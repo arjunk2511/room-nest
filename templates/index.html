@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="hero">
+    <h1>Find Your Perfect Room or PG</h1>
+    <p>Discover comfortable and affordable stays tailored to your needs.</p>
+    
+    <form action="{% url 'search' %}" method="GET" class="search-form">
+        <select name="location">
+            <option value="">Any Area in Mysore</option>
+            <option value="Vijayanagar">Vijayanagar</option>
+            <option value="Gokulam">Gokulam</option>
+            <option value="Kuvempunagar">Kuvempunagar</option>
+            <option value="Saraswathipuram">Saraswathipuram</option>
+            <option value="Jayalakshmipuram">Jayalakshmipuram</option>
+            <option value="Vontikoppal">Vontikoppal</option>
+            <option value="Hebbal">Hebbal</option>
+            <option value="Bannimantap">Bannimantap</option>
+            <option value="Bogadi">Bogadi</option>
+            <option value="Siddhartha Layout">Siddhartha Layout</option>
+            <option value="Other (Mysore)">Other (Mysore)</option>
+        </select>
+        <select name="type">
+            <option value="">Any Type</option>
+            <option value="1BHK">1BHK</option>
+            <option value="2BHK">2BHK</option>
+            <option value="3BHK">3BHK</option>
+            <option value="Single Room">Single Room</option>
+            <option value="PG (Men)">PG (Men)</option>
+            <option value="PG (Women)">PG (Women)</option>
+            <option value="Co-living">Co-living</option>
+        </select>
+        <button type="submit" class="btn btn-primary" style="background: #1e3a8a; border: 2px solid white;">Search Now</button>
+    </form>
+</section>
+
+<section class="container">
+    <h2 class="section-title">Featured Listings</h2>
+    <div class="grid">
+        {% for listing in listings %}
+        <div class="card">
+            {% if listing.image %}
+            <img src="{{ listing.image.url }}" alt="{{ listing.title }}" class="card-img">
+            {% else %}
+            <div class="card-img" style="background: #e5e7eb; display:flex; align-items:center; justify-content:center;">No Image</div>
+            {% endif %}
+            <div class="card-content">
+                <span class="details-badge" style="width: fit-content; margin-bottom: 0.5rem;">{{ listing.type }}</span>
+                <h3 class="card-title">{{ listing.title }}</h3>
+                <p class="card-price">₹{{ listing.price }}<span style="font-size: 1rem; color: #6b7280; font-weight: 400;">/mo</span></p>
+                <p class="card-location">📍 {{ listing.location }}</p>
+                <a href="{% url 'details' listing.id %}" class="btn btn-primary btn-block">View Details</a>
+            </div>
+        </div>
+        {% empty %}
+        <p style="text-align: center; grid-column: 1 / -1;">No listings available right now. Be the first to post a property!</p>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

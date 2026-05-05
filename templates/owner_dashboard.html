@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="max-width: 1200px; margin: 0 auto;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+        <h2>Owner Dashboard</h2>
+        <a href="{% url 'add_property' %}" class="btn btn-primary">+ Add New Property</a>
+    </div>
+    
+    {% if listings %}
+    <div class="grid">
+        {% for listing in listings %}
+        <div class="card" style="position: relative;">
+            <div class="card-image">
+                {% if listing.image %}
+                <img src="{{ listing.image.url }}" alt="{{ listing.title }}">
+                {% else %}
+                <div style="background: #e5e7eb; width: 100%; height: 100%; display:flex; align-items:center; justify-content:center;">
+                    No Image
+                </div>
+                {% endif %}
+                <span class="badge" style="position: absolute; top: 10px; right: 10px; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.875rem; font-weight: bold; {% if listing.is_sold %}background: #fee2e2; color: #ef4444;{% else %}background: #e0e7ff; color: var(--primary);{% endif %}">
+                    {{ listing.type }}{% if listing.is_sold %} (SOLD){% endif %}
+                </span>
+            </div>
+            <div class="card-content">
+                <div style="display: flex; justify-content: space-between; align-items: start;">
+                    <div>
+                        <h3 class="card-title">{{ listing.title }}</h3>
+                        <p class="card-location">📍 {{ listing.location }}</p>
+                    </div>
+                    <p class="card-price">₹{{ listing.price }}</p>
+                </div>
+                <div style="margin-top: 1rem; border-top: 1px solid #e5e7eb; padding-top: 1rem; display: flex; gap: 10px;">
+                    <a href="{% url 'details' listing.id %}" class="btn btn-primary" style="flex: 1; text-align: center; padding: 0.5rem;">View</a>
+                    <form action="{% url 'toggle_sold_status' listing.id %}" method="POST" style="flex: 1;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-outline" style="width: 100%; padding: 0.5rem; text-align: center; border-color: {% if listing.is_sold %}#10b981{% else %}#ef4444{% endif %}; color: {% if listing.is_sold %}#10b981{% else %}#ef4444{% endif %};">
+                            {% if listing.is_sold %}Mark Available{% else %}Mark as Sold{% endif %}
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div style="text-align: center; padding: 3rem; background: white; border-radius: 15px;">
+        <h3 style="color: #6b7280;">You haven't listed any properties yet.</h3>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

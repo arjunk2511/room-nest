@@ -1,0 +1,163 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="details-container">
+    <div class="details-image">
+        {% if listing.image %}
+        <img src="{{ listing.image.url }}" alt="{{ listing.title }}">
+        {% else %}
+        <div style="background: #e5e7eb; width: 100%; height: 400px; display:flex; align-items:center; justify-content:center; border-radius: 15px;">
+            No Image Available
+        </div>
+        {% endif %}
+    </div>
+
+    {% if listing.images.all %}
+    <div style="display:flex; gap:10px; margin-top:10px; overflow-x:auto;">
+        {% for img in listing.images.all %}
+        <img src="{{ img.image.url }}" style="height:100px; border-radius:8px;">
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="details-info">
+        <span class="details-badge">{{ listing.type }}</span>
+        {% if avg_rating > 0 %}
+        <span style="margin-left: 10px; color: #fbbf24; font-weight: bold;">⭐ {{ avg_rating }}/5</span>
+        {% endif %}
+        <h1 style="margin-top: 1rem; margin-bottom: 0.5rem;">{{ listing.title }}</h1>
+        <p style="color: var(--text-light); margin-top: 0; margin-bottom: 1rem; font-size: 0.95rem;">
+            Listed by <strong>{{ listing.owner.username }}</strong>
+            {% if listing.owner.userprofile.is_verified %}
+            <span style="color: #3b82f6; font-size: 1.1rem; margin-left: 5px;" title="Verified Owner">✔️ Verified</span>
+            {% endif %}
+        </p>
+        
+        <div style="display: flex; align-items: center; gap: 15px; margin-top: 0.5rem; margin-bottom: 0.5rem;">
+            {% if user.is_authenticated %}
+            <form action="{% url 'toggle_wishlist' listing.id %}" method="POST" style="margin: 0;">
+                {% csrf_token %}
+                <button type="submit" style="background: transparent; border: none; font-size: 2rem; cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'" title="{% if is_wishlisted %}Remove from Wishlist{% else %}Add to Wishlist{% endif %}">
+                    {% if is_wishlisted %}❤️{% else %}🤍{% endif %}
+                </button>
+            </form>
+            {% if request.user != listing.owner %}
+            <a href="{% url 'chat' listing.owner.id %}?listing_id={{ listing.id }}" class="btn btn-primary" style="padding: 0.6rem 1.2rem; font-size: 1rem; border-radius: 8px;">💬 Chat with Owner</a>
+            {% endif %}
+            {% endif %}
+        </div>
+
+        <p style="color: var(--text-light); margin-top: 0.5rem;">📍 Location: {{ listing.location }}</p>
+        
+        <p class="details-price">₹{{ listing.price }} <span style="font-size: 1.2rem; color: #6b7280; font-weight: 400;">/month</span></p>
+
+        <h3>Description</h3>
+        <p style="margin: 1rem 0; line-height: 1.6; color: #4b5563;">{{ listing.description }}</p>
+
+        <h3>Facilities</h3>
+        <div class="facilities">
+            <span class="facility-tag">{{ listing.facilities }}</span>
+        </div>
+
+        <div class="contact-card">
+            <h3>Contact Details</h3>
+            {% if has_subscription %}
+                <p style="margin-top: 1rem; font-size: 1.1rem;"><strong>Phone:</strong> {{ listing.phone }}</p>
+                <p style="margin-top: 0.5rem; font-size: 1.1rem;"><strong>Address:</strong> {{ listing.address }}</p>
+                {% if listing.exact_location %}
+                <p style="margin-top: 0.5rem; font-size: 1.1rem;"><strong>Exact Location:</strong> {{ listing.exact_location }}</p>
+                {% endif %}
+            {% else %}
+                <p style="margin: 1rem 0; color: #4b5563;">Subscribe for ₹49 to view owner's phone number and full address. Valid for 3 months.</p>
+                {% if user.is_authenticated %}
+                <form action="{% url 'subscribe' %}" method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="next" value="{{ request.path }}">
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Pay ₹49 to Unlock Contact</button>
+                </form>
+                {% else %}
+                <a href="{% url 'login' %}" class="btn btn-primary" style="width: 100%;">Login to Subscribe</a>
+                {% endif %}
+            {% endif %}
+        </div>
+        
+        <p style="margin-top: 2rem; color: #9ca3af; font-size: 0.875rem;">Listed on: {{ listing.created_at|date:"F d, Y" }}</p>
+
+        <div style="margin-top: 3rem; border-top: 1px solid #e5e7eb; padding-top: 2rem;">
+            <h3>⭐ Reviews & Ratings</h3>
+            {% if user.is_authenticated and request.user != listing.owner %}
+            <form action="{% url 'add_review' listing.id %}" method="POST" style="margin-top: 1rem; background: #f9fafb; padding: 1.5rem; border-radius: 10px;">
+                {% csrf_token %}
+                <h4 style="margin-top: 0; margin-bottom: 1rem; color: var(--text-dark);">Leave a Review</h4>
+                <div style="margin-bottom: 1rem;">
+                    <label style="font-weight: 500;">Rating:</label>
+                    <select name="rating" style="padding: 0.5rem; border-radius: 5px; border: 1px solid #d1d5db; margin-left: 10px; background: white;">
+                        <option value="5">⭐⭐⭐⭐⭐ (5/5)</option>
+                        <option value="4">⭐⭐⭐⭐ (4/5)</option>
+                        <option value="3">⭐⭐⭐ (3/5)</option>
+                        <option value="2">⭐⭐ (2/5)</option>
+                        <option value="1">⭐ (1/5)</option>
+                    </select>
+                </div>
+                <textarea name="comment" rows="3" placeholder="How was your experience?" style="width: 100%; padding: 0.75rem; border-radius: 8px; border: 1px solid #d1d5db; margin-bottom: 1rem; font-family: inherit;" required></textarea>
+                <button type="submit" class="btn btn-primary">Submit Review</button>
+            </form>
+            {% endif %}
+            
+            <div style="margin-top: 2rem;">
+                {% for review in reviews %}
+                <div style="margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid #f3f4f6;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                        <strong style="color: var(--text-dark);">{{ review.user.username }}</strong>
+                        <span style="color: #fbbf24;">
+                            {% if review.rating >= 1 %}⭐{% endif %}
+                            {% if review.rating >= 2 %}⭐{% endif %}
+                            {% if review.rating >= 3 %}⭐{% endif %}
+                            {% if review.rating >= 4 %}⭐{% endif %}
+                            {% if review.rating >= 5 %}⭐{% endif %}
+                        </span>
+                    </div>
+                    <p style="color: #4b5563; margin: 0; line-height: 1.5;">{{ review.comment }}</p>
+                    <small style="color: #9ca3af; display: block; margin-top: 0.5rem;">{{ review.created_at|date:"M d, Y" }}</small>
+                </div>
+                {% empty %}
+                <p style="color: #6b7280; font-style: italic;">No reviews yet. Be the first to leave one!</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if similar_listings %}
+<div style="max-width: 1200px; margin: 3rem auto 1rem auto; padding: 0 1rem;">
+    <h2 style="margin-bottom: 1.5rem; color: var(--text-dark);">Similar {{ listing.type }}s in {{ listing.location }}</h2>
+    <div class="grid">
+        {% for sim_listing in similar_listings %}
+        <a href="{% url 'details' sim_listing.id %}" style="text-decoration: none; color: inherit; display: block;">
+            <div class="card">
+                <div class="card-image">
+                    {% if sim_listing.image %}
+                    <img src="{{ sim_listing.image.url }}" alt="{{ sim_listing.title }}">
+                    {% else %}
+                    <div style="background: #e5e7eb; width: 100%; height: 100%; display:flex; align-items:center; justify-content:center;">
+                        No Image
+                    </div>
+                    {% endif %}
+                    <span class="badge">{{ sim_listing.type }}</span>
+                </div>
+                <div class="card-content">
+                    <div style="display: flex; justify-content: space-between; align-items: start;">
+                        <div>
+                            <h3 class="card-title">{{ sim_listing.title }}</h3>
+                            <p class="card-location">📍 {{ sim_listing.location }}</p>
+                        </div>
+                        <p class="card-price">₹{{ sim_listing.price }}</p>
+                    </div>
+                </div>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+{% endblock %}

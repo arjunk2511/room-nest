@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="max-width: 1200px; margin: 0 auto;">
+    <h2 style="margin-bottom: 2rem;">My Wishlist</h2>
+    {% if listings %}
+    <div class="grid">
+        {% for listing in listings %}
+        <div class="card">
+            <div class="card-image">
+                {% if listing.image %}
+                <img src="{{ listing.image.url }}" alt="{{ listing.title }}">
+                {% else %}
+                <div style="background: #e5e7eb; width: 100%; height: 100%; display:flex; align-items:center; justify-content:center;">
+                    No Image
+                </div>
+                {% endif %}
+                <span class="badge">{{ listing.type }}</span>
+            </div>
+            <div class="card-content">
+                <div style="display: flex; justify-content: space-between; align-items: start;">
+                    <div>
+                        <h3 class="card-title">{{ listing.title }}</h3>
+                        <p class="card-location">📍 {{ listing.location }}</p>
+                    </div>
+                    <p class="card-price">₹{{ listing.price }}</p>
+                </div>
+                <div style="margin-top: 1rem; border-top: 1px solid #e5e7eb; padding-top: 1rem;">
+                    <a href="{% url 'details' listing.id %}" class="btn btn-primary btn-block" style="text-align: center;">View Details</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div style="text-align: center; padding: 3rem; background: white; border-radius: 15px;">
+        <h3 style="color: #6b7280;">Your wishlist is empty.</h3>
+        <a href="{% url 'home' %}" class="btn btn-primary" style="margin-top: 1rem; display: inline-block;">Browse Properties</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

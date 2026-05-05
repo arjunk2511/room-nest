@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="form-container" style="max-width: 800px;">
+    <h2>Post a Property</h2>
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="title">Property Title</label>
+            <input type="text" id="title" name="title" required placeholder="e.g. Spacious 1RK in Andheri">
+        </div>
+
+        <div class="form-group">
+            <label for="location">Mysore Area</label>
+            <select id="location" name="location" required>
+                <option value="Vijayanagar">Vijayanagar</option>
+                <option value="Gokulam">Gokulam</option>
+                <option value="Kuvempunagar">Kuvempunagar</option>
+                <option value="Saraswathipuram">Saraswathipuram</option>
+                <option value="Jayalakshmipuram">Jayalakshmipuram</option>
+                <option value="Vontikoppal">Vontikoppal</option>
+                <option value="Hebbal">Hebbal</option>
+                <option value="Bannimantap">Bannimantap</option>
+                <option value="Bogadi">Bogadi</option>
+                <option value="Siddhartha Layout">Siddhartha Layout</option>
+                <option value="Other (Mysore)">Other (Mysore)</option>
+            </select>
+        </div>
+
+        <div style="display: flex; gap: 1rem;">
+            <div class="form-group" style="flex: 1;">
+                <label for="price">Monthly Rent (₹)</label>
+                <input type="number" id="price" name="price" required placeholder="e.g. 15000">
+            </div>
+            
+            <div class="form-group" style="flex: 1;">
+                <label for="type">Property Type</label>
+                <select id="type" name="type" required>
+                    <option value="1BHK">1BHK</option>
+                    <option value="2BHK">2BHK</option>
+                    <option value="3BHK">3BHK</option>
+                    <option value="Single Room">Single Room</option>
+                    <option value="PG (Men)">PG (Men)</option>
+                    <option value="PG (Women)">PG (Women)</option>
+                    <option value="Co-living">Co-living</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Facilities</label>
+            <div class="checkbox-group">
+                <label class="checkbox-item"><input type="checkbox" name="facilities" value="WiFi"> WiFi</label>
+                <label class="checkbox-item"><input type="checkbox" name="facilities" value="Food"> Food Included</label>
+                <label class="checkbox-item"><input type="checkbox" name="facilities" value="AC"> AC</label>
+                <label class="checkbox-item"><input type="checkbox" name="facilities" value="Parking"> Parking</label>
+                <label class="checkbox-item"><input type="checkbox" name="facilities" value="Attached Bath"> Attached Bath</label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="description">Description</label>
+            <textarea id="description" name="description" rows="4" required placeholder="Describe your property..."></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="address">Full Address (Hidden until subscribed)</label>
+            <textarea id="address" name="address" rows="2" required placeholder="Enter complete address"></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="exact_location">Exact Location / Landmark (Hidden until subscribed)</label>
+            <div style="display: flex; gap: 10px;">
+                <input type="text" id="exact_location" name="exact_location" placeholder="e.g. Google Maps URL or specific landmark" style="flex: 1;">
+                <button type="button" class="btn btn-outline" onclick="getLocation()" style="white-space: nowrap;">📍 Get Current Location</button>
+            </div>
+            <small id="location-status" style="color: var(--text-light);"></small>
+        </div>
+
+        <div class="form-group">
+            <label for="phone">Contact Phone Number (Hidden until subscribed)</label>
+            <input type="text" id="phone" name="phone" required placeholder="e.g. +91 9876543210">
+        </div>
+
+        <div class="form-group">
+            <label for="images">Property Images (Select up to 5 or more)</label>
+            <input type="file" id="images" name="images" accept="image/*" multiple required>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block" style="font-size: 1.1rem; padding: 1rem;">Post Property</button>
+    </form>
+</div>
+
+<script>
+function getLocation() {
+    const status = document.getElementById('location-status');
+    const input = document.getElementById('exact_location');
+    
+    if (!navigator.geolocation) {
+        status.textContent = 'Geolocation is not supported by your browser';
+    } else {
+        status.textContent = 'Locating...';
+        navigator.geolocation.getCurrentPosition((position) => {
+            const latitude  = position.coords.latitude;
+            const longitude = position.coords.longitude;
+            input.value = `https://www.google.com/maps?q=${latitude},${longitude}`;
+            status.textContent = 'Location added!';
+        }, () => {
+            status.textContent = 'Unable to retrieve your location';
+        });
+    }
+}
+</script>
+{% endblock %}

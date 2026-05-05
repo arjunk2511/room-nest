@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 0 auto;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+        <h2>Messages</h2>
+    </div>
+    
+    {% if chat_users %}
+    <div style="background: white; border-radius: 15px; box-shadow: var(--shadow); overflow: hidden;">
+        {% for chat in chat_users %}
+        <a href="{% url 'chat' chat.user.id %}" style="display: flex; padding: 1.5rem; text-decoration: none; color: inherit; border-bottom: 1px solid #e5e7eb; align-items: center; justify-content: space-between; transition: background 0.3s;">
+            <div>
+                <h3 style="margin-bottom: 0.5rem; color: var(--primary);">{{ chat.user.username }}</h3>
+                <p style="color: var(--text-light); font-size: 0.9rem;">
+                    {% if chat.last_message.sender == request.user %}You: {% endif %}
+                    {{ chat.last_message.content|truncatechars:50 }}
+                </p>
+            </div>
+            <div style="text-align: right;">
+                <p style="color: #9ca3af; font-size: 0.8rem; margin-bottom: 0.5rem;">{{ chat.last_message.timestamp|date:"M d, g:i a" }}</p>
+                {% if chat.unread_count > 0 %}
+                <span style="background: #ef4444; color: white; padding: 0.2rem 0.6rem; border-radius: 20px; font-size: 0.8rem; font-weight: bold;">
+                    {{ chat.unread_count }} New
+                </span>
+                {% endif %}
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div style="text-align: center; padding: 3rem; background: white; border-radius: 15px;">
+        <h3 style="color: #6b7280;">No messages yet.</h3>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
