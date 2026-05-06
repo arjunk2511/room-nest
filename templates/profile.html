@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="max-width: 900px; margin: 3rem auto; padding: 0 1rem; display: flex; flex-wrap: wrap; gap: 2rem;">
+    
+    <!-- Left Sidebar: Profile Card -->
+    <div style="flex: 1; min-width: 300px;">
+        <div style="background: white; border-radius: 24px; padding: 2rem; text-align: center; box-shadow: var(--shadow-lg); position: relative; overflow: hidden;">
+            <div style="width: 100%; height: 100px; background: linear-gradient(135deg, var(--primary) 0%, #a855f7 100%); position: absolute; top: 0; left: 0;"></div>
+            
+            <div style="width: 100px; height: 100px; border-radius: 50%; background: white; border: 4px solid white; display: flex; align-items: center; justify-content: center; font-size: 3rem; font-weight: bold; color: var(--primary); margin: 30px auto 1rem; position: relative; z-index: 1; box-shadow: var(--shadow);">
+                {{ user.username|make_list|first|upper }}
+            </div>
+            
+            <h2 style="margin-bottom: 0.2rem; font-size: 1.5rem;">{{ user.first_name }} {{ user.last_name }}</h2>
+            <p style="color: var(--text-light); margin-bottom: 1rem;">@{{ user.username }}</p>
+            
+            {% if profile.is_verified %}
+            <span style="display: inline-flex; align-items: center; gap: 5px; background: #dcfce7; color: #166534; padding: 0.4rem 1rem; border-radius: 999px; font-size: 0.85rem; font-weight: 700;">
+                <svg style="width: 16px; height: 16px;" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+                Verified Owner
+            </span>
+            {% endif %}
+        </div>
+
+        <!-- Subscription Card -->
+        <div style="background: white; border-radius: 24px; padding: 2rem; margin-top: 1.5rem; box-shadow: var(--shadow);">
+            <h3 style="margin-bottom: 1rem; font-size: 1.2rem; display: flex; align-items: center; gap: 8px;">
+                <svg style="width: 20px; height: 20px; color: #eab308;" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5 2a1 1 0 011 1v1h1a1 1 0 010 2H6v1a1 1 0 01-2 0V6H3a1 1 0 010-2h1V3a1 1 0 011-1zm0 10a1 1 0 011 1v1h1a1 1 0 110 2H6v1a1 1 0 11-2 0v-1H3a1 1 0 110-2h1v-1a1 1 0 011-1zM12 2a1 1 0 01.967.744L14.146 7.2 17.5 9.134a1 1 0 010 1.732l-3.354 1.935-1.18 4.455a1 1 0 01-1.933 0L9.854 12.8 6.5 10.866a1 1 0 010-1.732l3.354-1.935 1.18-4.455A1 1 0 0112 2z" clip-rule="evenodd"></path></svg>
+                My Subscription
+            </h3>
+            
+            {% if subscription %}
+            <div style="background: #f0fdf4; border: 1px solid #bbf7d0; padding: 1.5rem; border-radius: 16px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                    <span style="font-weight: 700; color: #166534;">Premium Active</span>
+                    <span style="width: 10px; height: 10px; background: #22c55e; border-radius: 50%; box-shadow: 0 0 0 3px #bbf7d0;"></span>
+                </div>
+                <p style="font-size: 0.9rem; color: #15803d; margin-top: 0.5rem;">Expires on: <strong>{{ subscription.end_date|date:"F d, Y" }}</strong></p>
+                <p style="font-size: 0.8rem; color: #166534; margin-top: 1rem; opacity: 0.8;">You have full access to owner contact details and exact map locations.</p>
+            </div>
+            {% else %}
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 1.5rem; border-radius: 16px; text-align: center;">
+                <span style="display: inline-block; padding: 0.2rem 0.8rem; background: #e2e8f0; color: #475569; border-radius: 999px; font-size: 0.8rem; font-weight: 600; margin-bottom: 1rem;">Free Plan</span>
+                <p style="font-size: 0.9rem; color: var(--text-dark); margin-bottom: 1rem;">Unlock full access to owner phone numbers and exact property locations.</p>
+                <a href="{% url 'subscribe' %}" class="btn btn-primary" style="width: 100%; font-size: 0.95rem; padding: 0.6rem;">Upgrade for ₹49</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Right Content: Edit Profile Form -->
+    <div style="flex: 2; min-width: 300px;">
+        <div style="background: white; border-radius: 24px; padding: 2.5rem; box-shadow: var(--shadow);">
+            <h2 style="margin-bottom: 2rem; font-size: 1.8rem; color: var(--text-dark);">Edit Profile</h2>
+            
+            <form method="POST">
+                {% csrf_token %}
+                <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                    <div class="form-group" style="flex: 1; min-width: 200px;">
+                        <label>First Name</label>
+                        <input type="text" name="first_name" value="{{ user.first_name }}" placeholder="First Name" style="width: 100%; padding: 0.8rem 1rem; border-radius: 12px; border: 1px solid #d1d5db; outline: none;">
+                    </div>
+                    <div class="form-group" style="flex: 1; min-width: 200px;">
+                        <label>Last Name</label>
+                        <input type="text" name="last_name" value="{{ user.last_name }}" placeholder="Last Name" style="width: 100%; padding: 0.8rem 1rem; border-radius: 12px; border: 1px solid #d1d5db; outline: none;">
+                    </div>
+                </div>
+
+                <div class="form-group" style="margin-top: 1.5rem;">
+                    <label>Email Address</label>
+                    <input type="email" name="email" value="{{ user.email }}" placeholder="your@email.com" style="width: 100%; padding: 0.8rem 1rem; border-radius: 12px; border: 1px solid #d1d5db; outline: none;">
+                </div>
+
+                <div class="form-group" style="margin-top: 1.5rem;">
+                    <label>Phone Number</label>
+                    <input type="text" name="phone_number" value="{{ profile.phone_number|default:'' }}" placeholder="+91 9876543210" style="width: 100%; padding: 0.8rem 1rem; border-radius: 12px; border: 1px solid #d1d5db; outline: none;">
+                    <small style="color: var(--text-light); display: block; margin-top: 0.5rem;">Owners need a valid phone number so customers can contact them.</small>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="margin-top: 2rem; padding: 0.8rem 2rem; font-size: 1.1rem; border-radius: 12px;">Save Changes</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
