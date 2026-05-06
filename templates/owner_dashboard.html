@@ -1,41 +1,50 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div style="max-width: 1200px; margin: 0 auto;">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
-        <h2>Owner Dashboard</h2>
-        <a href="{% url 'add_property' %}" class="btn btn-primary">+ Add New Property</a>
+<div style="max-width: 1200px; margin: 0 auto; padding: 2rem 1rem;">
+    <!-- Welcome Header -->
+    <div style="background: linear-gradient(135deg, var(--primary) 0%, #3b82f6 100%); border-radius: 24px; padding: 2.5rem; color: white; display: flex; justify-content: space-between; align-items: center; margin-bottom: 2.5rem; box-shadow: var(--shadow-lg); flex-wrap: wrap; gap: 1rem;">
+        <div>
+            <h2 style="font-size: 2rem; font-weight: 700; margin-bottom: 0.5rem;">Your Dashboard</h2>
+            <p style="opacity: 0.9;">Manage your properties and stay on top of your listings.</p>
+        </div>
+        <a href="{% url 'add_property' %}" class="btn btn-primary" style="background: white; color: var(--primary); border: none;">+ Add New Property</a>
     </div>
+
+    <h3 style="font-size: 1.5rem; margin-bottom: 1.5rem; color: var(--text-dark);">My Properties</h3>
     
     {% if listings %}
     <div class="grid">
         {% for listing in listings %}
-        <div class="card" style="position: relative;">
-            <div class="card-image">
+        <div class="card" style="position: relative; overflow: hidden; border-radius: 20px;">
+            <div class="card-image" style="height: 200px; position: relative;">
                 {% if listing.image %}
-                <img src="{{ listing.image.url }}" alt="{{ listing.title }}">
+                <img src="{{ listing.image.url }}" alt="{{ listing.title }}" style="width: 100%; height: 100%; object-fit: cover;">
                 {% else %}
-                <div style="background: #e5e7eb; width: 100%; height: 100%; display:flex; align-items:center; justify-content:center;">
-                    No Image
+                <div style="background: linear-gradient(135deg, #e5e7eb 0%, #f3f4f6 100%); width: 100%; height: 100%; display:flex; align-items:center; justify-content:center; color: #9ca3af; font-weight: 500;">
+                    No Image Provided
                 </div>
                 {% endif %}
-                <span class="badge" style="position: absolute; top: 10px; right: 10px; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.875rem; font-weight: bold; {% if listing.is_sold %}background: #fee2e2; color: #ef4444;{% else %}background: #e0e7ff; color: var(--primary);{% endif %}">
-                    {{ listing.type }}{% if listing.is_sold %} (SOLD){% endif %}
+                <span class="badge" style="position: absolute; top: 12px; right: 12px; padding: 0.4rem 1rem; border-radius: 9999px; font-size: 0.8rem; font-weight: 700; box-shadow: 0 4px 6px rgba(0,0,0,0.1); backdrop-filter: blur(4px); {% if listing.is_sold %}background: rgba(239, 68, 68, 0.9); color: white;{% else %}background: rgba(16, 185, 129, 0.9); color: white;{% endif %}">
+                    {% if listing.is_sold %}SOLD OUT{% else %}ACTIVE{% endif %}
                 </span>
             </div>
-            <div class="card-content">
-                <div style="display: flex; justify-content: space-between; align-items: start;">
+            <div class="card-content" style="padding: 1.5rem;">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem;">
                     <div>
-                        <h3 class="card-title">{{ listing.title }}</h3>
-                        <p class="card-location">📍 {{ listing.location }}</p>
+                        <span style="font-size: 0.8rem; font-weight: 600; color: var(--primary); text-transform: uppercase; letter-spacing: 0.5px;">{{ listing.type }}</span>
+                        <h3 class="card-title" style="margin-bottom: 0.2rem; font-size: 1.25rem;">{{ listing.title }}</h3>
+                        <p class="card-location" style="margin-bottom: 0; font-size: 0.9rem;">📍 {{ listing.location }}</p>
                     </div>
-                    <p class="card-price">₹{{ listing.price }}</p>
                 </div>
-                <div style="margin-top: 1rem; border-top: 1px solid #e5e7eb; padding-top: 1rem; display: flex; gap: 10px;">
-                    <a href="{% url 'details' listing.id %}" class="btn btn-primary" style="flex: 1; text-align: center; padding: 0.5rem;">View</a>
+                <div style="margin: 1rem 0; font-size: 1.5rem; font-weight: 800; color: var(--text-dark);">
+                    ₹{{ listing.price }}<span style="font-size: 0.9rem; color: var(--text-light); font-weight: 500;">/mo</span>
+                </div>
+                <div style="display: flex; gap: 0.8rem; margin-top: auto;">
+                    <a href="{% url 'details' listing.id %}" class="btn btn-outline" style="flex: 1; padding: 0.6rem; font-size: 0.9rem;">View</a>
                     <form action="{% url 'toggle_sold_status' listing.id %}" method="POST" style="flex: 1;">
                         {% csrf_token %}
-                        <button type="submit" class="btn btn-outline" style="width: 100%; padding: 0.5rem; text-align: center; border-color: {% if listing.is_sold %}#10b981{% else %}#ef4444{% endif %}; color: {% if listing.is_sold %}#10b981{% else %}#ef4444{% endif %};">
+                        <button type="submit" class="btn" style="width: 100%; padding: 0.6rem; font-size: 0.9rem; font-weight: 600; border-radius: 9999px; transition: all 0.3s; {% if listing.is_sold %}background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0;{% else %}background: #fef2f2; color: #dc2626; border: 1px solid #fecaca;{% endif %}">
                             {% if listing.is_sold %}Mark Available{% else %}Mark as Sold{% endif %}
                         </button>
                     </form>
@@ -45,8 +54,13 @@
         {% endfor %}
     </div>
     {% else %}
-    <div style="text-align: center; padding: 3rem; background: white; border-radius: 15px;">
-        <h3 style="color: #6b7280;">You haven't listed any properties yet.</h3>
+    <div style="text-align: center; padding: 4rem 2rem; background: white; border-radius: 24px; box-shadow: var(--shadow); border: 1px dashed #d1d5db;">
+        <div style="width: 80px; height: 80px; background: #e0e7ff; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem;">
+            <svg style="width: 40px; height: 40px; color: var(--primary);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+        </div>
+        <h3 style="color: var(--text-dark); font-size: 1.5rem; margin-bottom: 0.5rem;">No Properties Yet</h3>
+        <p style="color: var(--text-light); margin-bottom: 2rem;">Start earning by listing your first property on RoomNest.</p>
+        <a href="{% url 'add_property' %}" class="btn btn-primary" style="padding: 0.8rem 2rem;">Post Your First Property</a>
     </div>
     {% endif %}
 </div>
