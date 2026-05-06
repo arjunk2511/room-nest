@@ -2,23 +2,66 @@
 
 {% block content %}
 <div class="details-container">
-    <div class="details-image">
-        {% if listing.image %}
-        <img src="{{ listing.image.url }}" alt="{{ listing.title }}">
-        {% else %}
-        <div style="background: #e5e7eb; width: 100%; height: 400px; display:flex; align-items:center; justify-content:center; border-radius: 15px;">
-            No Image Available
+    <div class="details-image" style="position: relative;">
+        <!-- Carousel Container -->
+        <div class="carousel-container" style="position: relative; width: 100%; height: 400px; border-radius: 24px; overflow: hidden; background: #e5e7eb; box-shadow: var(--shadow-lg);">
+            <div class="carousel-slides" style="display: flex; transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); height: 100%;">
+                {% if listing.image %}
+                <img src="{{ listing.image.url }}" alt="{{ listing.title }}" style="min-width: 100%; height: 100%; object-fit: cover;">
+                {% else %}
+                <div style="min-width: 100%; height: 100%; display:flex; align-items:center; justify-content:center; color: #9ca3af; font-weight: 500;">No Image Available</div>
+                {% endif %}
+                
+                {% for img in listing.images.all %}
+                <img src="{{ img.image.url }}" alt="Gallery Image" style="min-width: 100%; height: 100%; object-fit: cover;">
+                {% endfor %}
+            </div>
+            
+            {% if listing.images.all %}
+            <!-- Navigation Buttons -->
+            <button onclick="moveSlide(-1)" style="position: absolute; top: 50%; left: 10px; transform: translateY(-50%); background: rgba(255,255,255,0.8); border: none; width: 40px; height: 40px; border-radius: 50%; font-size: 1.2rem; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.2); backdrop-filter: blur(4px); z-index: 10; display: flex; align-items: center; justify-content: center; color: var(--primary); font-weight: bold; transition: background 0.2s;">❮</button>
+            <button onclick="moveSlide(1)" style="position: absolute; top: 50%; right: 10px; transform: translateY(-50%); background: rgba(255,255,255,0.8); border: none; width: 40px; height: 40px; border-radius: 50%; font-size: 1.2rem; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.2); backdrop-filter: blur(4px); z-index: 10; display: flex; align-items: center; justify-content: center; color: var(--primary); font-weight: bold; transition: background 0.2s;">❯</button>
+            
+            <!-- Indicators -->
+            <div class="carousel-indicators" style="position: absolute; bottom: 15px; left: 50%; transform: translateX(-50%); display: flex; gap: 8px; z-index: 10;">
+                <div class="indicator active" style="width: 8px; height: 8px; border-radius: 50%; background: white; box-shadow: 0 1px 3px rgba(0,0,0,0.5); transition: opacity 0.3s;"></div>
+                {% for img in listing.images.all %}
+                <div class="indicator" style="width: 8px; height: 8px; border-radius: 50%; background: white; opacity: 0.5; box-shadow: 0 1px 3px rgba(0,0,0,0.5); transition: opacity 0.3s;"></div>
+                {% endfor %}
+            </div>
+            {% endif %}
         </div>
-        {% endif %}
+        
+        <script>
+            let currentSlide = 0;
+            const slides = document.querySelector('.carousel-slides');
+            const indicators = document.querySelectorAll('.indicator');
+            const totalSlides = {{ listing.images.all|length }} + {% if listing.image %}1{% else %}1{% endif %};
+            
+            function moveSlide(direction) {
+                currentSlide = (currentSlide + direction + totalSlides) % totalSlides;
+                slides.style.transform = `translateX(-${currentSlide * 100}%)`;
+                
+                indicators.forEach((ind, index) => {
+                    ind.style.opacity = index === currentSlide ? '1' : '0.5';
+                });
+            }
+            
+            // Add touch support for mobile swipe
+            let startX = 0;
+            let endX = 0;
+            const carouselContainer = document.querySelector('.carousel-container');
+            
+            carouselContainer.addEventListener('touchstart', e => {
+                startX = e.changedTouches[0].screenX;
+            });
+            carouselContainer.addEventListener('touchend', e => {
+                endX = e.changedTouches[0].screenX;
+                if (startX - endX > 50) moveSlide(1); // Swipe left
+                if (endX - startX > 50) moveSlide(-1); // Swipe right
+            });
+        </script>
     </div>
-
-    {% if listing.images.all %}
-    <div style="display:flex; gap:10px; margin-top:10px; overflow-x:auto;">
-        {% for img in listing.images.all %}
-        <img src="{{ img.image.url }}" style="height:100px; border-radius:8px;">
-        {% endfor %}
-    </div>
-    {% endif %}
 
     <div class="details-info">
         <span class="details-badge">{{ listing.type }}</span>
@@ -68,9 +111,9 @@
                 <p style="margin-top: 0.5rem; font-size: 1.1rem;"><strong>Exact Location:</strong> {{ listing.exact_location }}</p>
                 {% endif %}
             {% else %}
-                <p style="margin: 1rem 0; color: #4b5563;">Subscribe for ₹49 to view owner's phone number and full address. Valid for 3 months.</p>
+                <p style="margin: 1rem 0; color: #4b5563;">Subscribe for ₹49 to view <strong>ALL</strong> owners' phone numbers and full addresses. Valid for 3 months across the entire platform.</p>
                 {% if user.is_authenticated %}
-                <a href="{% url 'subscribe' %}" class="btn btn-primary" style="width: 100%;">Pay ₹49 to Unlock Contact</a>
+                <a href="{% url 'subscribe' %}" class="btn btn-primary" style="width: 100%;">Pay ₹49 to Unlock ALL Contacts</a>
                 {% else %}
                 <a href="{% url 'login' %}" class="btn btn-primary" style="width: 100%;">Login to Subscribe</a>
                 {% endif %}
@@ -157,4 +200,3 @@
 </div>
 {% endif %}
 {% endblock %}
-

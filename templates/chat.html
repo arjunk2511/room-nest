@@ -71,7 +71,7 @@
 
     <!-- Chat Input -->
     <div style="padding: 1rem 1.5rem; background: white; border-top: 1px solid #e5e7eb;">
-        <form method="POST" style="display: flex; gap: 10px; align-items: center;">
+        <form id="chatForm" method="POST" style="display: flex; gap: 10px; align-items: center;">
             {% csrf_token %}
             {% if listing %}
             <input type="hidden" name="listing_id" value="{{ listing.id }}">
@@ -104,8 +104,66 @@
         chatInput.style.background = '#f9fafb';
     });
 
-    // Auto-scroll to bottom of chat
     const chatMessages = document.getElementById('chatMessages');
-    chatMessages.scrollTop = chatMessages.scrollHeight;
+    
+    function scrollToBottom() {
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+    
+    // Auto-scroll on load
+    scrollToBottom();
+
+    // Polling function for real-time messages
+    function pollMessages() {
+        fetch(window.location.href)
+            .then(response => response.text())
+            .then(html => {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                const newContent = doc.getElementById('chatMessages').innerHTML;
+                
+                // Only update if there's a difference (new message)
+                if (chatMessages.innerHTML !== newContent) {
+                    const isScrolledToBottom = chatMessages.scrollHeight - chatMessages.clientHeight <= chatMessages.scrollTop + 50;
+                    chatMessages.innerHTML = newContent;
+                    if (isScrolledToBottom) {
+                        scrollToBottom();
+                    }
+                }
+            })
+            .catch(err => console.error('Polling error:', err));
+    }
+
+    // Poll every 3 seconds
+    setInterval(pollMessages, 3000);
+
+    // AJAX Form Submission
+    const chatForm = document.getElementById('chatForm');
+    chatForm.addEventListener('submit', function(e) {
+        e.preventDefault(); // Prevent page reload
+        
+        const formData = new FormData(this);
+        const submitBtn = chatForm.querySelector('button[type="submit"]');
+        
+        // Clear input immediately for snappy UX
+        chatInput.value = '';
+        submitBtn.disabled = true;
+        
+        fetch(window.location.href, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        }).then(response => {
+            submitBtn.disabled = false;
+            // Instantly poll after sending to show the new message
+            pollMessages();
+            setTimeout(scrollToBottom, 100);
+        }).catch(err => {
+            submitBtn.disabled = false;
+            console.error('Send error:', err);
+        });
+    });
 </script>
 {% endblock %}
