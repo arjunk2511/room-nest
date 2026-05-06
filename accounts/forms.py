@@ -11,6 +11,12 @@ class CustomUserCreationForm(UserCreationForm):
         model = User
         fields = UserCreationForm.Meta.fields + ('email',)
 
+    def clean_phone_number(self):
+        phone = self.cleaned_data.get('phone_number')
+        if UserProfile.objects.filter(phone_number=phone).exists():
+            raise forms.ValidationError("This phone number is already registered.")
+        return phone
+
     def save(self, commit=True):
         user = super().save(commit=False)
         user.email = self.cleaned_data['email']
