@@ -69,6 +69,13 @@
         <span style="margin-left: 10px; color: #fbbf24; font-weight: bold;">⭐ {{ avg_rating }}/5</span>
         {% endif %}
         <h1 style="margin-top: 1rem; margin-bottom: 0.5rem;">{{ listing.title }}</h1>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 1rem;">
+            <span style="background: #e0e7ff; color: #4f46e5; padding: 0.3rem 0.8rem; border-radius: 999px; font-size: 0.85rem; font-weight: 600;">🗓️ Available: {{ listing.available_from }}</span>
+            {% if listing.landmark %}
+            <span style="background: #f3f4f6; color: #4b5563; padding: 0.3rem 0.8rem; border-radius: 999px; font-size: 0.85rem; font-weight: 600;">📍 {{ listing.landmark }}</span>
+            {% endif %}
+        </div>
+        
         <p style="color: var(--text-light); margin-top: 0; margin-bottom: 1rem; font-size: 0.95rem;">
             Listed by <strong>{{ listing.owner.username }}</strong>
             {% if listing.owner.userprofile.is_verified %}
@@ -92,7 +99,16 @@
 
         <p style="color: var(--text-light); margin-top: 0.5rem;">📍 Location: {{ listing.location }}</p>
         
-        <p class="details-price">₹{{ listing.price }} <span style="font-size: 1.2rem; color: #6b7280; font-weight: 400;">/month</span></p>
+        <div style="display: flex; gap: 2rem; margin: 1.5rem 0; flex-wrap: wrap;">
+            <div>
+                <p style="color: var(--text-light); margin-bottom: 0.2rem; font-size: 0.85rem; font-weight: 600;">MONTHLY RENT</p>
+                <p class="details-price" style="margin: 0;">₹{{ listing.price }} <span style="font-size: 1.1rem; color: #6b7280; font-weight: 500;">/mo</span></p>
+            </div>
+            <div>
+                <p style="color: var(--text-light); margin-bottom: 0.2rem; font-size: 0.85rem; font-weight: 600;">SECURITY DEPOSIT</p>
+                <p class="details-price" style="margin: 0; color: #4b5563;">₹{{ listing.deposit }}</p>
+            </div>
+        </div>
 
         <h3>Description</h3>
         <p style="margin: 1rem 0; line-height: 1.6; color: #4b5563;">{{ listing.description }}</p>
@@ -100,6 +116,22 @@
         <h3>Facilities</h3>
         <div class="facilities">
             <span class="facility-tag">{{ listing.facilities }}</span>
+        </div>
+
+        <h3 style="margin-top: 2rem;">House Rules</h3>
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin: 1rem 0; background: #f8fafc; padding: 1.5rem; border-radius: 16px; border: 1px solid #e2e8f0;">
+            <div style="flex: 1; min-width: 120px;">
+                <p style="color: var(--text-light); margin-bottom: 0.2rem; font-size: 0.85rem; font-weight: 600;">FOOD PREFERENCE</p>
+                <p style="margin: 0; font-weight: 500; color: var(--text-dark);">🍲 {{ listing.food_preference }}</p>
+            </div>
+            <div style="flex: 1; min-width: 120px;">
+                <p style="color: var(--text-light); margin-bottom: 0.2rem; font-size: 0.85rem; font-weight: 600;">CURFEW</p>
+                <p style="margin: 0; font-weight: 500; color: var(--text-dark);">🕒 {{ listing.curfew }}</p>
+            </div>
+            <div style="flex: 1; min-width: 120px;">
+                <p style="color: var(--text-light); margin-bottom: 0.2rem; font-size: 0.85rem; font-weight: 600;">VISITORS</p>
+                <p style="margin: 0; font-weight: 500; color: var(--text-dark);">👥 {{ listing.visitors }}</p>
+            </div>
         </div>
 
         <div class="contact-card">
@@ -120,7 +152,12 @@
             {% endif %}
         </div>
         
-        <p style="margin-top: 2rem; color: #9ca3af; font-size: 0.875rem;">Listed on: {{ listing.created_at|date:"F d, Y" }}</p>
+        <div style="margin-top: 2rem; display: flex; justify-content: space-between; align-items: center; padding-top: 1.5rem; border-top: 1px dashed #d1d5db; flex-wrap: wrap; gap: 10px;">
+            <p style="color: #9ca3af; font-size: 0.875rem; margin: 0;">Listed on: {{ listing.created_at|date:"F d, Y" }}</p>
+            <button onclick="alert('Thank you for reporting. Our safety team will investigate this listing within 24 hours.')" style="background: none; border: none; color: #ef4444; font-weight: 600; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; gap: 5px;">
+                ⚠️ Report Fake/Unavailable
+            </button>
+        </div>
 
         <div style="margin-top: 3rem; border-top: 1px solid #e5e7eb; padding-top: 2rem;">
             <h3>⭐ Reviews & Ratings</h3>
