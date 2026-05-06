@@ -7,6 +7,8 @@ from subscriptions.models import Subscription
 from django.utils import timezone
 
 def home(request):
+    if not request.user.is_authenticated:
+        return render(request, 'welcome.html')
     featured_listings = Listing.objects.filter(is_sold=False).order_by('-created_at')[:6]
     return render(request, 'index.html', {'listings': featured_listings})
 
@@ -77,6 +79,13 @@ def add_property(request):
         
         exact_location = request.POST.get('exact_location', '')
         
+        deposit = request.POST.get('deposit', 0)
+        available_from = request.POST.get('available_from', 'Immediately')
+        food_preference = request.POST.get('food_preference', 'Any')
+        curfew = request.POST.get('curfew', 'No Curfew')
+        visitors = request.POST.get('visitors', 'Allowed')
+        landmark = request.POST.get('landmark', '')
+        
         images = request.FILES.getlist('images')
         main_image = images[0] if images else None
         
@@ -92,6 +101,12 @@ def add_property(request):
             address=address,
             exact_location=exact_location,
             phone=phone,
+            deposit=deposit,
+            available_from=available_from,
+            food_preference=food_preference,
+            curfew=curfew,
+            visitors=visitors,
+            landmark=landmark,
             image=main_image,
             owner=request.user
         )

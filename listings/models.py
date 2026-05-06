@@ -29,7 +29,21 @@ class Listing(models.Model):
     title = models.CharField(max_length=200)
     location = models.CharField(max_length=50, choices=MYSORE_AREAS, default='Vijayanagar')
     price = models.DecimalField(max_digits=10, decimal_places=2)
+    deposit = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     type = models.CharField(max_length=20, choices=TYPE_CHOICES)
+    available_from = models.CharField(max_length=100, default='Immediately')
+    
+    # House Rules
+    FOOD_CHOICES = (('Any', 'Any'), ('Veg Only', 'Veg Only'), ('Non-Veg Allowed', 'Non-Veg Allowed'))
+    food_preference = models.CharField(max_length=20, choices=FOOD_CHOICES, default='Any')
+    
+    CURFEW_CHOICES = (('No Curfew', 'No Curfew'), ('9 PM', '9 PM'), ('10 PM', '10 PM'), ('11 PM', '11 PM'), ('Strict', 'Strict'))
+    curfew = models.CharField(max_length=20, choices=CURFEW_CHOICES, default='No Curfew')
+    
+    VISITORS_CHOICES = (('Allowed', 'Allowed'), ('Not Allowed', 'Not Allowed'), ('Daytime Only', 'Daytime Only'))
+    visitors = models.CharField(max_length=20, choices=VISITORS_CHOICES, default='Allowed')
+    
+    landmark = models.CharField(max_length=200, blank=True, default='', help_text="e.g. 5 mins from JSS College")
     description = models.TextField()
     facilities = models.CharField(max_length=200, help_text="Comma separated e.g. WiFi, Food, AC, Parking")
     image = models.ImageField(upload_to='listings/')
