@@ -7,26 +7,48 @@ from django.contrib import messages
 
 @login_required
 def subscribe(request):
+    # Check if they already have an active subscription
+    active_sub = Subscription.objects.filter(user=request.user, is_active=True, end_date__gt=timezone.now()).first()
+    if active_sub:
+        messages.info(request, "You already have an active subscription!")
+        return redirect('home')
+
+    # Check if they have a pending subscription
+    pending_sub = Subscription.objects.filter(user=request.user, payment_status='Pending').first()
+
     if request.method == 'POST':
-        # Simulate payment: click button -> activate subscription
-        # Plan is valid for 3 months
-        end_date = timezone.now() + datetime.timedelta(days=90)
+        transaction_id = request.POST.get('transaction_id', '').strip()
+        if not transaction_id:
+            messages.error(request, "Please enter a valid Transaction ID / UTR Number.")
+            return redirect('subscribe')
         
-        # Check if user already has an active subscription to extend or create a new one
-        subscription, created = Subscription.objects.get_or_create(
+        # Save or update subscription
+        end_date = timezone.now() + datetime.timedelta(days=90) # 90 days plan
+        Subscription.objects.update_or_create(
             user=request.user,
-            defaults={'is_active': True, 'end_date': end_date}
+            defaults={
+                'is_active': False,
+                'end_date': end_date,
+                'transaction_id': transaction_id,
+                'payment_status': 'Pending'
+            }
         )
-        
-        if not created:
-            subscription.is_active = True
-            subscription.end_date = end_date
-            subscription.save()
+        messages.success(request, "Payment details submitted! Your subscription is pending verification.")
+        return redirect('home')
 
-        messages.success(request, 'Payment successful! You are now subscribed for 3 months.')
-        # redirect to the page they came from, if possible, or home
-        next_url = request.POST.get('next', 'home')
-        return redirect(next_url)
+    # For GET requests, render the pay.html
+    upi_id = "7981629660@ybl"  # ⚠️ CHANGE THIS TO YOUR ACTUAL UPI ID ⚠️
+    
+    # Generate UPI deep link
+    import urllib.parse
+    upi_payment_link = f"upi://pay?pa={upi_id}&pn=RoomNest&am=49&cu=INR&tn=RoomNest_Sub_for_{request.user.username}"
+    # QR Code API url
+    qr_code_url = f"https://api.qrserver.com/v1/create-qr-code/?size=250x250&data={urllib.parse.quote(upi_payment_link)}"
 
-    # If GET, just redirect home or show a simple pay page
-    return redirect('home')
+    context = {
+        'upi_id': upi_id,
+        'upi_link': upi_payment_link,
+        'qr_code_url': qr_code_url,
+        'pending_sub': pending_sub,
+    }
+    return render(request, 'pay.html', context)
