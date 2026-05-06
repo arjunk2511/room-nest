@@ -9,7 +9,7 @@ def register_view(request):
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
-            login(request, user)
+            login(request, user, backend='django.contrib.auth.backends.ModelBackend')
             messages.success(request, 'Registration successful.')
             return redirect('home')
         messages.error(request, 'Unsuccessful registration. Invalid information.')
@@ -41,3 +41,4 @@ def logout_view(request):
     logout(request)
     messages.info(request, 'You have successfully logged out.')
     return redirect('home')
+
