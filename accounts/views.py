@@ -3,6 +3,10 @@ from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.forms import AuthenticationForm
 from .forms import CustomUserCreationForm
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from subscriptions.models import Subscription
+from django.utils import timezone
+from .models import UserProfile
 
 def register_view(request):
     if request.method == 'POST':
@@ -42,3 +46,29 @@ def logout_view(request):
     messages.info(request, 'You have successfully logged out.')
     return redirect('home')
 
+@login_required
+def profile_view(request):
+    user_profile, created = UserProfile.objects.get_or_create(user=request.user)
+    
+    if request.method == 'POST':
+        request.user.first_name = request.POST.get('first_name', '')
+        request.user.last_name = request.POST.get('last_name', '')
+        request.user.email = request.POST.get('email', '')
+        request.user.save()
+        
+        user_profile.phone_number = request.POST.get('phone_number', '')
+        user_profile.save()
+        messages.success(request, 'Profile updated successfully!')
+        return redirect('profile')
+
+    subscription = Subscription.objects.filter(
+        user=request.user, 
+        is_active=True, 
+        end_date__gte=timezone.now()
+    ).first()
+    
+    context = {
+        'profile': user_profile,
+        'subscription': subscription
+    }
+    return render(request, 'profile.html', context)
