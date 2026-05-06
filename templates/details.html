@@ -70,11 +70,7 @@
             {% else %}
                 <p style="margin: 1rem 0; color: #4b5563;">Subscribe for ₹49 to view owner's phone number and full address. Valid for 3 months.</p>
                 {% if user.is_authenticated %}
-                <form action="{% url 'subscribe' %}" method="POST">
-                    {% csrf_token %}
-                    <input type="hidden" name="next" value="{{ request.path }}">
-                    <button type="submit" class="btn btn-primary" style="width: 100%;">Pay ₹49 to Unlock Contact</button>
-                </form>
+                <a href="{% url 'subscribe' %}" class="btn btn-primary" style="width: 100%;">Pay ₹49 to Unlock Contact</a>
                 {% else %}
                 <a href="{% url 'login' %}" class="btn btn-primary" style="width: 100%;">Login to Subscribe</a>
                 {% endif %}
@@ -161,3 +157,4 @@
 </div>
 {% endif %}
 {% endblock %}
+
