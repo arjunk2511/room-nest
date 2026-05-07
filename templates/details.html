@@ -143,12 +143,8 @@
                 <p style="margin-top: 0.5rem; font-size: 1.1rem;"><strong>Exact Location:</strong> {{ listing.exact_location }}</p>
                 {% endif %}
             {% else %}
-                <p style="margin: 1rem 0; color: #4b5563;">Subscribe for ₹49 to view <strong>ALL</strong> owners' phone numbers and full addresses. Valid for 3 months across the entire platform.</p>
-                {% if user.is_authenticated %}
-                <a href="{% url 'subscribe' %}" class="btn btn-primary" style="width: 100%;">Pay ₹49 to Unlock ALL Contacts</a>
-                {% else %}
-                <a href="{% url 'login' %}" class="btn btn-primary" style="width: 100%;">Login to Subscribe</a>
-                {% endif %}
+                <p style="margin: 1rem 0; color: #4b5563;">Login to your account to view the owner's full contact details and exact location.</p>
+                <a href="{% url 'login' %}" class="btn btn-primary" style="width: 100%;">Login to Unlock Details</a>
             {% endif %}
         </div>
         
