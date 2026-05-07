@@ -34,6 +34,12 @@ def search(request):
 
 def details(request, listing_id):
     listing = get_object_or_404(Listing, id=listing_id)
+    
+    # Increment view count if the user is not the owner
+    if not request.user.is_authenticated or request.user != listing.owner:
+        listing.views_count += 1
+        listing.save(update_fields=['views_count'])
+        
     has_subscription = False
     is_wishlisted = False
     
@@ -83,6 +89,7 @@ def add_property(request):
         curfew = request.POST.get('curfew', 'No Curfew')
         visitors = request.POST.get('visitors', 'Allowed')
         landmark = request.POST.get('landmark', '')
+        map_url = request.POST.get('map_url', '')
         
         images = request.FILES.getlist('images')
         main_image = images[0] if images else None
@@ -105,6 +112,7 @@ def add_property(request):
             curfew=curfew,
             visitors=visitors,
             landmark=landmark,
+            map_url=map_url,
             image=main_image,
             owner=request.user
         )
