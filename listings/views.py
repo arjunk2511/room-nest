@@ -135,7 +135,13 @@ def wishlist(request):
 @login_required
 def owner_dashboard(request):
     listings = Listing.objects.filter(owner=request.user)
-    return render(request, 'owner_dashboard.html', {'listings': listings})
+    active_count = listings.filter(is_sold=False).count()
+    sold_count = listings.filter(is_sold=True).count()
+    return render(request, 'owner_dashboard.html', {
+        'listings': listings,
+        'active_count': active_count,
+        'sold_count': sold_count,
+    })
 
 @login_required
 def toggle_sold_status(request, listing_id):
