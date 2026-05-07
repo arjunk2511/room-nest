@@ -1,60 +1,202 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
 <section class="hero">
-    <h1>Find Your Perfect Room or PG</h1>
-    <p>Discover comfortable and affordable stays tailored to your needs.</p>
-    
-    <form action="{% url 'search' %}" method="GET" class="search-form">
-        <select name="location">
-            <option value="">Any Area in Mysore</option>
-            <option value="Vijayanagar">Vijayanagar</option>
-            <option value="Gokulam">Gokulam</option>
-            <option value="Kuvempunagar">Kuvempunagar</option>
-            <option value="Saraswathipuram">Saraswathipuram</option>
-            <option value="Jayalakshmipuram">Jayalakshmipuram</option>
-            <option value="Vontikoppal">Vontikoppal</option>
-            <option value="Hebbal">Hebbal</option>
-            <option value="Bannimantap">Bannimantap</option>
-            <option value="Bogadi">Bogadi</option>
-            <option value="Siddhartha Layout">Siddhartha Layout</option>
-            <option value="Other (Mysore)">Other (Mysore)</option>
-        </select>
-        <select name="type">
-            <option value="">Any Type</option>
-            <option value="1BHK">1BHK</option>
-            <option value="2BHK">2BHK</option>
-            <option value="3BHK">3BHK</option>
-            <option value="Single Room">Single Room</option>
-            <option value="PG (Men)">PG (Men)</option>
-            <option value="PG (Women)">PG (Women)</option>
-            <option value="Co-living">Co-living</option>
-        </select>
-        <button type="submit" class="btn btn-primary" style="background: #1e3a8a; border: 2px solid white;">Search Now</button>
-    </form>
+    <img src="{% static 'images/hero_bg.png' %}" alt="RoomNest Hero" class="hero-bg-image">
+    <div class="hero-content">
+        <h1>Discover Your Next <br><span style="color: var(--secondary);">Perfect Stay</span></h1>
+        <p>Premium rooms, verified PGs, and affordable flats in Mysore. Your safe, comfortable, and modern living experience starts here.</p>
+        
+        <form action="{% url 'search' %}" method="GET" class="search-form-glass">
+            <div style="flex: 1; display: flex; align-items: center; background: white; border-radius: var(--radius-pill); padding: 0 1rem; box-shadow: var(--shadow-sm);">
+                <i class="fa-solid fa-location-dot" style="color: var(--primary);"></i>
+                <select name="location" style="background: transparent; box-shadow: none; padding: 0.8rem;">
+                    <option value="">Any Area in Mysore</option>
+                    <option value="Vijayanagar">Vijayanagar</option>
+                    <option value="Gokulam">Gokulam</option>
+                    <option value="Kuvempunagar">Kuvempunagar</option>
+                    <option value="Saraswathipuram">Saraswathipuram</option>
+                </select>
+            </div>
+            <div style="flex: 1; display: flex; align-items: center; background: white; border-radius: var(--radius-pill); padding: 0 1rem; box-shadow: var(--shadow-sm);">
+                <i class="fa-solid fa-building" style="color: var(--primary);"></i>
+                <select name="type" style="background: transparent; box-shadow: none; padding: 0.8rem;">
+                    <option value="">Any Type</option>
+                    <option value="PG (Men)">PG (Men)</option>
+                    <option value="PG (Women)">PG (Women)</option>
+                    <option value="1BHK">1BHK</option>
+                    <option value="Co-living">Co-living</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">
+                <i class="fa-solid fa-search"></i> Search
+            </button>
+        </form>
+    </div>
 </section>
 
-<section class="container">
-    <h2 class="section-title">Featured Listings</h2>
+<!-- Trust Statistics Section -->
+<section class="section" data-aos="fade-up">
+    <div class="trust-section">
+        <div class="trust-stat">
+            <h3>1,000+</h3>
+            <p>Happy Tenants</p>
+        </div>
+        <div class="trust-stat">
+            <h3>500+</h3>
+            <p>Verified Properties</p>
+        </div>
+        <div class="trust-stat">
+            <h3>50+</h3>
+            <p>Localities Covered</p>
+        </div>
+    </div>
+</section>
+
+<!-- Categories Section -->
+<section class="section" data-aos="fade-up">
+    <div class="section-header">
+        <div>
+            <h2 class="section-title">Explore Categories</h2>
+            <p class="section-subtitle">Find exactly what you're looking for</p>
+        </div>
+    </div>
+    <div class="categories-slider">
+        <div class="category-card" onclick="window.location.href='/search/?type=PG+(Women)'">
+            <div class="category-icon">👩‍🎓</div>
+            <h4 style="font-family: 'Poppins', sans-serif;">Girls PGs</h4>
+            <p style="font-size: 0.85rem; color: var(--text-light);">Safe & Secure</p>
+        </div>
+        <div class="category-card" onclick="window.location.href='/search/?type=PG+(Men)'">
+            <div class="category-icon">👨‍🎓</div>
+            <h4 style="font-family: 'Poppins', sans-serif;">Boys PGs</h4>
+            <p style="font-size: 0.85rem; color: var(--text-light);">Student Friendly</p>
+        </div>
+        <div class="category-card" onclick="window.location.href='/search/?type=Co-living'">
+            <div class="category-icon">🤝</div>
+            <h4 style="font-family: 'Poppins', sans-serif;">Co-living</h4>
+            <p style="font-size: 0.85rem; color: var(--text-light);">Working Pros</p>
+        </div>
+        <div class="category-card" onclick="window.location.href='/search/?type=1BHK'">
+            <div class="category-icon">🔑</div>
+            <h4 style="font-family: 'Poppins', sans-serif;">1 BHK Flats</h4>
+            <p style="font-size: 0.85rem; color: var(--text-light);">Private Space</p>
+        </div>
+        <div class="category-card" onclick="window.location.href='/search/?price=5000'">
+            <div class="category-icon">💰</div>
+            <h4 style="font-family: 'Poppins', sans-serif;">Budget Friendly</h4>
+            <p style="font-size: 0.85rem; color: var(--text-light);">Under ₹5000</p>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Listings Section -->
+<section class="section" data-aos="fade-up">
+    <div class="section-header">
+        <div>
+            <h2 class="section-title">Featured Properties</h2>
+            <p class="section-subtitle">Handpicked premium stays in top locations</p>
+        </div>
+        <a href="{% url 'search' %}" class="btn btn-outline" style="border-color: var(--border); color: var(--text-dark);">View All <i class="fa-solid fa-arrow-right"></i></a>
+    </div>
+    
     <div class="grid">
         {% for listing in listings %}
-        <div class="card">
-            {% if listing.image %}
-            <img src="{{ listing.image.url }}" alt="{{ listing.title }}" class="card-img">
-            {% else %}
-            <div class="card-img" style="background: #e5e7eb; display:flex; align-items:center; justify-content:center;">No Image</div>
-            {% endif %}
+        <a href="{% url 'details' listing.id %}" class="property-card" data-aos="fade-up" data-aos-delay="{{ forloop.counter|add:'100' }}">
+            <div class="card-image-wrapper">
+                {% if listing.image %}
+                <img src="{{ listing.image.url }}" alt="{{ listing.title }}" class="card-image" loading="lazy">
+                {% else %}
+                <div class="card-image skeleton" style="display:flex; align-items:center; justify-content:center; color: var(--text-light);">No Image</div>
+                {% endif %}
+                
+                <div class="card-badges">
+                    <span class="badge verified"><i class="fa-solid fa-check-circle"></i> Verified</span>
+                    <span class="badge" style="background: white;">{{ listing.type }}</span>
+                </div>
+                
+                {% if user.is_authenticated %}
+                <form action="{% url 'toggle_wishlist' listing.id %}" method="POST" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="wishlist-btn">
+                        <i class="fa-heart fa-regular"></i>
+                    </button>
+                </form>
+                {% endif %}
+            </div>
+            
             <div class="card-content">
-                <span class="details-badge" style="width: fit-content; margin-bottom: 0.5rem;">{{ listing.type }}</span>
+                <div class="card-price">₹{{ listing.price }}<span>/month</span></div>
                 <h3 class="card-title">{{ listing.title }}</h3>
-                <p class="card-price">₹{{ listing.price }}<span style="font-size: 1rem; color: #6b7280; font-weight: 400;">/mo</span></p>
-                <p class="card-location">📍 {{ listing.location }}</p>
-                <a href="{% url 'details' listing.id %}" class="btn btn-primary btn-block">View Details</a>
+                <p class="card-location"><i class="fa-solid fa-location-dot" style="color: var(--primary);"></i> {{ listing.location }}</p>
+                
+                <div class="card-amenities">
+                    <span class="amenity"><i class="fa-solid fa-bed"></i> {% if 'Furnished' in listing.facilities %}Furnished{% else %}Unfurnished{% endif %}</span>
+                    <span class="amenity"><i class="fa-solid fa-wifi"></i> WiFi</span>
+                    <span class="amenity"><i class="fa-solid fa-shield-halved"></i> Safe</span>
+                </div>
+            </div>
+        </a>
+        {% empty %}
+        <div style="grid-column: 1 / -1; text-align: center; padding: 4rem; background: var(--surface); border-radius: var(--radius-lg); border: 1px dashed var(--border);">
+            <i class="fa-solid fa-house-chimney-window" style="font-size: 3rem; color: var(--text-light); margin-bottom: 1rem;"></i>
+            <h3>No properties available yet</h3>
+            <p style="color: var(--text-light); margin-top: 0.5rem; margin-bottom: 1.5rem;">Be the first to list a property in Mysore!</p>
+            <a href="{% url 'add_property' %}" class="btn btn-primary">Post Property Free</a>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<!-- Testimonials Section -->
+<section class="section" data-aos="fade-up">
+    <div class="section-header">
+        <h2 class="section-title">What Our Users Say</h2>
+    </div>
+    <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));">
+        <div style="background: var(--surface); padding: 2rem; border-radius: var(--radius-lg); border: 1px solid var(--border); box-shadow: var(--shadow-sm);">
+            <div style="display: flex; color: #F59E0B; margin-bottom: 1rem; font-size: 0.9rem;">
+                <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+            </div>
+            <p style="font-style: italic; color: var(--text-dark); margin-bottom: 1.5rem;">"Found the perfect PG near my college within a day. The verified badges really help in avoiding scams. Highly recommended!"</p>
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <div style="width: 40px; height: 40px; background: var(--primary-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; color: var(--primary);">A</div>
+                <div>
+                    <h5 style="margin: 0; font-family: 'Inter', sans-serif;">Anjali S.</h5>
+                    <span style="font-size: 0.8rem; color: var(--text-light);">Student, Mysore</span>
+                </div>
             </div>
         </div>
-        {% empty %}
-        <p style="text-align: center; grid-column: 1 / -1;">No listings available right now. Be the first to post a property!</p>
-        {% endfor %}
+        
+        <div style="background: var(--surface); padding: 2rem; border-radius: var(--radius-lg); border: 1px solid var(--border); box-shadow: var(--shadow-sm);">
+            <div style="display: flex; color: #F59E0B; margin-bottom: 1rem; font-size: 0.9rem;">
+                <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+            </div>
+            <p style="font-style: italic; color: var(--text-dark); margin-bottom: 1.5rem;">"Listed my 2BHK flat and got connected directly with verified tenants. The process is seamless and zero brokerage is a game-changer."</p>
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <div style="width: 40px; height: 40px; background: var(--secondary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; color: white;">R</div>
+                <div>
+                    <h5 style="margin: 0; font-family: 'Inter', sans-serif;">Rahul Verma</h5>
+                    <span style="font-size: 0.8rem; color: var(--text-light);">Property Owner</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action -->
+<section class="section" data-aos="fade-up" style="margin-bottom: 4rem;">
+    <div style="background: linear-gradient(135deg, #111827 0%, #1E1B4B 100%); color: white; padding: 4rem 2rem; border-radius: var(--radius-xl); text-align: center; position: relative; overflow: hidden;">
+        <div style="position: absolute; top: -50px; left: -50px; width: 150px; height: 150px; background: var(--primary); filter: blur(80px); border-radius: 50%;"></div>
+        <div style="position: absolute; bottom: -50px; right: -50px; width: 150px; height: 150px; background: var(--secondary); filter: blur(80px); border-radius: 50%;"></div>
+        
+        <h2 style="font-size: 2.5rem; font-weight: 800; margin-bottom: 1rem; color: white; position: relative; z-index: 10;">Ready to find your new home?</h2>
+        <p style="font-size: 1.1rem; opacity: 0.8; margin-bottom: 2.5rem; max-width: 600px; margin-inline: auto; position: relative; z-index: 10;">Join thousands of users who have already found their perfect stay in Mysore.</p>
+        <div style="position: relative; z-index: 10; display: flex; justify-content: center; gap: 1rem;">
+            <a href="{% url 'search' %}" class="btn btn-primary" style="padding: 1rem 2.5rem;">Explore Rooms</a>
+            <a href="{% url 'add_property' %}" class="btn btn-outline" style="border-color: rgba(255,255,255,0.5); color: white;">List Property</a>
+        </div>
     </div>
 </section>
 {% endblock %}
