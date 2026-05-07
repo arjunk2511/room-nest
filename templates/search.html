@@ -1,59 +1,138 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container" style="background: var(--white); padding: 2rem; border-radius: 15px; margin-bottom: 2rem; box-shadow: var(--shadow);">
-    <h2>Search Properties</h2>
-    <form action="{% url 'search' %}" method="GET" class="search-form" style="margin-top: 1rem; justify-content: flex-start;">
-        <select name="location" style="margin-right: 10px;">
-            <option value="">Any Area in Mysore</option>
-            <option value="Vijayanagar" {% if values.location == 'Vijayanagar' %}selected{% endif %}>Vijayanagar</option>
-            <option value="Gokulam" {% if values.location == 'Gokulam' %}selected{% endif %}>Gokulam</option>
-            <option value="Kuvempunagar" {% if values.location == 'Kuvempunagar' %}selected{% endif %}>Kuvempunagar</option>
-            <option value="Saraswathipuram" {% if values.location == 'Saraswathipuram' %}selected{% endif %}>Saraswathipuram</option>
-            <option value="Jayalakshmipuram" {% if values.location == 'Jayalakshmipuram' %}selected{% endif %}>Jayalakshmipuram</option>
-            <option value="Vontikoppal" {% if values.location == 'Vontikoppal' %}selected{% endif %}>Vontikoppal</option>
-            <option value="Hebbal" {% if values.location == 'Hebbal' %}selected{% endif %}>Hebbal</option>
-            <option value="Bannimantap" {% if values.location == 'Bannimantap' %}selected{% endif %}>Bannimantap</option>
-            <option value="Bogadi" {% if values.location == 'Bogadi' %}selected{% endif %}>Bogadi</option>
-            <option value="Siddhartha Layout" {% if values.location == 'Siddhartha Layout' %}selected{% endif %}>Siddhartha Layout</option>
-            <option value="Other (Mysore)" {% if values.location == 'Other (Mysore)' %}selected{% endif %}>Other (Mysore)</option>
-        </select>
-        <input type="number" name="price" placeholder="Max Budget (₹)" value="{{ values.price }}" style="margin-right: 10px;">
-        <select name="type" style="margin-right: 10px;">
-            <option value="">Any Type</option>
-            <option value="1BHK" {% if values.type == '1BHK' %}selected{% endif %}>1BHK</option>
-            <option value="2BHK" {% if values.type == '2BHK' %}selected{% endif %}>2BHK</option>
-            <option value="3BHK" {% if values.type == '3BHK' %}selected{% endif %}>3BHK</option>
-            <option value="Single Room" {% if values.type == 'Single Room' %}selected{% endif %}>Single Room</option>
-            <option value="PG (Men)" {% if values.type == 'PG (Men)' %}selected{% endif %}>PG (Men)</option>
-            <option value="PG (Women)" {% if values.type == 'PG (Women)' %}selected{% endif %}>PG (Women)</option>
-            <option value="Co-living" {% if values.type == 'Co-living' %}selected{% endif %}>Co-living</option>
-        </select>
-        <button type="submit" class="btn btn-primary">Apply Filters</button>
-    </form>
+<div style="background: #f1f5f9; padding: 1.5rem 0; border-bottom: 1px solid #e2e8f0;">
+    <div class="container" style="max-width: 1200px; margin: 0 auto; padding: 0 1rem; display: flex; justify-content: space-between; align-items: center;">
+        <div>
+            <h1 style="font-size: 1.7rem; color: var(--text-dark); margin: 0; font-weight: 800;">Properties for Rent in Mysore</h1>
+            <p style="color: var(--text-light); margin: 5px 0 0 0; font-size: 0.95rem; font-weight: 500;">📍 Verified rooms, PGs, and shared apartments</p>
+        </div>
+        <p style="background: var(--white); color: var(--primary); padding: 0.5rem 1rem; border-radius: 8px; font-weight: 700; border: 1px solid #e2e8f0; font-size: 0.95rem; margin: 0;">{{ listings|length }} Homes Available</p>
+    </div>
 </div>
 
-<section class="container">
-    <h2 class="section-title">Search Results</h2>
-    <div class="grid">
+<div class="search-page-layout">
+    <!-- Left Sidebar for Filters -->
+    <aside class="search-sidebar">
+        <h3 style="margin-bottom: 1.5rem; font-size: 1.2rem; color: var(--text-dark); border-bottom: 2px solid #f1f5f9; padding-bottom: 0.5rem; font-weight: 700; display: flex; align-items: center; gap: 8px;">
+            <span>🔍</span> Filter Listings
+        </h3>
+        <form action="{% url 'search' %}" method="GET" style="display: flex; flex-direction: column; gap: 1.2rem;">
+            <div class="form-group" style="margin: 0;">
+                <label style="font-size: 0.85rem; font-weight: 700; color: var(--text-dark); margin-bottom: 0.4rem; display: block;">Mysore Locality</label>
+                <select name="location" style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; background: var(--white); font-size: 0.95rem;">
+                    <option value="">Any Area</option>
+                    <option value="Vijayanagar" {% if values.location == 'Vijayanagar' %}selected{% endif %}>Vijayanagar</option>
+                    <option value="Gokulam" {% if values.location == 'Gokulam' %}selected{% endif %}>Gokulam</option>
+                    <option value="Kuvempunagar" {% if values.location == 'Kuvempunagar' %}selected{% endif %}>Kuvempunagar</option>
+                    <option value="Saraswathipuram" {% if values.location == 'Saraswathipuram' %}selected{% endif %}>Saraswathipuram</option>
+                    <option value="Jayalakshmipuram" {% if values.location == 'Jayalakshmipuram' %}selected{% endif %}>Jayalakshmipuram</option>
+                    <option value="Vontikoppal" {% if values.location == 'Vontikoppal' %}selected{% endif %}>Vontikoppal</option>
+                    <option value="Hebbal" {% if values.location == 'Hebbal' %}selected{% endif %}>Hebbal</option>
+                    <option value="Bannimantap" {% if values.location == 'Bannimantap' %}selected{% endif %}>Bannimantap</option>
+                    <option value="Bogadi" {% if values.location == 'Bogadi' %}selected{% endif %}>Bogadi</option>
+                    <option value="Siddhartha Layout" {% if values.location == 'Siddhartha Layout' %}selected{% endif %}>Siddhartha Layout</option>
+                    <option value="Other (Mysore)" {% if values.location == 'Other (Mysore)' %}selected{% endif %}>Other</option>
+                </select>
+            </div>
+            
+            <div class="form-group" style="margin: 0;">
+                <label style="font-size: 0.85rem; font-weight: 700; color: var(--text-dark); margin-bottom: 0.4rem; display: block;">Accommodation Type</label>
+                <select name="type" style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; background: var(--white); font-size: 0.95rem;">
+                    <option value="">Any Type</option>
+                    <option value="1BHK" {% if values.type == '1BHK' %}selected{% endif %}>1BHK</option>
+                    <option value="2BHK" {% if values.type == '2BHK' %}selected{% endif %}>2BHK</option>
+                    <option value="3BHK" {% if values.type == '3BHK' %}selected{% endif %}>3BHK</option>
+                    <option value="Single Room" {% if values.type == 'Single Room' %}selected{% endif %}>Single Room</option>
+                    <option value="PG (Men)" {% if values.type == 'PG (Men)' %}selected{% endif %}>PG (Men)</option>
+                    <option value="PG (Women)" {% if values.type == 'PG (Women)' %}selected{% endif %}>PG (Women)</option>
+                    <option value="Co-living" {% if values.type == 'Co-living' %}selected{% endif %}>Co-living</option>
+                </select>
+            </div>
+            
+            <div class="form-group" style="margin: 0;">
+                <label style="font-size: 0.85rem; font-weight: 700; color: var(--text-dark); margin-bottom: 0.4rem; display: block;">Maximum Monthly Budget</label>
+                <input type="number" name="price" placeholder="₹ e.g. 15000" value="{{ values.price }}" style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 0.95rem; background: var(--white);">
+            </div>
+            
+            <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.9rem; border-radius: 8px; font-weight: 700; margin-top: 0.5rem; box-shadow: 0 4px 10px rgba(79, 70, 229, 0.2);">Apply Filters</button>
+        </form>
+    </aside>
+
+    <!-- Right Area for Search Results -->
+    <div class="search-results-area">
         {% for listing in listings %}
-        <div class="card">
-            {% if listing.image %}
-            <img src="{{ listing.image.url }}" alt="{{ listing.title }}" class="card-img">
-            {% else %}
-            <div class="card-img" style="background: #e5e7eb; display:flex; align-items:center; justify-content:center;">No Image</div>
-            {% endif %}
-            <div class="card-content">
-                <span class="details-badge" style="width: fit-content; margin-bottom: 0.5rem;">{{ listing.type }}</span>
-                <h3 class="card-title">{{ listing.title }}</h3>
-                <p class="card-price">₹{{ listing.price }}</p>
-                <p class="card-location">📍 {{ listing.location }}</p>
-                <a href="{% url 'details' listing.id %}" class="btn btn-primary btn-block">View Details</a>
+        <div class="hc-card">
+            <div class="hc-img-wrapper">
+                {% if listing.image %}
+                <img src="{{ listing.image.url }}" alt="{{ listing.title }}" class="hc-img">
+                {% else %}
+                <div class="hc-img" style="background: #e2e8f0; display:flex; align-items:center; justify-content:center; color: #64748b; font-weight: 600; font-size: 1rem;">No Image</div>
+                {% endif %}
+                <div class="card-badge" style="position: absolute; top: 1rem; left: 1rem; background: var(--white); color: var(--text-dark); padding: 0.35rem 0.8rem; border-radius: 6px; font-size: 0.75rem; font-weight: 700; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">{{ listing.type }}</div>
+            </div>
+            
+            <div class="hc-content">
+                <div class="hc-header">
+                    <div style="flex: 1; min-width: 0; padding-right: 1rem;">
+                        <h3 class="hc-title" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 0.4rem;">{{ listing.title }}</h3>
+                        <p class="hc-location" style="font-weight: 500;">📍 {{ listing.location }}</p>
+                    </div>
+                    <div class="hc-price">₹{{ listing.price }}<span style="font-size: 0.85rem; color: var(--text-light); font-weight: 500;">/mo</span></div>
+                </div>
+                
+                <div class="hc-info-grid">
+                    <div class="card-info-item">
+                        <span class="card-info-label">Deposit Required</span>
+                        <span class="card-info-value">₹{{ listing.deposit }}</span>
+                    </div>
+                    <div class="card-info-item">
+                        <span class="card-info-label">Availability</span>
+                        <span class="card-info-value">{{ listing.available_from }}</span>
+                    </div>
+                </div>
+                
+                <p style="color: var(--text-light); font-size: 0.95rem; line-height: 1.5; margin: 0 0 1.5rem 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; font-weight: 500;">{{ listing.description }}</p>
+                
+                <!-- Magicbricks WhatsApp Contact Sync Integration -->
+                <div class="hc-footer" style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: auto; align-items: center; justify-content: space-between;">
+                    <a href="{% url 'details' listing.id %}" class="btn btn-outline" style="padding: 0.55rem 1.2rem; font-size: 0.9rem; border-radius: 6px; font-weight: 600; border-color: #cbd5e1; color: var(--text-dark);">📄 View Details</a>
+                    
+                    <div style="display: flex; gap: 8px;">
+                        {% if user.is_authenticated %}
+                        <a href="tel:{{ listing.phone }}" class="btn btn-outline" style="padding: 0.55rem 1.2rem; font-size: 0.9rem; border-radius: 6px; border-color: #cbd5e1; color: var(--text-dark); font-weight: 600; display: flex; align-items: center; gap: 4px;">📞 Call</a>
+                        <button onclick="openWhatsApp('{{ listing.phone|escapejs }}', '{{ listing.title|escapejs }}')" class="btn" style="padding: 0.55rem 1.2rem; font-size: 0.9rem; border-radius: 6px; background: linear-gradient(135deg, #25D366 0%, #128C7E 100%); color: white; border: none; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 10px rgba(37,211,102,0.15); transition: all 0.25s;" onmouseover="this.style.transform='translateY(-1px)';" onmouseout="this.style.transform='translateY(0)';">
+                            <svg style="width: 16px; height: 16px; fill: white;" viewBox="0 0 448 512">
+                                <path d="M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L3 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157zm-157 341.6c-33.2 0-65.7-8.9-94-25.7l-6.7-4-69.8 18.3L72 359.2l-4.4-7c-18.5-29.4-28.2-63.3-28.2-98.2 0-101.7 82.8-184.5 184.6-184.5 49.3 0 95.6 19.2 130.4 54.1 34.8 34.9 56.2 81.2 56.1 130.5 0 101.8-84.9 184.6-186.6 184.6zm101.2-138.2c-5.5-2.8-32.8-16.2-37.9-18-5.1-1.9-8.8-2.8-12.5 2.8-3.7 5.6-14.3 18-17.6 21.8-3.2 3.7-6.5 4.2-12 1.4-32.6-16.3-54-29.1-75.5-66-5.7-9.8 5.7-9.1 16.3-30.3 1.8-3.7 .9-6.9-.5-9.7-1.4-2.8-12.5-30.1-17.1-41.2-4.5-10.8-9.1-9.3-12.5-9.5-3.2-.2-6.9-.2-10.6-.2-3.7 0-9.7 1.4-14.8 6.9-5.1 5.6-19.4 19-19.4 46.3 0 27.3 19.9 53.7 22.6 57.4 2.8 3.7 39.1 59.7 94.8 83.8 35.2 15.2 49 16.5 66.6 13.9 10.7-1.6 32.8-13.4 37.4-26.4 4.6-13 4.6-24.1 3.2-26.4-1.3-2.5-5-3.9-10.5-6.6z"/>
+                            </svg>
+                            WhatsApp
+                        </button>
+                        {% else %}
+                        <a href="{% url 'login' %}" class="btn btn-primary" style="padding: 0.55rem 1.2rem; font-size: 0.9rem; border-radius: 6px; font-weight: 700;">🔒 Login to Contact</a>
+                        {% endif %}
+                    </div>
+                </div>
             </div>
         </div>
         {% empty %}
-        <p style="text-align: center; grid-column: 1 / -1;">No matching properties found.</p>
+        <div style="text-align: center; padding: 5rem 2rem; background: var(--white); border-radius: 12px; border: 1px dashed #cbd5e1;">
+            <div style="font-size: 3rem; margin-bottom: 1rem;">🔍</div>
+            <h3 style="color: var(--text-dark); margin-bottom: 0.5rem; font-weight: 700;">No properties found</h3>
+            <p style="color: var(--text-light); font-weight: 500;">Try adjusting your filters or searching in a different area.</p>
+        </div>
         {% endfor %}
     </div>
-</section>
+</div>
+
+<script>
+// Keep only digits and format to WhatsApp redirect link
+function openWhatsApp(phone, title) {
+    let cleaned = phone.replace(/\D/g, '');
+    if (cleaned.length === 10) {
+        cleaned = '91' + cleaned;
+    }
+    const message = encodeURIComponent(`Hi, I saw your property "${title}" listed on RoomNest and I am interested. Is it still available?`);
+    window.open(`https://wa.me/${cleaned}?text=${message}`, '_blank');
+}
+</script>
 {% endblock %}

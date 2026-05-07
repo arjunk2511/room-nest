@@ -1,60 +1,171 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<section class="hero">
-    <h1>Find Your Perfect Room or PG</h1>
-    <p>Discover comfortable and affordable stays tailored to your needs.</p>
-    
-    <form action="{% url 'search' %}" method="GET" class="search-form">
-        <select name="location">
-            <option value="">Any Area in Mysore</option>
-            <option value="Vijayanagar">Vijayanagar</option>
-            <option value="Gokulam">Gokulam</option>
-            <option value="Kuvempunagar">Kuvempunagar</option>
-            <option value="Saraswathipuram">Saraswathipuram</option>
-            <option value="Jayalakshmipuram">Jayalakshmipuram</option>
-            <option value="Vontikoppal">Vontikoppal</option>
-            <option value="Hebbal">Hebbal</option>
-            <option value="Bannimantap">Bannimantap</option>
-            <option value="Bogadi">Bogadi</option>
-            <option value="Siddhartha Layout">Siddhartha Layout</option>
-            <option value="Other (Mysore)">Other (Mysore)</option>
-        </select>
-        <select name="type">
-            <option value="">Any Type</option>
-            <option value="1BHK">1BHK</option>
-            <option value="2BHK">2BHK</option>
-            <option value="3BHK">3BHK</option>
-            <option value="Single Room">Single Room</option>
-            <option value="PG (Men)">PG (Men)</option>
-            <option value="PG (Women)">PG (Women)</option>
-            <option value="Co-living">Co-living</option>
-        </select>
-        <button type="submit" class="btn btn-primary" style="padding: 1rem 2rem; font-size: 1.1rem; min-width: 150px;">Search Now</button>
-    </form>
+<!-- Logged-in Personal Welcome Area -->
+<section class="hero" style="padding: 5rem 1rem 11rem 1rem; text-align: center; position: relative;">
+    <h1 id="dynamic-greeting" style="font-size: 2.8rem; font-weight: 800; color: white; margin-bottom: 0.8rem; line-height: 1.2;">Welcome back, {{ user.username }}!</h1>
+    <p style="font-size: 1.25rem; max-width: 600px; margin: 0 auto 2rem auto; opacity: 0.95; color: white;">Ready to find your perfect stay? Let's search the latest rooms in Mysore.</p>
 </section>
 
-<section class="container">
-    <h2 class="section-title">Featured Listings</h2>
-    <div class="grid">
+<!-- Overlapping Search Hub -->
+<div class="search-wrapper" style="margin-top: -80px; margin-bottom: 4rem;">
+    <div class="search-container" style="max-width: 950px; background: var(--white); border-radius: 16px; box-shadow: var(--shadow-lg); overflow: hidden; border: 1px solid rgba(0,0,0,0.05);">
+        <div class="search-tabs" style="display: flex; border-bottom: 1px solid #f1f5f9; background: #f8fafc;">
+            <div class="search-tab active" onclick="setSearchType('')" style="flex: 1; text-align: center; padding: 1.2rem; font-weight: 700; font-size: 1rem; cursor: pointer; border-bottom: 3px solid var(--primary); color: var(--primary); transition: all 0.25s;">🔍 All Properties</div>
+            <div class="search-tab" onclick="setSearchType('1BHK')" style="flex: 1; text-align: center; padding: 1.2rem; font-weight: 600; font-size: 1rem; cursor: pointer; border-bottom: 3px solid transparent; color: var(--text-light); transition: all 0.25s;">🏠 Rent Flat</div>
+            <div class="search-tab" onclick="setSearchType('PG')" style="flex: 1; text-align: center; padding: 1.2rem; font-weight: 600; font-size: 1rem; cursor: pointer; border-bottom: 3px solid transparent; color: var(--text-light); transition: all 0.25s;">🏢 PGs / Hostels</div>
+            <div class="search-tab" onclick="setSearchType('Co-living')" style="flex: 1; text-align: center; padding: 1.2rem; font-weight: 600; font-size: 1rem; cursor: pointer; border-bottom: 3px solid transparent; color: var(--text-light); transition: all 0.25s;">👥 Co-living</div>
+        </div>
+        
+        <form action="{% url 'search' %}" method="GET" class="search-form" style="padding: 2rem; display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; background: var(--white);">
+            <input type="hidden" name="type" id="search-type-input" value="">
+            
+            <div class="search-field" style="flex: 1.2; min-width: 250px; position: relative;">
+                <span class="search-icon" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); font-size: 1.2rem; color: var(--text-light);">📍</span>
+                <select name="location" style="width: 100%; padding: 1rem 1rem 1rem 2.8rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 1rem; background: var(--white); cursor: pointer;">
+                    <option value="">Any Area in Mysore</option>
+                    <option value="Vijayanagar">Vijayanagar</option>
+                    <option value="Gokulam">Gokulam</option>
+                    <option value="Kuvempunagar">Kuvempunagar</option>
+                    <option value="Saraswathipuram">Saraswathipuram</option>
+                    <option value="Jayalakshmipuram">Jayalakshmipuram</option>
+                    <option value="Vontikoppal">Vontikoppal</option>
+                    <option value="Hebbal">Hebbal</option>
+                    <option value="Bannimantap">Bannimantap</option>
+                    <option value="Bogadi">Bogadi</option>
+                    <option value="Siddhartha Layout">Siddhartha Layout</option>
+                    <option value="Other (Mysore)">Other (Mysore)</option>
+                </select>
+            </div>
+            
+            <div class="search-field" style="flex: 1; min-width: 200px; position: relative;">
+                <span class="search-icon" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); font-size: 1.2rem; color: var(--text-light);">💰</span>
+                <input type="number" name="price" placeholder="Max Budget (₹)" style="width: 100%; padding: 1rem 1rem 1rem 2.8rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 1rem; background: var(--white);">
+            </div>
+            
+            <button type="submit" class="btn btn-primary search-btn" style="padding: 1rem 2rem; font-size: 1.05rem; font-weight: 700; border-radius: 8px; box-shadow: 0 4px 14px rgba(79, 70, 229, 0.35); min-width: 140px; cursor: pointer;">Search</button>
+        </form>
+    </div>
+</div>
+
+<!-- Quick Category Highlights (Icons Grid) -->
+<section style="max-width: 1200px; margin: 0 auto 3.5rem auto; padding: 0 2rem;">
+    <h3 style="font-size: 1.4rem; font-weight: 700; color: var(--text-dark); margin-bottom: 1.5rem;">Explore Mysore Listings</h3>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 1.2rem;">
+        <a href="{% url 'search' %}?type=1BHK" style="text-decoration: none; color: inherit;">
+            <div style="background: var(--white); border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.5rem 1rem; text-align: center; box-shadow: var(--shadow-sm); transition: all 0.25s;" onmouseover="this.style.transform='translateY(-4px)'; this.style.borderColor='var(--primary)';" onmouseout="this.style.transform='translateY(0)'; this.style.borderColor='#e2e8f0';">
+                <span style="font-size: 2rem; display: block; margin-bottom: 0.5rem;">🏡</span>
+                <span style="font-weight: 600; font-size: 0.95rem; color: var(--text-dark);">1 BHK / Flats</span>
+            </div>
+        </a>
+        <a href="{% url 'search' %}?type=Single+Room" style="text-decoration: none; color: inherit;">
+            <div style="background: var(--white); border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.5rem 1rem; text-align: center; box-shadow: var(--shadow-sm); transition: all 0.25s;" onmouseover="this.style.transform='translateY(-4px)'; this.style.borderColor='var(--primary)';" onmouseout="this.style.transform='translateY(0)'; this.style.borderColor='#e2e8f0';">
+                <span style="font-size: 2rem; display: block; margin-bottom: 0.5rem;">🛏️</span>
+                <span style="font-weight: 600; font-size: 0.95rem; color: var(--text-dark);">Single Rooms</span>
+            </div>
+        </a>
+        <a href="{% url 'search' %}?type=PG+(Men)" style="text-decoration: none; color: inherit;">
+            <div style="background: var(--white); border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.5rem 1rem; text-align: center; box-shadow: var(--shadow-sm); transition: all 0.25s;" onmouseover="this.style.transform='translateY(-4px)'; this.style.borderColor='var(--primary)';" onmouseout="this.style.transform='translateY(0)'; this.style.borderColor='#e2e8f0';">
+                <span style="font-size: 2rem; display: block; margin-bottom: 0.5rem;">👨‍🎓</span>
+                <span style="font-weight: 600; font-size: 0.95rem; color: var(--text-dark);">Men's PG</span>
+            </div>
+        </a>
+        <a href="{% url 'search' %}?type=PG+(Women)" style="text-decoration: none; color: inherit;">
+            <div style="background: var(--white); border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.5rem 1rem; text-align: center; box-shadow: var(--shadow-sm); transition: all 0.25s;" onmouseover="this.style.transform='translateY(-4px)'; this.style.borderColor='var(--primary)';" onmouseout="this.style.transform='translateY(0)'; this.style.borderColor='#e2e8f0';">
+                <span style="font-size: 2rem; display: block; margin-bottom: 0.5rem;">👩‍🎓</span>
+                <span style="font-weight: 600; font-size: 0.95rem; color: var(--text-dark);">Women's PG</span>
+            </div>
+        </a>
+        <a href="{% url 'search' %}?type=Co-living" style="text-decoration: none; color: inherit;">
+            <div style="background: var(--white); border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.5rem 1rem; text-align: center; box-shadow: var(--shadow-sm); transition: all 0.25s;" onmouseover="this.style.transform='translateY(-4px)'; this.style.borderColor='var(--primary)';" onmouseout="this.style.transform='translateY(0)'; this.style.borderColor='#e2e8f0';">
+                <span style="font-size: 2rem; display: block; margin-bottom: 0.5rem;">👥</span>
+                <span style="font-weight: 600; font-size: 0.95rem; color: var(--text-dark);">Co-living</span>
+            </div>
+        </a>
+    </div>
+</section>
+
+<!-- Recommended Listings -->
+<section class="container" style="max-width: 1200px; margin: 0 auto 5rem auto; padding: 0 2rem;">
+    <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 2rem;">
+        <h2 class="section-title" style="margin-bottom: 0; font-size: 1.7rem; font-weight: 700;">Recommended For You</h2>
+        <a href="{% url 'search' %}" style="color: var(--primary); font-weight: 700; text-decoration: none; display: flex; align-items: center; gap: 4px; font-size: 0.95rem;">See All Listings <span style="font-size: 1.1rem;">&#8594;</span></a>
+    </div>
+    
+    <div class="grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 2rem;">
         {% for listing in listings %}
-        <div class="card">
-            {% if listing.image %}
-            <img src="{{ listing.image.url }}" alt="{{ listing.title }}" class="card-img">
-            {% else %}
-            <div class="card-img" style="background: #e5e7eb; display:flex; align-items:center; justify-content:center;">No Image</div>
-            {% endif %}
-            <div class="card-content">
-                <span class="details-badge" style="width: fit-content; margin-bottom: 0.5rem;">{{ listing.type }}</span>
-                <h3 class="card-title">{{ listing.title }}</h3>
-                <p class="card-price">₹{{ listing.price }}<span style="font-size: 1rem; color: #6b7280; font-weight: 400;">/mo</span></p>
-                <p class="card-location">📍 {{ listing.location }}</p>
-                <a href="{% url 'details' listing.id %}" class="btn btn-primary btn-block">View Details</a>
+        <div class="card" style="background: var(--white); border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; box-shadow: var(--shadow); transition: all 0.3s ease; display: flex; flex-direction: column;">
+            <div class="card-img-wrapper" style="position: relative; height: 210px; width: 100%; overflow: hidden;">
+                {% if listing.image %}
+                <img src="{{ listing.image.url }}" alt="{{ listing.title }}" class="card-img" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease;" onmouseover="this.style.transform='scale(1.08)'" onmouseout="this.style.transform='scale(1)'">
+                {% else %}
+                <div style="background: #e2e8f0; width: 100%; height: 100%; display:flex; align-items:center; justify-content:center; color: #64748b; font-weight: 600; font-size: 1rem;">No Image Available</div>
+                {% endif %}
+                <div class="card-badge" style="position: absolute; top: 1rem; left: 1rem; background: var(--white); color: var(--text-dark); font-weight: 700; padding: 0.3rem 0.8rem; border-radius: 6px; font-size: 0.75rem; box-shadow: 0 2px 4px rgba(0,0,0,0.12);">{{ listing.type }}</div>
+            </div>
+            
+            <div class="card-content" style="padding: 1.5rem; display: flex; flex-direction: column; flex: 1;">
+                <div class="card-price" style="font-size: 1.6rem; font-weight: 800; color: var(--text-dark); margin-bottom: 0.3rem;">₹{{ listing.price }}<span style="font-size: 0.85rem; color: var(--text-light); font-weight: 500;"> / month</span></div>
+                <h3 class="card-title" style="font-size: 1.15rem; font-weight: 700; color: var(--text-dark); margin: 0 0 0.4rem 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ listing.title }}</h3>
+                <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 1.2rem; font-weight: 500; display: flex; align-items: center; gap: 4px;">📍 {{ listing.location }}</p>
+                
+                <div class="card-info-row" style="display: flex; gap: 1rem; border-top: 1px solid #f1f5f9; border-bottom: 1px solid #f1f5f9; padding: 0.8rem 0; margin-bottom: 1.5rem;">
+                    <div class="card-info-item" style="flex: 1; display: flex; flex-direction: column; gap: 2px;">
+                        <span class="card-info-label" style="font-size: 0.75rem; color: var(--text-light); text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px;">Deposit</span>
+                        <span class="card-info-value" style="font-size: 0.95rem; font-weight: 700; color: var(--text-dark);">₹{{ listing.deposit }}</span>
+                    </div>
+                    <div class="card-info-item" style="flex: 1; display: flex; flex-direction: column; gap: 2px;">
+                        <span class="card-info-label" style="font-size: 0.75rem; color: var(--text-light); text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px;">Availability</span>
+                        <span class="card-info-value" style="font-size: 0.95rem; font-weight: 700; color: var(--text-dark);">{{ listing.available_from }}</span>
+                    </div>
+                </div>
+                
+                <div class="card-footer-action" style="margin-top: auto;">
+                    <a href="{% url 'details' listing.id %}" class="btn btn-outline" style="width: 100%; border-radius: 8px; font-size: 0.95rem; font-weight: 700; padding: 0.7rem; text-align: center;">View Full Details</a>
+                </div>
             </div>
         </div>
         {% empty %}
-        <p style="text-align: center; grid-column: 1 / -1;">No listings available right now. Be the first to post a property!</p>
+        <p style="text-align: center; grid-column: 1 / -1; padding: 5rem; background: var(--white); border-radius: 12px; border: 1px dashed #cbd5e1; color: var(--text-light); font-size: 1.1rem; font-weight: 500;">No recommendation matching found. Please look at the search list page.</p>
         {% endfor %}
     </div>
 </section>
+
+<script>
+// Dynamic Greeting based on Local Time
+document.addEventListener("DOMContentLoaded", function() {
+    const hours = new Date().getHours();
+    let greet = "Welcome back";
+    if (hours < 12) greet = "Good morning";
+    else if (hours < 17) greet = "Good afternoon";
+    else greet = "Good evening";
+    
+    const greetingEl = document.getElementById("dynamic-greeting");
+    if (greetingEl) {
+        greetingEl.innerHTML = `${greet}, {{ user.username }}! 👋`;
+    }
+});
+
+// Set Search Tabs active state and values
+function setSearchType(type) {
+    // Set the hidden input
+    document.getElementById('search-type-input').value = type;
+    
+    // Manage active tab class
+    const tabs = document.querySelectorAll('.search-tab');
+    tabs.forEach(tab => {
+        tab.style.color = 'var(--text-light)';
+        tab.style.borderBottomColor = 'transparent';
+        tab.style.fontWeight = '600';
+    });
+    
+    // Set active tab
+    const eventTarget = window.event ? window.event.currentTarget : null;
+    if (eventTarget) {
+        eventTarget.style.color = 'var(--primary)';
+        eventTarget.style.borderBottomColor = 'var(--primary)';
+        eventTarget.style.fontWeight = '700';
+    }
+}
+</script>
 {% endblock %}
