@@ -34,8 +34,6 @@ def search(request):
 
 def details(request, listing_id):
     listing = get_object_or_404(Listing, id=listing_id)
-    listing.views_count += 1
-    listing.save(update_fields=['views_count'])
     has_subscription = False
     is_wishlisted = False
     
