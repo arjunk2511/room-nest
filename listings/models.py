@@ -51,8 +51,6 @@ class Listing(models.Model):
     exact_location = models.CharField(max_length=255, default='', blank=True)
     phone = models.CharField(max_length=20, default='')
     is_sold = models.BooleanField(default=False)
-    views_count = models.PositiveIntegerField(default=0)
-    map_url = models.URLField(max_length=1000, blank=True, null=True, help_text="Google Maps Live Location URL")
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
 
