@@ -1,26 +1,31 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div style="max-width: 800px; margin: 0 auto;">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
-        <h2>Messages</h2>
-    </div>
+<div style="max-width: 800px; margin: 3rem auto; padding: 0 1rem;">
+    <h2 style="font-size: 2rem; font-weight: 700; color: var(--text-dark); margin-bottom: 2rem; border-bottom: 2px solid #e2e8f0; padding-bottom: 0.5rem;">Your Inbox</h2>
     
     {% if chat_users %}
-    <div style="background: white; border-radius: 15px; box-shadow: var(--shadow); overflow: hidden;">
+    <div style="background: var(--white); border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: var(--shadow); overflow: hidden; display: flex; flex-direction: column;">
         {% for chat in chat_users %}
-        <a href="{% url 'chat' chat.user.id %}" style="display: flex; padding: 1.5rem; text-decoration: none; color: inherit; border-bottom: 1px solid #e5e7eb; align-items: center; justify-content: space-between; transition: background 0.3s;">
-            <div>
-                <h3 style="margin-bottom: 0.5rem; color: var(--primary);">{{ chat.user.username }}</h3>
-                <p style="color: var(--text-light); font-size: 0.9rem;">
-                    {% if chat.last_message.sender == request.user %}You: {% endif %}
-                    {{ chat.last_message.content|truncatechars:50 }}
-                </p>
+        <a href="{% url 'chat' chat.user.id %}" style="display: flex; align-items: center; justify-content: space-between; padding: 1.5rem; text-decoration: none; color: inherit; border-bottom: 1px solid #e2e8f0; transition: all 0.25s ease;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='var(--white)'">
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <!-- Initial Circle Avatar -->
+                <div style="width: 50px; height: 50px; border-radius: 50%; background: #e0e7ff; color: var(--primary); font-weight: 700; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; border: 1px solid #c7d2fe;">
+                    {{ chat.user.username|make_list|first|upper }}
+                </div>
+                <div>
+                    <h3 style="margin: 0 0 0.3rem 0; font-size: 1.1rem; color: var(--text-dark); font-weight: 700;">{{ chat.user.username }}</h3>
+                    <p style="color: var(--text-light); font-size: 0.95rem; margin: 0; line-height: 1.4;">
+                        {% if chat.last_message.sender == request.user %}<span style="font-weight: 500; opacity: 0.7;">You: </span>{% endif %}
+                        {{ chat.last_message.content|truncatechars:60 }}
+                    </p>
+                </div>
             </div>
-            <div style="text-align: right;">
-                <p style="color: #9ca3af; font-size: 0.8rem; margin-bottom: 0.5rem;">{{ chat.last_message.timestamp|date:"M d, g:i a" }}</p>
+            
+            <div style="text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 0.5rem;">
+                <p style="color: var(--text-light); font-size: 0.8rem; margin: 0; opacity: 0.85;">{{ chat.last_message.timestamp|date:"M d, g:i a" }}</p>
                 {% if chat.unread_count > 0 %}
-                <span style="background: #ef4444; color: white; padding: 0.2rem 0.6rem; border-radius: 20px; font-size: 0.8rem; font-weight: bold;">
+                <span style="background: #ef4444; color: white; padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.3px; box-shadow: 0 2px 4px rgba(239, 68, 68, 0.25);">
                     {{ chat.unread_count }} New
                 </span>
                 {% endif %}
@@ -29,8 +34,11 @@
         {% endfor %}
     </div>
     {% else %}
-    <div style="text-align: center; padding: 3rem; background: white; border-radius: 15px;">
-        <h3 style="color: #6b7280;">No messages yet.</h3>
+    <div style="text-align: center; padding: 5rem 2rem; background: var(--white); border-radius: 12px; border: 1px dashed #cbd5e1; max-width: 600px; margin: 2rem auto;">
+        <div style="font-size: 3rem; margin-bottom: 1rem;">💬</div>
+        <h3 style="color: var(--text-dark); font-size: 1.5rem; margin-bottom: 0.5rem;">No Messages Yet</h3>
+        <p style="color: var(--text-light); margin-bottom: 2rem;">Inquiries and conversations with property owners or potential tenants will appear here.</p>
+        <a href="{% url 'home' %}" class="btn btn-primary" style="padding: 0.8rem 2rem;">Browse Properties</a>
     </div>
     {% endif %}
 </div>

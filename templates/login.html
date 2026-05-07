@@ -1,21 +1,44 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="form-container">
-    <h2>Login to RoomNest</h2>
-    <form method="POST">
-        {% csrf_token %}
-        {% for field in form %}
-        <div class="form-group">
-            <label>{{ field.label }}</label>
-            {{ field }}
-            {% if field.errors %}
-                <small style="color: red;">{{ field.errors|striptags }}</small>
-            {% endif %}
+<div style="display: flex; max-width: 900px; margin: 4rem auto; background: var(--white); border-radius: 24px; box-shadow: var(--shadow-lg); overflow: hidden; border: 1px solid #e2e8f0; flex-wrap: wrap;">
+    <!-- Left Banner -->
+    <div style="flex: 1; min-width: 300px; background: linear-gradient(135deg, var(--primary) 0%, #a855f7 100%); color: white; padding: 3rem; display: flex; flex-direction: column; justify-content: center; position: relative; overflow: hidden;">
+        <div style="position: absolute; top: -50px; right: -50px; width: 150px; height: 150px; background: rgba(255,255,255,0.1); border-radius: 50%;"></div>
+        <div style="position: absolute; bottom: -80px; left: -20px; width: 200px; height: 200px; background: rgba(255,255,255,0.1); border-radius: 50%;"></div>
+        
+        <h2 style="font-size: 2.2rem; font-weight: 800; margin-bottom: 1rem; color: white;">Welcome Back! 👋</h2>
+        <p style="font-size: 1.1rem; opacity: 0.95; line-height: 1.5; margin-bottom: 2rem; color: white;">Login to stay connected, check saved wishlists, and manage your property listings on Mysore's favorite room finder.</p>
+        
+        <div style="font-size: 0.95rem; background: rgba(255,255,255,0.15); padding: 1.2rem; border-radius: 12px; border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(5px);">
+            💡 <strong>Quick Tip:</strong> Keep your profile phone number updated to get faster SMS & WhatsApp replies from matching owners.
         </div>
-        {% endfor %}
-        <button type="submit" class="btn btn-primary btn-block">Login</button>
-    </form>
-    <p style="text-align: center; margin-top: 1rem;">Don't have an account? <a href="{% url 'register' %}" style="color: var(--primary);">Register here</a>.</p>
+    </div>
+
+    <!-- Login Form Area -->
+    <div style="flex: 1.2; min-width: 300px; padding: 3.5rem; display: flex; flex-direction: column; justify-content: center;">
+        <h2 style="font-size: 1.8rem; font-weight: 700; margin-bottom: 2rem; color: var(--text-dark); text-align: center;">Account Login</h2>
+        
+        <form method="POST" style="display: flex; flex-direction: column; gap: 1.2rem;">
+            {% csrf_token %}
+            {% for field in form %}
+            <div class="form-group" style="display: flex; flex-direction: column; gap: 0.5rem;">
+                <label style="font-size: 0.9rem; font-weight: 600; color: var(--text-dark);">{{ field.label }}</label>
+                {{ field }}
+                {% if field.errors %}
+                    <small style="color: #ef4444; display: block; margin-top: 0.3rem;">{{ field.errors|striptags }}</small>
+                {% endif %}
+            </div>
+            {% endfor %}
+            
+            <button type="submit" class="btn btn-primary" style="padding: 1rem; font-size: 1.1rem; border-radius: 10px; margin-top: 1rem; box-shadow: 0 4px 14px rgba(79, 70, 229, 0.4);">
+                Secure Sign In 🔒
+            </button>
+        </form>
+        
+        <p style="text-align: center; margin-top: 2rem; color: var(--text-light); font-size: 0.95rem;">
+            New to RoomNest? <a href="{% url 'register' %}" style="color: var(--primary); font-weight: 700; text-decoration: none;">Register an account</a>
+        </p>
+    </div>
 </div>
 {% endblock %}

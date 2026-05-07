@@ -1,143 +1,200 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="form-container" style="max-width: 800px;">
-    <h2>Post a Property</h2>
-    <form method="POST" enctype="multipart/form-data">
+<div style="max-width: 850px; margin: 3rem auto; padding: 0 1rem;">
+    <div style="text-align: center; margin-bottom: 2.5rem;">
+        <h1 style="font-size: 2.2rem; font-weight: 700; color: var(--text-dark); margin-bottom: 0.5rem;">Sell or Rent Your Property on RoomNest</h1>
+        <p style="color: var(--text-light); font-size: 1.1rem; margin: 0;">Fill out the details below to list your property and start receiving inquiries instantly.</p>
+    </div>
+
+    <form method="POST" enctype="multipart/form-data" style="display: flex; flex-direction: column; gap: 2rem;">
         {% csrf_token %}
-        <div class="form-group">
-            <label for="title">Property Title</label>
-            <input type="text" id="title" name="title" required placeholder="e.g. Spacious 1RK in Andheri">
-        </div>
-
-        <div class="form-group">
-            <label for="location">Mysore Area</label>
-            <select id="location" name="location" required>
-                <option value="Vijayanagar">Vijayanagar</option>
-                <option value="Gokulam">Gokulam</option>
-                <option value="Kuvempunagar">Kuvempunagar</option>
-                <option value="Saraswathipuram">Saraswathipuram</option>
-                <option value="Jayalakshmipuram">Jayalakshmipuram</option>
-                <option value="Vontikoppal">Vontikoppal</option>
-                <option value="Hebbal">Hebbal</option>
-                <option value="Bannimantap">Bannimantap</option>
-                <option value="Bogadi">Bogadi</option>
-                <option value="Siddhartha Layout">Siddhartha Layout</option>
-                <option value="Other (Mysore)">Other (Mysore)</option>
-            </select>
-        </div>
-
-        <div style="display: flex; gap: 1rem;">
-            <div class="form-group" style="flex: 1;">
-                <label for="price">Monthly Rent (₹)</label>
-                <input type="number" id="price" name="price" required placeholder="e.g. 15000">
-            </div>
+        
+        <!-- Section 1: Basic Property Details -->
+        <div style="background: var(--white); padding: 2.5rem; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: var(--shadow-sm);">
+            <h3 style="font-size: 1.3rem; font-weight: 700; color: var(--text-dark); margin: 0 0 1.5rem 0; border-bottom: 2px solid #f1f5f9; padding-bottom: 0.8rem; display: flex; align-items: center; gap: 10px;">
+                <span style="background: var(--primary); color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.9rem;">1</span> Basic Details
+            </h3>
             
-            <div class="form-group" style="flex: 1;">
-                <label for="type">Property Type</label>
-                <select id="type" name="type" required>
-                    <option value="1BHK">1BHK</option>
-                    <option value="2BHK">2BHK</option>
-                    <option value="3BHK">3BHK</option>
-                    <option value="Single Room">Single Room</option>
-                    <option value="PG (Men)">PG (Men)</option>
-                    <option value="PG (Women)">PG (Women)</option>
-                    <option value="Co-living">Co-living</option>
-                </select>
+            <div class="form-group" style="margin-bottom: 1.5rem;">
+                <label for="title" style="font-weight: 600; color: var(--text-dark); margin-bottom: 0.5rem; display: block;">Property Title / Name</label>
+                <input type="text" id="title" name="title" required placeholder="e.g. Elegant 1BHK near Gokulam Park" style="width: 100%; padding: 0.9rem 1rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 1rem;">
+            </div>
+
+            <div style="display: flex; gap: 1.5rem; flex-wrap: wrap; margin-bottom: 1.5rem;">
+                <div class="form-group" style="flex: 1; min-width: 250px;">
+                    <label for="location" style="font-weight: 600; color: var(--text-dark); margin-bottom: 0.5rem; display: block;">Mysore Locality</label>
+                    <select id="location" name="location" required style="width: 100%; padding: 0.9rem 1rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 1rem; background: var(--white);">
+                        <option value="Vijayanagar">Vijayanagar</option>
+                        <option value="Gokulam">Gokulam</option>
+                        <option value="Kuvempunagar">Kuvempunagar</option>
+                        <option value="Saraswathipuram">Saraswathipuram</option>
+                        <option value="Jayalakshmipuram">Jayalakshmipuram</option>
+                        <option value="Vontikoppal">Vontikoppal</option>
+                        <option value="Hebbal">Hebbal</option>
+                        <option value="Bannimantap">Bannimantap</option>
+                        <option value="Bogadi">Bogadi</option>
+                        <option value="Siddhartha Layout">Siddhartha Layout</option>
+                        <option value="Other (Mysore)">Other (Mysore)</option>
+                    </select>
+                </div>
+                
+                <div class="form-group" style="flex: 1; min-width: 250px;">
+                    <label for="type" style="font-weight: 600; color: var(--text-dark); margin-bottom: 0.5rem; display: block;">Property Type</label>
+                    <select id="type" name="type" required style="width: 100%; padding: 0.9rem 1rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 1rem; background: var(--white);">
+                        <option value="1BHK">1BHK</option>
+                        <option value="2BHK">2BHK</option>
+                        <option value="3BHK">3BHK</option>
+                        <option value="Single Room">Single Room</option>
+                        <option value="PG (Men)">PG (Men)</option>
+                        <option value="PG (Women)">PG (Women)</option>
+                        <option value="Co-living">Co-living</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="landmark" style="font-weight: 600; color: var(--text-dark); margin-bottom: 0.5rem; display: block;">Key Landmark / Proximity</label>
+                <input type="text" id="landmark" name="landmark" required placeholder="e.g. 5 mins walk to JSS College, near Infosys Campus" style="width: 100%; padding: 0.9rem 1rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 1rem;">
             </div>
         </div>
 
-        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
-            <div class="form-group" style="flex: 1; min-width: 200px;">
-                <label for="deposit">Advance / Security Deposit (₹)</label>
-                <input type="number" id="deposit" name="deposit" required placeholder="e.g. 50000">
-            </div>
-            
-            <div class="form-group" style="flex: 1; min-width: 200px;">
-                <label for="available_from">Available From</label>
-                <input type="text" id="available_from" name="available_from" required placeholder="e.g. Immediately or June 1st">
-            </div>
-        </div>
+        <!-- Section 2: Rent and Pricing -->
+        <div style="background: var(--white); padding: 2.5rem; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: var(--shadow-sm);">
+            <h3 style="font-size: 1.3rem; font-weight: 700; color: var(--text-dark); margin: 0 0 1.5rem 0; border-bottom: 2px solid #f1f5f9; padding-bottom: 0.8rem; display: flex; align-items: center; gap: 10px;">
+                <span style="background: var(--primary); color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.9rem;">2</span> Rental Details
+            </h3>
 
-        <div style="display: flex; gap: 1rem; flex-wrap: wrap; background: #f8fafc; padding: 1.5rem; border-radius: 16px; margin-bottom: 1.5rem; border: 1px solid #e2e8f0;">
-            <div style="width: 100%; margin-bottom: 0.5rem; font-weight: 600; color: var(--text-dark);">🏠 House Rules</div>
-            
-            <div class="form-group" style="flex: 1; min-width: 150px; margin-bottom: 0;">
-                <label for="food_preference" style="font-size: 0.9rem;">Food Preference</label>
-                <select id="food_preference" name="food_preference" style="background: white;">
-                    <option value="Any">Any / Doesn't Matter</option>
-                    <option value="Veg Only">Pure Veg Only</option>
-                    <option value="Non-Veg Allowed">Non-Veg Allowed</option>
-                </select>
+            <div style="display: flex; gap: 1.5rem; flex-wrap: wrap; margin-bottom: 1.5rem;">
+                <div class="form-group" style="flex: 1; min-width: 200px;">
+                    <label for="price" style="font-weight: 600; color: var(--text-dark); margin-bottom: 0.5rem; display: block;">Monthly Rent (₹)</label>
+                    <input type="number" id="price" name="price" required placeholder="e.g. 12000" style="width: 100%; padding: 0.9rem 1rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 1rem;">
+                </div>
+                
+                <div class="form-group" style="flex: 1; min-width: 200px;">
+                    <label for="deposit" style="font-weight: 600; color: var(--text-dark); margin-bottom: 0.5rem; display: block;">Security Deposit / Advance (₹)</label>
+                    <input type="number" id="deposit" name="deposit" required placeholder="e.g. 40000" style="width: 100%; padding: 0.9rem 1rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 1rem;">
+                </div>
             </div>
 
-            <div class="form-group" style="flex: 1; min-width: 150px; margin-bottom: 0;">
-                <label for="curfew" style="font-size: 0.9rem;">Curfew Time</label>
-                <select id="curfew" name="curfew" style="background: white;">
-                    <option value="No Curfew">No Curfew</option>
-                    <option value="9 PM">9 PM</option>
-                    <option value="10 PM">10 PM</option>
-                    <option value="11 PM">11 PM</option>
-                    <option value="Strict">Strict</option>
-                </select>
-            </div>
-
-            <div class="form-group" style="flex: 1; min-width: 150px; margin-bottom: 0;">
-                <label for="visitors" style="font-size: 0.9rem;">Visitors</label>
-                <select id="visitors" name="visitors" style="background: white;">
-                    <option value="Allowed">Allowed</option>
-                    <option value="Not Allowed">Not Allowed</option>
-                    <option value="Daytime Only">Daytime Only</option>
-                </select>
+            <div class="form-group">
+                <label for="available_from" style="font-weight: 600; color: var(--text-dark); margin-bottom: 0.5rem; display: block;">Availability Status</label>
+                <input type="text" id="available_from" name="available_from" required placeholder="e.g. Immediately, 1st June, etc." style="width: 100%; padding: 0.9rem 1rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 1rem;">
             </div>
         </div>
 
-        <div class="form-group">
-            <label for="landmark">Proximity to Key Landmark</label>
-            <input type="text" id="landmark" name="landmark" required placeholder="e.g. 5 mins walk to JSS College or near Infosys campus">
-        </div>
+        <!-- Section 3: Amenities and House Rules -->
+        <div style="background: var(--white); padding: 2.5rem; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: var(--shadow-sm);">
+            <h3 style="font-size: 1.3rem; font-weight: 700; color: var(--text-dark); margin: 0 0 1.5rem 0; border-bottom: 2px solid #f1f5f9; padding-bottom: 0.8rem; display: flex; align-items: center; gap: 10px;">
+                <span style="background: var(--primary); color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.9rem;">3</span> Amenities & Rules
+            </h3>
 
-        <div class="form-group">
-            <label>Facilities</label>
-            <div class="checkbox-group">
-                <label class="checkbox-item"><input type="checkbox" name="facilities" value="WiFi"> WiFi</label>
-                <label class="checkbox-item"><input type="checkbox" name="facilities" value="Food"> Food Included</label>
-                <label class="checkbox-item"><input type="checkbox" name="facilities" value="AC"> AC</label>
-                <label class="checkbox-item"><input type="checkbox" name="facilities" value="Parking"> Parking</label>
-                <label class="checkbox-item"><input type="checkbox" name="facilities" value="Attached Bath"> Attached Bath</label>
+            <div class="form-group" style="margin-bottom: 2rem;">
+                <label style="font-weight: 600; color: var(--text-dark); margin-bottom: 1rem; display: block;">Facilities / Amenities Available</label>
+                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 1rem;">
+                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; color: var(--text-dark); font-weight: 500;">
+                        <input type="checkbox" name="facilities" value="WiFi" style="width: 18px; height: 18px;"> WiFi Internet
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; color: var(--text-dark); font-weight: 500;">
+                        <input type="checkbox" name="facilities" value="Food" style="width: 18px; height: 18px;"> Food Included
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; color: var(--text-dark); font-weight: 500;">
+                        <input type="checkbox" name="facilities" value="AC" style="width: 18px; height: 18px;"> Air Conditioner (AC)
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; color: var(--text-dark); font-weight: 500;">
+                        <input type="checkbox" name="facilities" value="Parking" style="width: 18px; height: 18px;"> Parking Space
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; color: var(--text-dark); font-weight: 500;">
+                        <input type="checkbox" name="facilities" value="Attached Bath" style="width: 18px; height: 18px;"> Attached Bath
+                    </label>
+                </div>
+            </div>
+
+            <div style="background: #f8fafc; padding: 1.5rem; border-radius: 8px; border: 1px solid #e2e8f0;">
+                <div style="font-weight: 600; color: var(--text-dark); margin-bottom: 1rem; font-size: 1rem;">🏠 House Rules Configuration</div>
+                <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                    <div class="form-group" style="flex: 1; min-width: 180px;">
+                        <label for="food_preference" style="font-size: 0.85rem; font-weight: 600; color: var(--text-light); margin-bottom: 0.3rem; display: block;">Food Preference</label>
+                        <select id="food_preference" name="food_preference" style="width: 100%; padding: 0.7rem; border-radius: 6px; border: 1px solid #cbd5e1; background: var(--white); outline: none;">
+                            <option value="Any">Any / Doesn't Matter</option>
+                            <option value="Veg Only">Pure Veg Only</option>
+                            <option value="Non-Veg Allowed">Non-Veg Allowed</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" style="flex: 1; min-width: 180px;">
+                        <label for="curfew" style="font-size: 0.85rem; font-weight: 600; color: var(--text-light); margin-bottom: 0.3rem; display: block;">Curfew Time</label>
+                        <select id="curfew" name="curfew" style="width: 100%; padding: 0.7rem; border-radius: 6px; border: 1px solid #cbd5e1; background: var(--white); outline: none;">
+                            <option value="No Curfew">No Curfew</option>
+                            <option value="9 PM">9 PM</option>
+                            <option value="10 PM">10 PM</option>
+                            <option value="11 PM">11 PM</option>
+                            <option value="Strict">Strict</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" style="flex: 1; min-width: 180px;">
+                        <label for="visitors" style="font-size: 0.85rem; font-weight: 600; color: var(--text-light); margin-bottom: 0.3rem; display: block;">Visitors Access</label>
+                        <select id="visitors" name="visitors" style="width: 100%; padding: 0.7rem; border-radius: 6px; border: 1px solid #cbd5e1; background: var(--white); outline: none;">
+                            <option value="Allowed">Allowed</option>
+                            <option value="Not Allowed">Not Allowed</option>
+                            <option value="Daytime Only">Daytime Only</option>
+                        </select>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <div class="form-group">
-            <label for="description">Description</label>
-            <textarea id="description" name="description" rows="4" required placeholder="Describe your property..."></textarea>
-        </div>
+        <!-- Section 4: Privacy & Contact Info -->
+        <div style="background: var(--white); padding: 2.5rem; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: var(--shadow-sm);">
+            <h3 style="font-size: 1.3rem; font-weight: 700; color: var(--text-dark); margin: 0 0 1.5rem 0; border-bottom: 2px solid #f1f5f9; padding-bottom: 0.8rem; display: flex; align-items: center; gap: 10px;">
+                <span style="background: var(--primary); color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.9rem;">4</span> Owner Contact & Location
+            </h3>
 
-        <div class="form-group">
-            <label for="address">Full Address (Hidden until subscribed)</label>
-            <textarea id="address" name="address" rows="2" required placeholder="Enter complete address"></textarea>
-        </div>
-
-        <div class="form-group">
-            <label for="exact_location">Exact Location / Landmark (Hidden until subscribed)</label>
-            <div style="display: flex; gap: 10px;">
-                <input type="text" id="exact_location" name="exact_location" placeholder="e.g. Google Maps URL or specific landmark" style="flex: 1;">
-                <button type="button" class="btn btn-outline" onclick="getLocation()" style="white-space: nowrap;">📍 Get Current Location</button>
+            <div class="form-group" style="margin-bottom: 1.5rem;">
+                <label for="phone" style="font-weight: 600; color: var(--text-dark); margin-bottom: 0.5rem; display: block;">Contact Phone Number</label>
+                <input type="text" id="phone" name="phone" required placeholder="e.g. +91 9876543210" style="width: 100%; padding: 0.9rem 1rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 1rem;">
+                <small style="color: var(--text-light); display: block; margin-top: 0.3rem;">Only verified subscribers will be shown this number.</small>
             </div>
-            <small id="location-status" style="color: var(--text-light);"></small>
+
+            <div class="form-group" style="margin-bottom: 1.5rem;">
+                <label for="address" style="font-weight: 600; color: var(--text-dark); margin-bottom: 0.5rem; display: block;">Full Property Address</label>
+                <textarea id="address" name="address" rows="3" required placeholder="Enter complete address details..." style="width: 100%; padding: 0.9rem 1rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 1rem; font-family: inherit; resize: vertical;"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="exact_location" style="font-weight: 600; color: var(--text-dark); margin-bottom: 0.5rem; display: block;">Exact Location Landmark / Coordinates</label>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <input type="text" id="exact_location" name="exact_location" placeholder="e.g. Google Maps share link, or specific block info" style="flex: 1; min-width: 250px; padding: 0.9rem 1rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 1rem;">
+                    <button type="button" class="btn btn-outline" onclick="getLocation()" style="white-space: nowrap; padding: 0.9rem 1.5rem; font-size: 0.95rem; border-radius: 8px;">📍 Auto-Detect Current Location</button>
+                </div>
+                <small id="location-status" style="color: var(--text-light); display: block; margin-top: 0.4rem; font-weight: 500;"></small>
+            </div>
         </div>
 
-        <div class="form-group">
-            <label for="phone">Contact Phone Number (Hidden until subscribed)</label>
-            <input type="text" id="phone" name="phone" required placeholder="e.g. +91 9876543210">
+        <!-- Section 5: Media Upload & Description -->
+        <div style="background: var(--white); padding: 2.5rem; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: var(--shadow-sm);">
+            <h3 style="font-size: 1.3rem; font-weight: 700; color: var(--text-dark); margin: 0 0 1.5rem 0; border-bottom: 2px solid #f1f5f9; padding-bottom: 0.8rem; display: flex; align-items: center; gap: 10px;">
+                <span style="background: var(--primary); color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.9rem;">5</span> Media & Description
+            </h3>
+
+            <div class="form-group" style="margin-bottom: 1.5rem;">
+                <label for="images" style="font-weight: 600; color: var(--text-dark); margin-bottom: 0.5rem; display: block;">Select Property Photos</label>
+                <div style="border: 2px dashed #cbd5e1; padding: 2.5rem; border-radius: 8px; text-align: center; position: relative; background: #f8fafc; transition: border-color 0.3s;" onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor='#cbd5e1'">
+                    <svg style="width: 48px; height: 48px; color: var(--text-light); margin-bottom: 1rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                    <p style="margin: 0 0 0.5rem 0; font-weight: 600; color: var(--text-dark);">Click to upload images</p>
+                    <p style="color: var(--text-light); font-size: 0.85rem; margin: 0 0 1.5rem 0;">Supports JPEG, PNG up to 10MB (Multiple selection allowed)</p>
+                    <input type="file" id="images" name="images" accept="image/*" multiple required style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer;">
+                </div>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 0;">
+                <label for="description" style="font-weight: 600; color: var(--text-dark); margin-bottom: 0.5rem; display: block;">Property Description</label>
+                <textarea id="description" name="description" rows="4" required placeholder="Provide a detailed description of the space, amenities, conditions, etc..." style="width: 100%; padding: 0.9rem 1rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 1rem; font-family: inherit; resize: vertical;"></textarea>
+            </div>
         </div>
 
-        <div class="form-group">
-            <label for="images">Property Images (Select up to 5 or more)</label>
-            <input type="file" id="images" name="images" accept="image/*" multiple required>
-        </div>
-
-        <button type="submit" class="btn btn-primary btn-block" style="font-size: 1.1rem; padding: 1rem;">Post Property</button>
+        <button type="submit" class="btn btn-primary" style="font-size: 1.15rem; padding: 1.2rem; border-radius: 10px; font-weight: 700; box-shadow: var(--shadow-lg);">🚀 Publish Property Listing</button>
     </form>
 </div>
 
@@ -147,16 +204,20 @@ function getLocation() {
     const input = document.getElementById('exact_location');
     
     if (!navigator.geolocation) {
-        status.textContent = 'Geolocation is not supported by your browser';
+        status.textContent = '❌ Geolocation is not supported by your browser';
+        status.style.color = '#ef4444';
     } else {
-        status.textContent = 'Locating...';
+        status.textContent = '⏳ Auto-detecting location coordinates...';
+        status.style.color = 'var(--text-light)';
         navigator.geolocation.getCurrentPosition((position) => {
             const latitude  = position.coords.latitude;
             const longitude = position.coords.longitude;
             input.value = `https://www.google.com/maps?q=${latitude},${longitude}`;
-            status.textContent = 'Location added!';
+            status.textContent = '✅ Location coordinate shared successfully!';
+            status.style.color = '#10b981';
         }, () => {
-            status.textContent = 'Unable to retrieve your location';
+            status.textContent = '❌ Permission denied or unable to retrieve location coordinates';
+            status.style.color = '#ef4444';
         });
     }
 }
