@@ -38,10 +38,8 @@ def details(request, listing_id):
     is_wishlisted = False
     
     if request.user.is_authenticated:
-        # Check active subscription
-        sub = Subscription.objects.filter(user=request.user, is_active=True, end_date__gte=timezone.now()).first()
-        if sub or request.user == listing.owner:
-            has_subscription = True
+        # Temporarily grant full access to contact details for ALL authenticated users to gain traffic
+        has_subscription = True
         
         # Check wishlist
         is_wishlisted = Wishlist.objects.filter(user=request.user, listing=listing).exists()
@@ -158,11 +156,8 @@ def chat_view(request, user_id):
         listing = Listing.objects.filter(id=listing_id).first() if listing_id else None
         
         if content:
-            # Mask phone numbers in the chat message to prevent bypassing the subscription!
-            # Matches 10 digit numbers, or numbers with spaces/dashes that look like phone numbers
-            masked_content = re.sub(r'(\+?\d{1,3}[-.\s]?)?(\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4})', '[PHONE NUMBER HIDDEN]', content)
-            # Also catch sequences of 10 digits
-            masked_content = re.sub(r'\b\d{10}\b', '[PHONE NUMBER HIDDEN]', masked_content)
+            # Masking disabled temporarily while subscription system is inactive
+            masked_content = content
             
             Message.objects.create(
                 sender=request.user,
