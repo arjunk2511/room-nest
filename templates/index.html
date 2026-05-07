@@ -1,60 +1,110 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
-<section class="hero">
-    <h1>Find Your Perfect Room or PG</h1>
-    <p>Discover comfortable and affordable stays tailored to your needs.</p>
-    
-    <form action="{% url 'search' %}" method="GET" class="search-form">
-        <select name="location">
-            <option value="">Any Area in Mysore</option>
-            <option value="Vijayanagar">Vijayanagar</option>
-            <option value="Gokulam">Gokulam</option>
-            <option value="Kuvempunagar">Kuvempunagar</option>
-            <option value="Saraswathipuram">Saraswathipuram</option>
-            <option value="Jayalakshmipuram">Jayalakshmipuram</option>
-            <option value="Vontikoppal">Vontikoppal</option>
-            <option value="Hebbal">Hebbal</option>
-            <option value="Bannimantap">Bannimantap</option>
-            <option value="Bogadi">Bogadi</option>
-            <option value="Siddhartha Layout">Siddhartha Layout</option>
-            <option value="Other (Mysore)">Other (Mysore)</option>
-        </select>
-        <select name="type">
-            <option value="">Any Type</option>
-            <option value="1BHK">1BHK</option>
-            <option value="2BHK">2BHK</option>
-            <option value="3BHK">3BHK</option>
-            <option value="Single Room">Single Room</option>
-            <option value="PG (Men)">PG (Men)</option>
-            <option value="PG (Women)">PG (Women)</option>
-            <option value="Co-living">Co-living</option>
-        </select>
-        <button type="submit" class="btn btn-primary" style="background: #1e3a8a; border: 2px solid white;">Search Now</button>
-    </form>
+<section class="hero" data-aos="fade-in">
+    <!-- Uses the generated background image -->
+    <img src="{% static 'images/hero_bg.png' %}" alt="RoomNest Hero" class="hero-bg-image">
+    <div class="hero-content">
+        <h1 data-aos="fade-up" data-aos-delay="100">Find Your Perfect <span style="color: #a78bfa;">Room</span> or <span style="color: #a78bfa;">PG</span></h1>
+        <p data-aos="fade-up" data-aos-delay="200" style="font-size: 1.2rem; margin-bottom: 2rem; max-width: 600px; margin-left: auto; margin-right: auto;">Discover premium, verified stays in Mysore tailored to your needs.</p>
+        
+        <form action="{% url 'search' %}" method="GET" class="search-form-glass" data-aos="fade-up" data-aos-delay="300">
+            <select name="location" style="color: var(--text-dark);">
+                <option value="">Any Area in Mysore</option>
+                <option value="Vijayanagar">Vijayanagar</option>
+                <option value="Gokulam">Gokulam</option>
+                <option value="Kuvempunagar">Kuvempunagar</option>
+                <option value="Saraswathipuram">Saraswathipuram</option>
+            </select>
+            <select name="type" style="color: var(--text-dark);">
+                <option value="">Any Type</option>
+                <option value="1BHK">1BHK</option>
+                <option value="PG (Men)">PG (Men)</option>
+                <option value="PG (Women)">PG (Women)</option>
+                <option value="Co-living">Co-living</option>
+            </select>
+            <button type="submit" class="btn btn-primary"><i class="fa-solid fa-magnifying-glass"></i> Search</button>
+        </form>
+    </div>
 </section>
 
-<section class="container">
-    <h2 class="section-title">Featured Listings</h2>
-    <div class="grid">
-        {% for listing in listings %}
-        <div class="card">
-            {% if listing.image %}
-            <img src="{{ listing.image.url }}" alt="{{ listing.title }}" class="card-img">
-            {% else %}
-            <div class="card-img" style="background: #e5e7eb; display:flex; align-items:center; justify-content:center;">No Image</div>
-            {% endif %}
-            <div class="card-content">
-                <span class="details-badge" style="width: fit-content; margin-bottom: 0.5rem;">{{ listing.type }}</span>
-                <h3 class="card-title">{{ listing.title }}</h3>
-                <p class="card-price">₹{{ listing.price }}<span style="font-size: 1rem; color: #6b7280; font-weight: 400;">/mo</span></p>
-                <p class="card-location">📍 {{ listing.location }}</p>
-                <a href="{% url 'details' listing.id %}" class="btn btn-primary btn-block">View Details</a>
+<!-- Trust Section -->
+<section class="section">
+    <div class="container">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; text-align: center;">
+            <div data-aos="fade-up" data-aos-delay="100" style="padding: 2rem; background: var(--surface); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm);">
+                <i class="fa-solid fa-shield-check" style="font-size: 3rem; color: var(--primary); margin-bottom: 1rem;"></i>
+                <h3 style="margin-bottom: 0.5rem;">Verified Listings</h3>
+                <p style="color: var(--text-light);">Every property is verified for your safety and comfort.</p>
+            </div>
+            <div data-aos="fade-up" data-aos-delay="200" style="padding: 2rem; background: var(--surface); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm);">
+                <i class="fa-solid fa-comments" style="font-size: 3rem; color: var(--primary); margin-bottom: 1rem;"></i>
+                <h3 style="margin-bottom: 0.5rem;">Direct Chat</h3>
+                <p style="color: var(--text-light);">Connect directly with owners without middlemen.</p>
+            </div>
+            <div data-aos="fade-up" data-aos-delay="300" style="padding: 2rem; background: var(--surface); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm);">
+                <i class="fa-solid fa-bed" style="font-size: 3rem; color: var(--primary); margin-bottom: 1rem;"></i>
+                <h3 style="margin-bottom: 0.5rem;">Premium Stays</h3>
+                <p style="color: var(--text-light);">High-quality spaces with modern amenities.</p>
             </div>
         </div>
-        {% empty %}
-        <p style="text-align: center; grid-column: 1 / -1;">No listings available right now. Be the first to post a property!</p>
-        {% endfor %}
+    </div>
+</section>
+
+<section class="section" style="background: var(--surface);">
+    <div class="container">
+        <h2 class="section-title" data-aos="fade-right">Featured Listings</h2>
+        <div class="grid">
+            {% for listing in listings %}
+            <a href="{% url 'details' listing.id %}" class="property-card" data-aos="fade-up" data-aos-delay="{{ forloop.counter|add:'100' }}">
+                <div class="card-image-wrapper">
+                    {% if listing.image %}
+                    <img src="{{ listing.image.url }}" alt="{{ listing.title }}" class="card-image" loading="lazy">
+                    {% else %}
+                    <div class="card-image skeleton" style="display:flex; align-items:center; justify-content:center; color: var(--text-light);">No Image</div>
+                    {% endif %}
+                    
+                    <div class="card-badges">
+                        <span class="badge verified"><i class="fa-solid fa-check-circle"></i> Verified</span>
+                        <span class="badge">{{ listing.type }}</span>
+                    </div>
+                    
+                    {% if user.is_authenticated %}
+                    <form action="{% url 'toggle_wishlist' listing.id %}" method="POST" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="wishlist-btn" onclick="event.stopPropagation();">
+                            {% if is_wishlisted %}<i class="fa-solid fa-heart" style="color: #ef4444;"></i>{% else %}<i class="fa-regular fa-heart"></i>{% endif %}
+                        </button>
+                    </form>
+                    {% endif %}
+                </div>
+                
+                <div class="card-content">
+                    <div class="card-price">₹{{ listing.price }}<span>/month</span></div>
+                    <h3 class="card-title">{{ listing.title }}</h3>
+                    <p class="card-location"><i class="fa-solid fa-location-dot" style="color: var(--primary);"></i> {{ listing.location }}</p>
+                </div>
+            </a>
+            {% empty %}
+            <div style="grid-column: 1 / -1; text-align: center; padding: 3rem;">
+                <p>No listings available right now. Be the first to post a property!</p>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div style="text-align: center; margin-top: 3rem;">
+            <a href="{% url 'search' %}" class="btn btn-outline" data-aos="fade-up">Explore All Properties</a>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action -->
+<section class="section" style="padding: 6rem 1.5rem;">
+    <div class="container" style="background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%); border-radius: var(--radius-xl); padding: 4rem 2rem; text-align: center; color: white;" data-aos="zoom-in">
+        <h2 style="font-size: 2.5rem; color: white; margin-bottom: 1rem;">Are you a Property Owner?</h2>
+        <p style="font-size: 1.2rem; margin-bottom: 2rem; max-width: 600px; margin-left: auto; margin-right: auto;">List your property on RoomNest and find reliable tenants quickly and securely.</p>
+        <a href="{% url 'add_property' %}" class="btn" style="background: white; color: var(--primary); font-size: 1.1rem; padding: 1rem 2rem;">Post Your Property Now</a>
     </div>
 </section>
 {% endblock %}
