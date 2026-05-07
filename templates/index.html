@@ -3,199 +3,149 @@
 
 {% block content %}
 <section class="hero">
-    <img src="{% static 'images/hero_bg.png' %}" alt="RoomNest Hero" class="hero-bg-image">
     <div class="hero-content">
-        <h1>Discover Your Next <br><span style="color: var(--secondary);">Perfect Stay</span></h1>
-        <p>Premium rooms, verified PGs, and affordable flats in Mysore. Your safe, comfortable, and modern living experience starts here.</p>
+        <div class="hero-badge">
+            <span style="display: inline-block; width: 6px; height: 6px; border-radius: 50%; background-color: var(--accent-indigo);"></span>
+            Over 500+ verified stays
+        </div>
+        <h1>Find a place you'll <br>love to live in.</h1>
+        <p>Ultra-clean, safe, and transparent renting. <br>Discover premium rooms and flats across Mysore.</p>
         
-        <form action="{% url 'search' %}" method="GET" class="search-form-glass">
-            <div style="flex: 1; display: flex; align-items: center; background: white; border-radius: var(--radius-pill); padding: 0 1rem; box-shadow: var(--shadow-sm);">
-                <i class="fa-solid fa-location-dot" style="color: var(--primary);"></i>
-                <select name="location" style="background: transparent; box-shadow: none; padding: 0.8rem;">
-                    <option value="">Any Area in Mysore</option>
+        <form action="{% url 'search' %}" method="GET" class="search-bar-floating">
+            <div class="search-field">
+                <i data-lucide="map-pin"></i>
+                <select name="location">
+                    <option value="">Any Location</option>
                     <option value="Vijayanagar">Vijayanagar</option>
                     <option value="Gokulam">Gokulam</option>
                     <option value="Kuvempunagar">Kuvempunagar</option>
                     <option value="Saraswathipuram">Saraswathipuram</option>
                 </select>
             </div>
-            <div style="flex: 1; display: flex; align-items: center; background: white; border-radius: var(--radius-pill); padding: 0 1rem; box-shadow: var(--shadow-sm);">
-                <i class="fa-solid fa-building" style="color: var(--primary);"></i>
-                <select name="type" style="background: transparent; box-shadow: none; padding: 0.8rem;">
+            <div class="search-field">
+                <i data-lucide="home"></i>
+                <select name="type">
                     <option value="">Any Type</option>
-                    <option value="PG (Men)">PG (Men)</option>
-                    <option value="PG (Women)">PG (Women)</option>
-                    <option value="1BHK">1BHK</option>
+                    <option value="1BHK">1 BHK Flat</option>
+                    <option value="PG (Men)">Boys PG</option>
+                    <option value="PG (Women)">Girls PG</option>
                     <option value="Co-living">Co-living</option>
                 </select>
             </div>
-            <button type="submit" class="btn btn-primary">
-                <i class="fa-solid fa-search"></i> Search
+            <button type="submit" class="btn btn-primary" style="padding: 0.75rem 2rem; margin: 0.25rem;">
+                Search
             </button>
         </form>
     </div>
 </section>
 
-<!-- Trust Statistics Section -->
-<section class="section" data-aos="fade-up">
-    <div class="trust-section">
-        <div class="trust-stat">
-            <h3>1,000+</h3>
-            <p>Happy Tenants</p>
+<section class="section">
+    <div class="container">
+        <!-- Categories / Filters visually -->
+        <div class="categories-wrap">
+            <a href="{% url 'search' %}?type=1BHK" class="category-item">
+                <i data-lucide="key"></i>
+                <span>Entire Homes</span>
+            </a>
+            <a href="{% url 'search' %}?type=PG+(Women)" class="category-item">
+                <i data-lucide="shield-check"></i>
+                <span>Girls PG</span>
+            </a>
+            <a href="{% url 'search' %}?type=PG+(Men)" class="category-item">
+                <i data-lucide="users"></i>
+                <span>Boys PG</span>
+            </a>
+            <a href="{% url 'search' %}?type=Co-living" class="category-item">
+                <i data-lucide="coffee"></i>
+                <span>Co-living</span>
+            </a>
+            <a href="{% url 'search' %}?price=5000" class="category-item">
+                <i data-lucide="wallet"></i>
+                <span>Budget Friendly</span>
+            </a>
         </div>
-        <div class="trust-stat">
-            <h3>500+</h3>
-            <p>Verified Properties</p>
-        </div>
-        <div class="trust-stat">
-            <h3>50+</h3>
-            <p>Localities Covered</p>
-        </div>
-    </div>
-</section>
 
-<!-- Categories Section -->
-<section class="section" data-aos="fade-up">
-    <div class="section-header">
-        <div>
-            <h2 class="section-title">Explore Categories</h2>
-            <p class="section-subtitle">Find exactly what you're looking for</p>
-        </div>
-    </div>
-    <div class="categories-slider">
-        <div class="category-card" onclick="window.location.href='/search/?type=PG+(Women)'">
-            <div class="category-icon">👩‍🎓</div>
-            <h4 style="font-family: 'Poppins', sans-serif;">Girls PGs</h4>
-            <p style="font-size: 0.85rem; color: var(--text-light);">Safe & Secure</p>
-        </div>
-        <div class="category-card" onclick="window.location.href='/search/?type=PG+(Men)'">
-            <div class="category-icon">👨‍🎓</div>
-            <h4 style="font-family: 'Poppins', sans-serif;">Boys PGs</h4>
-            <p style="font-size: 0.85rem; color: var(--text-light);">Student Friendly</p>
-        </div>
-        <div class="category-card" onclick="window.location.href='/search/?type=Co-living'">
-            <div class="category-icon">🤝</div>
-            <h4 style="font-family: 'Poppins', sans-serif;">Co-living</h4>
-            <p style="font-size: 0.85rem; color: var(--text-light);">Working Pros</p>
-        </div>
-        <div class="category-card" onclick="window.location.href='/search/?type=1BHK'">
-            <div class="category-icon">🔑</div>
-            <h4 style="font-family: 'Poppins', sans-serif;">1 BHK Flats</h4>
-            <p style="font-size: 0.85rem; color: var(--text-light);">Private Space</p>
-        </div>
-        <div class="category-card" onclick="window.location.href='/search/?price=5000'">
-            <div class="category-icon">💰</div>
-            <h4 style="font-family: 'Poppins', sans-serif;">Budget Friendly</h4>
-            <p style="font-size: 0.85rem; color: var(--text-light);">Under ₹5000</p>
-        </div>
-    </div>
-</section>
-
-<!-- Featured Listings Section -->
-<section class="section" data-aos="fade-up">
-    <div class="section-header">
-        <div>
-            <h2 class="section-title">Featured Properties</h2>
-            <p class="section-subtitle">Handpicked premium stays in top locations</p>
-        </div>
-        <a href="{% url 'search' %}" class="btn btn-outline" style="border-color: var(--border); color: var(--text-dark);">View All <i class="fa-solid fa-arrow-right"></i></a>
-    </div>
-    
-    <div class="grid">
-        {% for listing in listings %}
-        <a href="{% url 'details' listing.id %}" class="property-card" data-aos="fade-up" data-aos-delay="{{ forloop.counter|add:'100' }}">
-            <div class="card-image-wrapper">
-                {% if listing.image %}
-                <img src="{{ listing.image.url }}" alt="{{ listing.title }}" class="card-image" loading="lazy">
-                {% else %}
-                <div class="card-image skeleton" style="display:flex; align-items:center; justify-content:center; color: var(--text-light);">No Image</div>
-                {% endif %}
-                
-                <div class="card-badges">
-                    <span class="badge verified"><i class="fa-solid fa-check-circle"></i> Verified</span>
-                    <span class="badge" style="background: white;">{{ listing.type }}</span>
-                </div>
-                
-                {% if user.is_authenticated %}
-                <form action="{% url 'toggle_wishlist' listing.id %}" method="POST" style="display:inline;">
-                    {% csrf_token %}
-                    <button type="submit" class="wishlist-btn">
-                        <i class="fa-heart fa-regular"></i>
-                    </button>
-                </form>
-                {% endif %}
-            </div>
-            
-            <div class="card-content">
-                <div class="card-price">₹{{ listing.price }}<span>/month</span></div>
-                <h3 class="card-title">{{ listing.title }}</h3>
-                <p class="card-location"><i class="fa-solid fa-location-dot" style="color: var(--primary);"></i> {{ listing.location }}</p>
-                
-                <div class="card-amenities">
-                    <span class="amenity"><i class="fa-solid fa-bed"></i> {% if 'Furnished' in listing.facilities %}Furnished{% else %}Unfurnished{% endif %}</span>
-                    <span class="amenity"><i class="fa-solid fa-wifi"></i> WiFi</span>
-                    <span class="amenity"><i class="fa-solid fa-shield-halved"></i> Safe</span>
-                </div>
-            </div>
-        </a>
-        {% empty %}
-        <div style="grid-column: 1 / -1; text-align: center; padding: 4rem; background: var(--surface); border-radius: var(--radius-lg); border: 1px dashed var(--border);">
-            <i class="fa-solid fa-house-chimney-window" style="font-size: 3rem; color: var(--text-light); margin-bottom: 1rem;"></i>
-            <h3>No properties available yet</h3>
-            <p style="color: var(--text-light); margin-top: 0.5rem; margin-bottom: 1.5rem;">Be the first to list a property in Mysore!</p>
-            <a href="{% url 'add_property' %}" class="btn btn-primary">Post Property Free</a>
-        </div>
-        {% endfor %}
-    </div>
-</section>
-
-<!-- Testimonials Section -->
-<section class="section" data-aos="fade-up">
-    <div class="section-header">
-        <h2 class="section-title">What Our Users Say</h2>
-    </div>
-    <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));">
-        <div style="background: var(--surface); padding: 2rem; border-radius: var(--radius-lg); border: 1px solid var(--border); box-shadow: var(--shadow-sm);">
-            <div style="display: flex; color: #F59E0B; margin-bottom: 1rem; font-size: 0.9rem;">
-                <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
-            </div>
-            <p style="font-style: italic; color: var(--text-dark); margin-bottom: 1.5rem;">"Found the perfect PG near my college within a day. The verified badges really help in avoiding scams. Highly recommended!"</p>
-            <div style="display: flex; align-items: center; gap: 1rem;">
-                <div style="width: 40px; height: 40px; background: var(--primary-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; color: var(--primary);">A</div>
-                <div>
-                    <h5 style="margin: 0; font-family: 'Inter', sans-serif;">Anjali S.</h5>
-                    <span style="font-size: 0.8rem; color: var(--text-light);">Student, Mysore</span>
-                </div>
+        <div class="section-header" style="margin-top: 3rem;">
+            <div>
+                <h2 class="section-title">Featured Stays</h2>
+                <p class="section-subtitle">Hand-picked properties with verified owners.</p>
             </div>
         </div>
         
-        <div style="background: var(--surface); padding: 2rem; border-radius: var(--radius-lg); border: 1px solid var(--border); box-shadow: var(--shadow-sm);">
-            <div style="display: flex; color: #F59E0B; margin-bottom: 1rem; font-size: 0.9rem;">
-                <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
-            </div>
-            <p style="font-style: italic; color: var(--text-dark); margin-bottom: 1.5rem;">"Listed my 2BHK flat and got connected directly with verified tenants. The process is seamless and zero brokerage is a game-changer."</p>
-            <div style="display: flex; align-items: center; gap: 1rem;">
-                <div style="width: 40px; height: 40px; background: var(--secondary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; color: white;">R</div>
-                <div>
-                    <h5 style="margin: 0; font-family: 'Inter', sans-serif;">Rahul Verma</h5>
-                    <span style="font-size: 0.8rem; color: var(--text-light);">Property Owner</span>
+        <div class="grid">
+            {% for listing in listings %}
+            <a href="{% url 'details' listing.id %}" class="property-card">
+                <div class="card-image-wrapper">
+                    {% if listing.image %}
+                    <img src="{{ listing.image.url }}" alt="{{ listing.title }}" class="card-image" loading="lazy">
+                    {% else %}
+                    <div class="card-image skeleton" style="display:flex; align-items:center; justify-content:center; color: var(--text-tertiary);">No Image</div>
+                    {% endif %}
+                    
+                    <span class="card-badge">{{ listing.type }}</span>
+                    
+                    {% if user.is_authenticated %}
+                    <form action="{% url 'toggle_wishlist' listing.id %}" method="POST" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="wishlist-btn {% if is_wishlisted %}active{% endif %}" onclick="event.preventDefault(); this.closest('form').submit();">
+                            <i data-lucide="heart" {% if is_wishlisted %}fill="currentColor"{% endif %}></i>
+                        </button>
+                    </form>
+                    {% endif %}
                 </div>
+                
+                <div class="card-content">
+                    <div class="card-header">
+                        <div class="card-location">{{ listing.location }}</div>
+                        <div class="card-rating">
+                            <i data-lucide="star" fill="currentColor"></i> 4.8
+                        </div>
+                    </div>
+                    <div class="card-title">{{ listing.title }}</div>
+                    <div class="card-price">₹{{ listing.price }} <span>night</span></div>
+                </div>
+            </a>
+            {% empty %}
+            <div style="grid-column: 1 / -1; text-align: center; padding: 5rem 0;">
+                <i data-lucide="home" style="width: 48px; height: 48px; color: var(--border-dark); margin-bottom: 1rem;"></i>
+                <h3 style="color: var(--text-secondary); margin-bottom: 0.5rem;">No stays found</h3>
+                <p style="color: var(--text-tertiary);">Check back later for new properties.</p>
             </div>
+            {% endfor %}
         </div>
     </div>
 </section>
 
-<!-- Call to Action -->
-<section class="section" data-aos="fade-up" style="margin-bottom: 4rem;">
-    <div style="background: linear-gradient(135deg, #111827 0%, #1E1B4B 100%); color: white; padding: 4rem 2rem; border-radius: var(--radius-xl); text-align: center; position: relative; overflow: hidden;">
-        <div style="position: absolute; top: -50px; left: -50px; width: 150px; height: 150px; background: var(--primary); filter: blur(80px); border-radius: 50%;"></div>
-        <div style="position: absolute; bottom: -50px; right: -50px; width: 150px; height: 150px; background: var(--secondary); filter: blur(80px); border-radius: 50%;"></div>
+<!-- Trust Section -->
+<section class="section" style="background-color: var(--bg-hover); margin-top: 2rem;">
+    <div class="container">
+        <div style="text-align: center; max-width: 600px; margin: 0 auto;">
+            <h2 class="section-title">Rent with absolute trust.</h2>
+            <p class="section-subtitle" style="margin-bottom: 3rem;">We verify every owner and property to ensure your safety and comfort.</p>
+        </div>
         
-        <h2 style="font-size: 2.5rem; font-weight: 800; margin-bottom: 1rem; color: white; position: relative; z-index: 10;">Ready to find your new home?</h2>
-        <p style="font-size: 1.1rem; opacity: 0.8; margin-bottom: 2.5rem; max-width: 600px; margin-inline: auto; position: relative; z-index: 10;">Join thousands of users who have already found their perfect stay in Mysore.</p>
-        <div style="position: relative; z-index: 10; display: flex; justify-content: center; gap: 1rem;">
-            <a href="{% url 'search' %}" class="btn btn-primary" style="padding: 1rem 2.5rem;">Explore Rooms</a>
-            <a href="{% url 'add_property' %}" class="btn btn-outline" style="border-color: rgba(255,255,255,0.5); color: white;">List Property</a>
+        <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 3rem;">
+            <div style="text-align: center;">
+                <div style="width: 56px; height: 56px; background: var(--bg-surface); border: 1px solid var(--border-main); border-radius: var(--radius-xl); display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; box-shadow: var(--shadow-sm);">
+                    <i data-lucide="shield-check" style="color: var(--text-primary);"></i>
+                </div>
+                <h4 style="margin-bottom: 0.5rem;">Verified Properties</h4>
+                <p style="color: var(--text-secondary); font-size: 0.95rem;">Every listing is checked by our team.</p>
+            </div>
+            <div style="text-align: center;">
+                <div style="width: 56px; height: 56px; background: var(--bg-surface); border: 1px solid var(--border-main); border-radius: var(--radius-xl); display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; box-shadow: var(--shadow-sm);">
+                    <i data-lucide="message-circle" style="color: var(--text-primary);"></i>
+                </div>
+                <h4 style="margin-bottom: 0.5rem;">Direct Communication</h4>
+                <p style="color: var(--text-secondary); font-size: 0.95rem;">Chat directly with owners. No brokers.</p>
+            </div>
+            <div style="text-align: center;">
+                <div style="width: 56px; height: 56px; background: var(--bg-surface); border: 1px solid var(--border-main); border-radius: var(--radius-xl); display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; box-shadow: var(--shadow-sm);">
+                    <i data-lucide="credit-card" style="color: var(--text-primary);"></i>
+                </div>
+                <h4 style="margin-bottom: 0.5rem;">Secure Payments</h4>
+                <p style="color: var(--text-secondary); font-size: 0.95rem;">Pay your token advance with confidence.</p>
+            </div>
         </div>
     </div>
 </section>

@@ -2,253 +2,202 @@
 {% load static %}
 
 {% block content %}
-<div class="property-details">
-    <div class="details-header" data-aos="fade-in">
-        <div>
-            <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap;">
-                <span class="badge verified" style="background: var(--accent); color: white;"><i class="fa-solid fa-shield-check"></i> RoomNest Verified</span>
-                <span class="badge" style="background: var(--surface); border: 1px solid var(--border);">{{ listing.type }}</span>
-                {% if avg_rating > 0 %}
-                <span class="badge" style="background: var(--surface); border: 1px solid var(--border); color: #F59E0B;"><i class="fa-solid fa-star"></i> {{ avg_rating }}/5</span>
-                {% endif %}
-            </div>
-            <h1 style="font-size: 2.5rem; margin-bottom: 0.5rem;">{{ listing.title }}</h1>
-            <p style="color: var(--text-light); font-size: 1.1rem; display: flex; align-items: center; gap: 0.5rem;">
-                <i class="fa-solid fa-location-dot" style="color: var(--primary);"></i> {{ listing.location }}
-                {% if listing.landmark %}
-                <span style="font-size: 0.9rem; margin-left: 1rem; padding: 0.2rem 0.6rem; background: var(--bg-color); border-radius: var(--radius-sm);">Near {{ listing.landmark }}</span>
-                {% endif %}
-            </p>
-        </div>
-        
-        <div style="text-align: right; display: flex; gap: 1rem;">
-            {% if user.is_authenticated %}
-            <form action="{% url 'toggle_wishlist' listing.id %}" method="POST">
-                {% csrf_token %}
-                <button type="submit" class="btn btn-outline" style="width: 50px; height: 50px; padding: 0; border-radius: 50%;">
-                    {% if is_wishlisted %}<i class="fa-solid fa-heart" style="color: #ef4444; font-size: 1.5rem;"></i>{% else %}<i class="fa-regular fa-heart" style="font-size: 1.5rem;"></i>{% endif %}
-                </button>
-            </form>
-            <button class="btn btn-outline" style="width: 50px; height: 50px; padding: 0; border-radius: 50%;"><i class="fa-solid fa-share-nodes"></i></button>
-            {% endif %}
-        </div>
-    </div>
-
-    <!-- Image Gallery -->
-    <div class="gallery-grid" data-aos="fade-up">
-        <div class="gallery-main" style="position: relative;">
-            {% if listing.image %}
-            <img src="{{ listing.image.url }}" alt="{{ listing.title }}" id="main-image">
-            {% else %}
-            <div style="width: 100%; height: 100%; background: var(--border); display: flex; align-items: center; justify-content: center; color: var(--text-light);">No Image</div>
-            {% endif %}
-            <button class="btn btn-primary" style="position: absolute; bottom: 1.5rem; right: 1.5rem; background: rgba(255,255,255,0.9); color: var(--text-dark); backdrop-filter: blur(10px);"><i class="fa-solid fa-images"></i> View All Photos</button>
-        </div>
-        
-        <div class="gallery-side">
-            {% if listing.images.all|length > 0 %}
-                <img src="{{ listing.images.all.0.image.url }}" alt="Gallery 1">
-            {% else %}
-                {% if listing.image %}<img src="{{ listing.image.url }}" alt="Gallery 1">{% endif %}
-            {% endif %}
-        </div>
-        <div class="gallery-side" style="position: relative;">
-            {% if listing.images.all|length > 1 %}
-                <img src="{{ listing.images.all.1.image.url }}" alt="Gallery 2">
-            {% else %}
-                {% if listing.image %}<img src="{{ listing.image.url }}" alt="Gallery 2">{% endif %}
-            {% endif %}
-        </div>
-    </div>
-
-    <!-- Main Content & Sidebar -->
-    <div class="details-content-grid">
-        <div class="main-details" data-aos="fade-up">
-            <div class="details-card">
-                <h3 style="margin-bottom: 1.5rem; font-size: 1.5rem;">About this Property</h3>
-                <p style="color: var(--text-light); line-height: 1.8; font-size: 1.05rem;">{{ listing.description }}</p>
-                
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--border);">
-                    <div>
-                        <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.3rem;">Available From</p>
-                        <p style="font-weight: 600; font-size: 1.1rem;"><i class="fa-regular fa-calendar-check" style="color: var(--primary);"></i> {{ listing.available_from }}</p>
-                    </div>
-                    <div>
-                        <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.3rem;">Deposit</p>
-                        <p style="font-weight: 600; font-size: 1.1rem;"><i class="fa-solid fa-shield-halved" style="color: var(--primary);"></i> ₹{{ listing.deposit }}</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="details-card">
-                <h3 style="margin-bottom: 1.5rem; font-size: 1.5rem;">Amenities</h3>
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem;">
-                    <!-- Split the facilities string -->
-                    <div style="display: flex; align-items: center; gap: 0.8rem; font-size: 1.05rem; font-weight: 500;">
-                        <div style="width: 40px; height: 40px; background: var(--primary-light); color: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center;"><i class="fa-solid fa-couch"></i></div>
-                        {{ listing.facilities }}
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 0.8rem; font-size: 1.05rem; font-weight: 500;">
-                        <div style="width: 40px; height: 40px; background: var(--primary-light); color: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center;"><i class="fa-solid fa-wifi"></i></div>
-                        High-Speed WiFi
-                    </div>
-                </div>
-            </div>
-
-            <div class="details-card">
-                <h3 style="margin-bottom: 1.5rem; font-size: 1.5rem;">House Rules</h3>
-                <div style="display: flex; flex-direction: column; gap: 1.5rem;">
-                    <div style="display: flex; align-items: center; gap: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border);">
-                        <div style="font-size: 2rem; color: var(--text-light);"><i class="fa-solid fa-utensils"></i></div>
-                        <div>
-                            <h4 style="margin-bottom: 0.2rem;">Food Preference</h4>
-                            <p style="color: var(--text-light); margin: 0;">{{ listing.food_preference }}</p>
-                        </div>
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border);">
-                        <div style="font-size: 2rem; color: var(--text-light);"><i class="fa-solid fa-clock"></i></div>
-                        <div>
-                            <h4 style="margin-bottom: 0.2rem;">Curfew</h4>
-                            <p style="color: var(--text-light); margin: 0;">{{ listing.curfew }}</p>
-                        </div>
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 1.5rem;">
-                        <div style="font-size: 2rem; color: var(--text-light);"><i class="fa-solid fa-users"></i></div>
-                        <div>
-                            <h4 style="margin-bottom: 0.2rem;">Visitors</h4>
-                            <p style="color: var(--text-light); margin: 0;">{{ listing.visitors }}</p>
-                        </div>
-                    </div>
-                </div>
+<div class="container" style="padding-top: 2rem;">
+    
+    <div class="details-header-info">
+        <h1 class="details-title">{{ listing.title }}</h1>
+        <div class="details-meta" style="justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <span style="display: flex; align-items: center; gap: 0.25rem; font-weight: 500; color: var(--text-primary);">
+                    <i data-lucide="star" fill="currentColor" style="width: 16px; height: 16px;"></i> 
+                    {% if avg_rating > 0 %}{{ avg_rating }}{% else %}New{% endif %}
+                </span>
+                <span style="text-decoration: underline;">{{ reviews|length }} reviews</span>
+                <span>·</span>
+                <span style="text-decoration: underline;">{{ listing.location }}</span>
             </div>
             
-            <div class="details-card">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-                    <h3 style="font-size: 1.5rem; margin: 0;">Reviews & Ratings</h3>
-                    {% if avg_rating > 0 %}
-                    <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 1.2rem; font-weight: 700;">
-                        <i class="fa-solid fa-star" style="color: #F59E0B;"></i> {{ avg_rating }} <span style="font-size: 0.9rem; color: var(--text-light); font-weight: 400;">({{ reviews|length }} reviews)</span>
+            <div style="display: flex; gap: 1rem;">
+                <button class="btn btn-ghost" style="padding: 0.5rem; border-radius: var(--radius-md);"><i data-lucide="share"></i> Share</button>
+                {% if user.is_authenticated %}
+                <form action="{% url 'toggle_wishlist' listing.id %}" method="POST" style="margin: 0;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-ghost" style="padding: 0.5rem; border-radius: var(--radius-md);">
+                        <i data-lucide="heart" {% if is_wishlisted %}fill="#EF4444" color="#EF4444"{% endif %}></i> Save
+                    </button>
+                </form>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Gallery -->
+    <div class="gallery-grid">
+        <div class="gallery-main">
+            {% if listing.image %}
+            <img src="{{ listing.image.url }}" alt="{{ listing.title }}" class="gallery-item">
+            {% else %}
+            <div class="gallery-item skeleton" style="display:flex; align-items:center; justify-content:center;">No Image</div>
+            {% endif %}
+        </div>
+        
+        {% if listing.images.all|length > 0 %}
+        <img src="{{ listing.images.all.0.image.url }}" alt="Gallery 1" class="gallery-item">
+        {% else %}
+        {% if listing.image %}<img src="{{ listing.image.url }}" alt="Gallery 1" class="gallery-item">{% endif %}
+        {% endif %}
+        
+        {% if listing.images.all|length > 1 %}
+        <img src="{{ listing.images.all.1.image.url }}" alt="Gallery 2" class="gallery-item">
+        {% else %}
+        {% if listing.image %}<img src="{{ listing.image.url }}" alt="Gallery 2" class="gallery-item">{% endif %}
+        {% endif %}
+    </div>
+
+    <!-- Main Content Layout -->
+    <div class="details-layout">
+        
+        <!-- Left Column -->
+        <div>
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-main); padding-bottom: 2rem;">
+                <div>
+                    <h2 style="font-size: 1.5rem; margin-bottom: 0.25rem;">{{ listing.type }} hosted by {{ listing.owner.username }}</h2>
+                    <p style="color: var(--text-secondary);">1 guest · 1 bedroom · 1 private bath</p>
+                </div>
+                <div class="host-avatar">
+                    {{ listing.owner.username|make_list|first|upper }}
+                </div>
+            </div>
+
+            <!-- Features -->
+            <div style="padding: 2rem 0; border-bottom: 1px solid var(--border-main); display: flex; flex-direction: column; gap: 1.5rem;">
+                <div style="display: flex; gap: 1rem;">
+                    <i data-lucide="shield-check" style="width: 28px; height: 28px; color: var(--text-primary);"></i>
+                    <div>
+                        <h4 style="font-size: 1.05rem; margin-bottom: 0.25rem;">Verified Owner</h4>
+                        <p style="color: var(--text-secondary); font-size: 0.95rem;">This property is managed by a verified user.</p>
                     </div>
-                    {% endif %}
+                </div>
+                <div style="display: flex; gap: 1rem;">
+                    <i data-lucide="map-pin" style="width: 28px; height: 28px; color: var(--text-primary);"></i>
+                    <div>
+                        <h4 style="font-size: 1.05rem; margin-bottom: 0.25rem;">Great Location</h4>
+                        <p style="color: var(--text-secondary); font-size: 0.95rem;">Located centrally in {{ listing.location }}.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Description -->
+            <div style="padding: 2rem 0; border-bottom: 1px solid var(--border-main);">
+                <p style="color: var(--text-primary); font-size: 1.05rem; line-height: 1.6; white-space: pre-wrap;">{{ listing.description }}</p>
+            </div>
+
+            <!-- Amenities -->
+            <div style="padding: 2rem 0; border-bottom: 1px solid var(--border-main);">
+                <h3 style="font-size: 1.5rem; margin-bottom: 1.5rem;">What this place offers</h3>
+                <div class="amenities-grid">
+                    <div class="amenity-item"><i data-lucide="wifi"></i> Fast Wifi</div>
+                    <div class="amenity-item"><i data-lucide="bed"></i> {% if 'Furnished' in listing.facilities %}Furnished{% else %}Unfurnished{% endif %}</div>
+                    <div class="amenity-item"><i data-lucide="wind"></i> Air conditioning</div>
+                    <div class="amenity-item"><i data-lucide="shield"></i> 24/7 Security</div>
+                </div>
+            </div>
+
+            <!-- House Rules -->
+            <div style="padding: 2rem 0; border-bottom: 1px solid var(--border-main);">
+                <h3 style="font-size: 1.5rem; margin-bottom: 1.5rem;">House Rules</h3>
+                <div class="amenities-grid">
+                    <div class="amenity-item"><i data-lucide="utensils"></i> {{ listing.food_preference }}</div>
+                    <div class="amenity-item"><i data-lucide="clock"></i> Curfew: {{ listing.curfew }}</div>
+                    <div class="amenity-item"><i data-lucide="users"></i> Visitors: {{ listing.visitors }}</div>
+                </div>
+            </div>
+
+            <!-- Reviews -->
+            <div style="padding: 2rem 0;">
+                <h3 style="font-size: 1.5rem; margin-bottom: 2rem; display: flex; align-items: center; gap: 0.5rem;">
+                    <i data-lucide="star" fill="currentColor"></i> {{ avg_rating }} · {{ reviews|length }} reviews
+                </h3>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
+                    {% for review in reviews %}
+                    <div>
+                        <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                            <div class="host-avatar" style="width: 40px; height: 40px; font-size: 1rem;">
+                                {{ review.user.username|make_list|first|upper }}
+                            </div>
+                            <div>
+                                <div style="font-weight: 600;">{{ review.user.username }}</div>
+                                <div style="font-size: 0.85rem; color: var(--text-secondary);">{{ review.created_at|date:"F Y" }}</div>
+                            </div>
+                        </div>
+                        <p style="color: var(--text-primary); line-height: 1.6;">{{ review.comment }}</p>
+                    </div>
+                    {% empty %}
+                    <p style="color: var(--text-secondary);">No reviews yet.</p>
+                    {% endfor %}
                 </div>
                 
                 {% if user.is_authenticated and request.user != listing.owner %}
-                <form action="{% url 'add_review' listing.id %}" method="POST" style="margin-bottom: 2.5rem; padding: 1.5rem; background: var(--bg-color); border-radius: var(--radius-lg);">
+                <form action="{% url 'add_review' listing.id %}" method="POST" style="margin-top: 3rem; border: 1px solid var(--border-main); padding: 1.5rem; border-radius: var(--radius-lg);">
                     {% csrf_token %}
-                    <h4 style="margin-bottom: 1rem;">Write a Review</h4>
-                    <div style="display: flex; gap: 1rem; margin-bottom: 1rem; align-items: center;">
-                        <label style="font-weight: 600;">Rating:</label>
-                        <select name="rating" class="btn btn-outline" style="padding: 0.5rem 1rem;">
-                            <option value="5">5 Stars</option>
-                            <option value="4">4 Stars</option>
-                            <option value="3">3 Stars</option>
-                            <option value="2">2 Stars</option>
-                            <option value="1">1 Star</option>
-                        </select>
-                    </div>
-                    <textarea name="comment" rows="3" placeholder="Share your experience..." style="width: 100%; padding: 1rem; border-radius: var(--radius-md); border: 1px solid var(--border); font-family: 'Inter', sans-serif; margin-bottom: 1rem; outline: none;"></textarea>
+                    <h4 style="margin-bottom: 1rem; font-size: 1.1rem;">Write a review</h4>
+                    <select name="rating" style="padding: 0.75rem 1rem; border-radius: var(--radius-md); border: 1px solid var(--border-main); margin-bottom: 1rem; background: var(--bg-surface); color: var(--text-primary); outline: none;">
+                        <option value="5">5 Stars - Excellent</option>
+                        <option value="4">4 Stars - Very Good</option>
+                        <option value="3">3 Stars - Average</option>
+                        <option value="2">2 Stars - Poor</option>
+                        <option value="1">1 Star - Terrible</option>
+                    </select>
+                    <textarea name="comment" rows="3" placeholder="Share your experience..." style="width: 100%; padding: 1rem; border-radius: var(--radius-md); border: 1px solid var(--border-main); background: var(--bg-surface); color: var(--text-primary); outline: none; resize: vertical; margin-bottom: 1rem; font-family: var(--font-sans);"></textarea>
                     <button type="submit" class="btn btn-primary">Submit Review</button>
                 </form>
                 {% endif %}
-                
-                <div style="display: flex; flex-direction: column; gap: 1.5rem;">
-                    {% for review in reviews %}
-                    <div style="padding-bottom: 1.5rem; border-bottom: 1px solid var(--border);">
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
-                            <div style="display: flex; align-items: center; gap: 0.8rem;">
-                                <div style="width: 36px; height: 36px; background: var(--primary-light); color: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700;">{{ review.user.username|make_list|first|upper }}</div>
-                                <div>
-                                    <strong style="display: block; line-height: 1.2;">{{ review.user.username }}</strong>
-                                    <small style="color: var(--text-light);">{{ review.created_at|date:"M d, Y" }}</small>
-                                </div>
-                            </div>
-                            <div style="color: #F59E0B; font-size: 0.9rem;">
-                                {% for i in "12345"|make_list %}
-                                    {% if forloop.counter <= review.rating %}<i class="fa-solid fa-star"></i>{% else %}<i class="fa-regular fa-star"></i>{% endif %}
-                                {% endfor %}
-                            </div>
-                        </div>
-                        <p style="color: var(--text-dark); margin-top: 1rem;">{{ review.comment }}</p>
-                    </div>
-                    {% empty %}
-                    <p style="color: var(--text-light); font-style: italic;">No reviews yet. Be the first to leave one!</p>
-                    {% endfor %}
-                </div>
             </div>
         </div>
 
-        <div class="sidebar" data-aos="fade-up" data-aos-delay="100">
-            <div class="sticky-sidebar">
-                <div class="booking-card">
-                    <div style="padding-bottom: 1.5rem; border-bottom: 1px solid var(--border); margin-bottom: 1.5rem;">
-                        <p style="color: var(--text-light); margin-bottom: 0.3rem;">Monthly Rent</p>
-                        <div class="booking-price">₹{{ listing.price }}<span style="font-size: 1.2rem; color: var(--text-light); font-weight: 500;">/mo</span></div>
+        <!-- Right Column (Sticky Booking) -->
+        <div>
+            <div class="booking-sidebar">
+                <div class="booking-price">₹{{ listing.price }} <span>night</span></div>
+                
+                <div class="info-box">
+                    <div class="info-row">
+                        <span style="font-weight: 600;">Available</span>
+                        <span>{{ listing.available_from }}</span>
                     </div>
-                    
-                    <div style="margin-bottom: 2rem;">
-                        <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
-                            <div style="width: 50px; height: 50px; background: var(--primary-light); color: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 700;">{{ listing.owner.username|make_list|first|upper }}</div>
-                            <div>
-                                <h4 style="margin: 0; font-size: 1.1rem;">{{ listing.owner.username }}</h4>
-                                <p style="color: var(--text-light); font-size: 0.9rem; margin: 0;">Property Owner</p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    {% if has_subscription %}
-                    <div style="background: var(--bg-color); padding: 1rem; border-radius: var(--radius-md); margin-bottom: 1.5rem;">
-                        <p style="display: flex; align-items: center; gap: 0.8rem; margin-bottom: 0.8rem; font-weight: 500;"><i class="fa-solid fa-phone" style="color: var(--primary);"></i> {{ listing.phone }}</p>
-                        <p style="display: flex; align-items: center; gap: 0.8rem; font-weight: 500;"><i class="fa-solid fa-map" style="color: var(--primary);"></i> {{ listing.address }}</p>
-                    </div>
-                    
-                    <div style="display: flex; flex-direction: column; gap: 1rem;">
-                        <a href="https://wa.me/91{{ listing.phone }}" target="_blank" class="btn btn-primary" style="background: #25D366; color: white;"><i class="fa-brands fa-whatsapp" style="font-size: 1.2rem;"></i> WhatsApp</a>
-                        {% if request.user != listing.owner %}
-                        <a href="{% url 'chat' listing.owner.id %}?listing_id={{ listing.id }}" class="btn btn-outline" style="border-width: 2px;"><i class="fa-solid fa-comment"></i> Chat on RoomNest</a>
-                        {% endif %}
-                    </div>
-                    {% else %}
-                    <div style="text-align: center; margin-top: 1rem;">
-                        <i class="fa-solid fa-lock" style="font-size: 2rem; color: var(--text-light); margin-bottom: 1rem;"></i>
-                        <p style="margin-bottom: 1.5rem; color: var(--text-dark);">Login to view contact details</p>
-                        <a href="{% url 'login' %}" class="btn btn-primary" style="width: 100%;">Log In to Continue</a>
-                    </div>
-                    {% endif %}
-                    
-                    <div style="text-align: center; margin-top: 1.5rem;">
-                        <button onclick="alert('Thank you for reporting. Our safety team will investigate.')" style="background: none; border: none; color: #ef4444; font-size: 0.9rem; font-weight: 500; cursor: pointer; text-decoration: underline;"><i class="fa-solid fa-flag"></i> Report this listing</button>
+                    <div class="info-row">
+                        <span style="font-weight: 600;">Deposit</span>
+                        <span>₹{{ listing.deposit }}</span>
                     </div>
                 </div>
+
+                {% if has_subscription %}
+                <div style="margin-bottom: 1.5rem;">
+                    <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem; font-weight: 500;">
+                        <i data-lucide="phone"></i> {{ listing.phone }}
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 0.75rem; color: var(--text-secondary); font-size: 0.95rem;">
+                        <i data-lucide="map-pin"></i> {{ listing.address }}
+                    </div>
+                </div>
+                
+                <a href="https://wa.me/91{{ listing.phone }}" target="_blank" class="btn btn-primary" style="width: 100%; margin-bottom: 1rem; background-color: #22C55E; color: white;">
+                    <i data-lucide="message-circle"></i> WhatsApp Owner
+                </a>
+                
+                {% if request.user != listing.owner %}
+                <a href="{% url 'chat' listing.owner.id %}?listing_id={{ listing.id }}" class="btn btn-outline" style="width: 100%;">
+                    Chat via RoomNest
+                </a>
+                {% endif %}
+                {% else %}
+                <a href="{% url 'login' %}" class="btn btn-primary" style="width: 100%;">Log in to contact owner</a>
+                <p style="text-align: center; font-size: 0.85rem; color: var(--text-tertiary); margin-top: 1rem;">You won't be charged yet</p>
+                {% endif %}
             </div>
         </div>
+        
     </div>
 </div>
-
-{% if similar_listings %}
-<section class="section" style="padding-top: 0;">
-    <h2 class="section-title" style="font-size: 2rem;">Similar Properties</h2>
-    <div class="grid" style="margin-top: 2rem;">
-        {% for sim_listing in similar_listings %}
-        <a href="{% url 'details' sim_listing.id %}" class="property-card">
-            <div class="card-image-wrapper">
-                {% if sim_listing.image %}
-                <img src="{{ sim_listing.image.url }}" alt="{{ sim_listing.title }}" class="card-image" loading="lazy">
-                {% else %}
-                <div class="card-image skeleton" style="display:flex; align-items:center; justify-content:center; color: var(--text-light);">No Image</div>
-                {% endif %}
-                <div class="card-badges">
-                    <span class="badge" style="background: white;">{{ sim_listing.type }}</span>
-                </div>
-            </div>
-            
-            <div class="card-content">
-                <div class="card-price">₹{{ sim_listing.price }}<span>/month</span></div>
-                <h3 class="card-title">{{ sim_listing.title }}</h3>
-                <p class="card-location"><i class="fa-solid fa-location-dot" style="color: var(--primary);"></i> {{ sim_listing.location }}</p>
-            </div>
-        </a>
-        {% endfor %}
-    </div>
-</section>
-{% endif %}
 {% endblock %}

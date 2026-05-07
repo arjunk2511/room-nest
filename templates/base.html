@@ -4,59 +4,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>RoomNest - Premium Rooms & PGs</title>
+    <title>RoomNest - Spaces to Live</title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
-    <!-- FontAwesome for Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- AOS for Scroll Animations -->
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body>
-    <!-- Premium Navbar -->
     <nav class="navbar">
         <div class="nav-container">
-            <a href="{% url 'home' %}" class="logo">RoomNest</a>
+            <a href="{% url 'home' %}" class="logo">
+                <i data-lucide="home"></i>
+                RoomNest
+            </a>
+            
             <div class="nav-links">
-                <a href="{% url 'home' %}">Home</a>
-                <a href="{% url 'search' %}">Search</a>
+                <a href="{% url 'home' %}" class="{% if request.path == '/' %}active{% endif %}">Home</a>
+                <a href="{% url 'search' %}" class="{% if '/search' in request.path %}active{% endif %}">Browse</a>
                 {% if user.is_authenticated %}
-                <a href="{% url 'wishlist' %}">Saved</a>
-                <a href="{% url 'inbox' %}" style="position: relative;">
-                    Chat
+                <a href="{% url 'wishlist' %}" class="{% if '/wishlist' in request.path %}active{% endif %}">Saved</a>
+                <a href="{% url 'inbox' %}" class="{% if '/inbox' in request.path %}active{% endif %}" style="position: relative;">
+                    Messages
                     {% if unread_messages_count > 0 %}
-                    <span style="position: absolute; top: -5px; right: -15px; background: #EF4444; color: white; border-radius: 50%; padding: 2px 6px; font-size: 0.7rem; font-weight: bold;">{{ unread_messages_count }}</span>
+                    <span style="position: absolute; top: -5px; right: -15px; background: #EF4444; color: white; border-radius: 50%; padding: 0.1rem 0.4rem; font-size: 0.7rem; font-weight: 600;">{{ unread_messages_count }}</span>
                     {% endif %}
                 </a>
-                <a href="{% url 'owner_dashboard' %}">Dashboard</a>
+                <a href="{% url 'owner_dashboard' %}" class="{% if '/dashboard' in request.path %}active{% endif %}">Dashboard</a>
                 {% endif %}
             </div>
+
             <div class="nav-auth">
-                <!-- Theme Toggle -->
-                <button id="theme-toggle" style="background: none; border: none; cursor: pointer; color: var(--text-dark); font-size: 1.2rem; padding: 0.5rem;">
-                    <i class="fa-solid fa-moon" id="theme-icon-dark"></i>
-                    <i class="fa-solid fa-sun" id="theme-icon-light" style="display: none;"></i>
+                <button id="theme-toggle" class="btn btn-ghost" style="padding: 0.5rem; border-radius: 50%;">
+                    <i data-lucide="moon" id="theme-icon-dark"></i>
+                    <i data-lucide="sun" id="theme-icon-light" style="display: none;"></i>
                 </button>
                 
                 {% if user.is_authenticated %}
-                    <a href="{% url 'add_property' %}" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Post Property</a>
-                    <a href="{% url 'profile' %}" style="width: 40px; height: 40px; border-radius: 50%; background: var(--primary-light); color: var(--primary); display: flex; align-items: center; justify-content: center; font-weight: 700; text-decoration: none;">
+                    <a href="{% url 'add_property' %}" class="btn btn-outline" style="font-size: 0.85rem; padding: 0.5rem 1rem;">Post Property</a>
+                    <a href="{% url 'profile' %}" style="width: 36px; height: 36px; border-radius: 50%; background: var(--bg-hover); color: var(--text-primary); display: flex; align-items: center; justify-content: center; font-weight: 600; text-decoration: none; border: 1px solid var(--border-main);">
                         {{ user.username|make_list|first|upper }}
                     </a>
                 {% else %}
-                    <a href="{% url 'login' %}" class="btn btn-outline">Log In</a>
+                    <a href="{% url 'login' %}" class="btn btn-ghost">Log In</a>
                     <a href="{% url 'register' %}" class="btn btn-primary">Sign Up</a>
                 {% endif %}
             </div>
         </div>
     </nav>
 
-    <!-- Alert Messages -->
-    <div style="position: fixed; top: 80px; left: 50%; transform: translateX(-50%); z-index: 9999; width: 100%; max-width: 600px; padding: 0 1rem;">
+    <!-- Toast Messages -->
+    <div style="position: fixed; top: 80px; left: 50%; transform: translateX(-50%); z-index: 9999; width: 100%; max-width: 400px; padding: 0 1.5rem; pointer-events: none;">
         {% if messages %}
             {% for message in messages %}
-                <div style="background: var(--surface); border-left: 4px solid var(--primary); padding: 1rem 1.5rem; border-radius: var(--radius-md); box-shadow: var(--shadow-lg); display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem; animation: fadeUp 0.3s ease-out;">
-                    <div style="font-weight: 500; font-family: 'Inter', sans-serif;">{{ message }}</div>
-                    <button onclick="this.parentElement.remove()" style="background: none; border: none; font-size: 1.2rem; cursor: pointer; color: var(--text-light);"><i class="fa-solid fa-xmark"></i></button>
+                <div style="background: var(--bg-surface); border: 1px solid var(--border-main); padding: 1rem 1.5rem; border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem; pointer-events: auto; font-size: 0.95rem;">
+                    <span>{{ message }}</span>
+                    <button onclick="this.parentElement.remove()" style="background: none; border: none; cursor: pointer; color: var(--text-tertiary);"><i data-lucide="x" style="width: 16px; height: 16px;"></i></button>
                 </div>
             {% endfor %}
         {% endif %}
@@ -66,107 +67,84 @@
         {% block content %}{% endblock %}
     </main>
 
-    <!-- Premium Footer -->
-    <footer class="premium-footer">
-        <div class="footer-grid">
-            <div class="footer-brand">
-                <h2>RoomNest</h2>
-                <p style="color: var(--text-light); line-height: 1.8;">The premier platform to find your perfect room, PG, or flat. Experience a new standard of living with our verified properties and trusted community.</p>
-                <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
-                    <a href="#" style="width: 40px; height: 40px; border-radius: 50%; background: var(--primary-light); color: var(--primary); display: flex; align-items: center; justify-content: center;"><i class="fa-brands fa-instagram"></i></a>
-                    <a href="#" style="width: 40px; height: 40px; border-radius: 50%; background: var(--primary-light); color: var(--primary); display: flex; align-items: center; justify-content: center;"><i class="fa-brands fa-twitter"></i></a>
-                    <a href="#" style="width: 40px; height: 40px; border-radius: 50%; background: var(--primary-light); color: var(--primary); display: flex; align-items: center; justify-content: center;"><i class="fa-brands fa-linkedin-in"></i></a>
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col" style="grid-column: span 2;">
+                    <a href="{% url 'home' %}" class="logo" style="margin-bottom: 1.5rem;">
+                        <i data-lucide="home"></i>
+                        RoomNest
+                    </a>
+                    <p style="color: var(--text-secondary); max-width: 300px; font-size: 0.95rem;">Discover spaces to live in Mysore. Ultra-clean, safe, and transparent renting experience.</p>
+                </div>
+                <div class="footer-col">
+                    <h4>Company</h4>
+                    <ul>
+                        <li><a href="#">About</a></li>
+                        <li><a href="#">Careers</a></li>
+                        <li><a href="#">Press</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Support</h4>
+                    <ul>
+                        <li><a href="#">Help Center</a></li>
+                        <li><a href="#">Safety</a></li>
+                        <li><a href="#">Terms of Service</a></li>
+                    </ul>
                 </div>
             </div>
-            <div class="footer-links">
-                <h4>Explore</h4>
-                <ul>
-                    <li><a href="{% url 'search' %}">Rooms in Mysore</a></li>
-                    <li><a href="{% url 'search' %}">PGs for Men</a></li>
-                    <li><a href="{% url 'search' %}">PGs for Women</a></li>
-                    <li><a href="{% url 'search' %}">Flats for Rent</a></li>
-                </ul>
+            <div class="footer-bottom">
+                <p>&copy; 2026 RoomNest Inc. All rights reserved.</p>
+                <div style="display: flex; gap: 1.5rem;">
+                    <a href="#"><i data-lucide="twitter" style="width: 20px; height: 20px;"></i></a>
+                    <a href="#"><i data-lucide="instagram" style="width: 20px; height: 20px;"></i></a>
+                    <a href="#"><i data-lucide="linkedin" style="width: 20px; height: 20px;"></i></a>
+                </div>
             </div>
-            <div class="footer-links">
-                <h4>Company</h4>
-                <ul>
-                    <li><a href="#">About Us</a></li>
-                    <li><a href="#">Careers</a></li>
-                    <li><a href="#">Blog</a></li>
-                    <li><a href="#">Contact</a></li>
-                </ul>
-            </div>
-            <div class="footer-links">
-                <h4>Support</h4>
-                <ul>
-                    <li><a href="#">Help Center</a></li>
-                    <li><a href="#">Terms of Service</a></li>
-                    <li><a href="#">Privacy Policy</a></li>
-                    <li><a href="#">Trust & Safety</a></li>
-                </ul>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            <p>&copy; 2026 RoomNest. Crafted with <i class="fa-solid fa-heart" style="color: #EF4444;"></i> for a better living experience.</p>
         </div>
     </footer>
 
-    <!-- App-like Bottom Navigation (Mobile) -->
-    <div class="mobile-bottom-nav">
-        <a href="{% url 'home' %}" class="nav-item {% if request.path == '/' %}active{% endif %}">
-            <i class="fa-solid fa-house" style="font-size: 1.2rem;"></i>
-            <span>Home</span>
-        </a>
-        <a href="{% url 'search' %}" class="nav-item {% if '/search' in request.path %}active{% endif %}">
-            <i class="fa-solid fa-magnifying-glass" style="font-size: 1.2rem;"></i>
-            <span>Explore</span>
-        </a>
-        {% if user.is_authenticated %}
-        <a href="{% url 'wishlist' %}" class="nav-item {% if '/wishlist' in request.path %}active{% endif %}">
-            <i class="fa-regular fa-heart" style="font-size: 1.2rem;"></i>
-            <span>Saved</span>
-        </a>
-        <a href="{% url 'inbox' %}" class="nav-item {% if '/inbox' in request.path %}active{% endif %}" style="position: relative;">
-            <i class="fa-regular fa-comment-dots" style="font-size: 1.2rem;"></i>
-            {% if unread_messages_count > 0 %}
-            <span style="position: absolute; top: -2px; right: 10px; background: #EF4444; width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--surface);"></span>
+    <!-- Mobile Bottom Nav -->
+    <div class="mobile-nav">
+        <div class="mobile-nav-items">
+            <a href="{% url 'home' %}" class="mobile-nav-item {% if request.path == '/' %}active{% endif %}">
+                <i data-lucide="home"></i>
+                <span>Home</span>
+            </a>
+            <a href="{% url 'search' %}" class="mobile-nav-item {% if '/search' in request.path %}active{% endif %}">
+                <i data-lucide="search"></i>
+                <span>Browse</span>
+            </a>
+            {% if user.is_authenticated %}
+            <a href="{% url 'wishlist' %}" class="mobile-nav-item {% if '/wishlist' in request.path %}active{% endif %}">
+                <i data-lucide="heart"></i>
+                <span>Saved</span>
+            </a>
+            <a href="{% url 'inbox' %}" class="mobile-nav-item {% if '/inbox' in request.path %}active{% endif %}" style="position: relative;">
+                <i data-lucide="message-square"></i>
+                {% if unread_messages_count > 0 %}
+                <span style="position: absolute; top: -2px; right: 8px; background: #EF4444; width: 8px; height: 8px; border-radius: 50%;"></span>
+                {% endif %}
+                <span>Inbox</span>
+            </a>
+            <a href="{% url 'profile' %}" class="mobile-nav-item {% if '/profile' in request.path %}active{% endif %}">
+                <i data-lucide="user"></i>
+                <span>Profile</span>
+            </a>
+            {% else %}
+            <a href="{% url 'login' %}" class="mobile-nav-item">
+                <i data-lucide="log-in"></i>
+                <span>Log In</span>
+            </a>
             {% endif %}
-            <span>Chat</span>
-        </a>
-        <a href="{% url 'profile' %}" class="nav-item {% if '/profile' in request.path %}active{% endif %}">
-            <i class="fa-regular fa-user" style="font-size: 1.2rem;"></i>
-            <span>Profile</span>
-        </a>
-        {% else %}
-        <a href="{% url 'login' %}" class="nav-item">
-            <i class="fa-solid fa-right-to-bracket" style="font-size: 1.2rem;"></i>
-            <span>Log In</span>
-        </a>
-        {% endif %}
+        </div>
     </div>
 
-    <!-- Scripts -->
-    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script src="{% static 'js/app.js' %}"></script>
     <script>
-        // Initialize AOS animations
-        AOS.init({
-            duration: 800,
-            once: true,
-            offset: 100,
-        });
-
-        // Sticky Navbar effect
-        window.addEventListener('scroll', () => {
-            const nav = document.querySelector('.navbar');
-            if (window.scrollY > 10) {
-                nav.style.background = 'var(--glass-bg)';
-                nav.style.boxShadow = 'var(--shadow-md)';
-            } else {
-                nav.style.background = 'var(--glass-bg)';
-                nav.style.boxShadow = 'var(--shadow-sm)';
-            }
-        });
+        // Initialize Lucide Icons
+        lucide.createIcons();
     </script>
 </body>
 </html>
