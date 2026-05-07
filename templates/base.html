@@ -3,61 +3,58 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>RoomNest - Spaces to Live</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RoomNest - Find Your Perfect Room or PG</title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
-    <!-- Lucide Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <nav class="navbar">
         <div class="nav-container">
-            <a href="{% url 'home' %}" class="logo">
-                <i data-lucide="home"></i>
-                RoomNest
-            </a>
-            
+            <a href="{% url 'home' %}" class="logo">RoomNest</a>
             <div class="nav-links">
-                <a href="{% url 'home' %}" class="{% if request.path == '/' %}active{% endif %}">Home</a>
-                <a href="{% url 'search' %}" class="{% if '/search' in request.path %}active{% endif %}">Browse</a>
+                <a href="{% url 'home' %}">Home</a>
+                <a href="{% url 'search' %}">Search</a>
                 {% if user.is_authenticated %}
-                <a href="{% url 'wishlist' %}" class="{% if '/wishlist' in request.path %}active{% endif %}">Saved</a>
-                <a href="{% url 'inbox' %}" class="{% if '/inbox' in request.path %}active{% endif %}" style="position: relative;">
-                    Messages
+                <a href="{% url 'wishlist' %}">Wishlist</a>
+                <a href="{% url 'inbox' %}" style="position: relative;">
+                    Inbox
                     {% if unread_messages_count > 0 %}
-                    <span style="position: absolute; top: -5px; right: -15px; background: #EF4444; color: white; border-radius: 50%; padding: 0.1rem 0.4rem; font-size: 0.7rem; font-weight: 600;">{{ unread_messages_count }}</span>
+                    <span style="position: absolute; top: -5px; right: -15px; background: #ef4444; color: white; border-radius: 50%; padding: 2px 6px; font-size: 0.7rem; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">{{ unread_messages_count }}</span>
                     {% endif %}
                 </a>
-                <a href="{% url 'owner_dashboard' %}" class="{% if '/dashboard' in request.path %}active{% endif %}">Dashboard</a>
+                <a href="{% url 'owner_dashboard' %}">Dashboard</a>
+                <a href="{% url 'add_property' %}">Post Property</a>
                 {% endif %}
             </div>
-
             <div class="nav-auth">
-                <button id="theme-toggle" class="btn btn-ghost" style="padding: 0.5rem; border-radius: 50%;">
-                    <i data-lucide="moon" id="theme-icon-dark"></i>
-                    <i data-lucide="sun" id="theme-icon-light" style="display: none;"></i>
+                <button id="theme-toggle" class="btn btn-outline" style="padding: 0.5rem; border-radius: 50%; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; margin-right: 0.5rem;" title="Toggle Dark Mode">
+                    <svg id="theme-icon-dark" viewBox="0 0 24 24" fill="currentColor" style="width: 20px; height: 20px;">
+                        <path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-3.03 0-5.5-2.47-5.5-5.5 0-1.82.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/>
+                    </svg>
+                    <svg id="theme-icon-light" viewBox="0 0 24 24" fill="currentColor" style="width: 20px; height: 20px; display: none;">
+                        <path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0 .39-.39.39-1.03 0-1.41L5.99 4.58zm12.37 12.37c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0 .39-.39.39-1.03 0-1.41l-1.06-1.06zm1.06-10.96c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41.39.39 1.03.39 1.41 0l1.06-1.06zM7.05 18.36c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41.39.39 1.03.39 1.41 0l1.06-1.06z"/>
+                    </svg>
                 </button>
-                
                 {% if user.is_authenticated %}
-                    <a href="{% url 'add_property' %}" class="btn btn-outline" style="font-size: 0.85rem; padding: 0.5rem 1rem;">Post Property</a>
-                    <a href="{% url 'profile' %}" style="width: 36px; height: 36px; border-radius: 50%; background: var(--bg-hover); color: var(--text-primary); display: flex; align-items: center; justify-content: center; font-weight: 600; text-decoration: none; border: 1px solid var(--border-main);">
-                        {{ user.username|make_list|first|upper }}
+                    <a href="{% url 'profile' %}" class="username" style="color: var(--text-dark); text-decoration: none; font-weight: 600; margin-right: 1.5rem; display: flex; align-items: center; gap: 8px;">
+                        <span style="width: 30px; height: 30px; border-radius: 50%; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-size: 0.9rem;">{{ user.username|make_list|first|upper }}</span>
+                        {{ user.username }}
                     </a>
+                    <a href="{% url 'logout' %}" class="btn btn-outline">Logout</a>
                 {% else %}
-                    <a href="{% url 'login' %}" class="btn btn-ghost">Log In</a>
-                    <a href="{% url 'register' %}" class="btn btn-primary">Sign Up</a>
+                    <a href="{% url 'login' %}" class="btn btn-outline">Login</a>
+                    <a href="{% url 'register' %}" class="btn btn-primary">Register</a>
                 {% endif %}
             </div>
         </div>
     </nav>
 
-    <!-- Toast Messages -->
-    <div style="position: fixed; top: 80px; left: 50%; transform: translateX(-50%); z-index: 9999; width: 100%; max-width: 400px; padding: 0 1.5rem; pointer-events: none;">
+    <div class="messages">
         {% if messages %}
             {% for message in messages %}
-                <div style="background: var(--bg-surface); border: 1px solid var(--border-main); padding: 1rem 1.5rem; border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem; pointer-events: auto; font-size: 0.95rem;">
-                    <span>{{ message }}</span>
-                    <button onclick="this.parentElement.remove()" style="background: none; border: none; cursor: pointer; color: var(--text-tertiary);"><i data-lucide="x" style="width: 16px; height: 16px;"></i></button>
+                <div class="alert {{ message.tags }}">
+                    {{ message }}
                 </div>
             {% endfor %}
         {% endif %}
@@ -67,84 +64,62 @@
         {% block content %}{% endblock %}
     </main>
 
-    <footer>
-        <div class="container">
-            <div class="footer-grid">
-                <div class="footer-col" style="grid-column: span 2;">
-                    <a href="{% url 'home' %}" class="logo" style="margin-bottom: 1.5rem;">
-                        <i data-lucide="home"></i>
-                        RoomNest
-                    </a>
-                    <p style="color: var(--text-secondary); max-width: 300px; font-size: 0.95rem;">Discover spaces to live in Mysore. Ultra-clean, safe, and transparent renting experience.</p>
-                </div>
-                <div class="footer-col">
-                    <h4>Company</h4>
-                    <ul>
-                        <li><a href="#">About</a></li>
-                        <li><a href="#">Careers</a></li>
-                        <li><a href="#">Press</a></li>
-                    </ul>
-                </div>
-                <div class="footer-col">
-                    <h4>Support</h4>
-                    <ul>
-                        <li><a href="#">Help Center</a></li>
-                        <li><a href="#">Safety</a></li>
-                        <li><a href="#">Terms of Service</a></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>&copy; 2026 RoomNest Inc. All rights reserved.</p>
-                <div style="display: flex; gap: 1.5rem;">
-                    <a href="#"><i data-lucide="twitter" style="width: 20px; height: 20px;"></i></a>
-                    <a href="#"><i data-lucide="instagram" style="width: 20px; height: 20px;"></i></a>
-                    <a href="#"><i data-lucide="linkedin" style="width: 20px; height: 20px;"></i></a>
-                </div>
-            </div>
-        </div>
-    </footer>
-
-    <!-- Mobile Bottom Nav -->
-    <div class="mobile-nav">
-        <div class="mobile-nav-items">
-            <a href="{% url 'home' %}" class="mobile-nav-item {% if request.path == '/' %}active{% endif %}">
-                <i data-lucide="home"></i>
-                <span>Home</span>
-            </a>
-            <a href="{% url 'search' %}" class="mobile-nav-item {% if '/search' in request.path %}active{% endif %}">
-                <i data-lucide="search"></i>
-                <span>Browse</span>
-            </a>
-            {% if user.is_authenticated %}
-            <a href="{% url 'wishlist' %}" class="mobile-nav-item {% if '/wishlist' in request.path %}active{% endif %}">
-                <i data-lucide="heart"></i>
-                <span>Saved</span>
-            </a>
-            <a href="{% url 'inbox' %}" class="mobile-nav-item {% if '/inbox' in request.path %}active{% endif %}" style="position: relative;">
-                <i data-lucide="message-square"></i>
-                {% if unread_messages_count > 0 %}
-                <span style="position: absolute; top: -2px; right: 8px; background: #EF4444; width: 8px; height: 8px; border-radius: 50%;"></span>
-                {% endif %}
-                <span>Inbox</span>
-            </a>
-            <a href="{% url 'profile' %}" class="mobile-nav-item {% if '/profile' in request.path %}active{% endif %}">
-                <i data-lucide="user"></i>
-                <span>Profile</span>
-            </a>
-            {% else %}
-            <a href="{% url 'login' %}" class="mobile-nav-item">
-                <i data-lucide="log-in"></i>
-                <span>Log In</span>
-            </a>
+    <!-- Bottom Nav Bar for Mobile Devices -->
+    <div class="bottom-nav">
+        <a href="{% url 'home' %}" class="bottom-nav-item">
+            <svg class="bottom-nav-icon" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+            </svg>
+            <span>Home</span>
+        </a>
+        <a href="{% url 'search' %}" class="bottom-nav-item">
+            <svg class="bottom-nav-icon" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+            </svg>
+            <span>Search</span>
+        </a>
+        {% if user.is_authenticated %}
+        <a href="{% url 'wishlist' %}" class="bottom-nav-item">
+            <svg class="bottom-nav-icon" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+            </svg>
+            <span>Wishlist</span>
+        </a>
+        <a href="{% url 'inbox' %}" class="bottom-nav-item" style="position: relative;">
+            <svg class="bottom-nav-icon" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+            </svg>
+            {% if unread_messages_count > 0 %}
+            <span style="position: absolute; top: 5px; right: 20%; background: #ef4444; color: white; border-radius: 50%; padding: 1px 5px; font-size: 0.65rem; font-weight: bold; border: 2px solid white;">{{ unread_messages_count }}</span>
             {% endif %}
-        </div>
+            <span>Inbox</span>
+        </a>
+        <a href="{% url 'owner_dashboard' %}" class="bottom-nav-item">
+            <svg class="bottom-nav-icon" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v-2H7v-2h7V9H7V7h7V5h5v12h-5z"/>
+            </svg>
+            <span>Dashboard</span>
+        </a>
+        <a href="{% url 'profile' %}" class="bottom-nav-item">
+            <svg class="bottom-nav-icon" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+            </svg>
+            <span>Profile</span>
+        </a>
+        {% else %}
+        <a href="{% url 'login' %}" class="bottom-nav-item">
+            <svg class="bottom-nav-icon" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+            </svg>
+            <span>Login</span>
+        </a>
+        {% endif %}
     </div>
 
+    <footer>
+        <p>&copy; 2026 RoomNest. All rights reserved.</p>
+    </footer>
+
     <script src="{% static 'js/app.js' %}"></script>
-    <script>
-        // Initialize Lucide Icons
-        lucide.createIcons();
-    </script>
 </body>
 </html>

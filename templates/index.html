@@ -1,152 +1,60 @@
 {% extends 'base.html' %}
-{% load static %}
 
 {% block content %}
 <section class="hero">
-    <div class="hero-content">
-        <div class="hero-badge">
-            <span style="display: inline-block; width: 6px; height: 6px; border-radius: 50%; background-color: var(--accent-indigo);"></span>
-            Over 500+ verified stays
-        </div>
-        <h1>Find a place you'll <br>love to live in.</h1>
-        <p>Ultra-clean, safe, and transparent renting. <br>Discover premium rooms and flats across Mysore.</p>
-        
-        <form action="{% url 'search' %}" method="GET" class="search-bar-floating">
-            <div class="search-field">
-                <i data-lucide="map-pin"></i>
-                <select name="location">
-                    <option value="">Any Location</option>
-                    <option value="Vijayanagar">Vijayanagar</option>
-                    <option value="Gokulam">Gokulam</option>
-                    <option value="Kuvempunagar">Kuvempunagar</option>
-                    <option value="Saraswathipuram">Saraswathipuram</option>
-                </select>
-            </div>
-            <div class="search-field">
-                <i data-lucide="home"></i>
-                <select name="type">
-                    <option value="">Any Type</option>
-                    <option value="1BHK">1 BHK Flat</option>
-                    <option value="PG (Men)">Boys PG</option>
-                    <option value="PG (Women)">Girls PG</option>
-                    <option value="Co-living">Co-living</option>
-                </select>
-            </div>
-            <button type="submit" class="btn btn-primary" style="padding: 0.75rem 2rem; margin: 0.25rem;">
-                Search
-            </button>
-        </form>
-    </div>
+    <h1>Find Your Perfect Room or PG</h1>
+    <p>Discover comfortable and affordable stays tailored to your needs.</p>
+    
+    <form action="{% url 'search' %}" method="GET" class="search-form">
+        <select name="location">
+            <option value="">Any Area in Mysore</option>
+            <option value="Vijayanagar">Vijayanagar</option>
+            <option value="Gokulam">Gokulam</option>
+            <option value="Kuvempunagar">Kuvempunagar</option>
+            <option value="Saraswathipuram">Saraswathipuram</option>
+            <option value="Jayalakshmipuram">Jayalakshmipuram</option>
+            <option value="Vontikoppal">Vontikoppal</option>
+            <option value="Hebbal">Hebbal</option>
+            <option value="Bannimantap">Bannimantap</option>
+            <option value="Bogadi">Bogadi</option>
+            <option value="Siddhartha Layout">Siddhartha Layout</option>
+            <option value="Other (Mysore)">Other (Mysore)</option>
+        </select>
+        <select name="type">
+            <option value="">Any Type</option>
+            <option value="1BHK">1BHK</option>
+            <option value="2BHK">2BHK</option>
+            <option value="3BHK">3BHK</option>
+            <option value="Single Room">Single Room</option>
+            <option value="PG (Men)">PG (Men)</option>
+            <option value="PG (Women)">PG (Women)</option>
+            <option value="Co-living">Co-living</option>
+        </select>
+        <button type="submit" class="btn btn-primary" style="background: #1e3a8a; border: 2px solid white;">Search Now</button>
+    </form>
 </section>
 
-<section class="section">
-    <div class="container">
-        <!-- Categories / Filters visually -->
-        <div class="categories-wrap">
-            <a href="{% url 'search' %}?type=1BHK" class="category-item">
-                <i data-lucide="key"></i>
-                <span>Entire Homes</span>
-            </a>
-            <a href="{% url 'search' %}?type=PG+(Women)" class="category-item">
-                <i data-lucide="shield-check"></i>
-                <span>Girls PG</span>
-            </a>
-            <a href="{% url 'search' %}?type=PG+(Men)" class="category-item">
-                <i data-lucide="users"></i>
-                <span>Boys PG</span>
-            </a>
-            <a href="{% url 'search' %}?type=Co-living" class="category-item">
-                <i data-lucide="coffee"></i>
-                <span>Co-living</span>
-            </a>
-            <a href="{% url 'search' %}?price=5000" class="category-item">
-                <i data-lucide="wallet"></i>
-                <span>Budget Friendly</span>
-            </a>
-        </div>
-
-        <div class="section-header" style="margin-top: 3rem;">
-            <div>
-                <h2 class="section-title">Featured Stays</h2>
-                <p class="section-subtitle">Hand-picked properties with verified owners.</p>
+<section class="container">
+    <h2 class="section-title">Featured Listings</h2>
+    <div class="grid">
+        {% for listing in listings %}
+        <div class="card">
+            {% if listing.image %}
+            <img src="{{ listing.image.url }}" alt="{{ listing.title }}" class="card-img">
+            {% else %}
+            <div class="card-img" style="background: #e5e7eb; display:flex; align-items:center; justify-content:center;">No Image</div>
+            {% endif %}
+            <div class="card-content">
+                <span class="details-badge" style="width: fit-content; margin-bottom: 0.5rem;">{{ listing.type }}</span>
+                <h3 class="card-title">{{ listing.title }}</h3>
+                <p class="card-price">₹{{ listing.price }}<span style="font-size: 1rem; color: #6b7280; font-weight: 400;">/mo</span></p>
+                <p class="card-location">📍 {{ listing.location }}</p>
+                <a href="{% url 'details' listing.id %}" class="btn btn-primary btn-block">View Details</a>
             </div>
         </div>
-        
-        <div class="grid">
-            {% for listing in listings %}
-            <a href="{% url 'details' listing.id %}" class="property-card">
-                <div class="card-image-wrapper">
-                    {% if listing.image %}
-                    <img src="{{ listing.image.url }}" alt="{{ listing.title }}" class="card-image" loading="lazy">
-                    {% else %}
-                    <div class="card-image skeleton" style="display:flex; align-items:center; justify-content:center; color: var(--text-tertiary);">No Image</div>
-                    {% endif %}
-                    
-                    <span class="card-badge">{{ listing.type }}</span>
-                    
-                    {% if user.is_authenticated %}
-                    <form action="{% url 'toggle_wishlist' listing.id %}" method="POST" style="display:inline;">
-                        {% csrf_token %}
-                        <button type="submit" class="wishlist-btn {% if is_wishlisted %}active{% endif %}" onclick="event.preventDefault(); this.closest('form').submit();">
-                            <i data-lucide="heart" {% if is_wishlisted %}fill="currentColor"{% endif %}></i>
-                        </button>
-                    </form>
-                    {% endif %}
-                </div>
-                
-                <div class="card-content">
-                    <div class="card-header">
-                        <div class="card-location">{{ listing.location }}</div>
-                        <div class="card-rating">
-                            <i data-lucide="star" fill="currentColor"></i> 4.8
-                        </div>
-                    </div>
-                    <div class="card-title">{{ listing.title }}</div>
-                    <div class="card-price">₹{{ listing.price }} <span>night</span></div>
-                </div>
-            </a>
-            {% empty %}
-            <div style="grid-column: 1 / -1; text-align: center; padding: 5rem 0;">
-                <i data-lucide="home" style="width: 48px; height: 48px; color: var(--border-dark); margin-bottom: 1rem;"></i>
-                <h3 style="color: var(--text-secondary); margin-bottom: 0.5rem;">No stays found</h3>
-                <p style="color: var(--text-tertiary);">Check back later for new properties.</p>
-            </div>
-            {% endfor %}
-        </div>
-    </div>
-</section>
-
-<!-- Trust Section -->
-<section class="section" style="background-color: var(--bg-hover); margin-top: 2rem;">
-    <div class="container">
-        <div style="text-align: center; max-width: 600px; margin: 0 auto;">
-            <h2 class="section-title">Rent with absolute trust.</h2>
-            <p class="section-subtitle" style="margin-bottom: 3rem;">We verify every owner and property to ensure your safety and comfort.</p>
-        </div>
-        
-        <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 3rem;">
-            <div style="text-align: center;">
-                <div style="width: 56px; height: 56px; background: var(--bg-surface); border: 1px solid var(--border-main); border-radius: var(--radius-xl); display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; box-shadow: var(--shadow-sm);">
-                    <i data-lucide="shield-check" style="color: var(--text-primary);"></i>
-                </div>
-                <h4 style="margin-bottom: 0.5rem;">Verified Properties</h4>
-                <p style="color: var(--text-secondary); font-size: 0.95rem;">Every listing is checked by our team.</p>
-            </div>
-            <div style="text-align: center;">
-                <div style="width: 56px; height: 56px; background: var(--bg-surface); border: 1px solid var(--border-main); border-radius: var(--radius-xl); display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; box-shadow: var(--shadow-sm);">
-                    <i data-lucide="message-circle" style="color: var(--text-primary);"></i>
-                </div>
-                <h4 style="margin-bottom: 0.5rem;">Direct Communication</h4>
-                <p style="color: var(--text-secondary); font-size: 0.95rem;">Chat directly with owners. No brokers.</p>
-            </div>
-            <div style="text-align: center;">
-                <div style="width: 56px; height: 56px; background: var(--bg-surface); border: 1px solid var(--border-main); border-radius: var(--radius-xl); display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; box-shadow: var(--shadow-sm);">
-                    <i data-lucide="credit-card" style="color: var(--text-primary);"></i>
-                </div>
-                <h4 style="margin-bottom: 0.5rem;">Secure Payments</h4>
-                <p style="color: var(--text-secondary); font-size: 0.95rem;">Pay your token advance with confidence.</p>
-            </div>
-        </div>
+        {% empty %}
+        <p style="text-align: center; grid-column: 1 / -1;">No listings available right now. Be the first to post a property!</p>
+        {% endfor %}
     </div>
 </section>
 {% endblock %}

@@ -1,125 +1,59 @@
 {% extends 'base.html' %}
-{% load static %}
 
 {% block content %}
-<div class="container" style="display: flex; gap: 3rem; padding-top: 2rem; padding-bottom: 4rem;">
-    
-    <!-- Ultra-Clean Sidebar -->
-    <div class="filters-sidebar" style="width: 280px; flex-shrink: 0;">
-        <div style="position: sticky; top: 100px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
-                <h3 style="font-size: 1.25rem;">Filters</h3>
-                <a href="{% url 'search' %}" style="font-size: 0.85rem; color: var(--text-secondary); text-decoration: underline;">Clear all</a>
-            </div>
-            
-            <form action="{% url 'search' %}" method="GET">
-                <div style="margin-bottom: 2rem; border-bottom: 1px solid var(--border-light); padding-bottom: 2rem;">
-                    <label style="display: block; font-weight: 500; margin-bottom: 1rem; color: var(--text-primary);">Location</label>
-                    <select name="location" style="width: 100%; padding: 0.75rem 1rem; border: 1px solid var(--border-main); border-radius: var(--radius-md); background: var(--bg-surface); outline: none; font-family: var(--font-sans); color: var(--text-primary);">
-                        <option value="">Anywhere in Mysore</option>
-                        <option value="Vijayanagar" {% if values.location == 'Vijayanagar' %}selected{% endif %}>Vijayanagar</option>
-                        <option value="Gokulam" {% if values.location == 'Gokulam' %}selected{% endif %}>Gokulam</option>
-                        <option value="Kuvempunagar" {% if values.location == 'Kuvempunagar' %}selected{% endif %}>Kuvempunagar</option>
-                        <option value="Saraswathipuram" {% if values.location == 'Saraswathipuram' %}selected{% endif %}>Saraswathipuram</option>
-                    </select>
-                </div>
-                
-                <div style="margin-bottom: 2rem; border-bottom: 1px solid var(--border-light); padding-bottom: 2rem;">
-                    <label style="display: block; font-weight: 500; margin-bottom: 1rem; color: var(--text-primary);">Max Price</label>
-                    <div style="display: flex; align-items: center; gap: 0.5rem; border: 1px solid var(--border-main); border-radius: var(--radius-md); padding: 0 1rem; background: var(--bg-surface);">
-                        <span style="color: var(--text-tertiary);">₹</span>
-                        <input type="number" name="price" placeholder="5000" value="{{ values.price }}" style="width: 100%; padding: 0.75rem 0; border: none; background: transparent; outline: none; font-family: var(--font-sans); color: var(--text-primary);">
-                    </div>
-                </div>
-                
-                <div style="margin-bottom: 2rem;">
-                    <label style="display: block; font-weight: 500; margin-bottom: 1rem; color: var(--text-primary);">Property Type</label>
-                    <div style="display: flex; flex-direction: column; gap: 0.75rem;">
-                        <label style="display: flex; align-items: center; gap: 0.75rem; cursor: pointer; color: var(--text-secondary); font-size: 0.95rem;">
-                            <input type="radio" name="type" value="" {% if not values.type %}checked{% endif %} style="accent-color: var(--text-primary);"> Any Type
-                        </label>
-                        <label style="display: flex; align-items: center; gap: 0.75rem; cursor: pointer; color: var(--text-secondary); font-size: 0.95rem;">
-                            <input type="radio" name="type" value="1BHK" {% if values.type == '1BHK' %}checked{% endif %} style="accent-color: var(--text-primary);"> 1 BHK Flat
-                        </label>
-                        <label style="display: flex; align-items: center; gap: 0.75rem; cursor: pointer; color: var(--text-secondary); font-size: 0.95rem;">
-                            <input type="radio" name="type" value="PG (Men)" {% if values.type == 'PG (Men)' %}checked{% endif %} style="accent-color: var(--text-primary);"> Boys PG
-                        </label>
-                        <label style="display: flex; align-items: center; gap: 0.75rem; cursor: pointer; color: var(--text-secondary); font-size: 0.95rem;">
-                            <input type="radio" name="type" value="PG (Women)" {% if values.type == 'PG (Women)' %}checked{% endif %} style="accent-color: var(--text-primary);"> Girls PG
-                        </label>
-                    </div>
-                </div>
-
-                <button type="submit" class="btn btn-primary" style="width: 100%;">Show Results</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- Results Section -->
-    <div style="flex: 1;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
-            <h2 style="font-size: 1.5rem; font-weight: 600;">
-                {{ listings|length }} stays found
-            </h2>
-            <button id="mobile-filter-btn" class="btn btn-outline" style="display: none;">
-                <i data-lucide="sliders-horizontal"></i> Filters
-            </button>
-        </div>
-
-        <div class="grid" style="grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 2rem;">
-            {% for listing in listings %}
-            <a href="{% url 'details' listing.id %}" class="property-card">
-                <div class="card-image-wrapper">
-                    {% if listing.image %}
-                    <img src="{{ listing.image.url }}" alt="{{ listing.title }}" class="card-image" loading="lazy">
-                    {% else %}
-                    <div class="card-image skeleton" style="display:flex; align-items:center; justify-content:center; color: var(--text-tertiary);">No Image</div>
-                    {% endif %}
-                    
-                    <span class="card-badge">{{ listing.type }}</span>
-                    
-                    {% if user.is_authenticated %}
-                    <form action="{% url 'toggle_wishlist' listing.id %}" method="POST" style="display:inline;">
-                        {% csrf_token %}
-                        <button type="submit" class="wishlist-btn {% if is_wishlisted %}active{% endif %}" onclick="event.preventDefault(); this.closest('form').submit();">
-                            <i data-lucide="heart" {% if is_wishlisted %}fill="currentColor"{% endif %}></i>
-                        </button>
-                    </form>
-                    {% endif %}
-                </div>
-                
-                <div class="card-content">
-                    <div class="card-header">
-                        <div class="card-location">{{ listing.location }}</div>
-                        <div class="card-rating">
-                            <i data-lucide="star" fill="currentColor"></i> 4.8
-                        </div>
-                    </div>
-                    <div class="card-title">{{ listing.title }}</div>
-                    <div class="card-price">₹{{ listing.price }} <span>night</span></div>
-                </div>
-            </a>
-            {% empty %}
-            <div style="grid-column: 1 / -1; text-align: center; padding: 6rem 0;">
-                <i data-lucide="search-x" style="width: 48px; height: 48px; color: var(--border-dark); margin-bottom: 1rem;"></i>
-                <h3 style="color: var(--text-secondary); margin-bottom: 0.5rem;">No exact matches</h3>
-                <p style="color: var(--text-tertiary);">Try changing or removing some of your filters.</p>
-                <a href="{% url 'search' %}" class="btn btn-outline" style="margin-top: 1.5rem;">Clear all filters</a>
-            </div>
-            {% endfor %}
-        </div>
-    </div>
+<div class="container" style="background: var(--white); padding: 2rem; border-radius: 15px; margin-bottom: 2rem; box-shadow: var(--shadow);">
+    <h2>Search Properties</h2>
+    <form action="{% url 'search' %}" method="GET" class="search-form" style="margin-top: 1rem; justify-content: flex-start;">
+        <select name="location" style="margin-right: 10px;">
+            <option value="">Any Area in Mysore</option>
+            <option value="Vijayanagar" {% if values.location == 'Vijayanagar' %}selected{% endif %}>Vijayanagar</option>
+            <option value="Gokulam" {% if values.location == 'Gokulam' %}selected{% endif %}>Gokulam</option>
+            <option value="Kuvempunagar" {% if values.location == 'Kuvempunagar' %}selected{% endif %}>Kuvempunagar</option>
+            <option value="Saraswathipuram" {% if values.location == 'Saraswathipuram' %}selected{% endif %}>Saraswathipuram</option>
+            <option value="Jayalakshmipuram" {% if values.location == 'Jayalakshmipuram' %}selected{% endif %}>Jayalakshmipuram</option>
+            <option value="Vontikoppal" {% if values.location == 'Vontikoppal' %}selected{% endif %}>Vontikoppal</option>
+            <option value="Hebbal" {% if values.location == 'Hebbal' %}selected{% endif %}>Hebbal</option>
+            <option value="Bannimantap" {% if values.location == 'Bannimantap' %}selected{% endif %}>Bannimantap</option>
+            <option value="Bogadi" {% if values.location == 'Bogadi' %}selected{% endif %}>Bogadi</option>
+            <option value="Siddhartha Layout" {% if values.location == 'Siddhartha Layout' %}selected{% endif %}>Siddhartha Layout</option>
+            <option value="Other (Mysore)" {% if values.location == 'Other (Mysore)' %}selected{% endif %}>Other (Mysore)</option>
+        </select>
+        <input type="number" name="price" placeholder="Max Budget (₹)" value="{{ values.price }}" style="margin-right: 10px;">
+        <select name="type" style="margin-right: 10px;">
+            <option value="">Any Type</option>
+            <option value="1BHK" {% if values.type == '1BHK' %}selected{% endif %}>1BHK</option>
+            <option value="2BHK" {% if values.type == '2BHK' %}selected{% endif %}>2BHK</option>
+            <option value="3BHK" {% if values.type == '3BHK' %}selected{% endif %}>3BHK</option>
+            <option value="Single Room" {% if values.type == 'Single Room' %}selected{% endif %}>Single Room</option>
+            <option value="PG (Men)" {% if values.type == 'PG (Men)' %}selected{% endif %}>PG (Men)</option>
+            <option value="PG (Women)" {% if values.type == 'PG (Women)' %}selected{% endif %}>PG (Women)</option>
+            <option value="Co-living" {% if values.type == 'Co-living' %}selected{% endif %}>Co-living</option>
+        </select>
+        <button type="submit" class="btn btn-primary">Apply Filters</button>
+    </form>
 </div>
 
-<style>
-    @media (max-width: 900px) {
-        .filters-sidebar {
-            display: none;
-        }
-        #mobile-filter-btn {
-            display: flex !important;
-        }
-        /* Keep simple for now. A real modal would require more JS/CSS */
-    }
-</style>
+<section class="container">
+    <h2 class="section-title">Search Results</h2>
+    <div class="grid">
+        {% for listing in listings %}
+        <div class="card">
+            {% if listing.image %}
+            <img src="{{ listing.image.url }}" alt="{{ listing.title }}" class="card-img">
+            {% else %}
+            <div class="card-img" style="background: #e5e7eb; display:flex; align-items:center; justify-content:center;">No Image</div>
+            {% endif %}
+            <div class="card-content">
+                <span class="details-badge" style="width: fit-content; margin-bottom: 0.5rem;">{{ listing.type }}</span>
+                <h3 class="card-title">{{ listing.title }}</h3>
+                <p class="card-price">₹{{ listing.price }}</p>
+                <p class="card-location">📍 {{ listing.location }}</p>
+                <a href="{% url 'details' listing.id %}" class="btn btn-primary btn-block">View Details</a>
+            </div>
+        </div>
+        {% empty %}
+        <p style="text-align: center; grid-column: 1 / -1;">No matching properties found.</p>
+        {% endfor %}
+    </div>
+</section>
 {% endblock %}
