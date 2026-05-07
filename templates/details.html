@@ -142,6 +142,12 @@
                 {% if listing.exact_location %}
                 <p style="margin-top: 0.5rem; font-size: 1.1rem;"><strong>Exact Location:</strong> {{ listing.exact_location }}</p>
                 {% endif %}
+                {% if listing.map_url %}
+                <a href="{{ listing.map_url }}" target="_blank" class="btn btn-primary" style="margin-top: 1rem; display: inline-flex; align-items: center; gap: 8px; border-radius: 9999px;">
+                    <svg style="width: 20px; height: 20px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                    Open in Google Maps
+                </a>
+                {% endif %}
             {% else %}
                 <p style="margin: 1rem 0; color: #4b5563;">Login to your account to view the owner's full contact details and exact location.</p>
                 <a href="{% url 'login' %}" class="btn btn-primary" style="width: 100%;">Login to Unlock Details</a>

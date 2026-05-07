@@ -119,10 +119,15 @@
         </div>
 
         <div class="form-group">
-            <label for="exact_location">Exact Location / Landmark (Hidden until subscribed)</label>
+            <label for="exact_location">Exact Location / Landmark</label>
+            <input type="text" id="exact_location" name="exact_location" placeholder="e.g. Next to Big Bazaar">
+        </div>
+
+        <div class="form-group">
+            <label for="map_url">Google Maps Live Location URL (Optional)</label>
             <div style="display: flex; gap: 10px;">
-                <input type="text" id="exact_location" name="exact_location" placeholder="e.g. Google Maps URL or specific landmark" style="flex: 1;">
-                <button type="button" class="btn btn-outline" onclick="getLocation()" style="white-space: nowrap;">📍 Get Current Location</button>
+                <input type="url" id="map_url" name="map_url" placeholder="Paste Google Maps link here" style="flex: 1;">
+                <button type="button" class="btn btn-outline" onclick="getLocation()" style="white-space: nowrap;">📍 Use Current Location</button>
             </div>
             <small id="location-status" style="color: var(--text-light);"></small>
         </div>
@@ -144,7 +149,7 @@
 <script>
 function getLocation() {
     const status = document.getElementById('location-status');
-    const input = document.getElementById('exact_location');
+    const input = document.getElementById('map_url');
     
     if (!navigator.geolocation) {
         status.textContent = 'Geolocation is not supported by your browser';
