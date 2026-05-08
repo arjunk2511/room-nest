@@ -138,12 +138,7 @@
             {% if listing.owner.userprofile.is_verified %}
             <span style="color: #10b981; font-size: 1rem; margin-left: 5px; background: #d1fae5; padding: 0.2rem 0.5rem; border-radius: 4px;" title="Verified Owner">✔️ Verified</span>
             {% endif %}
-            
-            {% if request.user == listing.owner %}
-            <span style="color: var(--primary); font-size: 0.9rem; margin-left: 10px; background: #eff6ff; padding: 0.3rem 0.7rem; border-radius: 6px; font-weight: bold; border: 1px solid #bfdbfe; display: inline-flex; align-items: center; gap: 4px;">
-                👁️ {{ listing.views_count }} Views
-            </span>
-            {% endif %}
+
         </p>
 
         <h3>Description</h3>
