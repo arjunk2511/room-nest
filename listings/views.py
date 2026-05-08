@@ -86,8 +86,13 @@ def add_property(request):
         landmark = request.POST.get('landmark', '')
         
         images = request.FILES.getlist('images')
-        main_image = images[0] if images else None
+        if len(images) < 3:
+            messages.error(request, 'You must upload at least 3 photos to publish your listing.')
+            return render(request, 'add_property.html', {
+                'error_msg': 'Minimum 3 photos required'
+            })
         
+        main_image = images[0]
         facilities_str = ', '.join(facilities)
 
         listing = Listing.objects.create(
@@ -177,6 +182,10 @@ def edit_property(request, listing_id):
         # Handle new image files if uploaded
         images = request.FILES.getlist('images')
         if images:
+            if len(images) < 3:
+                messages.error(request, 'If you decide to upload new photos, you must upload at least 3 photos.')
+                return redirect('edit_property', listing_id=listing.id)
+            
             # Update main image to first new image
             listing.image = images[0]
             
