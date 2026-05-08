@@ -54,7 +54,7 @@ class Listing(models.Model):
     exact_location = models.CharField(max_length=255, default='', blank=True)
     phone = models.CharField(max_length=20, default='')
     is_sold = models.BooleanField(default=False)
-    views_count = models.IntegerField(default=0)
+
     
     # Custom fields for dynamic categories
     listing_purpose = models.CharField(max_length=20, default='Rent') # Rent, Lease, Sale

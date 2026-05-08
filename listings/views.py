@@ -38,10 +38,7 @@ def details(request, listing_id):
     has_subscription = False
     is_wishlisted = False
     
-    # Increment view count if viewer is not the owner
-    if not request.user.is_authenticated or request.user != listing.owner:
-        listing.views_count += 1
-        listing.save(update_fields=['views_count'])
+
         
     if request.user.is_authenticated:
         if request.user == listing.owner:
