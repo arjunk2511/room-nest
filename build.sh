@@ -9,13 +9,15 @@ python manage.py makemigrations
 # Run database migrations with self-healing fail-safe
 echo "Applying database migrations..."
 if ! python manage.py migrate; then
-    echo "WARNING: Standard migration failed due to existing database schema mismatch. Initiating self-healing..."
-    # Fake core listings migrations since columns already exist in PostgreSQL
-    python manage.py migrate listings 0007 --fake || true
-    python manage.py migrate listings 0008 --fake || true
-    # Retry the migration process
-    echo "Retrying database migrations..."
-    python manage.py migrate
+    echo "WARNING: Migration failed. Attempting clean migration fallback with --fake-initial..."
+    if ! python manage.py migrate --fake-initial; then
+        echo "CRITICAL: Fallback failed. Forcing initial migration state faking to align database history..."
+        python manage.py migrate accounts 0001 --fake || true
+        python manage.py migrate subscriptions 0001 --fake || true
+        python manage.py migrate listings 0001 --fake || true
+        echo "Retrying final migration pass..."
+        python manage.py migrate
+    fi
 fi
 
 # Create non-interactive Django superuser securely using Render environment variables
