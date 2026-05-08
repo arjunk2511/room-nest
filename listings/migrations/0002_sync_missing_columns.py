@@ -37,10 +37,6 @@ class Migration(migrations.Migration):
             state_operations=[],
             database_operations=[
                 migrations.RunPython(
-                    add_column_if_not_exists('listings_listing', 'views_count', models.IntegerField(default=0)),
-                    reverse_code=migrations.RunPython.noop
-                ),
-                migrations.RunPython(
                     add_column_if_not_exists('listings_listing', 'built_up_area', models.CharField(blank=True, default='', max_length=50)),
                     reverse_code=migrations.RunPython.noop
                 ),
