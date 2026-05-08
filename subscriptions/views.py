@@ -37,7 +37,7 @@ def subscribe(request):
         return redirect('home')
 
     # For GET requests, render the pay.html
-    upi_id = "7981629660@ybl"  # ⚠️ CHANGE THIS TO YOUR ACTUAL UPI ID ⚠️
+    upi_id = "bhagya@okaxis"  # NOTE: Change this to your actual UPI ID (e.g. gpay, phonepe, etc.)
     
     # Generate UPI deep link
     import urllib.parse
