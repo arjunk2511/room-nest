@@ -1,0 +1,139 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="max-width: 1100px; margin: 4rem auto; padding: 0 1.5rem;">
+    
+    <!-- Page Header -->
+    <div style="text-align: center; margin-bottom: 4rem;">
+        <span style="background: rgba(79, 70, 229, 0.1); color: var(--primary); padding: 0.4rem 1rem; border-radius: 20px; font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">Get in Touch</span>
+        <h1 style="font-size: 2.5rem; font-weight: 800; color: var(--text-dark); margin-top: 0.8rem; margin-bottom: 0.8rem; letter-spacing: -0.5px;">Contact RoomNest</h1>
+        <p style="color: var(--text-light); font-size: 1.1rem; max-width: 500px; margin: 0 auto; line-height: 1.5;">
+            Have questions, feedback, or need assistance? Reach out to our dedicated support team.
+        </p>
+    </div>
+
+    <!-- Dual Layout Panel -->
+    <div style="display: flex; gap: 3rem; flex-wrap: wrap; align-items: stretch;">
+        
+        <!-- Left: Contact Details Column -->
+        <div style="flex: 1; min-width: 300px; display: flex; flex-direction: column; gap: 2rem;">
+            
+            <!-- Quick Contact Card -->
+            <div class="card" style="padding: 2.5rem; border-radius: 24px; flex: 1; display: flex; flex-direction: column; justify-content: space-between;">
+                <div>
+                    <h2 style="font-size: 1.5rem; font-weight: 700; color: var(--text-dark); margin-bottom: 1.5rem;">Support Channels 📞</h2>
+                    
+                    <!-- Phone Section -->
+                    <div style="display: flex; gap: 1.2rem; align-items: flex-start; margin-bottom: 2rem;">
+                        <div style="width: 44px; height: 44px; border-radius: 12px; background: rgba(79, 70, 229, 0.08); color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0;">
+                            📞
+                        </div>
+                        <div>
+                            <h4 style="font-size: 0.95rem; font-weight: 700; color: var(--text-dark); margin-bottom: 0.2rem;">Phone Helpline</h4>
+                            <p style="color: var(--text-light); font-size: 0.95rem; margin: 0;">+91 98765 43210</p>
+                            <span style="color: var(--text-light); font-size: 0.8rem; opacity: 0.8;">Mon - Sat, 9:00 AM - 6:00 PM</span>
+                        </div>
+                    </div>
+
+                    <!-- Email Section -->
+                    <div style="display: flex; gap: 1.2rem; align-items: flex-start; margin-bottom: 2rem;">
+                        <div style="width: 44px; height: 44px; border-radius: 12px; background: rgba(79, 70, 229, 0.08); color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0;">
+                            ✉️
+                        </div>
+                        <div>
+                            <h4 style="font-size: 0.95rem; font-weight: 700; color: var(--text-dark); margin-bottom: 0.2rem;">Email Desk</h4>
+                            <p style="margin: 0;"><a href="mailto:support@roomnest.online" style="color: var(--primary); font-weight: 600; text-decoration: none; font-size: 0.95rem;">support@roomnest.online</a></p>
+                            <span style="color: var(--text-light); font-size: 0.8rem; opacity: 0.8;">Response in under 24 hours</span>
+                        </div>
+                    </div>
+
+                    <!-- Address Section -->
+                    <div style="display: flex; gap: 1.2rem; align-items: flex-start; margin-bottom: 2rem;">
+                        <div style="width: 44px; height: 44px; border-radius: 12px; background: rgba(79, 70, 229, 0.08); color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0;">
+                            📍
+                        </div>
+                        <div>
+                            <h4 style="font-size: 0.95rem; font-weight: 700; color: var(--text-dark); margin-bottom: 0.2rem;">Head Office</h4>
+                            <p style="color: var(--text-light); font-size: 0.95rem; line-height: 1.5; margin: 0;">
+                                123, Nest Towers, 2nd Stage,<br>Hebbal Industrial Area,<br>Mysore, Karnataka - 570016
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Social links -->
+                <div style="border-top: 1px solid rgba(0,0,0,0.06); padding-top: 1.5rem; margin-top: 1.5rem;">
+                    <h4 style="font-size: 0.9rem; font-weight: 700; color: var(--text-dark); margin-bottom: 1rem;">Connect with us on Socials</h4>
+                    <div style="display: flex; gap: 1.2rem;">
+                        <a href="#" style="color: var(--text-light); transition: color 0.3s;" title="Facebook">
+                            <svg style="width: 24px; height: 24px; fill: currentColor;" viewBox="0 0 24 24"><path d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.667c0-.955.192-1.333 1.115-1.333h2.885v-5h-3.808c-3.596 0-5.192 1.583-5.192 4.615v3.385z"/></svg>
+                        </a>
+                        <a href="#" style="color: var(--text-light); transition: color 0.3s;" title="Twitter">
+                            <svg style="width: 24px; height: 24px; fill: currentColor;" viewBox="0 0 24 24"><path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"/></svg>
+                        </a>
+                        <a href="#" style="color: var(--text-light); transition: color 0.3s;" title="Instagram">
+                            <svg style="width: 24px; height: 24px; fill: currentColor;" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204 0.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Right: Modern Contact Form Card -->
+        <div style="flex: 1.2; min-width: 320px;">
+            <div class="card" style="padding: 2.5rem; border-radius: 24px; box-shadow: var(--shadow-lg);">
+                <h2 style="font-size: 1.5rem; font-weight: 700; color: var(--text-dark); margin-bottom: 1.5rem;">Send a Message ✉️</h2>
+                
+                <form method="POST" style="display: flex; flex-direction: column; gap: 1.2rem;">
+                    {% csrf_token %}
+                    
+                    <!-- Name -->
+                    <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                        <label style="font-size: 0.9rem; font-weight: 600; color: var(--text-dark);">Your Name</label>
+                        <input type="text" name="name" placeholder="John Doe" required style="width: 100%; padding: 0.8rem 1rem; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 0.95rem; outline: none; transition: border-color 0.3s; background: #f9fafb;">
+                    </div>
+                    
+                    <!-- Email -->
+                    <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                        <label style="font-size: 0.9rem; font-weight: 600; color: var(--text-dark);">Your Email</label>
+                        <input type="email" name="email" placeholder="john@example.com" required style="width: 100%; padding: 0.8rem 1rem; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 0.95rem; outline: none; transition: border-color 0.3s; background: #f9fafb;">
+                    </div>
+
+                    <!-- Subject -->
+                    <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                        <label style="font-size: 0.9rem; font-weight: 600; color: var(--text-dark);">Subject</label>
+                        <input type="text" name="subject" placeholder="Inquiry about property listing" required style="width: 100%; padding: 0.8rem 1rem; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 0.95rem; outline: none; transition: border-color 0.3s; background: #f9fafb;">
+                    </div>
+
+                    <!-- Message -->
+                    <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                        <label style="font-size: 0.9rem; font-weight: 600; color: var(--text-dark);">Message</label>
+                        <textarea name="message" rows="5" placeholder="Tell us how we can help you..." required style="width: 100%; padding: 0.8rem 1rem; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 0.95rem; outline: none; transition: border-color 0.3s; background: #f9fafb; resize: vertical;"></textarea>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit" class="btn btn-primary" style="padding: 1rem; font-size: 1.05rem; border-radius: 10px; margin-top: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;">
+                        Send Message 🚀
+                    </button>
+                </form>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<!-- CSS style handles input focus styling within dark mode -->
+<style>
+    body.dark-mode input, body.dark-mode textarea {
+        background: #0f172a !important;
+        border-color: #334155 !important;
+        color: var(--text-dark) !important;
+    }
+    body.dark-mode input:focus, body.dark-mode textarea:focus {
+        border-color: var(--primary) !important;
+        background: #1e293b !important;
+    }
+</style>
+{% endblock %}

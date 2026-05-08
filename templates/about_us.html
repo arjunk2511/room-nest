@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="max-width: 1000px; margin: 4rem auto; padding: 0 1.5rem; text-align: center;">
+    
+    <!-- Hero Header -->
+    <div style="background: linear-gradient(135deg, var(--primary) 0%, #a855f7 100%); border-radius: 32px; padding: 4rem 2rem; color: white; box-shadow: var(--shadow-lg); margin-bottom: 4rem; position: relative; overflow: hidden;">
+        <div style="position: absolute; top: -50px; right: -50px; width: 150px; height: 150px; background: rgba(255,255,255,0.1); border-radius: 50%;"></div>
+        <div style="position: absolute; bottom: -80px; left: -20px; width: 200px; height: 200px; background: rgba(255,255,255,0.1); border-radius: 50%;"></div>
+        
+        <h1 style="font-size: 3rem; font-weight: 800; margin-bottom: 1rem; color: white; letter-spacing: -1px;">About RoomNest</h1>
+        <p style="font-size: 1.2rem; opacity: 0.95; max-width: 650px; margin: 0 auto; line-height: 1.6; color: white;">
+            Connecting property seekers directly with owners across cities. Find comfortable rooms, PGs, and flats with zero brokerage.
+        </p>
+    </div>
+
+    <!-- Main Description Section -->
+    <div style="background: var(--white); border: 1px solid rgba(0,0,0,0.06); border-radius: 24px; padding: 3rem; margin-bottom: 4rem; text-align: left; box-shadow: var(--shadow); transition: background-color 0.3s ease;">
+        <h2 style="font-size: 1.8rem; font-weight: 700; color: var(--text-dark); margin-bottom: 1.2rem;">Our Mission 🌟</h2>
+        <p style="font-size: 1.05rem; line-height: 1.7; color: var(--text-light); margin-bottom: 1.5rem;">
+            At <strong>RoomNest</strong>, we believe finding a home or a listing shouldn't be buried under massive brokerage fees and complex contracts. We have built Mysore's and beyond's most trusted, easy-to-use rental community platform. Whether you are a college student searching for a secure PG, a professional seeking a flatmate, or a business seeking a commercial spot, RoomNest connects you directly to verified owners in seconds.
+        </p>
+        <p style="font-size: 1.05rem; line-height: 1.7; color: var(--text-light);">
+            We empower property owners with a simple self-listing portal, giving them absolute control over their listings, phone contacts, and direct messaging workflows. Safe, easy, and completely direct.
+        </p>
+    </div>
+
+    <!-- Core Features Grid -->
+    <h2 style="font-size: 2rem; font-weight: 800; color: var(--text-dark); margin-bottom: 2rem;">Why Use RoomNest?</h2>
+    
+    <div class="grid" style="margin-bottom: 4rem;">
+        
+        <!-- Pillar 1 -->
+        <div class="card" style="padding: 2.5rem; text-align: left; height: 100%;">
+            <div style="width: 50px; height: 50px; border-radius: 14px; background: rgba(79, 70, 229, 0.1); color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin-bottom: 1.5rem;">
+                🔍
+            </div>
+            <h3 style="font-size: 1.3rem; font-weight: 700; color: var(--text-dark); margin-bottom: 0.8rem;">Easy Room Finding</h3>
+            <p style="font-size: 0.95rem; line-height: 1.6; color: var(--text-light);">
+                Easily filter and browse through thousands of rooms, professional PGs, shared apartments, hostels, and commercial spaces to find your perfect nest.
+            </p>
+        </div>
+
+        <!-- Pillar 2 -->
+        <div class="card" style="padding: 2.5rem; text-align: left; height: 100%;">
+            <div style="width: 50px; height: 50px; border-radius: 14px; background: rgba(16, 185, 129, 0.1); color: var(--secondary); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin-bottom: 1.5rem;">
+                🏠
+            </div>
+            <h3 style="font-size: 1.3rem; font-weight: 700; color: var(--text-dark); margin-bottom: 0.8rem;">Quick Self-Listing</h3>
+            <p style="font-size: 0.95rem; line-height: 1.6; color: var(--text-light);">
+                Property owners can list rooms, flats, and shops in under 3 minutes with photo uploads, custom curfew rules, deposit terms, and contact controls.
+            </p>
+        </div>
+
+        <!-- Pillar 3 -->
+        <div class="card" style="padding: 2.5rem; text-align: left; height: 100%;">
+            <div style="width: 50px; height: 50px; border-radius: 14px; background: rgba(245, 158, 11, 0.1); color: #f59e0b; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin-bottom: 1.5rem;">
+                🔒
+            </div>
+            <h3 style="font-size: 1.3rem; font-weight: 700; color: var(--text-dark); margin-bottom: 0.8rem;">Safe & Verified Platform</h3>
+            <p style="font-size: 0.95rem; line-height: 1.6; color: var(--text-light);">
+                Enjoy safe direct owner contact, private message systems, secure password masking, and manual owner profile verification badges for peace of mind.
+            </p>
+        </div>
+
+        <!-- Pillar 4 -->
+        <div class="card" style="padding: 2.5rem; text-align: left; height: 100%;">
+            <div style="width: 50px; height: 50px; border-radius: 14px; background: rgba(168, 85, 247, 0.1); color: #a855f7; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin-bottom: 1.5rem;">
+                🌆
+            </div>
+            <h3 style="font-size: 1.3rem; font-weight: 700; color: var(--text-dark); margin-bottom: 0.8rem;">Multi-City Presence</h3>
+            <p style="font-size: 0.95rem; line-height: 1.6; color: var(--text-light);">
+                Expanding rapidly across major educational and commercial cities, offering smart accommodation hunting wherever your career or study takes you.
+            </p>
+        </div>
+
+    </div>
+
+    <!-- Statistics Section -->
+    <div style="display: flex; flex-wrap: wrap; gap: 2rem; justify-content: space-around; background: var(--white); border: 1px solid rgba(0,0,0,0.06); padding: 2.5rem; border-radius: 24px; box-shadow: var(--shadow);">
+        <div style="flex: 1; min-width: 150px; padding: 1rem;">
+            <div style="font-size: 2.5rem; font-weight: 800; color: var(--primary); margin-bottom: 0.3rem;">10,000+</div>
+            <div style="font-size: 0.95rem; font-weight: 600; color: var(--text-light); text-transform: uppercase;">Active Seekers</div>
+        </div>
+        <div style="flex: 1; min-width: 150px; padding: 1rem; border-left: 1px solid rgba(0,0,0,0.06); border-right: 1px solid rgba(0,0,0,0.06);">
+            <div style="font-size: 2.5rem; font-weight: 800; color: var(--primary); margin-bottom: 0.3rem;">5,000+</div>
+            <div style="font-size: 0.95rem; font-weight: 600; color: var(--text-light); text-transform: uppercase;">Listed Rooms</div>
+        </div>
+        <div style="flex: 1; min-width: 150px; padding: 1rem;">
+            <div style="font-size: 2.5rem; font-weight: 800; color: var(--primary); margin-bottom: 0.3rem;">0%</div>
+            <div style="font-size: 0.95rem; font-weight: 600; color: var(--text-light); text-transform: uppercase;">Brokerage Fee</div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
