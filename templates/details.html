@@ -44,19 +44,62 @@
             {% endif %}
         </div>
         
+        <!-- Interactive Thumbnail Strip -->
+        {% if listing.images.all %}
+        <div style="margin-top: 1rem; border-top: 1px solid #f1f5f9; padding-top: 1rem;">
+            <p style="font-size: 0.9rem; font-weight: 600; color: var(--text-light); margin-top: 0; margin-bottom: 0.6rem;">📷 Property Gallery (All {{ listing.images.all|length|add:"1" }} photos):</p>
+            <div class="thumbnail-strip" style="display: flex; gap: 10px; overflow-x: auto; padding: 4px 2px; scrollbar-width: thin; -webkit-overflow-scrolling: touch;">
+                {% if listing.image %}
+                <div class="thumbnail-item" onclick="goToSlide(0)" style="width: 85px; height: 60px; border-radius: 8px; overflow: hidden; cursor: pointer; border: 2.5px solid var(--primary); transition: all 0.2s; flex-shrink: 0; opacity: 1; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                    <img src="{{ listing.image.url }}" alt="Main Image" style="width: 100%; height: 100%; object-fit: cover;">
+                </div>
+                {% endif %}
+                {% for img in listing.images.all %}
+                <div class="thumbnail-item" onclick="goToSlide({{ forloop.counter }})" style="width: 85px; height: 60px; border-radius: 8px; overflow: hidden; cursor: pointer; border: 2.5px solid transparent; transition: all 0.2s; flex-shrink: 0; opacity: 0.55; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                    <img src="{{ img.image.url }}" alt="Gallery Image {{ forloop.counter }}" style="width: 100%; height: 100%; object-fit: cover;">
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+        
         <script>
             let currentSlide = 0;
             const slides = document.querySelector('.carousel-slides');
             const indicators = document.querySelectorAll('.indicator');
+            const thumbs = document.querySelectorAll('.thumbnail-item');
             const totalSlides = {{ listing.images.all|length }} + {% if listing.image %}1{% else %}1{% endif %};
             
-            function moveSlide(direction) {
-                currentSlide = (currentSlide + direction + totalSlides) % totalSlides;
-                slides.style.transform = `translateX(-${currentSlide * 100}%)`;
-                
+            function syncGalleryUI() {
+                // Update dots indicators
                 indicators.forEach((ind, index) => {
                     ind.style.opacity = index === currentSlide ? '1' : '0.5';
                 });
+                
+                // Update clickable thumbnails
+                thumbs.forEach((thumb, index) => {
+                    if (index === currentSlide) {
+                        thumb.style.borderColor = 'var(--primary)';
+                        thumb.style.opacity = '1';
+                        // Auto-scroll thumbnail strip to center active thumbnail
+                        thumb.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+                    } else {
+                        thumb.style.borderColor = 'transparent';
+                        thumb.style.opacity = '0.55';
+                    }
+                });
+            }
+
+            function moveSlide(direction) {
+                currentSlide = (currentSlide + direction + totalSlides) % totalSlides;
+                slides.style.transform = `translateX(-${currentSlide * 100}%)`;
+                syncGalleryUI();
+            }
+            
+            function goToSlide(index) {
+                currentSlide = index;
+                slides.style.transform = `translateX(-${currentSlide * 100}%)`;
+                syncGalleryUI();
             }
             
             // Add touch support for mobile swipe
