@@ -56,7 +56,15 @@ def profile_view(request):
         request.user.email = request.POST.get('email', '')
         request.user.save()
         
-        user_profile.phone_number = request.POST.get('phone_number', '')
+        phone_number = request.POST.get('phone_number', '').strip() or None
+        if phone_number:
+            # Check if this phone number is already registered by a DIFFERENT user profile
+            existing_profile = UserProfile.objects.filter(phone_number=phone_number).exclude(user=request.user).first()
+            if existing_profile:
+                messages.error(request, 'This phone number is already registered to another account.')
+                return redirect('profile')
+        
+        user_profile.phone_number = phone_number
         user_profile.save()
         messages.success(request, 'Profile updated successfully!')
         return redirect('profile')
