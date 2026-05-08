@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 from .models import Listing, ListingImage, Wishlist, Message, Review
 from django.db.models import Q, Avg
 from django.contrib.auth.models import User
@@ -149,6 +150,52 @@ def toggle_sold_status(request, listing_id):
     listing.is_sold = not listing.is_sold
     listing.save()
     return redirect('owner_dashboard')
+
+@login_required
+def edit_property(request, listing_id):
+    listing = get_object_or_404(Listing, id=listing_id, owner=request.user)
+    
+    if request.method == 'POST':
+        listing.title = request.POST['title']
+        listing.location = request.POST['location']
+        listing.price = request.POST['price']
+        listing.type = request.POST['type']
+        listing.description = request.POST['description']
+        listing.address = request.POST['address']
+        listing.phone = request.POST['phone']
+        listing.exact_location = request.POST.get('exact_location', '')
+        listing.deposit = request.POST.get('deposit', 0)
+        listing.available_from = request.POST.get('available_from', 'Immediately')
+        listing.food_preference = request.POST.get('food_preference', 'Any')
+        listing.curfew = request.POST.get('curfew', 'No Curfew')
+        listing.visitors = request.POST.get('visitors', 'Allowed')
+        listing.landmark = request.POST.get('landmark', '')
+        
+        facilities = request.POST.getlist('facilities')
+        listing.facilities = ', '.join(facilities)
+        
+        # Handle new image files if uploaded
+        images = request.FILES.getlist('images')
+        if images:
+            # Update main image to first new image
+            listing.image = images[0]
+            
+            # Delete existing extra gallery images and save new ones
+            listing.images.all().delete()
+            for img in images[1:]:
+                ListingImage.objects.create(listing=listing, image=img)
+        
+        listing.save()
+        messages.success(request, 'Property listing updated successfully!')
+        return redirect('owner_dashboard')
+    
+    # Pre-select facilities list for the template context
+    selected_facilities = [f.strip() for f in listing.facilities.split(',')] if listing.facilities else []
+    
+    return render(request, 'edit_property.html', {
+        'listing': listing,
+        'selected_facilities': selected_facilities,
+    })
 
 import re
 

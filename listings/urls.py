@@ -10,6 +10,7 @@ urlpatterns = [
     path('wishlist/', views.wishlist, name='wishlist'),
     path('owner/dashboard/', views.owner_dashboard, name='owner_dashboard'),
     path('owner/toggle-sold/<int:listing_id>/', views.toggle_sold_status, name='toggle_sold_status'),
+    path('edit-property/<int:listing_id>/', views.edit_property, name='edit_property'),
     path('chat/<int:user_id>/', views.chat_view, name='chat'),
     path('inbox/', views.inbox_view, name='inbox'),
     path('listing/<int:listing_id>/review/', views.add_review, name='add_review'),
