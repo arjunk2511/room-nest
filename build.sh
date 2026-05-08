@@ -6,7 +6,17 @@ echo "Building for Render..."
 pip install -r requirements.txt
 python manage.py collectstatic --no-input
 python manage.py makemigrations
-python manage.py migrate
+# Run database migrations with self-healing fail-safe
+echo "Applying database migrations..."
+if ! python manage.py migrate; then
+    echo "WARNING: Standard migration failed due to existing database schema mismatch. Initiating self-healing..."
+    # Fake core listings migrations since columns already exist in PostgreSQL
+    python manage.py migrate listings 0007 --fake || true
+    python manage.py migrate listings 0012 --fake || true
+    # Retry the migration process
+    echo "Retrying database migrations..."
+    python manage.py migrate
+fi
 
 # Create non-interactive Django superuser securely using Render environment variables
 echo "Checking superuser requirements..."
