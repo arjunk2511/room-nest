@@ -54,6 +54,16 @@ class Listing(models.Model):
     exact_location = models.CharField(max_length=255, default='', blank=True)
     phone = models.CharField(max_length=20, default='')
     is_sold = models.BooleanField(default=False)
+    views_count = models.IntegerField(default=0)
+    
+    # Custom fields for dynamic categories
+    listing_purpose = models.CharField(max_length=20, default='Rent') # Rent, Lease, Sale
+    rooms_available = models.IntegerField(default=1) # PG
+    sharing_count = models.IntegerField(default=1) # PG (members per room)
+    flatmate_preference = models.CharField(max_length=50, blank=True, default='') # Flatmate
+    commercial_type = models.CharField(max_length=50, blank=True, default='') # Commercial / Office
+    built_up_area = models.CharField(max_length=50, blank=True, default='') # Commercial / Office
+    
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
 

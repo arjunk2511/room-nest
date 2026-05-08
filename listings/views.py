@@ -38,10 +38,21 @@ def details(request, listing_id):
     has_subscription = False
     is_wishlisted = False
     
-    if request.user.is_authenticated:
-        # Temporarily grant full access to contact details for ALL authenticated users to gain traffic
-        has_subscription = True
+    # Increment view count if viewer is not the owner
+    if not request.user.is_authenticated or request.user != listing.owner:
+        listing.views_count += 1
+        listing.save(update_fields=['views_count'])
         
+    if request.user.is_authenticated:
+        if request.user == listing.owner:
+            has_subscription = True
+        else:
+            has_subscription = Subscription.objects.filter(
+                user=request.user,
+                is_active=True,
+                end_date__gt=timezone.now()
+            ).exists()
+            
         # Check wishlist
         is_wishlisted = Wishlist.objects.filter(user=request.user, listing=listing).exists()
 
@@ -85,6 +96,23 @@ def add_property(request):
         visitors = request.POST.get('visitors', 'Allowed')
         landmark = request.POST.get('landmark', '')
         
+        # New dynamic category fields
+        listing_purpose = request.POST.get('listing_purpose', 'Rent')
+        
+        try:
+            rooms_available = int(request.POST.get('rooms_available', 1))
+        except (ValueError, TypeError):
+            rooms_available = 1
+            
+        try:
+            sharing_count = int(request.POST.get('sharing_count', 1))
+        except (ValueError, TypeError):
+            sharing_count = 1
+            
+        flatmate_preference = request.POST.get('flatmate_preference', '')
+        commercial_type = request.POST.get('commercial_type', '')
+        built_up_area = request.POST.get('built_up_area', '')
+        
         images = request.FILES.getlist('images')
         if len(images) < 3:
             messages.error(request, 'You must upload at least 3 photos to publish your listing.')
@@ -112,7 +140,13 @@ def add_property(request):
             visitors=visitors,
             landmark=landmark,
             image=main_image,
-            owner=request.user
+            owner=request.user,
+            listing_purpose=listing_purpose,
+            rooms_available=rooms_available,
+            sharing_count=sharing_count,
+            flatmate_preference=flatmate_preference,
+            commercial_type=commercial_type,
+            built_up_area=built_up_area
         )
         
         # Save extra images
@@ -175,6 +209,23 @@ def edit_property(request, listing_id):
         listing.curfew = request.POST.get('curfew', 'No Curfew')
         listing.visitors = request.POST.get('visitors', 'Allowed')
         listing.landmark = request.POST.get('landmark', '')
+        
+        # Parse and update new dynamic category fields
+        listing.listing_purpose = request.POST.get('listing_purpose', 'Rent')
+        
+        try:
+            listing.rooms_available = int(request.POST.get('rooms_available', 1))
+        except (ValueError, TypeError):
+            listing.rooms_available = 1
+            
+        try:
+            listing.sharing_count = int(request.POST.get('sharing_count', 1))
+        except (ValueError, TypeError):
+            listing.sharing_count = 1
+            
+        listing.flatmate_preference = request.POST.get('flatmate_preference', '')
+        listing.commercial_type = request.POST.get('commercial_type', '')
+        listing.built_up_area = request.POST.get('built_up_area', '')
         
         facilities = request.POST.getlist('facilities')
         listing.facilities = ', '.join(facilities)
