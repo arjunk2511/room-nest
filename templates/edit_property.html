@@ -1,0 +1,239 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="max-width: 850px; margin: 3rem auto; padding: 0 1rem;">
+    <div style="text-align: center; margin-bottom: 2.5rem;">
+        <h1 style="font-size: 2.2rem; font-weight: 700; color: var(--text-dark); margin-bottom: 0.5rem;">Edit Your Property Listing</h1>
+        <p style="color: var(--text-light); font-size: 1.1rem; margin: 0;">Make changes to your property details below to update your listing instantly.</p>
+    </div>
+
+    <form method="POST" enctype="multipart/form-data" style="display: flex; flex-direction: column; gap: 2rem;">
+        {% csrf_token %}
+        
+        <!-- Section 1: Basic Property Details -->
+        <div style="background: var(--white); padding: 2.5rem; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: var(--shadow-sm);">
+            <h3 style="font-size: 1.3rem; font-weight: 700; color: var(--text-dark); margin: 0 0 1.5rem 0; border-bottom: 2px solid #f1f5f9; padding-bottom: 0.8rem; display: flex; align-items: center; gap: 10px;">
+                <span style="background: var(--primary); color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.9rem;">1</span> Basic Details
+            </h3>
+            
+            <div class="form-group" style="margin-bottom: 1.5rem;">
+                <label for="title" style="font-weight: 600; color: var(--text-dark); margin-bottom: 0.5rem; display: block;">Property Title / Name</label>
+                <input type="text" id="title" name="title" required value="{{ listing.title }}" placeholder="e.g. Elegant 1BHK near Gokulam Park" style="width: 100%; padding: 0.9rem 1rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 1rem;">
+            </div>
+
+            <div style="display: flex; gap: 1.5rem; flex-wrap: wrap; margin-bottom: 1.5rem;">
+                <div class="form-group" style="flex: 1; min-width: 250px;">
+                    <label for="location" style="font-weight: 600; color: var(--text-dark); margin-bottom: 0.5rem; display: block;">Mysore Locality</label>
+                    <select id="location" name="location" required style="width: 100%; padding: 0.9rem 1rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 1rem; background: var(--white);">
+                        <option value="Vijayanagar" {% if listing.location == 'Vijayanagar' %}selected{% endif %}>Vijayanagar</option>
+                        <option value="Gokulam" {% if listing.location == 'Gokulam' %}selected{% endif %}>Gokulam</option>
+                        <option value="Kuvempunagar" {% if listing.location == 'Kuvempunagar' %}selected{% endif %}>Kuvempunagar</option>
+                        <option value="Saraswathipuram" {% if listing.location == 'Saraswathipuram' %}selected{% endif %}>Saraswathipuram</option>
+                        <option value="Jayalakshmipuram" {% if listing.location == 'Jayalakshmipuram' %}selected{% endif %}>Jayalakshmipuram</option>
+                        <option value="Vontikoppal" {% if listing.location == 'Vontikoppal' %}selected{% endif %}>Vontikoppal</option>
+                        <option value="Hebbal" {% if listing.location == 'Hebbal' %}selected{% endif %}>Hebbal</option>
+                        <option value="Bannimantap" {% if listing.location == 'Bannimantap' %}selected{% endif %}>Bannimantap</option>
+                        <option value="Bogadi" {% if listing.location == 'Bogadi' %}selected{% endif %}>Bogadi</option>
+                        <option value="Siddhartha Layout" {% if listing.location == 'Siddhartha Layout' %}selected{% endif %}>Siddhartha Layout</option>
+                        <option value="Other (Mysore)" {% if listing.location == 'Other (Mysore)' %}selected{% endif %}>Other (Mysore)</option>
+                    </select>
+                </div>
+                
+                <div class="form-group" style="flex: 1; min-width: 250px;">
+                    <label for="type" style="font-weight: 600; color: var(--text-dark); margin-bottom: 0.5rem; display: block;">Property Type</label>
+                    <select id="type" name="type" required style="width: 100%; padding: 0.9rem 1rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 1rem; background: var(--white);">
+                        <option value="1BHK" {% if listing.type == '1BHK' %}selected{% endif %}>1BHK</option>
+                        <option value="2BHK" {% if listing.type == '2BHK' %}selected{% endif %}>2BHK</option>
+                        <option value="3BHK" {% if listing.type == '3BHK' %}selected{% endif %}>3BHK</option>
+                        <option value="Single Room" {% if listing.type == 'Single Room' %}selected{% endif %}>Single Room</option>
+                        <option value="PG (Men)" {% if listing.type == 'PG (Men)' %}selected{% endif %}>PG (Men)</option>
+                        <option value="PG (Women)" {% if listing.type == 'PG (Women)' %}selected{% endif %}>PG (Women)</option>
+                        <option value="Co-living" {% if listing.type == 'Co-living' %}selected{% endif %}>Co-living</option>
+                        <option value="Flatmate" {% if listing.type == 'Flatmate' %}selected{% endif %}>Flatmate / Shared Flat</option>
+                        <option value="Commercial Space" {% if listing.type == 'Commercial Space' %}selected{% endif %}>Commercial Space</option>
+                        <option value="Office Space" {% if listing.type == 'Office Space' %}selected{% endif %}>Office Space / Office cabin</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="landmark" style="font-weight: 600; color: var(--text-dark); margin-bottom: 0.5rem; display: block;">Key Landmark / Proximity</label>
+                <input type="text" id="landmark" name="landmark" required value="{{ listing.landmark }}" placeholder="e.g. 5 mins walk to JSS College, near Infosys Campus" style="width: 100%; padding: 0.9rem 1rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 1rem;">
+            </div>
+        </div>
+
+        <!-- Section 2: Rent and Pricing -->
+        <div style="background: var(--white); padding: 2.5rem; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: var(--shadow-sm);">
+            <h3 style="font-size: 1.3rem; font-weight: 700; color: var(--text-dark); margin: 0 0 1.5rem 0; border-bottom: 2px solid #f1f5f9; padding-bottom: 0.8rem; display: flex; align-items: center; gap: 10px;">
+                <span style="background: var(--primary); color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.9rem;">2</span> Rental Details
+            </h3>
+
+            <div style="display: flex; gap: 1.5rem; flex-wrap: wrap; margin-bottom: 1.5rem;">
+                <div class="form-group" style="flex: 1; min-width: 200px;">
+                    <label for="price" style="font-weight: 600; color: var(--text-dark); margin-bottom: 0.5rem; display: block;">Monthly Rent (₹)</label>
+                    <input type="number" id="price" name="price" required value="{{ listing.price|floatformat:0 }}" placeholder="e.g. 12000" style="width: 100%; padding: 0.9rem 1rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 1rem;">
+                </div>
+                
+                <div class="form-group" style="flex: 1; min-width: 200px;">
+                    <label for="deposit" style="font-weight: 600; color: var(--text-dark); margin-bottom: 0.5rem; display: block;">Security Deposit / Advance (₹)</label>
+                    <input type="number" id="deposit" name="deposit" required value="{{ listing.deposit|floatformat:0 }}" placeholder="e.g. 40000" style="width: 100%; padding: 0.9rem 1rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 1rem;">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="available_from" style="font-weight: 600; color: var(--text-dark); margin-bottom: 0.5rem; display: block;">Availability Status</label>
+                <input type="text" id="available_from" name="available_from" required value="{{ listing.available_from }}" placeholder="e.g. Immediately, 1st June, etc." style="width: 100%; padding: 0.9rem 1rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 1rem;">
+            </div>
+        </div>
+
+        <!-- Section 3: Amenities and House Rules -->
+        <div style="background: var(--white); padding: 2.5rem; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: var(--shadow-sm);">
+            <h3 style="font-size: 1.3rem; font-weight: 700; color: var(--text-dark); margin: 0 0 1.5rem 0; border-bottom: 2px solid #f1f5f9; padding-bottom: 0.8rem; display: flex; align-items: center; gap: 10px;">
+                <span style="background: var(--primary); color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.9rem;">3</span> Amenities & Rules
+            </h3>
+
+            <div class="form-group" style="margin-bottom: 2rem;">
+                <label style="font-weight: 600; color: var(--text-dark); margin-bottom: 1rem; display: block;">Facilities / Amenities Available</label>
+                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 1rem;">
+                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; color: var(--text-dark); font-weight: 500;">
+                        <input type="checkbox" name="facilities" value="WiFi" {% if 'WiFi' in selected_facilities %}checked{% endif %} style="width: 18px; height: 18px;"> WiFi Internet
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; color: var(--text-dark); font-weight: 500;">
+                        <input type="checkbox" name="facilities" value="Food" {% if 'Food' in selected_facilities %}checked{% endif %} style="width: 18px; height: 18px;"> Food Included
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; color: var(--text-dark); font-weight: 500;">
+                        <input type="checkbox" name="facilities" value="AC" {% if 'AC' in selected_facilities %}checked{% endif %} style="width: 18px; height: 18px;"> Air Conditioner (AC)
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; color: var(--text-dark); font-weight: 500;">
+                        <input type="checkbox" name="facilities" value="Parking" {% if 'Parking' in selected_facilities %}checked{% endif %} style="width: 18px; height: 18px;"> Parking Space
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; color: var(--text-dark); font-weight: 500;">
+                        <input type="checkbox" name="facilities" value="Attached Bath" {% if 'Attached Bath' in selected_facilities %}checked{% endif %} style="width: 18px; height: 18px;"> Attached Bath
+                    </label>
+                </div>
+            </div>
+
+            <div style="background: #f8fafc; padding: 1.5rem; border-radius: 8px; border: 1px solid #e2e8f0;">
+                <div style="font-weight: 600; color: var(--text-dark); margin-bottom: 1rem; font-size: 1rem;">🏠 House Rules Configuration</div>
+                <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                    <div class="form-group" style="flex: 1; min-width: 180px;">
+                        <label for="food_preference" style="font-size: 0.85rem; font-weight: 600; color: var(--text-light); margin-bottom: 0.3rem; display: block;">Food Preference</label>
+                        <select id="food_preference" name="food_preference" style="width: 100%; padding: 0.7rem; border-radius: 6px; border: 1px solid #cbd5e1; background: var(--white); outline: none;">
+                            <option value="Any" {% if listing.food_preference == 'Any' %}selected{% endif %}>Any / Doesn't Matter</option>
+                            <option value="Veg Only" {% if listing.food_preference == 'Veg Only' %}selected{% endif %}>Pure Veg Only</option>
+                            <option value="Non-Veg Allowed" {% if listing.food_preference == 'Non-Veg Allowed' %}selected{% endif %}>Non-Veg Allowed</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" style="flex: 1; min-width: 180px;">
+                        <label for="curfew" style="font-size: 0.85rem; font-weight: 600; color: var(--text-light); margin-bottom: 0.3rem; display: block;">Curfew Time</label>
+                        <select id="curfew" name="curfew" style="width: 100%; padding: 0.7rem; border-radius: 6px; border: 1px solid #cbd5e1; background: var(--white); outline: none;">
+                            <option value="No Curfew" {% if listing.curfew == 'No Curfew' %}selected{% endif %}>No Curfew</option>
+                            <option value="9 PM" {% if listing.curfew == '9 PM' %}selected{% endif %}>9 PM</option>
+                            <option value="10 PM" {% if listing.curfew == '10 PM' %}selected{% endif %}>10 PM</option>
+                            <option value="11 PM" {% if listing.curfew == '11 PM' %}selected{% endif %}>11 PM</option>
+                            <option value="Strict" {% if listing.curfew == 'Strict' %}selected{% endif %}>Strict</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" style="flex: 1; min-width: 180px;">
+                        <label for="visitors" style="font-size: 0.85rem; font-weight: 600; color: var(--text-light); margin-bottom: 0.3rem; display: block;">Visitors Access</label>
+                        <select id="visitors" name="visitors" style="width: 100%; padding: 0.7rem; border-radius: 6px; border: 1px solid #cbd5e1; background: var(--white); outline: none;">
+                            <option value="Allowed" {% if listing.visitors == 'Allowed' %}selected{% endif %}>Allowed</option>
+                            <option value="Not Allowed" {% if listing.visitors == 'Not Allowed' %}selected{% endif %}>Not Allowed</option>
+                            <option value="Daytime Only" {% if listing.visitors == 'Daytime Only' %}selected{% endif %}>Daytime Only</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 4: Privacy & Contact Info -->
+        <div style="background: var(--white); padding: 2.5rem; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: var(--shadow-sm);">
+            <h3 style="font-size: 1.3rem; font-weight: 700; color: var(--text-dark); margin: 0 0 1.5rem 0; border-bottom: 2px solid #f1f5f9; padding-bottom: 0.8rem; display: flex; align-items: center; gap: 10px;">
+                <span style="background: var(--primary); color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.9rem;">4</span> Owner Contact & Location
+            </h3>
+
+            <div class="form-group" style="margin-bottom: 1.5rem;">
+                <label for="phone" style="font-weight: 600; color: var(--text-dark); margin-bottom: 0.5rem; display: block;">Contact Phone Number</label>
+                <input type="text" id="phone" name="phone" required value="{{ listing.phone }}" placeholder="e.g. +91 9876543210" style="width: 100%; padding: 0.9rem 1rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 1rem;">
+                <small style="color: var(--text-light); display: block; margin-top: 0.3rem;">Only verified subscribers will be shown this number.</small>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 1.5rem;">
+                <label for="address" style="font-weight: 600; color: var(--text-dark); margin-bottom: 0.5rem; display: block;">Full Property Address</label>
+                <textarea id="address" name="address" rows="3" required placeholder="Enter complete address details..." style="width: 100%; padding: 0.9rem 1rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 1rem; font-family: inherit; resize: vertical;">{{ listing.address }}</textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="exact_location" style="font-weight: 600; color: var(--text-dark); margin-bottom: 0.5rem; display: block;">Exact Location Landmark / Coordinates</label>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <input type="text" id="exact_location" name="exact_location" value="{{ listing.exact_location }}" placeholder="e.g. Google Maps share link, or specific block info" style="flex: 1; min-width: 250px; padding: 0.9rem 1rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 1rem;">
+                    <button type="button" class="btn btn-outline" onclick="getLocation()" style="white-space: nowrap; padding: 0.9rem 1.5rem; font-size: 0.95rem; border-radius: 8px;">📍 Auto-Detect Current Location</button>
+                </div>
+                <small id="location-status" style="color: var(--text-light); display: block; margin-top: 0.4rem; font-weight: 500;"></small>
+            </div>
+        </div>
+
+        <!-- Section 5: Media Upload & Description -->
+        <div style="background: var(--white); padding: 2.5rem; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: var(--shadow-sm);">
+            <h3 style="font-size: 1.3rem; font-weight: 700; color: var(--text-dark); margin: 0 0 1.5rem 0; border-bottom: 2px solid #f1f5f9; padding-bottom: 0.8rem; display: flex; align-items: center; gap: 10px;">
+                <span style="background: var(--primary); color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.9rem;">5</span> Media & Description
+            </h3>
+
+            <!-- Show Current Main Image Preview -->
+            {% if listing.image %}
+            <div style="margin-bottom: 1.5rem;">
+                <p style="font-weight: 600; color: var(--text-dark); margin-bottom: 0.5rem;">Current Main Image:</p>
+                <img src="{{ listing.image.url }}" alt="Main Image Preview" style="max-width: 200px; height: 130px; object-fit: cover; border-radius: 8px; border: 1px solid #cbd5e1;">
+            </div>
+            {% endif %}
+
+            <div class="form-group" style="margin-bottom: 1.5rem;">
+                <label for="images" style="font-weight: 600; color: var(--text-dark); margin-bottom: 0.5rem; display: block;">Select New Property Photos (Optional)</label>
+                <div style="border: 2px dashed #cbd5e1; padding: 2.5rem; border-radius: 8px; text-align: center; position: relative; background: #f8fafc; transition: border-color 0.3s;" onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor='#cbd5e1'">
+                    <svg style="width: 48px; height: 48px; color: var(--text-light); margin-bottom: 1rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                    <p style="margin: 0 0 0.5rem 0; font-weight: 600; color: var(--text-dark);">Click to upload new photos</p>
+                    <p style="color: var(--text-light); font-size: 0.85rem; margin: 0 0 1.5rem 0;">Leave empty to keep your existing photos. Uploading new images will replace current ones.</p>
+                    <input type="file" id="images" name="images" accept="image/*" multiple style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer;">
+                </div>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 0;">
+                <label for="description" style="font-weight: 600; color: var(--text-dark); margin-bottom: 0.5rem; display: block;">Property Description</label>
+                <textarea id="description" name="description" rows="4" required placeholder="Provide a detailed description of the space, amenities, conditions, etc..." style="width: 100%; padding: 0.9rem 1rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 1rem; font-family: inherit; resize: vertical;">{{ listing.description }}</textarea>
+            </div>
+        </div>
+
+        <div style="display: flex; gap: 15px; margin-top: 1rem;">
+            <a href="{% url 'owner_dashboard' %}" class="btn btn-outline" style="flex: 1; text-align: center; font-size: 1.15rem; padding: 1.2rem; border-radius: 10px; font-weight: 700; text-decoration: none; color: var(--text-dark); border-color: #cbd5e1;">Cancel</a>
+            <button type="submit" class="btn btn-primary" style="flex: 2; font-size: 1.15rem; padding: 1.2rem; border-radius: 10px; font-weight: 700; box-shadow: var(--shadow-lg);">💾 Save Changes</button>
+        </div>
+    </form>
+</div>
+
+<script>
+function getLocation() {
+    const status = document.getElementById('location-status');
+    const input = document.getElementById('exact_location');
+    
+    if (!navigator.geolocation) {
+        status.textContent = '❌ Geolocation is not supported by your browser';
+        status.style.color = '#ef4444';
+    } else {
+        status.textContent = '⏳ Auto-detecting location coordinates...';
+        status.style.color = 'var(--text-light)';
+        navigator.geolocation.getCurrentPosition((position) => {
+            const latitude  = position.coords.latitude;
+            const longitude = position.coords.longitude;
+            input.value = `https://www.google.com/maps?q=${latitude},${longitude}`;
+            status.textContent = '✅ Location coordinate shared successfully!';
+            status.style.color = '#10b981';
+        }, () => {
+            status.textContent = '❌ Permission denied or unable to retrieve location coordinates';
+            status.style.color = '#ef4444';
+        });
+    }
+}
+</script>
+{% endblock %}
