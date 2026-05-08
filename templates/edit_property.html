@@ -62,6 +62,73 @@
             </div>
         </div>
 
+        <!-- Section 1.5: Dynamic Category Specific Fields -->
+        <div id="dynamic-category-section" style="background: var(--white); padding: 2.5rem; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: var(--shadow-sm); display: none;">
+            <h3 style="font-size: 1.3rem; font-weight: 700; color: var(--text-dark); margin: 0 0 1.5rem 0; border-bottom: 2px solid #f1f5f9; padding-bottom: 0.8rem; display: flex; align-items: center; gap: 10px;">
+                ✨ Specific Details
+            </h3>
+            
+            <!-- Flat BHK Panel -->
+            <div id="panel-flat" class="category-panel" style="display: none;">
+                <div class="form-group">
+                    <label for="listing_purpose" style="font-weight: 600; color: var(--text-dark); margin-bottom: 0.5rem; display: block;">Listing Purpose (Sale / Lease / Rent)</label>
+                    <select id="listing_purpose" name="listing_purpose" style="width: 100%; padding: 0.9rem 1rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 1rem; background: var(--white);">
+                        <option value="Rent" {% if listing.listing_purpose == 'Rent' %}selected{% endif %}>Rent</option>
+                        <option value="Lease" {% if listing.listing_purpose == 'Lease' %}selected{% endif %}>Lease</option>
+                        <option value="Sale" {% if listing.listing_purpose == 'Sale' %}selected{% endif %}>Sale</option>
+                    </select>
+                </div>
+            </div>
+            
+            <!-- PG Panel -->
+            <div id="panel-pg" class="category-panel" style="display: none;">
+                <div style="display: flex; gap: 1.5rem; flex-wrap: wrap;">
+                    <div class="form-group" style="flex: 1; min-width: 200px;">
+                        <label for="rooms_available" style="font-weight: 600; color: var(--text-dark); margin-bottom: 0.5rem; display: block;">How many Rooms are Available?</label>
+                        <input type="number" id="rooms_available" name="rooms_available" value="{{ listing.rooms_available|default:1 }}" min="1" style="width: 100%; padding: 0.9rem 1rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 1rem;">
+                    </div>
+                    <div class="form-group" style="flex: 1; min-width: 200px;">
+                        <label for="sharing_count" style="font-weight: 600; color: var(--text-dark); margin-bottom: 0.5rem; display: block;">Members sharing in one room</label>
+                        <select id="sharing_count" name="sharing_count" style="width: 100%; padding: 0.9rem 1rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 1rem; background: var(--white);">
+                            <option value="1" {% if listing.sharing_count == 1 %}selected{% endif %}>1 (Single Occupancy / Private Room)</option>
+                            <option value="2" {% if listing.sharing_count == 2 %}selected{% endif %}>2 Sharing</option>
+                            <option value="3" {% if listing.sharing_count == 3 %}selected{% endif %}>3 Sharing</option>
+                            <option value="4" {% if listing.sharing_count == 4 %}selected{% endif %}>4 Sharing</option>
+                            <option value="5" {% if listing.sharing_count == 5 %}selected{% endif %}>Co-living Dorm</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Flatmate Panel -->
+            <div id="panel-flatmate" class="category-panel" style="display: none;">
+                <div class="form-group">
+                    <label for="flatmate_preference" style="font-weight: 600; color: var(--text-dark); margin-bottom: 0.5rem; display: block;">Flatmate Preference</label>
+                    <input type="text" id="flatmate_preference" name="flatmate_preference" value="{{ listing.flatmate_preference }}" placeholder="e.g. Veg Only, IT Professionals, Students, etc." style="width: 100%; padding: 0.9rem 1rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 1rem;">
+                </div>
+            </div>
+            
+            <!-- Commercial / Office Panel -->
+            <div id="panel-commercial" class="category-panel" style="display: none;">
+                <div style="display: flex; gap: 1.5rem; flex-wrap: wrap;">
+                    <div class="form-group" style="flex: 1; min-width: 200px;">
+                        <label for="commercial_type" style="font-weight: 600; color: var(--text-dark); margin-bottom: 0.5rem; display: block;">Space Purpose / Sub-type</label>
+                        <select id="commercial_type" name="commercial_type" style="width: 100%; padding: 0.9rem 1rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 1rem; background: var(--white);">
+                            <option value="Shop / Showroom" {% if listing.commercial_type == 'Shop / Showroom' %}selected{% endif %}>Shop / Showroom</option>
+                            <option value="Office Cabin" {% if listing.commercial_type == 'Office Cabin' %}selected{% endif %}>Office Cabin</option>
+                            <option value="Warehouse / Godown" {% if listing.commercial_type == 'Warehouse / Godown' %}selected{% endif %}>Warehouse / Godown</option>
+                            <option value="Co-working Desk" {% if listing.commercial_type == 'Co-working Desk' %}selected{% endif %}>Co-working Desk</option>
+                            <option value="Other Commercial" {% if listing.commercial_type == 'Other Commercial' %}selected{% endif %}>Other Commercial Space</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="flex: 1; min-width: 200px;">
+                        <label for="built_up_area" style="font-weight: 600; color: var(--text-dark); margin-bottom: 0.5rem; display: block;">Built-up Area (Sq.Ft)</label>
+                        <input type="text" id="built_up_area" name="built_up_area" value="{{ listing.built_up_area }}" placeholder="e.g. 1500 Sq.Ft" style="width: 100%; padding: 0.9rem 1rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 1rem;">
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Section 2: Rent and Pricing -->
         <div style="background: var(--white); padding: 2.5rem; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: var(--shadow-sm);">
             <h3 style="font-size: 1.3rem; font-weight: 700; color: var(--text-dark); margin: 0 0 1.5rem 0; border-bottom: 2px solid #f1f5f9; padding-bottom: 0.8rem; display: flex; align-items: center; gap: 10px;">
@@ -263,5 +330,65 @@ function getLocation() {
         });
     }
 }
+
+// Dynamic Category Fields Handler
+document.addEventListener("DOMContentLoaded", function() {
+    const typeSelect = document.getElementById("type");
+    const dynamicSection = document.getElementById("dynamic-category-section");
+    const panels = {
+        flat: document.getElementById("panel-flat"),
+        pg: document.getElementById("panel-pg"),
+        flatmate: document.getElementById("panel-flatmate"),
+        commercial: document.getElementById("panel-commercial")
+    };
+
+    function updatePanels() {
+        const val = typeSelect.value;
+        
+        // Hide all panels
+        for (let p in panels) {
+            if (panels[p]) {
+                panels[p].style.display = "none";
+                // Remove required flags for hidden fields
+                const inputs = panels[p].querySelectorAll("input, select");
+                inputs.forEach(input => input.removeAttribute("required"));
+            }
+        }
+        if (dynamicSection) {
+            dynamicSection.style.display = "none";
+        }
+
+        if (val === "1BHK" || val === "2BHK" || val === "3BHK") {
+            if (dynamicSection && panels.flat) {
+                dynamicSection.style.display = "block";
+                panels.flat.style.display = "block";
+                panels.flat.querySelectorAll("input, select").forEach(inp => inp.setAttribute("required", "required"));
+            }
+        } else if (val === "PG (Men)" || val === "PG (Women)" || val === "Co-living" || val === "Single Room") {
+            if (dynamicSection && panels.pg) {
+                dynamicSection.style.display = "block";
+                panels.pg.style.display = "block";
+                panels.pg.querySelectorAll("input, select").forEach(inp => inp.setAttribute("required", "required"));
+            }
+        } else if (val === "Flatmate") {
+            if (dynamicSection && panels.flatmate) {
+                dynamicSection.style.display = "block";
+                panels.flatmate.style.display = "block";
+                panels.flatmate.querySelectorAll("input, select").forEach(inp => inp.setAttribute("required", "required"));
+            }
+        } else if (val === "Commercial Space" || val === "Office Space") {
+            if (dynamicSection && panels.commercial) {
+                dynamicSection.style.display = "block";
+                panels.commercial.style.display = "block";
+                panels.commercial.querySelectorAll("input, select").forEach(inp => inp.setAttribute("required", "required"));
+            }
+        }
+    }
+
+    if (typeSelect) {
+        typeSelect.addEventListener("change", updatePanels);
+        updatePanels();
+    }
+});
 </script>
 {% endblock %}

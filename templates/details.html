@@ -138,6 +138,12 @@
             {% if listing.owner.userprofile.is_verified %}
             <span style="color: #10b981; font-size: 1rem; margin-left: 5px; background: #d1fae5; padding: 0.2rem 0.5rem; border-radius: 4px;" title="Verified Owner">✔️ Verified</span>
             {% endif %}
+            
+            {% if request.user == listing.owner %}
+            <span style="color: var(--primary); font-size: 0.9rem; margin-left: 10px; background: #eff6ff; padding: 0.3rem 0.7rem; border-radius: 6px; font-weight: bold; border: 1px solid #bfdbfe; display: inline-flex; align-items: center; gap: 4px;">
+                👁️ {{ listing.views_count }} Views
+            </span>
+            {% endif %}
         </p>
 
         <h3>Description</h3>
@@ -162,6 +168,51 @@
                 <p style="color: var(--text-light); margin-bottom: 0.2rem; font-size: 0.85rem; font-weight: 600;">VISITORS</p>
                 <p style="margin: 0; font-weight: 500; color: var(--text-dark);">👥 {{ listing.visitors }}</p>
             </div>
+        </div>
+
+        <!-- Specific Category-Specific Details Section -->
+        <h3 style="margin-top: 2.5rem;">🏠 Specific Property Specifications</h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; margin: 1rem 0; background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); padding: 1.5rem; border-radius: 16px; border: 1px solid #e2e8f0; box-shadow: var(--shadow-sm);">
+            <div>
+                <p style="color: var(--text-light); margin-bottom: 0.2rem; font-size: 0.85rem; font-weight: 600;">PROPERTY CATEGORY</p>
+                <p style="margin: 0; font-weight: 600; color: var(--text-dark);">✨ {{ listing.type }}</p>
+            </div>
+            
+            {% if listing.type == '1BHK' or listing.type == '2BHK' or listing.type == '3BHK' %}
+            <div>
+                <p style="color: var(--text-light); margin-bottom: 0.2rem; font-size: 0.85rem; font-weight: 600;">LISTING PURPOSE</p>
+                <p style="margin: 0; font-weight: 600; color: var(--primary);">🏷️ For {{ listing.listing_purpose }}</p>
+            </div>
+            {% endif %}
+            
+            {% if listing.type == 'PG (Men)' or listing.type == 'PG (Women)' or listing.type == 'Co-living' or listing.type == 'Single Room' %}
+            <div>
+                <p style="color: var(--text-light); margin-bottom: 0.2rem; font-size: 0.85rem; font-weight: 600;">ROOMS AVAILABLE</p>
+                <p style="margin: 0; font-weight: 600; color: var(--text-dark);">🛏️ {{ listing.rooms_available }} Rooms</p>
+            </div>
+            <div>
+                <p style="color: var(--text-light); margin-bottom: 0.2rem; font-size: 0.85rem; font-weight: 600;">ROOM SHARING</p>
+                <p style="margin: 0; font-weight: 600; color: var(--text-dark);">👥 {{ listing.sharing_count }} Sharing</p>
+            </div>
+            {% endif %}
+            
+            {% if listing.type == 'Flatmate' %}
+            <div>
+                <p style="color: var(--text-light); margin-bottom: 0.2rem; font-size: 0.85rem; font-weight: 600;">FLATMATE PREFERENCE</p>
+                <p style="margin: 0; font-weight: 600; color: var(--text-dark);">🤝 {{ listing.flatmate_preference }}</p>
+            </div>
+            {% endif %}
+            
+            {% if listing.type == 'Commercial Space' or listing.type == 'Office Space' %}
+            <div>
+                <p style="color: var(--text-light); margin-bottom: 0.2rem; font-size: 0.85rem; font-weight: 600;">SPACE PURPOSE</p>
+                <p style="margin: 0; font-weight: 600; color: var(--text-dark);">🏢 {{ listing.commercial_type }}</p>
+            </div>
+            <div>
+                <p style="color: var(--text-light); margin-bottom: 0.2rem; font-size: 0.85rem; font-weight: 600;">BUILT-UP AREA</p>
+                <p style="margin: 0; font-weight: 600; color: var(--text-dark);">📐 {{ listing.built_up_area }}</p>
+            </div>
+            {% endif %}
         </div>
 
         {% if listing.type == 'Flatmate' %}
