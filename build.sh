@@ -6,19 +6,9 @@ echo "Building for Render..."
 pip install -r requirements.txt
 python manage.py collectstatic --no-input
 python manage.py makemigrations
-# Run database migrations with self-healing fail-safe
+# Run database migrations
 echo "Applying database migrations..."
-if ! python manage.py migrate; then
-    echo "WARNING: Migration failed. Attempting clean migration fallback with --fake-initial..."
-    if ! python manage.py migrate --fake-initial; then
-        echo "CRITICAL: Fallback failed. Forcing initial migration state faking to align database history..."
-        python manage.py migrate accounts 0001 --fake || true
-        python manage.py migrate subscriptions 0001 --fake || true
-        python manage.py migrate listings 0001 --fake || true
-        echo "Retrying final migration pass..."
-        python manage.py migrate
-    fi
-fi
+python manage.py migrate --fake-initial
 
 # Create non-interactive Django superuser securely using Render environment variables
 echo "Checking superuser requirements..."
