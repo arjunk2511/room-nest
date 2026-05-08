@@ -12,7 +12,7 @@ if ! python manage.py migrate; then
     echo "WARNING: Standard migration failed due to existing database schema mismatch. Initiating self-healing..."
     # Fake core listings migrations since columns already exist in PostgreSQL
     python manage.py migrate listings 0007 --fake || true
-    python manage.py migrate listings 0012 --fake || true
+    python manage.py migrate listings 0008 --fake || true
     # Retry the migration process
     echo "Retrying database migrations..."
     python manage.py migrate
