@@ -7,7 +7,21 @@ SECRET_KEY = 'django-insecure-dummy-key-for-roomnest-project'
 
 DEBUG = 'RENDER' not in os.environ or os.environ.get('FORCE_DEBUG') == 'True'
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = [
+    "roomnest.online",
+    "www.roomnest.online",
+    "room-nest.onrender.com"
+]
+
+# Support local development when running locally
+if 'RENDER' not in os.environ or os.environ.get('FORCE_DEBUG') == 'True':
+    ALLOWED_HOSTS.extend(['127.0.0.1', 'localhost', '[::1]'])
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://roomnest.online",
+    "https://www.roomnest.online",
+    "https://room-nest.onrender.com"
+]
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -139,3 +153,28 @@ CLOUDINARY_STORAGE = {
     'API_KEY': os.environ.get('CLOUDINARY_API_KEY', 'your_api_key_here'),
     'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET', 'your_api_secret_here'),
 }
+
+# Production Security and Optimization Settings (Render & Custom Domain)
+if 'RENDER' in os.environ:
+    # Redirect all HTTP requests to HTTPS
+    SECURE_SSL_REDIRECT = True
+    
+    # Trust the reverse proxy header for HTTPS detection
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    
+    # Use headers passed by Render to get the real host and port
+    USE_X_FORWARDED_HOST = True
+    USE_X_FORWARDED_PORT = True
+    
+    # Ensure cookies are only sent over secure HTTPS connections
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    
+    # Security headers
+    SECURE_BROWSER_XSS_FILTER = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    
+    # Strict-Transport-Security (HSTS) settings
+    SECURE_HSTS_SECONDS = 31536000  # 1 year
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
