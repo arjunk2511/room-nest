@@ -278,3 +278,24 @@ def add_review(request, listing_id):
             defaults={'rating': rating, 'comment': comment}
         )
     return redirect('details', listing_id=listing.id)
+
+def about_us(request):
+    return render(request, 'about_us.html')
+
+def privacy_policy(request):
+    return render(request, 'privacy_policy.html')
+
+def terms_conditions(request):
+    return render(request, 'terms_conditions.html')
+
+def contact_us(request):
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        email = request.POST.get('email')
+        subject = request.POST.get('subject')
+        message = request.POST.get('message')
+        
+        messages.success(request, f"Thank you, {name}! Your message has been sent successfully. Our support team will get back to you shortly.")
+        return redirect('contact_us')
+        
+    return render(request, 'contact_us.html')

@@ -14,4 +14,8 @@ urlpatterns = [
     path('chat/<int:user_id>/', views.chat_view, name='chat'),
     path('inbox/', views.inbox_view, name='inbox'),
     path('listing/<int:listing_id>/review/', views.add_review, name='add_review'),
+    path('about/', views.about_us, name='about_us'),
+    path('privacy/', views.privacy_policy, name='privacy_policy'),
+    path('terms/', views.terms_conditions, name='terms_conditions'),
+    path('contact/', views.contact_us, name='contact_us'),
 ]
