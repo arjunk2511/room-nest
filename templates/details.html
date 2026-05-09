@@ -505,6 +505,14 @@
 
 <script>
 function openWhatsApp(phone, title) {
+    // Background call to record WhatsApp lead conversion
+    fetch("{% url 'track_whatsapp' listing.id %}", {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}'
+        }
+    }).catch(err => console.error("Lead tracking failed:", err));
+
     let cleaned = phone.replace(/\D/g, '');
     if (cleaned.length === 10) {
         cleaned = '91' + cleaned;
@@ -545,6 +553,14 @@ function requestVisit(phone, title) {
         alert("Please select a date for your visit.");
         return;
     }
+    
+    // Background call to record WhatsApp lead conversion
+    fetch("{% url 'track_whatsapp' listing.id %}", {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}'
+        }
+    }).catch(err => console.error("Lead tracking failed:", err));
     
     // Format date beautifully
     const dateObj = new Date(visitDate);

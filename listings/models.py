@@ -54,6 +54,8 @@ class Listing(models.Model):
     exact_location = models.CharField(max_length=255, default='', blank=True)
     phone = models.CharField(max_length=20, default='')
     is_sold = models.BooleanField(default=False)
+    views_count = models.PositiveIntegerField(default=0)
+    whatsapp_clicks_count = models.PositiveIntegerField(default=0)
 
     
     # Custom fields for dynamic categories

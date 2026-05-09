@@ -13,17 +13,21 @@
 
     <!-- Quick Stats Summary -->
     <div style="display: flex; gap: 1.5rem; margin-bottom: 2.5rem; flex-wrap: wrap;">
-        <div style="flex: 1; min-width: 200px; background: var(--white); padding: 1.5rem; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: var(--shadow-sm);">
-            <p style="color: var(--text-light); margin: 0; font-size: 0.9rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Total Properties</p>
+        <div style="flex: 1; min-width: 180px; background: var(--white); padding: 1.5rem; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: var(--shadow-sm);">
+            <p style="color: var(--text-light); margin: 0; font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Total Properties</p>
             <p style="font-size: 2rem; font-weight: 800; color: var(--text-dark); margin: 0.5rem 0 0 0;">{{ listings|length }}</p>
         </div>
-        <div style="flex: 1; min-width: 200px; background: var(--white); padding: 1.5rem; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: var(--shadow-sm);">
-            <p style="color: var(--text-light); margin: 0; font-size: 0.9rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Active Listings</p>
+        <div style="flex: 1; min-width: 180px; background: var(--white); padding: 1.5rem; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: var(--shadow-sm);">
+            <p style="color: var(--text-light); margin: 0; font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Active Listings</p>
             <p style="font-size: 2rem; font-weight: 800; color: #10b981; margin: 0.5rem 0 0 0;">{{ active_count }}</p>
         </div>
-        <div style="flex: 1; min-width: 200px; background: var(--white); padding: 1.5rem; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: var(--shadow-sm);">
-            <p style="color: var(--text-light); margin: 0; font-size: 0.9rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Sold Listings</p>
-            <p style="font-size: 2rem; font-weight: 800; color: #ef4444; margin: 0.5rem 0 0 0;">{{ sold_count }}</p>
+        <div style="flex: 1; min-width: 180px; background: var(--white); padding: 1.5rem; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: var(--shadow-sm);">
+            <p style="color: var(--text-light); margin: 0; font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Total Views 👁️</p>
+            <p style="font-size: 2rem; font-weight: 800; color: #6366f1; margin: 0.5rem 0 0 0;">{{ total_views }}</p>
+        </div>
+        <div style="flex: 1; min-width: 180px; background: var(--white); padding: 1.5rem; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: var(--shadow-sm);">
+            <p style="color: var(--text-light); margin: 0; font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">WhatsApp Leads 💬</p>
+            <p style="font-size: 2rem; font-weight: 800; color: #10b981; margin: 0.5rem 0 0 0;">{{ total_whatsapp_clicks }}</p>
         </div>
     </div>
 
@@ -58,6 +62,15 @@
                     <span><strong>Deposit:</strong> ₹{{ listing.deposit }}</span>
                     <span>•</span>
                     <span><strong>Available:</strong> {{ listing.available_from }}</span>
+                </div>
+                
+                <div style="display: flex; gap: 10px; margin: 0.8rem 0; font-size: 0.82rem; flex-wrap: wrap;">
+                    <span style="background: #eef2ff; color: #4338ca; padding: 0.3rem 0.6rem; border-radius: 6px; font-weight: 600; display: inline-flex; align-items: center; gap: 4px; border: 1px solid #c7d2fe;">
+                        👁️ {{ listing.views_count }} views
+                    </span>
+                    <span style="background: #ecfdf5; color: #047857; padding: 0.3rem 0.6rem; border-radius: 6px; font-weight: 600; display: inline-flex; align-items: center; gap: 4px; border: 1px solid #a7f3d0;">
+                        💬 {{ listing.whatsapp_clicks_count }} WhatsApp Leads
+                    </span>
                 </div>
                 
                 <div class="hc-footer" style="padding-top: 0.8rem; margin-top: auto;">

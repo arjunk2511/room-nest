@@ -35,6 +35,12 @@ def search(request):
 
 def details(request, listing_id):
     listing = get_object_or_404(Listing, id=listing_id)
+    
+    # Increment view counter (skip incrementing if owner views their own listing)
+    if not request.user.is_authenticated or request.user != listing.owner:
+        listing.views_count += 1
+        listing.save(update_fields=['views_count'])
+
     has_subscription = False
     is_wishlisted = False
     
@@ -174,11 +180,28 @@ def owner_dashboard(request):
     listings = Listing.objects.filter(owner=request.user)
     active_count = listings.filter(is_sold=False).count()
     sold_count = listings.filter(is_sold=True).count()
+    
+    # Aggregate view stats and lead clicks across all properties
+    total_views = sum(l.views_count for l in listings)
+    total_whatsapp_clicks = sum(l.whatsapp_clicks_count for l in listings)
+    
     return render(request, 'owner_dashboard.html', {
         'listings': listings,
         'active_count': active_count,
         'sold_count': sold_count,
+        'total_views': total_views,
+        'total_whatsapp_clicks': total_whatsapp_clicks,
     })
+
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
+
+@require_POST
+def track_whatsapp_click(request, listing_id):
+    listing = get_object_or_404(Listing, id=listing_id)
+    listing.whatsapp_clicks_count += 1
+    listing.save(update_fields=['whatsapp_clicks_count'])
+    return JsonResponse({'status': 'success', 'whatsapp_clicks_count': listing.whatsapp_clicks_count})
 
 @login_required
 def toggle_sold_status(request, listing_id):
