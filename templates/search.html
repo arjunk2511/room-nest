@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load performance_tags %}
 
 {% block content %}
 <div style="background: #f1f5f9; padding: 1.5rem 0; border-bottom: 1px solid #e2e8f0;">
@@ -7,7 +8,7 @@
             <h1 style="font-size: 1.7rem; color: var(--text-dark); margin: 0; font-weight: 800;">Properties for Rent in Mysore</h1>
             <p style="color: var(--text-light); margin: 5px 0 0 0; font-size: 0.95rem; font-weight: 500;">📍 Verified rooms, PGs, and shared apartments</p>
         </div>
-        <p style="background: var(--white); color: var(--primary); padding: 0.5rem 1rem; border-radius: 8px; font-weight: 700; border: 1px solid #e2e8f0; font-size: 0.95rem; margin: 0;">{{ listings|length }} Homes Available</p>
+        <p style="background: var(--white); color: var(--primary); padding: 0.5rem 1rem; border-radius: 8px; font-weight: 700; border: 1px solid #e2e8f0; font-size: 0.95rem; margin: 0;">{{ total_count }} Homes Available</p>
     </div>
 </div>
 
@@ -78,7 +79,7 @@
         <div class="hc-card">
             <div class="hc-img-wrapper">
                 {% if listing.image %}
-                <img src="{{ listing.image.url }}" alt="{{ listing.title }}" class="hc-img">
+                <img src="{{ listing.image.url|optimize_image:'w_600' }}" alt="{{ listing.title }}" class="hc-img" loading="lazy">
                 {% else %}
                 <div class="hc-img" style="background: #e2e8f0; display:flex; align-items:center; justify-content:center; color: #64748b; font-weight: 600; font-size: 1rem;">No Image</div>
                 {% endif %}
@@ -138,6 +139,41 @@
             <p style="color: var(--text-light); font-weight: 500;">Try adjusting your filters or searching in a different area.</p>
         </div>
         {% endfor %}
+
+        <!-- Responsive Query-Preserving Pagination -->
+        {% if page_obj.has_other_pages %}
+        <div style="display: flex; justify-content: center; align-items: center; gap: 8px; margin-top: 2.5rem; flex-wrap: wrap; padding-bottom: 1rem;">
+            {% if page_obj.has_previous %}
+                <a href="?page={{ page_obj.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" 
+                   style="background: var(--white); color: var(--text-dark); border: 1px solid #cbd5e1; padding: 0.65rem 1.2rem; border-radius: 8px; font-weight: 600; text-decoration: none; font-size: 0.9rem; display: inline-flex; align-items: center; gap: 4px; box-shadow: var(--shadow-sm); transition: all 0.2s;"
+                   onmouseover="this.style.transform='translateY(-1px)'; this.style.borderColor='var(--primary)';" onmouseout="this.style.transform='translateY(0)'; this.style.borderColor='#cbd5e1';">
+                   ⬅️ Prev
+                </a>
+            {% endif %}
+
+            {% for num in page_obj.paginator.page_range %}
+                {% if page_obj.number == num %}
+                    <span style="background: var(--primary); color: white; padding: 0.65rem 1.2rem; border-radius: 8px; font-weight: 700; font-size: 0.9rem; box-shadow: 0 4px 10px rgba(79,70,229,0.3);">
+                        {{ num }}
+                    </span>
+                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                    <a href="?page={{ num }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" 
+                       style="background: var(--white); color: var(--text-dark); border: 1px solid #cbd5e1; padding: 0.65rem 1.2rem; border-radius: 8px; font-weight: 600; text-decoration: none; font-size: 0.9rem; box-shadow: var(--shadow-sm); transition: all 0.2s;"
+                       onmouseover="this.style.transform='translateY(-1px)'; this.style.borderColor='var(--primary)';" onmouseout="this.style.transform='translateY(0)'; this.style.borderColor='#cbd5e1';">
+                       {{ num }}
+                    </a>
+                {% endif %}
+            {% endfor %}
+
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" 
+                   style="background: var(--white); color: var(--text-dark); border: 1px solid #cbd5e1; padding: 0.65rem 1.2rem; border-radius: 8px; font-weight: 600; text-decoration: none; font-size: 0.9rem; display: inline-flex; align-items: center; gap: 4px; box-shadow: var(--shadow-sm); transition: all 0.2s;"
+                   onmouseover="this.style.transform='translateY(-1px)'; this.style.borderColor='var(--primary)';" onmouseout="this.style.transform='translateY(0)'; this.style.borderColor='#cbd5e1';">
+                   Next ➡️
+                </a>
+            {% endif %}
+        </div>
+        {% endif %}
     </div>
 </div>
 

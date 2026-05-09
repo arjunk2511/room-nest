@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load performance_tags %}
 
 {% block content %}
 <div style="max-width: 1200px; margin: 2rem auto 0 auto; padding: 0 1rem;">
@@ -19,13 +20,13 @@
         <div class="carousel-container" style="position: relative; width: 100%; height: 450px; border-radius: 16px; overflow: hidden; background: #e2e8f0;">
             <div class="carousel-slides" style="display: flex; transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); height: 100%;">
                 {% if listing.image %}
-                <img src="{{ listing.image.url }}" alt="{{ listing.title }}" style="min-width: 100%; height: 100%; object-fit: cover;">
+                <img src="{{ listing.image.url|optimize_image:'w_1200' }}" alt="{{ listing.title }}" style="min-width: 100%; height: 100%; object-fit: cover;">
                 {% else %}
                 <div style="min-width: 100%; height: 100%; display:flex; align-items:center; justify-content:center; color: #64748b; font-weight: 500; font-size: 1.2rem;">No Image Available</div>
                 {% endif %}
                 
                 {% for img in listing.images.all %}
-                <img src="{{ img.image.url }}" alt="Gallery Image" style="min-width: 100%; height: 100%; object-fit: cover;">
+                <img src="{{ img.image.url|optimize_image:'w_1200' }}" alt="Gallery Image" loading="lazy" style="min-width: 100%; height: 100%; object-fit: cover;">
                 {% endfor %}
             </div>
             
@@ -51,12 +52,12 @@
             <div class="thumbnail-strip" style="display: flex; gap: 10px; overflow-x: auto; padding: 4px 2px; scrollbar-width: thin; -webkit-overflow-scrolling: touch;">
                 {% if listing.image %}
                 <div class="thumbnail-item" onclick="goToSlide(0)" style="width: 85px; height: 60px; border-radius: 8px; overflow: hidden; cursor: pointer; border: 2.5px solid var(--primary); transition: all 0.2s; flex-shrink: 0; opacity: 1; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
-                    <img src="{{ listing.image.url }}" alt="Main Image" style="width: 100%; height: 100%; object-fit: cover;">
+                    <img src="{{ listing.image.url|optimize_image:'w_150' }}" alt="Main Image" loading="lazy" style="width: 100%; height: 100%; object-fit: cover;">
                 </div>
                 {% endif %}
                 {% for img in listing.images.all %}
                 <div class="thumbnail-item" onclick="goToSlide({{ forloop.counter }})" style="width: 85px; height: 60px; border-radius: 8px; overflow: hidden; cursor: pointer; border: 2.5px solid transparent; transition: all 0.2s; flex-shrink: 0; opacity: 0.55; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
-                    <img src="{{ img.image.url }}" alt="Gallery Image {{ forloop.counter }}" style="width: 100%; height: 100%; object-fit: cover;">
+                    <img src="{{ img.image.url|optimize_image:'w_150' }}" alt="Gallery Image {{ forloop.counter }}" loading="lazy" style="width: 100%; height: 100%; object-fit: cover;">
                 </div>
                 {% endfor %}
             </div>
@@ -479,7 +480,7 @@
             <div class="card">
                 <div class="card-image">
                     {% if sim_listing.image %}
-                    <img src="{{ sim_listing.image.url }}" alt="{{ sim_listing.title }}">
+                    <img src="{{ sim_listing.image.url|optimize_image:'w_600' }}" alt="{{ sim_listing.title }}" loading="lazy">
                     {% else %}
                     <div style="background: #e5e7eb; width: 100%; height: 100%; display:flex; align-items:center; justify-content:center;">
                         No Image

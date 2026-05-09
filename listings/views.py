@@ -7,14 +7,16 @@ from django.contrib.auth.models import User
 from subscriptions.models import Subscription
 from django.utils import timezone
 
+from django.core.paginator import Paginator
+
 def home(request):
     if not request.user.is_authenticated:
         return render(request, 'welcome.html')
-    featured_listings = Listing.objects.filter(is_sold=False).order_by('-created_at')[:6]
+    featured_listings = Listing.objects.filter(is_sold=False).select_related('owner').order_by('-created_at')[:6]
     return render(request, 'index.html', {'listings': featured_listings})
 
 def search(request):
-    listings = Listing.objects.filter(is_sold=False)
+    listings = Listing.objects.filter(is_sold=False).select_related('owner').prefetch_related('reviews').order_by('-created_at')
     
     location = request.GET.get('location')
     max_price = request.GET.get('price')
@@ -27,9 +29,16 @@ def search(request):
     if listing_type:
         listings = listings.filter(type__iexact=listing_type)
         
+    # Standard 8 listings per page is perfect for mobile performance
+    paginator = Paginator(listings, 8)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
     context = {
-        'listings': listings,
-        'values': request.GET
+        'listings': page_obj,
+        'page_obj': page_obj,
+        'values': request.GET,
+        'total_count': listings.count()
     }
     return render(request, 'search.html', context)
 
@@ -171,7 +180,7 @@ def toggle_wishlist(request, listing_id):
 
 @login_required
 def wishlist(request):
-    wishlist_items = Wishlist.objects.filter(user=request.user)
+    wishlist_items = Wishlist.objects.filter(user=request.user).select_related('listing', 'listing__owner').prefetch_related('listing__reviews')
     listings = [item.listing for item in wishlist_items]
     return render(request, 'wishlist.html', {'listings': listings})
 
