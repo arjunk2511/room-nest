@@ -7,14 +7,41 @@
         <p style="color: var(--text-light); font-size: 1.1rem; margin: 0;">Fill out the details below to list your property and start receiving inquiries instantly.</p>
     </div>
 
+    <!-- Beautiful Progress Wizard Bar -->
+    <div style="display: flex; justify-content: space-between; align-items: center; max-width: 600px; margin: 0 auto 3rem auto; position: relative; padding: 0 1rem;">
+        <div style="position: absolute; top: 50%; left: 1.5rem; right: 1.5rem; height: 3px; background: #e2e8f0; transform: translateY(-50%); z-index: 1;">
+            <div id="wizard-progress-bar" style="width: 0%; height: 100%; background: var(--primary); transition: width 0.3s ease;"></div>
+        </div>
+        
+        <!-- Step 1 Indicator -->
+        <div class="wizard-step-indicator" id="step-ind-1" style="z-index: 2; display: flex; flex-direction: column; align-items: center; gap: 8px;">
+            <div class="step-num" style="width: 38px; height: 38px; border-radius: 50%; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1rem; border: 3px solid #fff; box-shadow: 0 4px 10px rgba(79, 70, 229, 0.3); transition: all 0.3s ease;">1</div>
+            <span style="font-size: 0.85rem; font-weight: 700; color: var(--text-dark); transition: all 0.3s ease;">Basic Info</span>
+        </div>
+        
+        <!-- Step 2 Indicator -->
+        <div class="wizard-step-indicator" id="step-ind-2" style="z-index: 2; display: flex; flex-direction: column; align-items: center; gap: 8px;">
+            <div class="step-num" style="width: 38px; height: 38px; border-radius: 50%; background: #fff; color: var(--text-light); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1rem; border: 3px solid #e2e8f0; transition: all 0.3s ease;">2</div>
+            <span style="font-size: 0.85rem; font-weight: 600; color: var(--text-light); transition: all 0.3s ease;">Rent & Rules</span>
+        </div>
+        
+        <!-- Step 3 Indicator -->
+        <div class="wizard-step-indicator" id="step-ind-3" style="z-index: 2; display: flex; flex-direction: column; align-items: center; gap: 8px;">
+            <div class="step-num" style="width: 38px; height: 38px; border-radius: 50%; background: #fff; color: var(--text-light); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1rem; border: 3px solid #e2e8f0; transition: all 0.3s ease;">3</div>
+            <span style="font-size: 0.85rem; font-weight: 600; color: var(--text-light); transition: all 0.3s ease;">Photos & Contact</span>
+        </div>
+    </div>
+
     <form method="POST" enctype="multipart/form-data" style="display: flex; flex-direction: column; gap: 2rem;">
         {% csrf_token %}
         
-        <!-- Section 1: Basic Property Details -->
-        <div style="background: var(--white); padding: 2.5rem; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: var(--shadow-sm);">
-            <h3 style="font-size: 1.3rem; font-weight: 700; color: var(--text-dark); margin: 0 0 1.5rem 0; border-bottom: 2px solid #f1f5f9; padding-bottom: 0.8rem; display: flex; align-items: center; gap: 10px;">
-                <span style="background: var(--primary); color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.9rem;">1</span> Basic Details
-            </h3>
+        <!-- Step 1 Container -->
+        <div class="wizard-step" id="step-1" style="display: flex; flex-direction: column; gap: 2rem;">
+            <!-- Section 1: Basic Property Details -->
+            <div style="background: var(--white); padding: 2.5rem; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: var(--shadow-sm);">
+                <h3 style="font-size: 1.3rem; font-weight: 700; color: var(--text-dark); margin: 0 0 1.5rem 0; border-bottom: 2px solid #f1f5f9; padding-bottom: 0.8rem; display: flex; align-items: center; gap: 10px;">
+                    <span style="background: var(--primary); color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.9rem;">1</span> Basic Details
+                </h3>
             
             <div class="form-group" style="margin-bottom: 1.5rem;">
                 <label for="title" style="font-weight: 600; color: var(--text-dark); margin-bottom: 0.5rem; display: block;">Property Title / Name</label>
@@ -127,10 +154,19 @@
                     </div>
                 </div>
             </div>
+            
+            <!-- Step 1 Navigation -->
+            <div style="display: flex; justify-content: flex-end; margin-top: 1rem;">
+                <button type="button" onclick="nextStep(2)" class="btn btn-primary" style="padding: 1.1rem 2.5rem; border-radius: 12px; font-weight: 700; font-size: 1.05rem; box-shadow: var(--shadow); display: inline-flex; align-items: center; gap: 8px; border: none; cursor: pointer;">
+                    Next Step: Rent & Rules ➡️
+                </button>
+            </div>
         </div>
 
-        <!-- Section 2: Rent and Pricing -->
-        <div style="background: var(--white); padding: 2.5rem; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: var(--shadow-sm);">
+        <!-- Step 2 Container -->
+        <div class="wizard-step" id="step-2" style="display: none; flex-direction: column; gap: 2rem;">
+            <!-- Section 2: Rent and Pricing -->
+            <div style="background: var(--white); padding: 2.5rem; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: var(--shadow-sm);">
             <h3 style="font-size: 1.3rem; font-weight: 700; color: var(--text-dark); margin: 0 0 1.5rem 0; border-bottom: 2px solid #f1f5f9; padding-bottom: 0.8rem; display: flex; align-items: center; gap: 10px;">
                 <span style="background: var(--primary); color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.9rem;">2</span> Rental Details
             </h3>
@@ -213,10 +249,22 @@
                     </div>
                 </div>
             </div>
+            
+            <!-- Step 2 Navigation -->
+            <div style="display: flex; justify-content: space-between; margin-top: 1rem; gap: 1rem;">
+                <button type="button" onclick="prevStep(1)" class="btn btn-outline" style="padding: 1.1rem 2rem; border-radius: 12px; font-weight: 600; font-size: 1rem; border: 1px solid #cbd5e1; background: white; color: var(--text-dark); cursor: pointer;">
+                    ⬅️ Back
+                </button>
+                <button type="button" onclick="nextStep(3)" class="btn btn-primary" style="padding: 1.1rem 2.5rem; border-radius: 12px; font-weight: 700; font-size: 1.05rem; box-shadow: var(--shadow); display: inline-flex; align-items: center; gap: 8px; border: none; cursor: pointer;">
+                    Next Step: Photos & Contact ➡️
+                </button>
+            </div>
         </div>
 
-        <!-- Section 4: Privacy & Contact Info -->
-        <div style="background: var(--white); padding: 2.5rem; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: var(--shadow-sm);">
+        <!-- Step 3 Container -->
+        <div class="wizard-step" id="step-3" style="display: none; flex-direction: column; gap: 2rem;">
+            <!-- Section 4: Privacy & Contact Info -->
+            <div style="background: var(--white); padding: 2.5rem; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: var(--shadow-sm);">
             <h3 style="font-size: 1.3rem; font-weight: 700; color: var(--text-dark); margin: 0 0 1.5rem 0; border-bottom: 2px solid #f1f5f9; padding-bottom: 0.8rem; display: flex; align-items: center; gap: 10px;">
                 <span style="background: var(--primary); color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.9rem;">4</span> Owner Contact & Location
             </h3>
@@ -287,8 +335,16 @@
                 <textarea id="description" name="description" rows="4" required placeholder="Provide a detailed description of the space, amenities, conditions, etc..." style="width: 100%; padding: 0.9rem 1rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 1rem; font-family: inherit; resize: vertical;"></textarea>
             </div>
         </div>
-
-        <button type="submit" class="btn btn-primary" style="font-size: 1.15rem; padding: 1.2rem; border-radius: 10px; font-weight: 700; box-shadow: var(--shadow-lg);">🚀 Publish Property Listing</button>
+        
+        <!-- Step 3 Navigation -->
+        <div style="display: flex; justify-content: space-between; margin-top: 1rem; gap: 1rem;">
+            <button type="button" onclick="prevStep(2)" class="btn btn-outline" style="padding: 1.1rem 2rem; border-radius: 12px; font-weight: 600; font-size: 1rem; border: 1px solid #cbd5e1; background: white; color: var(--text-dark); cursor: pointer;">
+                ⬅️ Back
+            </button>
+            <button type="submit" class="btn btn-primary" style="font-size: 1.15rem; padding: 1.1rem 3rem; border-radius: 12px; font-weight: 700; box-shadow: var(--shadow-lg); border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 8px;">
+                🚀 Publish Property Listing
+            </button>
+        </div>
     </form>
 </div>
 
@@ -515,6 +571,101 @@ document.addEventListener("DOMContentLoaded", function() {
         typeSelect.addEventListener("change", updatePanels);
         updatePanels();
     }
+});
+
+// Progress Wizard Navigation Logic
+let currentStep = 1;
+
+function showStep(stepNum) {
+    // Hide all steps
+    document.querySelectorAll('.wizard-step').forEach(step => {
+        step.style.display = 'none';
+    });
+    
+    // Show current step
+    document.getElementById(`step-${stepNum}`).style.display = 'flex';
+    
+    // Update Indicators
+    for (let i = 1; i <= 3; i++) {
+        const ind = document.getElementById(`step-ind-${i}`);
+        const num = ind.querySelector('.step-num');
+        const text = ind.querySelector('span');
+        
+        if (i < stepNum) {
+            // Completed step
+            num.style.background = '#10b981'; // Green accent
+            num.style.color = 'white';
+            num.style.borderColor = '#10b981';
+            num.innerHTML = '✓';
+            text.style.color = '#10b981';
+            text.style.fontWeight = '700';
+        } else if (i === stepNum) {
+            // Current active step
+            num.style.background = 'var(--primary)';
+            num.style.color = 'white';
+            num.style.borderColor = 'white';
+            num.style.boxShadow = '0 4px 10px rgba(79, 70, 229, 0.3)';
+            num.innerHTML = i;
+            text.style.color = 'var(--text-dark)';
+            text.style.fontWeight = '700';
+        } else {
+            // Future step
+            num.style.background = '#fff';
+            num.style.color = 'var(--text-light)';
+            num.style.borderColor = '#e2e8f0';
+            num.style.boxShadow = 'none';
+            num.innerHTML = i;
+            text.style.color = 'var(--text-light)';
+            text.style.fontWeight = '600';
+        }
+    }
+    
+    // Update connecting line
+    const percent = ((stepNum - 1) / 2) * 100;
+    document.getElementById('wizard-progress-bar').style.width = `${percent}%`;
+    
+    // Scroll smoothly to top of wizard to help mobile users
+    const targetElement = document.querySelector('.wizard-step-indicator');
+    if (targetElement) {
+        window.scrollTo({ top: targetElement.offsetTop - 120, behavior: 'smooth' });
+    }
+}
+
+function nextStep(stepNum) {
+    if (validateStep(currentStep)) {
+        currentStep = stepNum;
+        showStep(currentStep);
+    }
+}
+
+function prevStep(stepNum) {
+    currentStep = stepNum;
+    showStep(currentStep);
+}
+
+function validateStep(stepNum) {
+    const currentStepDiv = document.getElementById(`step-${stepNum}`);
+    const inputs = currentStepDiv.querySelectorAll('input, select, textarea');
+    
+    for (let input of inputs) {
+        // Exclude checking validity for files input since we validate it on submit
+        if (input.type === 'file' && input.id === 'images') continue;
+        if (input.type === 'file' && input.id === 'real-file-input') continue;
+        
+        if (!input.checkValidity()) {
+            input.reportValidity();
+            return false;
+        }
+    }
+    return true;
+}
+
+// Set up initial state
+document.addEventListener('DOMContentLoaded', () => {
+    if (document.getElementById('step-1')) {
+        showStep(1);
+    }
+});
 });
 </script>
 {% endblock %}

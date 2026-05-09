@@ -11,10 +11,20 @@
     </div>
 </div>
 
+<div id="filter-overlay" class="drawer-overlay" onclick="toggleFilterDrawer()"></div>
+<button id="mobile-filter-trigger" class="floating-filter-btn" onclick="toggleFilterDrawer()">
+    🎛️ Filter Rooms
+</button>
+
 <div class="search-page-layout">
     <!-- Left Sidebar for Filters -->
-    <aside class="search-sidebar">
-        <h3 style="margin-bottom: 1.5rem; font-size: 1.2rem; color: var(--text-dark); border-bottom: 2px solid #f1f5f9; padding-bottom: 0.5rem; font-weight: 700; display: flex; align-items: center; gap: 8px;">
+    <aside class="search-sidebar" id="search-sidebar-drawer">
+        <div class="drawer-header" style="display: none; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; border-bottom: 1px solid #e2e8f0; padding-bottom: 0.8rem;">
+            <h3 style="margin: 0; font-size: 1.15rem; font-weight: 700; color: var(--text-dark); display: flex; align-items: center; gap: 8px;">🎛️ Filter Rooms</h3>
+            <button type="button" onclick="toggleFilterDrawer()" style="background: none; border: none; font-size: 1.6rem; color: var(--text-light); cursor: pointer; padding: 0 0.4rem; display: flex; align-items: center; justify-content: center;">&times;</button>
+        </div>
+        
+        <h3 class="desktop-filter-title" style="margin-bottom: 1.5rem; font-size: 1.2rem; color: var(--text-dark); border-bottom: 2px solid #f1f5f9; padding-bottom: 0.5rem; font-weight: 700; display: flex; align-items: center; gap: 8px;">
             <span>🔍</span> Filter Listings
         </h3>
         <form action="{% url 'search' %}" method="GET" style="display: flex; flex-direction: column; gap: 1.2rem;">
@@ -140,6 +150,22 @@ function openWhatsApp(phone, title) {
     }
     const message = encodeURIComponent(`Hi, I saw your property "${title}" listed on RoomNest and I am interested. Is it still available?`);
     window.open(`https://wa.me/${cleaned}?text=${message}`, '_blank');
+}
+
+// 🎛️ Drawer Toggler for Mobile Airbnb Filters
+function toggleFilterDrawer() {
+    const sidebar = document.getElementById('search-sidebar-drawer');
+    const overlay = document.getElementById('filter-overlay');
+    
+    if (sidebar.classList.contains('open')) {
+        sidebar.classList.remove('open');
+        overlay.classList.remove('active');
+        document.body.style.overflow = ''; // Restore page scrolling
+    } else {
+        sidebar.classList.add('open');
+        overlay.classList.add('active');
+        document.body.style.overflow = 'hidden'; // Lock page scrolling
+    }
 }
 </script>
 {% endblock %}
