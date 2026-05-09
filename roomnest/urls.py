@@ -6,8 +6,11 @@ from django.conf.urls.static import static
 from django.urls import re_path
 from django.views.static import serve
 
+from django.views.generic.base import RedirectView
+
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('favicon.ico', RedirectView.as_view(url=settings.STATIC_URL + 'images/favicon.ico')),
     path('', include('listings.urls')),
     path('accounts/', include('accounts.urls')),
     path('subscriptions/', include('subscriptions.urls')),
