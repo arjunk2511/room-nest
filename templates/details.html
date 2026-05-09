@@ -1,6 +1,9 @@
 {% extends 'base.html' %}
 {% load performance_tags %}
 
+{% block seo_title %}{{ listing.title }} | RoomNest Mysore{% endblock %}
+{% block seo_description %}Rent this {{ listing.type }} in {{ listing.location }} for ₹{{ listing.price }}/month. Security deposit ₹{{ listing.deposit }}, available from {{ listing.available_from }}. Direct contact, zero brokerage!{% endblock %}
+
 {% block content %}
 <div style="max-width: 1200px; margin: 2rem auto 0 auto; padding: 0 1rem;">
     <div style="display: flex; justify-content: space-between; align-items: flex-start;">
