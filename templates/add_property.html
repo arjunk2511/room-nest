@@ -524,7 +524,7 @@ document.addEventListener("DOMContentLoaded", function() {
         commercial: document.getElementById("panel-commercial")
     };
 
-    function updatePanels() {
+    window.updatePanels = function() {
         const val = typeSelect.value;
         
         // Hide all panels
@@ -568,8 +568,8 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     if (typeSelect) {
-        typeSelect.addEventListener("change", updatePanels);
-        updatePanels();
+        typeSelect.addEventListener("change", window.updatePanels);
+        window.updatePanels();
     }
 });
 
@@ -584,6 +584,58 @@ function showStep(stepNum) {
     
     // Show current step
     document.getElementById(`step-${stepNum}`).style.display = 'flex';
+
+    // DYNAMIC REQUIRED ATTRIBUTES CONFIGURATION (Bulletproof Form Navigation)
+    const step1Inputs = [
+        document.getElementById('title'),
+        document.getElementById('location'),
+        document.getElementById('type'),
+        document.getElementById('landmark')
+    ];
+    const step2Inputs = [
+        document.getElementById('price'),
+        document.getElementById('deposit'),
+        document.getElementById('available_from')
+    ];
+    const step3Inputs = [
+        document.getElementById('phone'),
+        document.getElementById('address'),
+        document.getElementById('description')
+    ];
+
+    // Enable required attribute ONLY for the active step
+    step1Inputs.forEach(input => {
+        if (input) {
+            if (stepNum === 1) input.setAttribute('required', 'required');
+            else input.removeAttribute('required');
+        }
+    });
+
+    step2Inputs.forEach(input => {
+        if (input) {
+            if (stepNum === 2) input.setAttribute('required', 'required');
+            else input.removeAttribute('required');
+        }
+    });
+
+    step3Inputs.forEach(input => {
+        if (input) {
+            if (stepNum === 3) input.setAttribute('required', 'required');
+            else input.removeAttribute('required');
+        }
+    });
+    
+    // Handle category panel inputs inside Step 1 dynamically
+    if (stepNum === 1) {
+        if (typeof window.updatePanels === 'function') {
+            window.updatePanels();
+        }
+    } else {
+        const catPanels = document.querySelectorAll('.category-panel');
+        catPanels.forEach(panel => {
+            panel.querySelectorAll('input, select').forEach(inp => inp.removeAttribute('required'));
+        });
+    }
     
     // Update Indicators
     for (let i = 1; i <= 3; i++) {
