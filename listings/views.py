@@ -21,6 +21,8 @@ def search(request):
     location = request.GET.get('location')
     max_price = request.GET.get('price')
     listing_type = request.GET.get('type')
+    furnishing = request.GET.get('furnishing')
+    target_gender = request.GET.get('target_gender')
     
     if location:
         listings = listings.filter(location__icontains=location)
@@ -28,6 +30,10 @@ def search(request):
         listings = listings.filter(price__lte=max_price)
     if listing_type:
         listings = listings.filter(type__iexact=listing_type)
+    if furnishing:
+        listings = listings.filter(furnishing__iexact=furnishing)
+    if target_gender:
+        listings = listings.filter(target_gender__iexact=target_gender)
         
     # Standard 8 listings per page is perfect for mobile performance
     paginator = Paginator(listings, 8)

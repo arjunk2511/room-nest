@@ -26,3 +26,12 @@ def optimize_image(url, arg='w_800'):
                 return optimized_url
             
     return url_str
+
+@register.filter(name='split_by_comma')
+def split_by_comma(value):
+    """
+    Splits a comma-separated string into a list of cleaned strings.
+    """
+    if not value:
+        return []
+    return [item.strip() for item in str(value).split(',') if item.strip()]

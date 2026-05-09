@@ -68,6 +68,27 @@
                 <label style="font-size: 0.85rem; font-weight: 700; color: var(--text-dark); margin-bottom: 0.4rem; display: block;">Maximum Monthly Budget</label>
                 <input type="number" name="price" placeholder="₹ e.g. 15000" value="{{ values.price }}" style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 0.95rem; background: var(--white);">
             </div>
+
+            <div class="form-group" style="margin: 0;">
+                <label style="font-size: 0.85rem; font-weight: 700; color: var(--text-dark); margin-bottom: 0.4rem; display: block;">Furnishing Status</label>
+                <select name="furnishing" style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; background: var(--white); font-size: 0.95rem;">
+                    <option value="">Any Status</option>
+                    <option value="Unfurnished" {% if values.furnishing == 'Unfurnished' %}selected{% endif %}>Unfurnished</option>
+                    <option value="Semi-Furnished" {% if values.furnishing == 'Semi-Furnished' %}selected{% endif %}>Semi-Furnished</option>
+                    <option value="Fully Furnished" {% if values.furnishing == 'Fully Furnished' %}selected{% endif %}>Fully Furnished</option>
+                </select>
+            </div>
+
+            <div class="form-group" style="margin: 0;">
+                <label style="font-size: 0.85rem; font-weight: 700; color: var(--text-dark); margin-bottom: 0.4rem; display: block;">Preferred Gender</label>
+                <select name="target_gender" style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; background: var(--white); font-size: 0.95rem;">
+                    <option value="">Anyone</option>
+                    <option value="Men" {% if values.target_gender == 'Men' %}selected{% endif %}>Male Only</option>
+                    <option value="Women" {% if values.target_gender == 'Women' %}selected{% endif %}>Female Only</option>
+                    <option value="Co-ed / Family" {% if values.target_gender == 'Co-ed / Family' %}selected{% endif %}>Family / Co-ed</option>
+                    <option value="Anyone" {% if values.target_gender == 'Anyone' %}selected{% endif %}>No Preference</option>
+                </select>
+            </div>
             
             <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.9rem; border-radius: 8px; font-weight: 700; margin-top: 0.5rem; box-shadow: 0 4px 10px rgba(79, 70, 229, 0.2);">Apply Filters</button>
         </form>
