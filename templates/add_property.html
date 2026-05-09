@@ -247,9 +247,10 @@
                             <option value="Not Allowed">Not Allowed</option>
                             <option value="Daytime Only">Daytime Only</option>
                         </select>
-                    </div>
                 </div>
             </div>
+        </div>
+    </div>
             
             <!-- Step 2 Navigation -->
             <div style="display: flex; justify-content: space-between; margin-top: 1rem; gap: 1rem;">
@@ -346,7 +347,8 @@
                 🚀 Publish Property Listing
             </button>
         </div>
-    </form>
+    </div>
+</form>
 </div>
 
 <script>
@@ -601,7 +603,8 @@ function showStep(stepNum) {
     const step3Inputs = [
         document.getElementById('phone'),
         document.getElementById('address'),
-        document.getElementById('description')
+        document.getElementById('description'),
+        document.getElementById('images')
     ];
 
     // Enable required attribute ONLY for the active step
