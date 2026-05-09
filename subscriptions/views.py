@@ -36,8 +36,7 @@ def subscribe(request):
         messages.success(request, "Payment details submitted! Your subscription is pending verification.")
         return redirect('home')
 
-    # For GET requests, render the pay.html
-    upi_id = "bhagya@okaxis"  # NOTE: Change this to your actual UPI ID (e.g. gpay, phonepe, etc.)
+    upi_id = "7981629660@ybl"  # Changed to actual owner UPI ID
     
     # Generate UPI deep link
     import urllib.parse
