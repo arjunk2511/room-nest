@@ -550,14 +550,13 @@ footer {
         left: 0;
         width: 100%;
         height: 65px;
-        background: rgba(255, 255, 255, 0.85);
-        backdrop-filter: blur(15px);
-        -webkit-backdrop-filter: blur(15px);
+        background: #ffffff !important; /* Force clean solid white background for light mode */
         border-top: 1px solid rgba(0, 0, 0, 0.08);
         justify-content: space-around;
         align-items: center;
-        z-index: 1000;
+        z-index: 999999 !important; /* Extremely high z-index to stay above all other overlays */
         padding-bottom: env(safe-area-inset-bottom); /* Support modern phones with home indicators */
+        box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.05); /* Premium soft shadow */
     }
 
     .bottom-nav-item {
@@ -571,6 +570,7 @@ footer {
         font-weight: 600;
         gap: 4px;
         flex: 1;
+        height: 100%; /* Entire height of bar is clickable, making tap targets huge */
         transition: color 0.3s;
     }
 
