@@ -63,6 +63,14 @@ class Listing(models.Model):
     rooms_available = models.IntegerField(default=1) # PG
     sharing_count = models.IntegerField(default=1) # PG (members per room)
     flatmate_preference = models.CharField(max_length=50, blank=True, default='') # Flatmate
+    
+    GENDER_PREFERENCE_CHOICES = (
+        ('Any', 'Any (Boys or Girls)'),
+        ('Boys Only', 'Boys Only'),
+        ('Girls Only', 'Girls Only'),
+    )
+    target_gender = models.CharField(max_length=20, choices=GENDER_PREFERENCE_CHOICES, default='Any')
+    
     commercial_type = models.CharField(max_length=50, blank=True, default='') # Commercial / Office
     built_up_area = models.CharField(max_length=50, blank=True, default='') # Commercial / Office
     

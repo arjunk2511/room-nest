@@ -5,7 +5,10 @@
 <div style="max-width: 1200px; margin: 2rem auto 0 auto; padding: 0 1rem;">
     <div style="display: flex; justify-content: space-between; align-items: flex-start;">
         <div>
-            <span class="details-badge" style="background: var(--primary); color: white;">{{ listing.type }}</span>
+            <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                <span class="details-badge" style="background: var(--primary); color: white;">{{ listing.type }}</span>
+                <span style="background: #f1f5f9; color: #475569; padding: 0.4rem 0.8rem; border-radius: 6px; font-weight: 600; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 5px; border: 1px solid #e2e8f0;">📅 Posted on {{ listing.created_at|date:"M d, Y" }}</span>
+            </div>
             <h1 style="margin-top: 0.8rem; margin-bottom: 0.5rem; font-size: 2rem; color: var(--text-dark);">{{ listing.title }}</h1>
             <p style="color: var(--text-light); margin: 0; font-size: 1.1rem; margin-bottom: 1.5rem;">📍 {{ listing.location }}</p>
         </div>
@@ -196,6 +199,18 @@
             <div>
                 <p style="color: var(--text-light); margin-bottom: 0.2rem; font-size: 0.85rem; font-weight: 600;">FLATMATE PREFERENCE</p>
                 <p style="margin: 0; font-weight: 600; color: var(--text-dark);">🤝 {{ listing.flatmate_preference }}</p>
+            </div>
+            <div>
+                <p style="color: var(--text-light); margin-bottom: 0.2rem; font-size: 0.85rem; font-weight: 600;">GENDER PREFERRED</p>
+                <p style="margin: 0; font-weight: 600; color: var(--text-dark);">
+                    {% if listing.target_gender == 'Boys Only' %}
+                        👦 Boys Only (Male)
+                    {% elif listing.target_gender == 'Girls Only' %}
+                        👧 Girls Only (Female)
+                    {% else %}
+                        🚻 Any (Boys or Girls)
+                    {% endif %}
+                </p>
             </div>
             {% endif %}
             

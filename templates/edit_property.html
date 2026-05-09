@@ -102,9 +102,17 @@
             
             <!-- Flatmate Panel -->
             <div id="panel-flatmate" class="category-panel" style="display: none;">
-                <div class="form-group">
-                    <label for="flatmate_preference" style="font-weight: 600; color: var(--text-dark); margin-bottom: 0.5rem; display: block;">Flatmate Preference</label>
+                <div class="form-group" style="margin-bottom: 1.5rem;">
+                    <label for="flatmate_preference" style="font-weight: 600; color: var(--text-dark); margin-bottom: 0.5rem; display: block;">Flatmate Lifestyle/Rules Preference</label>
                     <input type="text" id="flatmate_preference" name="flatmate_preference" value="{{ listing.flatmate_preference }}" placeholder="e.g. Veg Only, IT Professionals, Students, etc." style="width: 100%; padding: 0.9rem 1rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 1rem;">
+                </div>
+                <div class="form-group" style="margin-bottom: 1.5rem;">
+                    <label for="target_gender" style="font-weight: 600; color: var(--text-dark); margin-bottom: 0.5rem; display: block;">Gender Preferred for Flatmate/Sharing</label>
+                    <select id="target_gender" name="target_gender" style="width: 100%; padding: 0.9rem 1rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 1rem; background: var(--white); cursor: pointer;">
+                        <option value="Any" {% if listing.target_gender == 'Any' %}selected{% endif %}>Any (Boys or Girls)</option>
+                        <option value="Boys Only" {% if listing.target_gender == 'Boys Only' %}selected{% endif %}>Boys Only (Male Preferred)</option>
+                        <option value="Girls Only" {% if listing.target_gender == 'Girls Only' %}selected{% endif %}>Girls Only (Female Preferred)</option>
+                    </select>
                 </div>
             </div>
             
