@@ -18,29 +18,32 @@ document.addEventListener('DOMContentLoaded', () => {
     const iconLight = document.getElementById('theme-icon-light');
     
     // Check for saved theme preference or use OS preference
-    const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
-    const currentTheme = localStorage.getItem('theme');
+    const isDarkMode = document.body.classList.contains('dark-mode');
     
-    if (currentTheme == 'dark' || (!currentTheme && prefersDarkScheme.matches)) {
-        document.body.classList.add('dark-mode');
-        if(iconDark && iconLight) {
+    if (isDarkMode) {
+        if (iconDark && iconLight) {
             iconDark.style.display = 'none';
             iconLight.style.display = 'block';
         }
+    } else {
+        if (iconDark && iconLight) {
+            iconDark.style.display = 'block';
+            iconLight.style.display = 'none';
+        }
     }
     
-    if(themeToggle) {
+    if (themeToggle) {
         themeToggle.addEventListener('click', () => {
             document.body.classList.toggle('dark-mode');
             let theme = 'light';
             
             if (document.body.classList.contains('dark-mode')) {
                 theme = 'dark';
-                iconDark.style.display = 'none';
-                iconLight.style.display = 'block';
+                if (iconDark) iconDark.style.display = 'none';
+                if (iconLight) iconLight.style.display = 'block';
             } else {
-                iconDark.style.display = 'block';
-                iconLight.style.display = 'none';
+                if (iconDark) iconDark.style.display = 'block';
+                if (iconLight) iconLight.style.display = 'none';
             }
             
             localStorage.setItem('theme', theme);
