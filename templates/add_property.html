@@ -323,7 +323,7 @@
                 </div>
                 
                 <!-- Hidden input that actually gets submitted to Django -->
-                <input type="file" id="images" name="images" accept="image/*" multiple style="display: none;" required>
+                <input type="file" id="images" name="images" accept="image/*" multiple style="display: none;">
 
                 <!-- Beautiful, interactive image preview grid with micro-animations -->
                 <div id="preview-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 12px; margin-top: 1.2rem;"></div>
@@ -489,6 +489,16 @@ document.querySelector('form').addEventListener('submit', function(e) {
     if (selectedFiles.length < 3) {
         e.preventDefault();
         alert('⚠️ You must select at least 3 photos to publish your listing. Currently you have selected ' + selectedFiles.length + '.');
+        const dz = document.getElementById('image-upload-dropzone');
+        if (dz) {
+            dz.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            dz.style.borderColor = '#ef4444';
+            dz.style.background = '#fef2f2';
+            setTimeout(() => {
+                dz.style.borderColor = '#cbd5e1';
+                dz.style.background = '#f8fafc';
+            }, 3000);
+        }
         return false;
     }
 });
