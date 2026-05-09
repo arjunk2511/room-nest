@@ -548,14 +548,15 @@ footer {
         position: fixed;
         bottom: 0;
         left: 0;
+        right: 0;
         width: 100%;
-        height: 65px;
+        height: calc(60px + env(safe-area-inset-bottom, 0px)); /* Dynamically adjust height to accommodate safe area without squishing icons */
         background: #ffffff !important; /* Force clean solid white background for light mode */
         border-top: 1px solid rgba(0, 0, 0, 0.08);
         justify-content: space-around;
         align-items: center;
         z-index: 999999 !important; /* Extremely high z-index to stay above all other overlays */
-        padding-bottom: env(safe-area-inset-bottom); /* Support modern phones with home indicators */
+        padding-bottom: env(safe-area-inset-bottom, 0px); /* Support modern phones with home indicators */
         box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.05); /* Premium soft shadow */
         transform: translate3d(0, 0, 0); /* Promote to GPU compositing layer to prevent jumpiness on scroll */
         will-change: transform;
@@ -594,7 +595,7 @@ footer {
 
     /* Body padding so content doesn't get cut off by bottom nav */
     body {
-        padding-bottom: 75px !important;
+        padding-bottom: calc(75px + env(safe-area-inset-bottom, 0px)) !important; /* Scale content safety padding proportionally */
     }
 
     /* Hero Responsive */
