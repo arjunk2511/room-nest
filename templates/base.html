@@ -11,7 +11,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'css/style.css' %}?v=2.1">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}?v=2.2">
 </head>
 <body>
     <nav class="navbar">
@@ -22,12 +22,6 @@
                 <a href="{% url 'search' %}">Search</a>
                 {% if user.is_authenticated %}
                 <a href="{% url 'wishlist' %}">Wishlist</a>
-                <a href="{% url 'inbox' %}" style="position: relative;">
-                    Inbox
-                    {% if unread_messages_count > 0 %}
-                    <span style="position: absolute; top: -5px; right: -15px; background: #ef4444; color: white; border-radius: 50%; padding: 2px 6px; font-size: 0.7rem; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">{{ unread_messages_count }}</span>
-                    {% endif %}
-                </a>
                 <a href="{% url 'owner_dashboard' %}">Dashboard</a>
                 <a href="{% url 'add_property' %}">Post Property</a>
                 {% endif %}
@@ -82,15 +76,7 @@
             </svg>
             <span>Wishlist</span>
         </a>
-        <a href="{% url 'inbox' %}" class="bottom-nav-item" style="position: relative;">
-            <svg class="bottom-nav-icon" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
-            </svg>
-            {% if unread_messages_count > 0 %}
-            <span style="position: absolute; top: 5px; right: 20%; background: #ef4444; color: white; border-radius: 50%; padding: 1px 5px; font-size: 0.65rem; font-weight: bold; border: 2px solid white;">{{ unread_messages_count }}</span>
-            {% endif %}
-            <span>Inbox</span>
-        </a>
+
         <a href="{% url 'owner_dashboard' %}" class="bottom-nav-item">
             <svg class="bottom-nav-icon" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v-2H7v-2h7V9H7V7h7V5h5v12h-5z"/>
@@ -164,7 +150,7 @@
         </div>
     </footer>
 
-    <script src="{% static 'js/app.js' %}?v=2.1"></script>
+    <script src="{% static 'js/app.js' %}?v=2.2"></script>
     <script>
     document.addEventListener("DOMContentLoaded", function() {
         const passwordInputs = document.querySelectorAll("input[type='password']");
