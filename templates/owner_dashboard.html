@@ -74,13 +74,22 @@
                 </div>
                 
                 <div class="hc-footer" style="padding-top: 0.8rem; margin-top: auto;">
-                    <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
-                        <a href="{% url 'details' listing.id %}" class="btn btn-outline" style="padding: 0.5rem 1.2rem; font-size: 0.85rem; border-radius: 6px;">Preview</a>
-                        <a href="{% url 'edit_property' listing.id %}" class="btn" style="padding: 0.5rem 1.2rem; font-size: 0.85rem; border-radius: 6px; background: #e0e7ff; color: #3730a3; border: 1px solid #c7d2fe; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; transition: all 0.2s;" onmouseover="this.style.background='#c7d2fe';" onmouseout="this.style.background='#e0e7ff';">✏️ Edit Details</a>
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+                        <a href="{% url 'details' listing.id %}" class="btn btn-outline" style="padding: 0.5rem 1rem; font-size: 0.82rem; border-radius: 6px; text-decoration: none;">👁️ Preview</a>
+                        
+                        <a href="{% url 'edit_property' listing.id %}" class="btn" style="padding: 0.5rem 1rem; font-size: 0.82rem; border-radius: 6px; background: #e0e7ff; color: #3730a3; border: 1px solid #c7d2fe; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; transition: all 0.2s;" onmouseover="this.style.background='#c7d2fe';" onmouseout="this.style.background='#e0e7ff';">✏️ Edit</a>
+                        
                         <form action="{% url 'toggle_sold_status' listing.id %}" method="POST" style="margin: 0;">
                             {% csrf_token %}
-                            <button type="submit" class="btn" style="padding: 0.5rem 1.2rem; font-size: 0.85rem; font-weight: 600; border-radius: 6px; transition: all 0.3s; {% if listing.is_sold %}background: #d1fae5; color: #065f46; border: 1px solid #a7f3d0;{% else %}background: #fee2e2; color: #991b1b; border: 1px solid #fecaca;{% endif %}">
-                                {% if listing.is_sold %}Mark Active{% else %}Mark Sold{% endif %}
+                            <button type="submit" class="btn" style="padding: 0.5rem 1rem; font-size: 0.82rem; font-weight: 600; border-radius: 6px; cursor: pointer; transition: all 0.3s; {% if listing.is_sold %}background: #d1fae5; color: #065f46; border: 1px solid #a7f3d0;{% else %}background: #fffbeb; color: #92400e; border: 1px solid #fef3c7;{% endif %}">
+                                {% if listing.is_sold %}🟢 Mark Active{% else %}🔴 Mark Rented{% endif %}
+                            </button>
+                        </form>
+                        
+                        <form action="{% url 'delete_property' listing.id %}" method="POST" onsubmit="return confirm('⚠️ Are you sure you want to permanently delete this listing? This action cannot be undone.');" style="margin: 0;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn" style="padding: 0.5rem 1rem; font-size: 0.82rem; font-weight: 600; border-radius: 6px; background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; transition: all 0.2s;" onmouseover="this.style.background='#fca5a5';" onmouseout="this.style.background='#fee2e2';">
+                                🗑️ Delete
                             </button>
                         </form>
                     </div>

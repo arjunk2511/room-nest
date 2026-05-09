@@ -385,3 +385,15 @@ def contact_us(request):
         return redirect('contact_us')
         
     return render(request, 'contact_us.html')
+
+@login_required
+def delete_property(request, listing_id):
+    listing = get_object_or_404(Listing, id=listing_id)
+    if listing.owner != request.user:
+        messages.error(request, "You are not authorized to delete this property.")
+        return redirect('owner_dashboard')
+        
+    if request.method == 'POST':
+        listing.delete()
+        messages.success(request, "Property listing deleted successfully!")
+    return redirect('owner_dashboard')

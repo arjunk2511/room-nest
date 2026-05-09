@@ -19,4 +19,5 @@ urlpatterns = [
     path('privacy/', views.privacy_policy, name='privacy_policy'),
     path('terms/', views.terms_conditions, name='terms_conditions'),
     path('contact/', views.contact_us, name='contact_us'),
+    path('owner/delete/<int:listing_id>/', views.delete_property, name='delete_property'),
 ]

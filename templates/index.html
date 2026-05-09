@@ -121,7 +121,12 @@
             <div class="card-content" style="padding: 1.5rem; display: flex; flex-direction: column; flex: 1;">
                 <div class="card-price" style="font-size: 1.6rem; font-weight: 800; color: var(--text-dark); margin-bottom: 0.3rem;">₹{{ listing.price }}<span style="font-size: 0.85rem; color: var(--text-light); font-weight: 500;"> / month</span></div>
                 <h3 class="card-title" style="font-size: 1.15rem; font-weight: 700; color: var(--text-dark); margin: 0 0 0.4rem 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ listing.title }}</h3>
-                <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 1.2rem; font-weight: 500; display: flex; align-items: center; gap: 4px;">📍 {{ listing.location }}</p>
+                <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 1.2rem; font-weight: 500; display: flex; align-items: center; justify-content: space-between; width: 100%;">
+                    <span>📍 {{ listing.location }}</span>
+                    {% if listing.owner.userprofile.is_verified %}
+                    <span style="background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0; font-size: 0.72rem; font-weight: 700; padding: 0.15rem 0.4rem; border-radius: 4px; display: inline-flex; align-items: center; gap: 2px;">✔️ Verified</span>
+                    {% endif %}
+                </p>
                 
                 <div class="card-info-row" style="display: flex; gap: 0.8rem; flex-wrap: wrap; border-top: 1px solid #f1f5f9; border-bottom: 1px solid #f1f5f9; padding: 0.8rem 0; margin-bottom: 1.5rem;">
                     <div class="card-info-item" style="flex: 1; min-width: 70px; display: flex; flex-direction: column; gap: 2px;">

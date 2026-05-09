@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block seo_title %}Server Error (500) | RoomNest{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 600px; margin: 5rem auto; text-align: center; padding: 2rem; background: var(--white); border-radius: 16px; border: 1px solid #e2e8f0; box-shadow: var(--shadow);">
+    <span style="font-size: 5rem; display: block; margin-bottom: 1.5rem; animation: pulse 2s infinite;">🛠️</span>
+    <h1 style="font-size: 2.2rem; font-weight: 800; color: var(--text-dark); margin-bottom: 1rem; font-family: 'Outfit', sans-serif;">Something Went Wrong</h1>
+    <p style="color: var(--text-light); font-size: 1.1rem; line-height: 1.6; margin-bottom: 2rem;">Our servers are currently experiencing a slight hiccup while nesting your request. Don't worry, our developers are already on it!</p>
+    <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+        <a href="{% url 'home' %}" class="btn btn-primary" style="padding: 0.8rem 2rem; font-weight: 700; border-radius: 8px; text-decoration: none;">Go back Home</a>
+        <a href="{% url 'contact_us' %}" class="btn btn-outline" style="padding: 0.8rem 2rem; font-weight: 700; border-radius: 8px; text-decoration: none;">Report This Issue</a>
+    </div>
+</div>
+
+<style>
+@keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.08); opacity: 0.95; }
+}
+</style>
+{% endblock %}

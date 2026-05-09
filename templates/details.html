@@ -4,6 +4,14 @@
 {% block seo_title %}{{ listing.title }} | RoomNest Mysore{% endblock %}
 {% block seo_description %}Rent this {{ listing.type }} in {{ listing.location }} for ₹{{ listing.price }}/month. Security deposit ₹{{ listing.deposit }}, available from {{ listing.available_from }}. Direct contact, zero brokerage!{% endblock %}
 
+{% block og_title %}{{ listing.title }} | RoomNest Mysore{% endblock %}
+{% block og_description %}Rent this {{ listing.type }} in {{ listing.location }} for ₹{{ listing.price }}/month. Security deposit ₹{{ listing.deposit }}, available from {{ listing.available_from }}. Direct contact, zero brokerage!{% endblock %}
+{% block og_image %}{% if listing.image %}{{ listing.image.url }}{% else %}https://roomnest.online/static/images/logo_icon.png{% endif %}{% endblock %}
+
+{% block twitter_title %}{{ listing.title }} | RoomNest Mysore{% endblock %}
+{% block twitter_description %}Rent this {{ listing.type }} in {{ listing.location }} for ₹{{ listing.price }}/month. Security deposit ₹{{ listing.deposit }}, available from {{ listing.available_from }}. Direct contact, zero brokerage!{% endblock %}
+{% block twitter_image %}{% if listing.image %}{{ listing.image.url }}{% else %}https://roomnest.online/static/images/logo_icon.png{% endif %}{% endblock %}
+
 {% block content %}
 <div style="max-width: 1200px; margin: 2rem auto 0 auto; padding: 0 1rem;">
     <div style="display: flex; justify-content: space-between; align-items: flex-start;">

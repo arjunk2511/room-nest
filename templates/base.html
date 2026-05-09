@@ -8,6 +8,26 @@
     <meta name="description" content="{% block seo_description %}Discover comfortable and affordable rooms, PGs, flatmate hubs, offices, and commercial spaces for rent in Mysore. Direct owner contact, zero brokerage.{% endblock %}">
     <meta name="keywords" content="RoomNest, rooms for rent Mysore, flatmates Mysore, PG in Mysore, PG for men Mysore, PG for women Mysore, commercial spaces for rent Mysore, office for rent Mysore, hostels Mysore, rent flat Mysore, shared apartments, room finder Mysore, zero brokerage rent">
     <meta name="author" content="RoomNest">
+    
+    <!-- Open Graph / Facebook SEO -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://roomnest.online{{ request.path }}">
+    <meta property="og:title" content="{% block og_title %}RoomNest - Find Your Perfect Room, PG, Flatmate in Mysore{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}Discover comfortable and affordable rooms, PGs, flatmate hubs, offices, and commercial spaces for rent in Mysore. Direct owner contact, zero brokerage.{% endblock %}">
+    <meta property="og:image" content="{% block og_image %}https://roomnest.online{% static 'images/logo_icon.png' %}{% endblock %}">
+
+    <!-- Twitter SEO -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://roomnest.online{{ request.path }}">
+    <meta property="twitter:title" content="{% block twitter_title %}RoomNest - Find Your Perfect Room, PG, Flatmate in Mysore{% endblock %}">
+    <meta property="twitter:description" content="{% block twitter_description %}Discover comfortable and affordable rooms, PGs, flatmate hubs, offices, and commercial spaces for rent in Mysore. Direct owner contact, zero brokerage.{% endblock %}">
+    <meta property="twitter:image" content="{% block twitter_image %}https://roomnest.online{% static 'images/logo_icon.png' %}{% endblock %}">
+
+    <!-- Google Analytics Integration Support -->
+    {% block google_analytics %}
+    <!-- Customize this block with your GA4 tag script in your child templates if needed -->
+    {% endblock %}
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -219,6 +239,16 @@
                     eyeBtn.innerHTML = eyeClosed;
                 }
             });
+        });
+
+        // Bottom Mobile Nav Active Class Sync
+        const currentPath = window.location.pathname;
+        const bottomNavItems = document.querySelectorAll('.bottom-nav-item');
+        bottomNavItems.forEach(item => {
+            const href = item.getAttribute('href');
+            if (href === currentPath || (href !== '/' && currentPath.startsWith(href))) {
+                item.classList.add('active');
+            }
         });
     });
     </script>

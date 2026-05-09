@@ -91,7 +91,12 @@
                 <div class="hc-header">
                     <div style="flex: 1; min-width: 0; padding-right: 1rem;">
                         <h3 class="hc-title" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 0.4rem;">{{ listing.title }}</h3>
-                        <p class="hc-location" style="font-weight: 500;">📍 {{ listing.location }}</p>
+                        <p class="hc-location" style="font-weight: 500; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+                            <span>📍 {{ listing.location }}</span>
+                            {% if listing.owner.userprofile.is_verified %}
+                            <span style="background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0; font-size: 0.72rem; font-weight: 700; padding: 0.15rem 0.4rem; border-radius: 4px; display: inline-flex; align-items: center; gap: 2px;">✔️ Verified</span>
+                            {% endif %}
+                        </p>
                     </div>
                     <div class="hc-price">₹{{ listing.price }}<span style="font-size: 0.85rem; color: var(--text-light); font-weight: 500;">/mo</span></div>
                 </div>
