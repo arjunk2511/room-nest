@@ -155,9 +155,20 @@
                 </div>
             </div>
 
-            <div class="form-group">
-                <label for="available_from" style="font-weight: 600; color: var(--text-dark); margin-bottom: 0.5rem; display: block;">Availability Status</label>
-                <input type="text" id="available_from" name="available_from" required value="{{ listing.available_from }}" placeholder="e.g. Immediately, 1st June, etc." style="width: 100%; padding: 0.9rem 1rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 1rem;">
+            <div style="display: flex; gap: 1.5rem; flex-wrap: wrap; margin-top: 1.5rem;">
+                <div class="form-group" style="flex: 1; min-width: 250px;">
+                    <label for="available_from" style="font-weight: 600; color: var(--text-dark); margin-bottom: 0.5rem; display: block;">Availability Status</label>
+                    <input type="text" id="available_from" name="available_from" required value="{{ listing.available_from }}" placeholder="e.g. Immediately, 1st June, etc." style="width: 100%; padding: 0.9rem 1rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 1rem;">
+                </div>
+                
+                <div class="form-group" style="flex: 1; min-width: 250px;">
+                    <label for="furnishing" style="font-weight: 600; color: var(--text-dark); margin-bottom: 0.5rem; display: block;">Furnishing Status</label>
+                    <select id="furnishing" name="furnishing" required style="width: 100%; padding: 0.9rem 1rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 1rem; background: var(--white); cursor: pointer;">
+                        <option value="Unfurnished" {% if listing.furnishing == 'Unfurnished' %}selected{% endif %}>Unfurnished</option>
+                        <option value="Semi-Furnished" {% if listing.furnishing == 'Semi-Furnished' %}selected{% endif %}>Semi-Furnished</option>
+                        <option value="Fully Furnished" {% if listing.furnishing == 'Fully Furnished' %}selected{% endif %}>Fully Furnished</option>
+                    </select>
+                </div>
             </div>
         </div>
 

@@ -123,6 +123,7 @@ def add_property(request):
             
         flatmate_preference = request.POST.get('flatmate_preference', '')
         target_gender = request.POST.get('target_gender', 'Any')
+        furnishing = request.POST.get('furnishing', 'Unfurnished')
         commercial_type = request.POST.get('commercial_type', '')
         built_up_area = request.POST.get('built_up_area', '')
         
@@ -159,6 +160,7 @@ def add_property(request):
             sharing_count=sharing_count,
             flatmate_preference=flatmate_preference,
             target_gender=target_gender,
+            furnishing=furnishing,
             commercial_type=commercial_type,
             built_up_area=built_up_area
         )
@@ -256,6 +258,7 @@ def edit_property(request, listing_id):
             
         listing.flatmate_preference = request.POST.get('flatmate_preference', '')
         listing.target_gender = request.POST.get('target_gender', 'Any')
+        listing.furnishing = request.POST.get('furnishing', 'Unfurnished')
         listing.commercial_type = request.POST.get('commercial_type', '')
         listing.built_up_area = request.POST.get('built_up_area', '')
         

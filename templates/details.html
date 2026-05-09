@@ -177,6 +177,13 @@
                 <p style="margin: 0; font-weight: 600; color: var(--text-dark);">✨ {{ listing.type }}</p>
             </div>
             
+            {% if listing.type != 'Commercial Space' and listing.type != 'Office Space' %}
+            <div>
+                <p style="color: var(--text-light); margin-bottom: 0.2rem; font-size: 0.85rem; font-weight: 600;">FURNISHING STATUS</p>
+                <p style="margin: 0; font-weight: 600; color: var(--text-dark);">🛋️ {{ listing.furnishing }}</p>
+            </div>
+            {% endif %}
+            
             {% if listing.type == '1BHK' or listing.type == '2BHK' or listing.type == '3BHK' %}
             <div>
                 <p style="color: var(--text-light); margin-bottom: 0.2rem; font-size: 0.85rem; font-weight: 600;">LISTING PURPOSE</p>

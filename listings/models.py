@@ -71,6 +71,13 @@ class Listing(models.Model):
     )
     target_gender = models.CharField(max_length=20, choices=GENDER_PREFERENCE_CHOICES, default='Any')
     
+    FURNISHING_CHOICES = (
+        ('Unfurnished', 'Unfurnished'),
+        ('Semi-Furnished', 'Semi-Furnished'),
+        ('Fully Furnished', 'Fully Furnished'),
+    )
+    furnishing = models.CharField(max_length=20, choices=FURNISHING_CHOICES, default='Unfurnished')
+    
     commercial_type = models.CharField(max_length=50, blank=True, default='') # Commercial / Office
     built_up_area = models.CharField(max_length=50, blank=True, default='') # Commercial / Office
     
