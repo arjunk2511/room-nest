@@ -1,5 +1,48 @@
 from django.contrib.auth.models import User
 from django.db import models
+from io import BytesIO
+from django.core.files.base import ContentFile
+from PIL import Image
+
+def resize_and_compress_image(image_field, max_width=1200, quality=80):
+    """
+    On-upload helper to compress, resize, and convert images to WebP format.
+    Balances premium visual quality (quality=80) with minimal file size.
+    """
+    if not image_field:
+        return
+    try:
+        img = Image.open(image_field)
+        
+        # Convert color palette or alpha channels to compatible formats
+        if img.mode in ('RGBA', 'LA') or (img.mode == 'P' and 'transparency' in img.info):
+            save_mode = 'RGBA'
+            format_ext = 'WEBP'
+        else:
+            img = img.convert('RGB')
+            save_mode = 'RGB'
+            format_ext = 'WEBP'
+            
+        # Downscale oversized photos to max_width preserving ratio
+        width, height = img.size
+        if width > max_width:
+            new_height = int((max_width / width) * height)
+            img = img.resize((max_width, new_height), Image.Resampling.LANCZOS)
+            
+        # Buffer image data in memory
+        buffer = BytesIO()
+        img.save(buffer, format=format_ext, quality=quality, method=4)
+        buffer.seek(0)
+        
+        # Rewrite filename extension to .webp
+        original_name = image_field.name
+        name_without_ext = original_name.rsplit('.', 1)[0]
+        new_filename = f"{name_without_ext}.webp"
+        
+        image_field.save(new_filename, ContentFile(buffer.read()), save=False)
+    except Exception as e:
+        print(f"Error compressing uploaded image: {e}")
+
 
 class Listing(models.Model):
     TYPE_CHOICES = (
@@ -87,9 +130,19 @@ class Listing(models.Model):
     def __str__(self):
         return self.title
 
+    def save(self, *args, **kwargs):
+        if self.image and not self.image.name.lower().endswith('.webp'):
+            resize_and_compress_image(self.image)
+        super().save(*args, **kwargs)
+
 class ListingImage(models.Model):
     listing = models.ForeignKey(Listing, related_name='images', on_delete=models.CASCADE)
     image = models.ImageField(upload_to='listings/gallery/')
+
+    def save(self, *args, **kwargs):
+        if self.image and not self.image.name.lower().endswith('.webp'):
+            resize_and_compress_image(self.image)
+        super().save(*args, **kwargs)
 
 class Wishlist(models.Model):
     user = models.ForeignKey(User, related_name='wishlist', on_delete=models.CASCADE)

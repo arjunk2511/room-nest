@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load performance_tags %}
 
 {% block content %}
 <div style="max-width: 1000px; margin: 2rem auto; padding: 0 1rem;">
@@ -39,7 +40,7 @@
         <div class="hc-card" style="margin-bottom: 0;">
             <div class="hc-img-wrapper" style="width: 220px; min-width: 220px; height: 180px;">
                 {% if listing.image %}
-                <img src="{{ listing.image.url }}" alt="{{ listing.title }}" class="hc-img">
+                <img src="{{ listing.image.url|optimize_image:'w_600' }}" alt="{{ listing.title }}" class="hc-img" loading="lazy">
                 {% else %}
                 <div class="hc-img" style="background: #e2e8f0; display:flex; align-items:center; justify-content:center; color: #64748b; font-weight: 500;">No Image</div>
                 {% endif %}
