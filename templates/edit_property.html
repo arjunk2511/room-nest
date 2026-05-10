@@ -280,6 +280,10 @@
                     from { transform: scale(0.9); opacity: 0; }
                     to { transform: scale(1); opacity: 1; }
                 }
+                @keyframes spin {
+                    from { transform: rotate(0deg); }
+                    to { transform: rotate(360deg); }
+                }
                 .upload-dropzone:hover {
                     border-color: var(--primary) !important;
                     background: rgba(79, 70, 229, 0.05) !important;
@@ -324,6 +328,50 @@
 
 <script>
 let selectedFiles = [];
+
+// Compress image on the fly using HTML5 Canvas (Converting to optimized, lightweight WebP in browser)
+function compressImage(file) {
+    return new Promise((resolve) => {
+        if (!file.type.startsWith('image/')) {
+            resolve(file);
+            return;
+        }
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const img = new Image();
+            img.onload = function() {
+                const canvas = document.createElement('canvas');
+                let width = img.width;
+                let height = img.height;
+                const MAX_WIDTH = 1000; // Perfect visual resolution for room cards
+                if (width > MAX_WIDTH) {
+                    height = Math.round((MAX_WIDTH / width) * height);
+                    width = MAX_WIDTH;
+                }
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+                canvas.toBlob(function(blob) {
+                    if (blob) {
+                        const nameWithoutExt = file.name.substring(0, file.name.lastIndexOf('.')) || file.name;
+                        const compressedFile = new File([blob], `${nameWithoutExt}.webp`, {
+                            type: 'image/webp',
+                            lastModified: Date.now()
+                        });
+                        resolve(compressedFile);
+                    } else {
+                        resolve(file);
+                    }
+                }, 'image/webp', 0.8); // 80% WebP quality balances pristine details and 90% size savings!
+            };
+            img.onerror = () => resolve(file);
+            img.src = e.target.result;
+        };
+        reader.onerror = () => resolve(file);
+        reader.readAsDataURL(file);
+    });
+}
 
 const realFileInput = document.getElementById('real-file-input');
 const hiddenSubmitInput = document.getElementById('images');
@@ -413,15 +461,33 @@ function updateImagesUI() {
 }
 
 // Handle File Selection
-realFileInput.addEventListener('change', function() {
+realFileInput.addEventListener('change', async function() {
     const files = Array.from(realFileInput.files);
     
-    files.forEach(file => {
+    const originalText = dropzone.querySelector('p').textContent;
+    const subText = dropzone.querySelector('p').nextElementSibling;
+    const originalSubtext = subText.textContent;
+    
+    dropzone.querySelector('p').textContent = '⚡ Optimizing & Converting Photos...';
+    
+    let processedCount = 0;
+    for (let file of files) {
+        processedCount++;
+        subText.textContent = `Processing image ${processedCount} of ${files.length}. Please wait...`;
+        
         // Prevent duplicate files
-        if (!selectedFiles.some(f => f.name === file.name && f.size === file.size)) {
-            selectedFiles.push(file);
+        if (!selectedFiles.some(f => f.name === file.name || (f.name.replace('.webp', '') === file.name.substring(0, file.name.lastIndexOf('.'))))) {
+            try {
+                const compressed = await compressImage(file);
+                selectedFiles.push(compressed);
+            } catch (err) {
+                selectedFiles.push(file); // fallback
+            }
         }
-    });
+    }
+    
+    dropzone.querySelector('p').textContent = originalText;
+    subText.textContent = originalSubtext;
     
     updateImagesUI();
     // Clear value to allow picking the same file again if deleted
@@ -440,19 +506,39 @@ dropzone.addEventListener('dragleave', () => {
     dropzone.style.background = '#f8fafc';
 });
 
-dropzone.addEventListener('drop', (e) => {
+dropzone.addEventListener('drop', async (e) => {
     e.preventDefault();
     dropzone.style.borderColor = '#cbd5e1';
     dropzone.style.background = '#f8fafc';
     
     const files = Array.from(e.dataTransfer.files);
-    files.forEach(file => {
+    
+    const originalText = dropzone.querySelector('p').textContent;
+    const subText = dropzone.querySelector('p').nextElementSibling;
+    const originalSubtext = subText.textContent;
+    
+    dropzone.querySelector('p').textContent = '⚡ Optimizing & Converting Photos...';
+
+    let processedCount = 0;
+    for (let file of files) {
         if (file.type.startsWith('image/')) {
-            if (!selectedFiles.some(f => f.name === file.name && f.size === file.size)) {
-                selectedFiles.push(file);
+            processedCount++;
+            subText.textContent = `Processing image ${processedCount} of ${files.length}. Please wait...`;
+            
+            if (!selectedFiles.some(f => f.name === file.name || (f.name.replace('.webp', '') === file.name.substring(0, file.name.lastIndexOf('.'))))) {
+                try {
+                    const compressed = await compressImage(file);
+                    selectedFiles.push(compressed);
+                } catch (err) {
+                    selectedFiles.push(file); // fallback
+                }
             }
         }
-    });
+    }
+    
+    dropzone.querySelector('p').textContent = originalText;
+    subText.textContent = originalSubtext;
+    
     updateImagesUI();
 });
 
@@ -461,6 +547,22 @@ document.querySelector('form').addEventListener('submit', function(e) {
         e.preventDefault();
         alert('⚠️ If you choose to upload new photos, you must select at least 3 photos. Currently you have selected ' + selectedFiles.length + '.');
         return false;
+    }
+    
+    // Progressive uploading loading button state
+    const submitBtn = document.querySelector('button[type="submit"]');
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.style.background = 'linear-gradient(135deg, #4f46e5 0%, #4338ca 100%)';
+        submitBtn.style.opacity = '0.85';
+        submitBtn.style.cursor = 'not-allowed';
+        submitBtn.innerHTML = `
+            <svg style="animation: spin 1s linear infinite; width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 3; display: inline-block; vertical-align: middle; margin-right: 8px;" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,0.2)"></circle>
+                <path d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" fill="white"></path>
+            </svg>
+            Saving Changes... (Uploading Photos)
+        `;
     }
 });
 

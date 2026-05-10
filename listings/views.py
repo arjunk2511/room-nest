@@ -180,10 +180,11 @@ def add_property(request):
             built_up_area=built_up_area
         )
         
-        # Save extra images
+        # Save extra images efficiently using bulk_create (single database query)
         if len(images) > 1:
-            for img in images[1:]:
-                ListingImage.objects.create(listing=listing, image=img)
+            ListingImage.objects.bulk_create([
+                ListingImage(listing=listing, image=img) for img in images[1:]
+            ])
                 
         return redirect('owner_dashboard')
 
@@ -290,10 +291,11 @@ def edit_property(request, listing_id):
             # Update main image to first new image
             listing.image = images[0]
             
-            # Delete existing extra gallery images and save new ones
+            # Delete existing extra gallery images and save new ones efficiently using bulk_create
             listing.images.all().delete()
-            for img in images[1:]:
-                ListingImage.objects.create(listing=listing, image=img)
+            ListingImage.objects.bulk_create([
+                ListingImage(listing=listing, image=img) for img in images[1:]
+            ])
         
         listing.save()
         messages.success(request, 'Property listing updated successfully!')
