@@ -40,11 +40,20 @@ def search(request):
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     
+    has_subscription = False
+    if request.user.is_authenticated:
+        has_subscription = Subscription.objects.filter(
+            user=request.user,
+            is_active=True,
+            end_date__gt=timezone.now()
+        ).exists()
+    
     context = {
         'listings': page_obj,
         'page_obj': page_obj,
         'values': request.GET,
-        'total_count': listings.count()
+        'total_count': listings.count(),
+        'has_subscription': has_subscription
     }
     return render(request, 'search.html', context)
 

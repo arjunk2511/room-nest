@@ -144,7 +144,7 @@
                     <a href="{% url 'details' listing.id %}" class="btn btn-outline" style="padding: 0.55rem 1.2rem; font-size: 0.9rem; border-radius: 6px; font-weight: 600; border-color: #cbd5e1; color: var(--text-dark);">📄 View Details</a>
                     
                     <div style="display: flex; gap: 8px;">
-                        {% if user.is_authenticated %}
+                        {% if user.is_authenticated and has_subscription or user.is_authenticated and request.user == listing.owner %}
                         <a href="tel:{{ listing.phone }}" class="btn btn-outline" style="padding: 0.55rem 1.2rem; font-size: 0.9rem; border-radius: 6px; border-color: #cbd5e1; color: var(--text-dark); font-weight: 600; display: flex; align-items: center; gap: 4px;">📞 Call</a>
                         <button onclick="openWhatsApp('{{ listing.phone|escapejs }}', '{{ listing.title|escapejs }}')" class="btn" style="padding: 0.55rem 1.2rem; font-size: 0.9rem; border-radius: 6px; background: linear-gradient(135deg, #25D366 0%, #128C7E 100%); color: white; border: none; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 10px rgba(37,211,102,0.15); transition: all 0.25s;" onmouseover="this.style.transform='translateY(-1px)';" onmouseout="this.style.transform='translateY(0)';">
                             <svg style="width: 16px; height: 16px; fill: white;" viewBox="0 0 448 512">
@@ -152,6 +152,8 @@
                             </svg>
                             WhatsApp
                         </button>
+                        {% elif user.is_authenticated %}
+                        <a href="{% url 'subscribe' %}" class="btn btn-primary" style="padding: 0.55rem 1.2rem; font-size: 0.9rem; border-radius: 6px; font-weight: 700; background: linear-gradient(135deg, #e11d48 0%, #be123c 100%); border: none;">⭐ Upgrade Plan</a>
                         {% else %}
                         <a href="{% url 'login' %}?next={{ request.get_full_path }}" class="btn btn-primary" style="padding: 0.55rem 1.2rem; font-size: 0.9rem; border-radius: 6px; font-weight: 700;">🔒 Login to Contact</a>
                         {% endif %}

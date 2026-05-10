@@ -499,11 +499,24 @@
                 </div>
                 {% endif %}
             {% else %}
+                {% if user.is_authenticated %}
+                <div style="background: linear-gradient(135deg, #fff1f2 0%, #ffe4e6 100%); padding: 1.8rem; border-radius: 16px; text-align: center; margin-bottom: 1.5rem; border: 1px solid #fecdd3; box-shadow: var(--shadow-sm);">
+                    <div style="font-size: 2.2rem; margin-bottom: 0.8rem;">💎</div>
+                    <h4 style="margin: 0 0 0.5rem 0; font-weight: 800; color: #9f1239; font-size: 1.15rem;">Unlock Landlord Contact Info</h4>
+                    <p style="margin: 0 0 1.5rem 0; color: #be123c; font-size: 0.92rem; line-height: 1.5; font-weight: 500;">
+                        An active subscription is required to view direct phone numbers, maps, exact addresses, and to contact owners over WhatsApp.
+                    </p>
+                    <a href="{% url 'subscribe' %}" class="btn" style="width: 100%; padding: 1rem; border-radius: 12px; background: linear-gradient(135deg, #e11d48 0%, #be123c 100%); color: white; border: none; font-weight: 700; font-size: 1rem; display: block; text-decoration: none; text-align: center; box-shadow: 0 4px 12px rgba(225,29,72,0.3); transition: all 0.25s;" onmouseover="this.style.transform='translateY(-1px)';" onmouseout="this.style.transform='translateY(0)';">
+                        Upgrade Plan (₹49) 🚀
+                    </a>
+                </div>
+                {% else %}
                 <div style="background: #f1f5f9; padding: 1.5rem; border-radius: 8px; text-align: center; margin-bottom: 1.5rem;">
                     <div style="font-size: 2rem; margin-bottom: 1rem;">🔒</div>
                     <p style="margin: 0 0 1rem 0; color: var(--text-dark); font-weight: 500;">Login to view the owner's exact phone number and location details.</p>
                 </div>
                 <a href="{% url 'login' %}?next={{ request.path }}" class="btn btn-primary" style="width: 100%; padding: 1rem;">Login to Unlock Details</a>
+                {% endif %}
             {% endif %}
         </div>
 
