@@ -62,8 +62,8 @@
                     </a>
                     <a href="{% url 'logout' %}" class="btn btn-outline">Logout</a>
                 {% else %}
-                    <a href="{% url 'login' %}" class="btn btn-outline">Login</a>
-                    <a href="{% url 'register' %}" class="btn btn-primary">Register</a>
+                    <a href="{% url 'login' %}?next={{ request.path }}" class="btn btn-outline">Login</a>
+                    <a href="{% url 'register' %}?next={{ request.path }}" class="btn btn-primary">Register</a>
                 {% endif %}
             </div>
         </div>
@@ -118,7 +118,7 @@
             <span>Profile</span>
         </a>
         {% else %}
-        <a href="{% url 'login' %}" class="bottom-nav-item">
+        <a href="{% url 'login' %}?next={{ request.path }}" class="bottom-nav-item">
             <svg class="bottom-nav-icon" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
             </svg>

@@ -153,7 +153,7 @@
                             WhatsApp
                         </button>
                         {% else %}
-                        <a href="{% url 'login' %}" class="btn btn-primary" style="padding: 0.55rem 1.2rem; font-size: 0.9rem; border-radius: 6px; font-weight: 700;">🔒 Login to Contact</a>
+                        <a href="{% url 'login' %}?next={{ request.get_full_path }}" class="btn btn-primary" style="padding: 0.55rem 1.2rem; font-size: 0.9rem; border-radius: 6px; font-weight: 700;">🔒 Login to Contact</a>
                         {% endif %}
                     </div>
                 </div>

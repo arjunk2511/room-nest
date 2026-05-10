@@ -8,20 +8,31 @@ from subscriptions.models import Subscription
 from django.utils import timezone
 from .models import UserProfile
 
+from django.utils.http import url_has_allowed_host_and_scheme
+
 def register_view(request):
+    if request.user.is_authenticated:
+        return redirect('home')
+        
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
             login(request, user, backend='django.contrib.auth.backends.ModelBackend')
             messages.success(request, 'Registration successful.')
-            return redirect('home')
+            next_url = request.GET.get('next') or request.POST.get('next') or 'home'
+            if not url_has_allowed_host_and_scheme(url=next_url, allowed_hosts={request.get_host()}):
+                next_url = 'home'
+            return redirect(next_url)
         messages.error(request, 'Unsuccessful registration. Invalid information.')
     else:
         form = CustomUserCreationForm()
     return render(request, 'register.html', {'form': form})
 
 def login_view(request):
+    if request.user.is_authenticated:
+        return redirect('home')
+        
     if request.method == 'POST':
         form = AuthenticationForm(request, data=request.POST)
         if form.is_valid():
@@ -31,7 +42,10 @@ def login_view(request):
             if user is not None:
                 login(request, user)
                 messages.info(request, f'You are now logged in as {username}.')
-                return redirect('home')
+                next_url = request.GET.get('next') or request.POST.get('next') or 'home'
+                if not url_has_allowed_host_and_scheme(url=next_url, allowed_hosts={request.get_host()}):
+                    next_url = 'home'
+                return redirect(next_url)
             else:
                 messages.error(request, 'Invalid username or password.')
         else:

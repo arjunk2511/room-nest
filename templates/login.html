@@ -56,7 +56,7 @@
         </form>
         
         <p style="text-align: center; margin-top: 2rem; color: var(--text-light); font-size: 0.95rem;">
-            New to RoomNest? <a href="{% url 'register' %}" style="color: var(--primary); font-weight: 700; text-decoration: none;">Register an account</a>
+            New to RoomNest? <a href="{% url 'register' %}{% if request.GET.next %}?next={{ request.GET.next }}{% endif %}" style="color: var(--primary); font-weight: 700; text-decoration: none;">Register an account</a>
         </p>
     </div>
 </div>

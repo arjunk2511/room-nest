@@ -44,7 +44,7 @@
                 Create Account ✨
             </button>
         </form>
-        <p style="text-align: center; margin-top: 2rem; color: var(--text-light);">Already part of our family? <a href="{% url 'login' %}" style="color: var(--primary); font-weight: 700; text-decoration: none;">Login here</a></p>
+        <p style="text-align: center; margin-top: 2rem; color: var(--text-light);">Already part of our family? <a href="{% url 'login' %}{% if request.GET.next %}?next={{ request.GET.next }}{% endif %}" style="color: var(--primary); font-weight: 700; text-decoration: none;">Login here</a></p>
     </div>
 </div>
 {% endblock %}

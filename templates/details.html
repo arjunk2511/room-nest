@@ -503,7 +503,7 @@
                     <div style="font-size: 2rem; margin-bottom: 1rem;">🔒</div>
                     <p style="margin: 0 0 1rem 0; color: var(--text-dark); font-weight: 500;">Login to view the owner's exact phone number and location details.</p>
                 </div>
-                <a href="{% url 'login' %}" class="btn btn-primary" style="width: 100%; padding: 1rem;">Login to Unlock Details</a>
+                <a href="{% url 'login' %}?next={{ request.path }}" class="btn btn-primary" style="width: 100%; padding: 1rem;">Login to Unlock Details</a>
             {% endif %}
         </div>
 
