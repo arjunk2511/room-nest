@@ -90,7 +90,8 @@
                 </select>
             </div>
             
-            <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.9rem; border-radius: 8px; font-weight: 700; margin-top: 0.5rem; box-shadow: 0 4px 10px rgba(79, 70, 229, 0.2);">Apply Filters</button>
+            <button type="submit" class="btn" style="width: 100%; padding: 0.85rem; border-radius: 8px; font-weight: 700; margin-top: 0.5rem; background: #f59e0b; color: white; border: none; cursor: pointer; box-shadow: 0 4px 10px rgba(245, 158, 11, 0.25); transition: background-color 0.2s;" onmouseover="this.style.background='#d97706';" onmouseout="this.style.background='#f59e0b';">Apply Filters</button>
+            <a href="{% url 'search' %}" class="btn btn-outline" style="display: block; width: 100%; padding: 0.8rem; border-radius: 8px; font-weight: 600; text-align: center; text-decoration: none; border-color: #cbd5e1; color: var(--text-dark); background: #f8fafc; font-size: 0.9rem; transition: all 0.2s;" onmouseover="this.style.background='#f1f5f9';" onmouseout="this.style.background='#f8fafc';">Clear Filters</a>
         </form>
     </aside>
 

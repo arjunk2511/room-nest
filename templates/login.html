@@ -1,63 +1,118 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div style="display: flex; max-width: 900px; margin: 4rem auto; background: var(--white); border-radius: 24px; box-shadow: var(--shadow-lg); overflow: hidden; border: 1px solid #e2e8f0; flex-wrap: wrap;">
-    <!-- Left Banner -->
-    <div style="flex: 1; min-width: 300px; background: linear-gradient(135deg, var(--primary) 0%, #a855f7 100%); color: white; padding: 3rem; display: flex; flex-direction: column; justify-content: center; position: relative; overflow: hidden;">
-        <div style="position: absolute; top: -50px; right: -50px; width: 150px; height: 150px; background: rgba(255,255,255,0.1); border-radius: 50%;"></div>
-        <div style="position: absolute; bottom: -80px; left: -20px; width: 200px; height: 200px; background: rgba(255,255,255,0.1); border-radius: 50%;"></div>
-        
-        <h2 style="font-size: 2.2rem; font-weight: 800; margin-bottom: 1rem; color: white;">Welcome Back! 👋</h2>
-        <p style="font-size: 1.1rem; opacity: 0.95; line-height: 1.5; margin-bottom: 2rem; color: white;">Login to stay connected, check saved wishlists, and manage your property listings on Mysore's favorite room finder.</p>
-        
-        <div style="font-size: 0.95rem; background: rgba(255,255,255,0.15); padding: 1.2rem; border-radius: 12px; border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(5px);">
-            💡 <strong>Quick Tip:</strong> Keep your profile phone number updated to get faster SMS & WhatsApp replies from matching owners.
+<div style="display: flex; flex-wrap: wrap; max-width: 1100px; margin: 4rem auto; background: white; border-radius: 24px; box-shadow: var(--shadow-lg); overflow: hidden; border: 1px solid rgba(15,23,42,0.06);">
+    
+    <!-- Left: Login Form Column -->
+    <div style="flex: 1.1; min-width: 320px; padding: 3.5rem 3rem; display: flex; flex-direction: column; justify-content: center;">
+        <div style="text-align: left; margin-bottom: 2rem;">
+            <h1 style="font-size: 2.2rem; font-weight: 800; color: var(--text-dark); margin: 0 0 0.4rem 0; letter-spacing: -0.5px;">Welcome Back</h1>
+            <p style="color: var(--text-light); font-size: 0.95rem; margin: 0; font-weight: 500;">Login to manage listings or browse verified homes</p>
         </div>
-    </div>
 
-    <!-- Login Form Area -->
-    <div style="flex: 1.2; min-width: 300px; padding: 3.5rem; display: flex; flex-direction: column; justify-content: center;">
-        <h2 style="font-size: 1.8rem; font-weight: 700; margin-bottom: 2rem; color: var(--text-dark); text-align: center;">Account Login</h2>
-        
-        <form method="POST" style="display: flex; flex-direction: column; gap: 1.2rem;">
+        <form method="POST" id="loginForm" style="display: flex; flex-direction: column; gap: 1rem;">
             {% csrf_token %}
+            
             <style>
-                .form-group input {
+                .login-form-group {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 0.4rem;
+                }
+                .login-form-group label {
+                    font-size: 0.85rem;
+                    font-weight: 700;
+                    color: var(--text-dark);
+                }
+                .login-form-group input {
                     width: 100%;
                     padding: 0.85rem 1rem;
-                    border-radius: 8px;
-                    border: 1px solid #cbd5e1;
+                    border-radius: 10px;
+                    border: 1.5px solid #cbd5e1;
                     outline: none;
-                    font-size: 1rem;
-                    transition: border-color 0.2s;
+                    font-size: 0.95rem;
+                    background: #f8fafc;
+                    transition: all 0.2s;
                 }
-                .form-group input:focus {
+                .login-form-group input:focus {
                     border-color: var(--primary);
-                    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+                    background: var(--white);
+                    box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.12);
                 }
             </style>
+
             {% for field in form %}
-            <div class="form-group" style="display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 0.8rem;">
-                <label style="font-size: 0.9rem; font-weight: 600; color: var(--text-dark);">{{ field.label }}</label>
+            <div class="login-form-group">
+                <label>{{ field.label }}</label>
                 {{ field }}
                 {% if field.errors %}
-                    <small style="color: #ef4444; display: block; margin-top: 0.3rem;">{{ field.errors|striptags }}</small>
+                    <small style="color: #ef4444; font-weight: 500; display: block; margin-top: 0.2rem;">{{ field.errors|striptags }}</small>
                 {% endif %}
             </div>
             {% endfor %}
-            
-            <div style="text-align: right; margin-top: -0.5rem; margin-bottom: 0.8rem;">
-                <a href="{% url 'password_reset' %}" style="color: var(--text-light); font-size: 0.85rem; font-weight: 500; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-light)'">Forgot password?</a>
+
+            <!-- Forgot Password Row -->
+            <div style="text-align: right; margin-top: -0.25rem; margin-bottom: 0.5rem;">
+                <a href="{% url 'password_reset' %}" style="color: var(--text-light); font-size: 0.85rem; font-weight: 600; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-light)'">Forgot password?</a>
             </div>
-            
-            <button type="submit" class="btn btn-primary" style="padding: 1rem; font-size: 1.1rem; border-radius: 10px; margin-top: 0.5rem; box-shadow: 0 4px 14px rgba(79, 70, 229, 0.4);">
-                Secure Sign In 🔒
+
+            <!-- Warm Gold Button matching reference style -->
+            <button type="submit" class="btn" style="background: #f59e0b; color: white; border: none; font-weight: 700; font-size: 1.05rem; padding: 1rem; border-radius: 10px; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.25);" onmouseover="this.style.background='#d97706'; this.style.transform='translateY(-1px)';" onmouseout="this.style.background='#f59e0b'; this.style.transform='translateY(0)';">
+                Sign In
             </button>
         </form>
-        
-        <p style="text-align: center; margin-top: 2rem; color: var(--text-light); font-size: 0.95rem;">
-            New to RoomNest? <a href="{% url 'register' %}{% if request.GET.next %}?next={{ request.GET.next }}{% endif %}" style="color: var(--primary); font-weight: 700; text-decoration: none;">Register an account</a>
+
+        <p style="text-align: center; margin-top: 2.5rem; color: var(--text-light); font-size: 0.92rem; font-weight: 500;">
+            New to RoomNest? <a href="{% url 'register' %}{% if request.GET.next %}?next={{ request.GET.next }}{% endif %}" style="color: var(--primary); font-weight: 700; text-decoration: none;">Create an account</a>
         </p>
     </div>
+
+    <!-- Right: Brand Promo Marketing Banner (Golden Checkmarks + Dark Navy Background) -->
+    <div style="flex: 1; min-width: 320px; background: #0b1329; color: white; padding: 4rem 3.5rem; display: flex; flex-direction: column; justify-content: space-between; position: relative; overflow: hidden;">
+        <!-- Faint decorative background details -->
+        <div style="position: absolute; top: -100px; right: -100px; width: 300px; height: 300px; background: radial-gradient(circle, rgba(79, 70, 229, 0.15) 0%, transparent 70%); border-radius: 50%;"></div>
+        <div style="position: absolute; bottom: -120px; left: -50px; width: 250px; height: 250px; background: radial-gradient(circle, rgba(16, 185, 129, 0.12) 0%, transparent 70%); border-radius: 50%;"></div>
+
+        <div style="position: relative; z-index: 2;">
+            <h2 style="font-size: 2rem; font-weight: 850; margin-bottom: 0.8rem; line-height: 1.2; letter-spacing: -0.5px;">Welcome to RoomNest</h2>
+            <p style="font-size: 1.35rem; color: #94a3b8; font-weight: 700; margin-bottom: 2.5rem; line-height: 1.3;">Find Rooms, PGs, & Flatmates Across Mysore</p>
+            
+            <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 1.5rem;">
+                <li style="display: flex; align-items: center; gap: 14px; font-size: 1.05rem; font-weight: 600;">
+                    <span style="background: rgba(245, 158, 11, 0.15); color: #f59e0b; width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; border: 1.5px solid #f59e0b; flex-shrink: 0;">✓</span>
+                    Direct Owner Contacts
+                </li>
+                <li style="display: flex; align-items: center; gap: 14px; font-size: 1.05rem; font-weight: 600;">
+                    <span style="background: rgba(245, 158, 11, 0.15); color: #f59e0b; width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; border: 1.5px solid #f59e0b; flex-shrink: 0;">✓</span>
+                    Zero Brokerage / Zero Commissions
+                </li>
+                <li style="display: flex; align-items: center; gap: 14px; font-size: 1.05rem; font-weight: 600;">
+                    <span style="background: rgba(245, 158, 11, 0.15); color: #f59e0b; width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; border: 1.5px solid #f59e0b; flex-shrink: 0;">✓</span>
+                    Verified Landlords & Rooms
+                </li>
+                <li style="display: flex; align-items: center; gap: 14px; font-size: 1.05rem; font-weight: 600;">
+                    <span style="background: rgba(245, 158, 11, 0.15); color: #f59e0b; width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; border: 1.5px solid #f59e0b; flex-shrink: 0;">✓</span>
+                    Live Coordinates Mapping
+                </li>
+            </ul>
+        </div>
+
+        <div style="position: relative; z-index: 2; margin-top: 3.5rem;">
+            <a href="{% url 'search' %}" style="display: block; width: 100%; text-align: center; background: #f59e0b; color: white; border: none; font-weight: 700; font-size: 1rem; padding: 0.9rem 1.5rem; border-radius: 10px; text-decoration: none; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.25); transition: all 0.2s;" onmouseover="this.style.background='#d97706'; this.style.transform='translateY(-1px)';" onmouseout="this.style.background='#f59e0b'; this.style.transform='translateY(0)';">
+                Explore Listings
+            </a>
+        </div>
+    </div>
+
 </div>
+
+<script>
+// Auto style generated form inputs to match our sleek theme design system
+document.addEventListener("DOMContentLoaded", function() {
+    const inputs = document.querySelectorAll('#loginForm input');
+    inputs.forEach(input => {
+        input.placeholder = "Enter your " + (input.name ? input.name.replace('_', ' ') : 'detail');
+    });
+});
+</script>
 {% endblock %}
