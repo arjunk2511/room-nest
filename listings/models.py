@@ -69,6 +69,8 @@ class Listing(models.Model):
         ('Bannimantap', 'Bannimantap'),
         ('Bogadi', 'Bogadi'),
         ('Siddhartha Layout', 'Siddhartha Layout'),
+        ('Padvarahalli', 'Padvarahalli'),
+        ('Vinayakanagar', 'Vinayakanagar'),
         ('Other (Mysore)', 'Other (Mysore)'),
     )
 
