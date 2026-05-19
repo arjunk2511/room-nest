@@ -122,6 +122,7 @@ def add_property(request):
         curfew = request.POST.get('curfew', 'No Curfew')
         visitors = request.POST.get('visitors', 'Allowed')
         landmark = request.POST.get('landmark', '')
+        nearby_food_options = request.POST.get('nearby_food_options', '')
         
         # New dynamic category fields
         listing_purpose = request.POST.get('listing_purpose', 'Rent')
@@ -168,6 +169,7 @@ def add_property(request):
             curfew=curfew,
             visitors=visitors,
             landmark=landmark,
+            nearby_food_options=nearby_food_options,
             image=main_image,
             owner=request.user,
             listing_purpose=listing_purpose,
@@ -258,6 +260,7 @@ def edit_property(request, listing_id):
         listing.curfew = request.POST.get('curfew', 'No Curfew')
         listing.visitors = request.POST.get('visitors', 'Allowed')
         listing.landmark = request.POST.get('landmark', '')
+        listing.nearby_food_options = request.POST.get('nearby_food_options', '')
         
         # Parse and update new dynamic category fields
         listing.listing_purpose = request.POST.get('listing_purpose', 'Rent')

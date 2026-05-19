@@ -221,6 +221,17 @@
             </div>
             {% endif %}
             
+            {% if listing.nearby_food_options %}
+            <div style="display: flex; align-items: flex-start; gap: 12px; padding-bottom: 0.8rem; border-bottom: 1px solid #e2e8f0; border-radius: 8px; padding: 0.5rem;">
+                <span style="font-size: 1.5rem;">🍲</span>
+                <div>
+                    <h4 style="margin: 0 0 0.2rem 0; font-size: 1rem; font-weight: 700; color: var(--text-dark); display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">Nearby Mess & Food Options</h4>
+                    <p style="margin: 0; color: var(--primary); font-weight: 600; font-size: 0.95rem;">{{ listing.nearby_food_options }}</p>
+                </div>
+            </div>
+            {% endif %}
+            
+            
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem;">
                 <div style="display: flex; align-items: center; gap: 10px; background: var(--white); border: 1px solid #f1f5f9; padding: 0.8rem 1rem; border-radius: 10px;">
                     <span style="font-size: 1.3rem;">🚌</span>

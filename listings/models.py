@@ -92,6 +92,7 @@ class Listing(models.Model):
     visitors = models.CharField(max_length=20, choices=VISITORS_CHOICES, default='Allowed')
     
     landmark = models.CharField(max_length=200, blank=True, default='', help_text="e.g. 5 mins from JSS College")
+    nearby_food_options = models.CharField(max_length=255, blank=True, default='', help_text="List nearby mess, tiffin services, or restaurants")
     description = models.TextField()
     facilities = models.CharField(max_length=200, help_text="Comma separated e.g. WiFi, Food, AC, Parking")
     image = models.ImageField(upload_to='listings/')
