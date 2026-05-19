@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'accounts.apps.AccountsConfig',
     'listings.apps.ListingsConfig',
     'subscriptions.apps.SubscriptionsConfig',
+    'webpush',
 ]
 
 SITE_ID = 1
@@ -186,3 +187,9 @@ if 'RENDER' in os.environ:
     SECURE_HSTS_SECONDS = 31536000  # 1 year
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_PRELOAD = True
+
+WEBPUSH_SETTINGS = {
+    "VAPID_PUBLIC_KEY": "BPeisOSjSEOWGcBRtzI6ZpK_aAHP8ZdAhxP0Dvm-fSNNUY75qWIW8L9kD7rjV5TWqfoQFOCN1g88BbdsGxamm4I",
+    "VAPID_PRIVATE_KEY": "tI1DnvnFrB9Vism4m61VrzVaHV5rDiwa7dSc1XZpexU",
+    "VAPID_ADMIN_EMAIL": "admin@roomnest.online"
+}

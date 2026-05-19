@@ -29,6 +29,7 @@ urlpatterns = [
     path('', include('listings.urls')),
     path('accounts/', include('accounts.urls')),
     path('subscriptions/', include('subscriptions.urls')),
+    path('webpush/', include('webpush.urls')),
 ]
 
 if settings.DEBUG:
