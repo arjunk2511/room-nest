@@ -51,7 +51,7 @@
     </div>
 
     <!-- Payment submission form -->
-    <form method="POST" style="text-align: left; border-top: 1px solid #e5e7eb; padding-top: 2rem;">
+    <form method="POST" enctype="multipart/form-data" style="text-align: left; border-top: 1px solid #e5e7eb; padding-top: 2rem;">
         {% csrf_token %}
         <div class="form-group" style="margin-bottom: 1.5rem;">
             <label for="transaction_id" style="font-weight: 600; color: var(--text-dark); display: block; margin-bottom: 0.5rem;">
@@ -64,6 +64,15 @@
                 Copy and paste the 12-digit UTR number from GPay, PhonePe, or Paytm transaction details after successful payment.
             </small>
         </div>
+        
+        <div class="form-group" style="margin-bottom: 1.8rem;">
+            <label for="payment_screenshot" style="font-weight: 600; color: var(--text-dark); display: block; margin-bottom: 0.5rem;">
+                Upload Payment Screenshot (Optional but speeds up approval)
+            </label>
+            <input type="file" id="payment_screenshot" name="payment_screenshot" accept="image/*"
+                   style="width: 100%; padding: 0.6rem; border: 1px dashed #cbd5e1; border-radius: 12px; outline: none;">
+        </div>
+
         <button type="submit" class="btn btn-success" style="width: 100%; border-radius: 16px; padding: 0.8rem;">
             Submit Payment Details
         </button>

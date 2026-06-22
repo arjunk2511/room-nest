@@ -52,9 +52,12 @@
                 <a href="{% url 'home' %}">Home</a>
                 <a href="{% url 'search' %}">Search</a>
                 {% if user.is_authenticated %}
-                <a href="{% url 'wishlist' %}">Wishlist</a>
-                <a href="{% url 'owner_dashboard' %}">Dashboard</a>
-                <a href="{% url 'add_property' %}">Post Property</a>
+                    {% if user.is_superuser or user.is_staff %}
+                        <a href="{% url 'admin_dashboard' %}" style="color: #ea580c; font-weight: 700;">🛡️ Admin</a>
+                    {% endif %}
+                    <a href="{% url 'tenant_dashboard' %}">Tenant Portal</a>
+                    <a href="{% url 'owner_dashboard' %}">Owner Portal</a>
+                    <a href="{% url 'add_property' %}">Post Property</a>
                 {% endif %}
             </div>
             <div class="nav-auth">
@@ -101,18 +104,18 @@
             <span>Search</span>
         </a>
         {% if user.is_authenticated %}
-        <a href="{% url 'wishlist' %}" class="bottom-nav-item">
+        <a href="{% url 'tenant_dashboard' %}" class="bottom-nav-item">
             <svg class="bottom-nav-icon" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
             </svg>
-            <span>Wishlist</span>
+            <span>Tenant</span>
         </a>
 
         <a href="{% url 'owner_dashboard' %}" class="bottom-nav-item">
             <svg class="bottom-nav-icon" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v-2H7v-2h7V9H7V7h7V5h5v12h-5z"/>
             </svg>
-            <span>Dashboard</span>
+            <span>Owner</span>
         </a>
         <a href="{% url 'profile' %}" class="bottom-nav-item">
             <svg class="bottom-nav-icon" viewBox="0 0 24 24" fill="currentColor">

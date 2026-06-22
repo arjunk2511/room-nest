@@ -70,9 +70,25 @@
                 </select>
             </div>
             
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+                <div class="form-group" style="margin: 0;">
+                    <label style="font-size: 0.85rem; font-weight: 700; color: var(--text-dark); margin-bottom: 0.4rem; display: block;">Min Price</label>
+                    <input type="number" name="min_price" placeholder="₹ Min" value="{{ values.min_price }}" style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 0.95rem; background: var(--white);">
+                </div>
+                <div class="form-group" style="margin: 0;">
+                    <label style="font-size: 0.85rem; font-weight: 700; color: var(--text-dark); margin-bottom: 0.4rem; display: block;">Max Price</label>
+                    <input type="number" name="price" placeholder="₹ Max" value="{{ values.price }}" style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 0.95rem; background: var(--white);">
+                </div>
+            </div>
+
             <div class="form-group" style="margin: 0;">
-                <label style="font-size: 0.85rem; font-weight: 700; color: var(--text-dark); margin-bottom: 0.4rem; display: block;">Maximum Monthly Budget</label>
-                <input type="number" name="price" placeholder="₹ e.g. 15000" value="{{ values.price }}" style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 0.95rem; background: var(--white);">
+                <label style="font-size: 0.85rem; font-weight: 700; color: var(--text-dark); margin-bottom: 0.4rem; display: block;">Listing Purpose</label>
+                <select name="listing_purpose" style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; background: var(--white); font-size: 0.95rem;">
+                    <option value="">Any Purpose</option>
+                    <option value="Rent" {% if values.listing_purpose == 'Rent' %}selected{% endif %}>Rent</option>
+                    <option value="Lease" {% if values.listing_purpose == 'Lease' %}selected{% endif %}>Lease</option>
+                    <option value="Sale" {% if values.listing_purpose == 'Sale' %}selected{% endif %}>Sale</option>
+                </select>
             </div>
 
             <div class="form-group" style="margin: 0;">
@@ -89,10 +105,39 @@
                 <label style="font-size: 0.85rem; font-weight: 700; color: var(--text-dark); margin-bottom: 0.4rem; display: block;">Preferred Gender</label>
                 <select name="target_gender" style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; background: var(--white); font-size: 0.95rem;">
                     <option value="">Anyone</option>
-                    <option value="Men" {% if values.target_gender == 'Men' %}selected{% endif %}>Male Only</option>
-                    <option value="Women" {% if values.target_gender == 'Women' %}selected{% endif %}>Female Only</option>
-                    <option value="Co-ed / Family" {% if values.target_gender == 'Co-ed / Family' %}selected{% endif %}>Family / Co-ed</option>
-                    <option value="Anyone" {% if values.target_gender == 'Anyone' %}selected{% endif %}>No Preference</option>
+                    <option value="Boys Only" {% if values.target_gender == 'Boys Only' %}selected{% endif %}>Male Only</option>
+                    <option value="Girls Only" {% if values.target_gender == 'Girls Only' %}selected{% endif %}>Female Only</option>
+                    <option value="Any" {% if values.target_gender == 'Any' %}selected{% endif %}>No Preference</option>
+                </select>
+            </div>
+
+            <!-- Amenities checkboxes -->
+            <div class="form-group" style="margin: 0;">
+                <label style="font-size: 0.85rem; font-weight: 700; color: var(--text-dark); margin-bottom: 0.4rem; display: block;">Amenities</label>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.4rem; font-size: 0.85rem;">
+                    <label style="display: flex; align-items: center; gap: 4px; cursor: pointer;">
+                        <input type="checkbox" name="facilities" value="WiFi" {% if "WiFi" in values.getlist %}checked{% endif %} style="accent-color: var(--primary);"> WiFi
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 4px; cursor: pointer;">
+                        <input type="checkbox" name="facilities" value="AC" {% if "AC" in values.getlist %}checked{% endif %} style="accent-color: var(--primary);"> AC
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 4px; cursor: pointer;">
+                        <input type="checkbox" name="facilities" value="Parking" {% if "Parking" in values.getlist %}checked{% endif %} style="accent-color: var(--primary);"> Parking
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 4px; cursor: pointer;">
+                        <input type="checkbox" name="facilities" value="Food" {% if "Food" in values.getlist %}checked{% endif %} style="accent-color: var(--primary);"> Food
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group" style="margin: 0;">
+                <label style="font-size: 0.85rem; font-weight: 700; color: var(--text-dark); margin-bottom: 0.4rem; display: block;">Sort Listings By</label>
+                <select name="sort_by" style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; background: var(--white); font-size: 0.95rem;">
+                    <option value="newest" {% if values.sort_by == 'newest' %}selected{% endif %}>Newest First</option>
+                    <option value="price_asc" {% if values.sort_by == 'price_asc' %}selected{% endif %}>Price: Low to High</option>
+                    <option value="price_desc" {% if values.sort_by == 'price_desc' %}selected{% endif %}>Price: High to Low</option>
+                    <option value="popularity" {% if values.sort_by == 'popularity' %}selected{% endif %}>Popularity (Most Viewed)</option>
+                    <option value="rating" {% if values.sort_by == 'rating' %}selected{% endif %}>Reviews Rating</option>
                 </select>
             </div>
             

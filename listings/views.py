@@ -1,13 +1,16 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from .models import Listing, ListingImage, Wishlist, Message, Review
+from .models import Listing, ListingImage, Wishlist, Message, Review, Lead
 from django.db.models import Q, Avg
 from django.contrib.auth.models import User
 from subscriptions.models import Subscription
 from django.utils import timezone
-
 from django.core.paginator import Paginator
+from django.http import JsonResponse, HttpResponse
+from django.views.decorators.http import require_POST
+import csv
+import datetime
 
 def home(request):
     if not request.user.is_authenticated:
@@ -19,21 +22,44 @@ def search(request):
     listings = Listing.objects.filter(is_sold=False).select_related('owner').prefetch_related('reviews').order_by('-created_at')
     
     location = request.GET.get('location')
-    max_price = request.GET.get('price')
+    min_price = request.GET.get('min_price')
+    max_price = request.GET.get('price')  # standard max price parameter
     listing_type = request.GET.get('type')
+    listing_purpose = request.GET.get('listing_purpose')
     furnishing = request.GET.get('furnishing')
     target_gender = request.GET.get('target_gender')
+    facilities_list = request.GET.getlist('facilities')
+    sort_by = request.GET.get('sort_by')
     
     if location:
         listings = listings.filter(location__icontains=location)
+    if min_price:
+        listings = listings.filter(price__gte=min_price)
     if max_price:
         listings = listings.filter(price__lte=max_price)
     if listing_type:
         listings = listings.filter(type__iexact=listing_type)
+    if listing_purpose:
+        listings = listings.filter(listing_purpose__iexact=listing_purpose)
     if furnishing:
         listings = listings.filter(furnishing__iexact=furnishing)
     if target_gender:
         listings = listings.filter(target_gender__iexact=target_gender)
+    if facilities_list:
+        for facility in facilities_list:
+            listings = listings.filter(facilities__icontains=facility)
+            
+    # Apply sorting
+    if sort_by == 'price_asc':
+        listings = listings.order_by('price')
+    elif sort_by == 'price_desc':
+        listings = listings.order_by('-price')
+    elif sort_by == 'popularity':
+        listings = listings.order_by('-views_count')
+    elif sort_by == 'rating':
+        listings = listings.annotate(avg_rating=Avg('reviews__rating')).order_by('-avg_rating')
+    else:  # newest
+        listings = listings.order_by('-created_at')
         
     # Standard 8 listings per page is perfect for mobile performance
     paginator = Paginator(listings, 8)
@@ -67,8 +93,6 @@ def details(request, listing_id):
 
     has_subscription = False
     is_wishlisted = False
-    
-
         
     if request.user.is_authenticated:
         if request.user == listing.owner:
@@ -216,22 +240,76 @@ def owner_dashboard(request):
     total_views = sum(l.views_count for l in listings)
     total_whatsapp_clicks = sum(l.whatsapp_clicks_count for l in listings)
     
+    # Retrieve leads for the owner's properties
+    leads = Lead.objects.filter(listing__owner=request.user).select_related('listing', 'tenant').order_by('-created_at')
+    
+    # Retrieve active subscription details
+    subscription = Subscription.objects.filter(
+        user=request.user, 
+        is_active=True, 
+        end_date__gt=timezone.now()
+    ).first()
+    
+    # Retrieve active chat threads (leads)
+    chat_messages = Message.objects.filter(
+        Q(sender=request.user) | Q(receiver=request.user)
+    ).order_by('-timestamp')
+    chat_users = []
+    seen_users = set()
+    for msg in chat_messages:
+        other_user = msg.receiver if msg.sender == request.user else msg.sender
+        if other_user not in seen_users:
+            seen_users.add(other_user)
+            unread_count = Message.objects.filter(sender=other_user, receiver=request.user, is_read=False).count()
+            chat_users.append({
+                'user': other_user,
+                'last_message': msg,
+                'unread_count': unread_count
+            })
+            
     return render(request, 'owner_dashboard.html', {
         'listings': listings,
         'active_count': active_count,
         'sold_count': sold_count,
         'total_views': total_views,
         'total_whatsapp_clicks': total_whatsapp_clicks,
+        'leads': leads,
+        'subscription': subscription,
+        'chat_users': chat_users[:5],  # Limit to 5 for dashboard summary
     })
-
-from django.http import JsonResponse
-from django.views.decorators.http import require_POST
 
 @require_POST
 def track_whatsapp_click(request, listing_id):
     listing = get_object_or_404(Listing, id=listing_id)
     listing.whatsapp_clicks_count += 1
     listing.save(update_fields=['whatsapp_clicks_count'])
+    
+    # Save a lead if the user is authenticated and not the owner
+    if request.user.is_authenticated and request.user != listing.owner:
+        from accounts.models import UserProfile
+        profile = UserProfile.objects.filter(user=request.user).first()
+        phone = profile.phone_number if profile and profile.phone_number else 'Not Provided'
+        name = f"{request.user.first_name} {request.user.last_name}".strip() or request.user.username
+        
+        # Check if a WhatsApp lead already exists within the last 24 hours to prevent spamming
+        last_day = timezone.now() - timezone.timedelta(days=1)
+        exists = Lead.objects.filter(
+            listing=listing,
+            tenant=request.user,
+            lead_type='WhatsApp',
+            created_at__gte=last_day
+        ).exists()
+        
+        if not exists:
+            Lead.objects.create(
+                listing=listing,
+                tenant=request.user,
+                name=name,
+                email=request.user.email,
+                phone=phone,
+                lead_type='WhatsApp'
+            )
+            
     return JsonResponse({'status': 'success', 'whatsapp_clicks_count': listing.whatsapp_clicks_count})
 
 @login_required
@@ -324,15 +402,37 @@ def chat_view(request, user_id):
         listing = Listing.objects.filter(id=listing_id).first() if listing_id else None
         
         if content:
-            # Masking disabled temporarily while subscription system is inactive
-            masked_content = content
-            
             Message.objects.create(
                 sender=request.user,
                 receiver=other_user,
                 listing=listing,
-                content=masked_content
+                content=content
             )
+            
+            # Record a Lead of type 'Chat' if they are messaging about a listing and they are not the owner
+            if listing and request.user != listing.owner:
+                from accounts.models import UserProfile
+                profile = UserProfile.objects.filter(user=request.user).first()
+                phone = profile.phone_number if profile and profile.phone_number else 'Not Provided'
+                name = f"{request.user.first_name} {request.user.last_name}".strip() or request.user.username
+                
+                # Check if a Chat lead already exists
+                exists = Lead.objects.filter(
+                    listing=listing,
+                    tenant=request.user,
+                    lead_type='Chat'
+                ).exists()
+                
+                if not exists:
+                    Lead.objects.create(
+                        listing=listing,
+                        tenant=request.user,
+                        name=name,
+                        email=request.user.email,
+                        phone=phone,
+                        message_content=content,
+                        lead_type='Chat'
+                    )
         return redirect(f"{request.path}?listing_id={listing_id}" if listing_id else request.path)
         
     messages = Message.objects.filter(
@@ -417,3 +517,205 @@ def delete_property(request, listing_id):
         listing.delete()
         messages.success(request, "Property listing deleted successfully!")
     return redirect('owner_dashboard')
+
+
+@login_required
+def tenant_dashboard(request):
+    wishlist_items = Wishlist.objects.filter(user=request.user).select_related('listing', 'listing__owner').prefetch_related('listing__reviews')
+    listings = [item.listing for item in wishlist_items]
+    
+    # Active subscription
+    subscription = Subscription.objects.filter(
+        user=request.user, 
+        is_active=True, 
+        end_date__gt=timezone.now()
+    ).first()
+    
+    # Subscription history
+    sub_history = Subscription.objects.filter(user=request.user).order_by('-start_date')
+    
+    # Inquiries (Leads generated by the tenant)
+    inquiries = Lead.objects.filter(tenant=request.user).select_related('listing').order_by('-created_at')
+    
+    # Retrieve active chat threads (inbox style)
+    messages_query = Message.objects.filter(
+        Q(sender=request.user) | Q(receiver=request.user)
+    ).order_by('-timestamp')
+    chat_users = []
+    seen_users = set()
+    for msg in messages_query:
+        other_user = msg.receiver if msg.sender == request.user else msg.sender
+        if other_user not in seen_users:
+            seen_users.add(other_user)
+            unread_count = Message.objects.filter(sender=other_user, receiver=request.user, is_read=False).count()
+            chat_users.append({
+                'user': other_user,
+                'last_message': msg,
+                'unread_count': unread_count
+            })
+            
+    return render(request, 'tenant_dashboard.html', {
+        'listings': listings,
+        'subscription': subscription,
+        'sub_history': sub_history,
+        'inquiries': inquiries,
+        'chat_users': chat_users[:5],
+    })
+
+
+@login_required
+def admin_dashboard(request):
+    if not request.user.is_superuser and not request.user.is_staff:
+        messages.error(request, "Access Denied: Admin authorization required.")
+        return redirect('home')
+        
+    # Global metrics
+    total_listings = Listing.objects.count()
+    active_listings = Listing.objects.filter(is_sold=False).count()
+    total_users = User.objects.count()
+    active_subscriptions = Subscription.objects.filter(is_active=True, end_date__gt=timezone.now()).count()
+    pending_subscriptions_count = Subscription.objects.filter(payment_status='Pending').count()
+    
+    # Calculate revenue from approved subscriptions (each subscription is INR 49)
+    approved_subs = Subscription.objects.filter(payment_status='Approved')
+    total_revenue = approved_subs.count() * 49
+    
+    # Pending property verifications
+    pending_verifications = Listing.objects.filter(verification_status='Pending').select_related('owner')
+    
+    # Pending subscriptions
+    pending_subscriptions = Subscription.objects.filter(payment_status='Pending').select_related('user')
+    
+    return render(request, 'admin_dashboard.html', {
+        'total_listings': total_listings,
+        'active_listings': active_listings,
+        'total_users': total_users,
+        'active_subscriptions': active_subscriptions,
+        'pending_subscriptions_count': pending_subscriptions_count,
+        'total_revenue': total_revenue,
+        'pending_verifications': pending_verifications,
+        'pending_subscriptions': pending_subscriptions,
+    })
+
+
+@login_required
+def request_verification(request, listing_id):
+    listing = get_object_or_404(Listing, id=listing_id, owner=request.user)
+    
+    if request.method == 'POST':
+        document = request.FILES.get('verification_document')
+        notes = request.POST.get('verification_notes', '').strip()
+        
+        if not document:
+            messages.error(request, "Please upload a verification document (PDF or Image).")
+            return redirect('owner_dashboard')
+            
+        listing.verification_document = document
+        listing.verification_notes = notes
+        listing.verification_status = 'Pending'
+        listing.save()
+        messages.success(request, f"Verification request submitted for '{listing.title}'! Our team will review it shortly.")
+        
+    return redirect('owner_dashboard')
+
+
+@login_required
+def approve_verification(request, listing_id):
+    if not request.user.is_superuser and not request.user.is_staff:
+        messages.error(request, "Unauthorized action.")
+        return redirect('home')
+        
+    listing = get_object_or_404(Listing, id=listing_id)
+    listing.is_verified = True
+    listing.verification_status = 'Verified'
+    listing.save(update_fields=['is_verified', 'verification_status'])
+    messages.success(request, f"Property '{listing.title}' successfully verified!")
+    return redirect('admin_dashboard')
+
+
+@login_required
+def reject_verification(request, listing_id):
+    if not request.user.is_superuser and not request.user.is_staff:
+        messages.error(request, "Unauthorized action.")
+        return redirect('home')
+        
+    listing = get_object_or_404(Listing, id=listing_id)
+    listing.is_verified = False
+    listing.verification_status = 'Rejected'
+    
+    notes = request.POST.get('rejection_notes', '').strip()
+    if notes:
+        listing.verification_notes = f"Rejected: {notes}"
+        
+    listing.save()
+    messages.warning(request, f"Property '{listing.title}' verification request rejected.")
+    return redirect('admin_dashboard')
+
+
+@login_required
+def approve_subscription(request, subscription_id):
+    if not request.user.is_superuser and not request.user.is_staff:
+        messages.error(request, "Unauthorized action.")
+        return redirect('home')
+        
+    sub = get_object_or_404(Subscription, id=subscription_id)
+    sub.is_active = True
+    sub.payment_status = 'Approved'
+    sub.end_date = timezone.now() + datetime.timedelta(days=90)
+    sub.save(update_fields=['is_active', 'payment_status', 'end_date'])
+    messages.success(request, f"Subscription approved for user {sub.user.username}!")
+    return redirect('admin_dashboard')
+
+
+@login_required
+def reject_subscription(request, subscription_id):
+    if not request.user.is_superuser and not request.user.is_staff:
+        messages.error(request, "Unauthorized action.")
+        return redirect('home')
+        
+    sub = get_object_or_404(Subscription, id=subscription_id)
+    sub.is_active = False
+    sub.payment_status = 'Rejected'
+    sub.save(update_fields=['is_active', 'payment_status'])
+    messages.warning(request, f"Subscription rejected for user {sub.user.username}.")
+    return redirect('admin_dashboard')
+
+
+@login_required
+def export_leads_csv(request):
+    # Check subscription
+    has_sub = Subscription.objects.filter(
+        user=request.user, 
+        is_active=True, 
+        end_date__gt=timezone.now()
+    ).exists()
+    
+    if not has_sub:
+        messages.error(request, "Premium subscription required to export leads.")
+        return redirect('owner_dashboard')
+        
+    # Get listings owned by this user
+    listing_ids = Listing.objects.filter(owner=request.user).values_list('id', flat=True)
+    leads = Lead.objects.filter(listing_id__in=listing_ids).select_related('listing').order_by('-created_at')
+    
+    # Generate CSV
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = f'attachment; filename="RoomNest_Leads_{timezone.now().strftime("%Y%m%d")}.csv"'
+    
+    writer = csv.writer(response)
+    writer.writerow(['Lead Name', 'Email', 'Phone', 'Property Title', 'Type', 'Location', 'Lead Method', 'Date Received'])
+    
+    for lead in leads:
+        writer.writerow([
+            lead.name,
+            lead.email,
+            lead.phone,
+            lead.listing.title,
+            lead.listing.type,
+            lead.listing.location,
+            lead.lead_type,
+            lead.created_at.strftime('%Y-%m-%d %H:%M')
+        ])
+        
+    return response
+

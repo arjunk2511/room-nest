@@ -1,0 +1,181 @@
+{% extends 'base.html' %}
+
+{% block seo_title %}Custom Admin Dashboard - RoomNest{% endblock %}
+
+{% block content %}
+<div style="max-width: 1100px; margin: 3rem auto; padding: 0 1.5rem;" class="tab-container">
+    
+    <!-- Admin Hero Header -->
+    <div style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); color: white; border-radius: var(--border-radius-lg); padding: 2.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 2rem; box-shadow: var(--shadow-md);">
+        <div>
+            <span style="background: rgba(255,255,255,0.15); padding: 0.35rem 0.85rem; border-radius: 4px; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #cbd5e1;">Staff Operations</span>
+            <h1 style="font-size: 2.2rem; font-weight: 800; margin-top: 0.5rem; margin-bottom: 0.2rem; color: white;">Custom Admin Dashboard</h1>
+            <p style="opacity: 0.85; margin: 0; font-size: 0.95rem;">Verify properties, approve premium subscription transactions, and monitor platform metrics.</p>
+        </div>
+        <div>
+            <span class="badge" style="background: rgba(16,185,129,0.2); color: #a7f3d0; border-color: rgba(16,185,129,0.3); font-size: 0.8rem; padding: 0.4rem 0.9rem;">🟢 System Active</span>
+        </div>
+    </div>
+
+    <!-- Admin Global Statistics Widgets -->
+    <div class="stats-cards-grid" style="margin-top: 1rem;">
+        <div class="stat-card-premium">
+            <span style="font-size: 0.75rem; color: var(--text-light); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Platform Revenue</span>
+            <span style="font-size: 1.8rem; font-weight: 850; color: #10b981; margin-top: 0.25rem; display: block;">₹{{ total_revenue }}</span>
+        </div>
+        <div class="stat-card-premium stat-card-success">
+            <span style="font-size: 0.75rem; color: var(--text-light); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Active Subscriptions</span>
+            <span style="font-size: 1.8rem; font-weight: 850; color: var(--primary); margin-top: 0.25rem; display: block;">{{ active_subscriptions }}</span>
+        </div>
+        <div class="stat-card-premium stat-card-warning">
+            <span style="font-size: 0.75rem; color: var(--text-light); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Pending Payments</span>
+            <span style="font-size: 1.8rem; font-weight: 850; color: #b45309; margin-top: 0.25rem; display: block;">{{ pending_subscriptions_count }}</span>
+        </div>
+        <div class="stat-card-premium stat-card-danger">
+            <span style="font-size: 0.75rem; color: var(--text-light); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Total Properties / Users</span>
+            <span style="font-size: 1.8rem; font-weight: 850; color: var(--text-dark); margin-top: 0.25rem; display: block;">{{ total_listings }} / {{ total_users }}</span>
+        </div>
+    </div>
+
+    <!-- Tab Selection Header -->
+    <div class="tab-header" style="margin-top: 2rem;">
+        <button class="tab-btn active" onclick="switchTab(event, 'sub-approvals-tab')">💳 Subscription Verifications ({{ pending_subscriptions|length }})</button>
+        <button class="tab-btn" onclick="switchTab(event, 'prop-verifications-tab')">🛡️ Property Listing Verifications ({{ pending_verifications|length }})</button>
+    </div>
+
+    <!-- 1. SUBSCRIPTION VERIFICATIONS TAB -->
+    <div id="sub-approvals-tab" class="tab-pane active">
+        {% if pending_subscriptions %}
+        <div class="table-wrapper">
+            <table class="premium-table">
+                <thead>
+                    <tr>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Plan Details</th>
+                        <th>Transaction ID / UTR</th>
+                        <th>Screenshot</th>
+                        <th style="text-align: center;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for sub in pending_subscriptions %}
+                    <tr>
+                        <td><strong style="color: var(--text-dark); font-weight: 700;">{{ sub.user.username }}</strong></td>
+                        <td style="color: var(--text-light);">{{ sub.user.email }}</td>
+                        <td>{{ sub.plan_name }} (₹49)</td>
+                        <td><code style="background: #f1f5f9; padding: 0.2rem 0.5rem; border-radius: 4px; font-weight: 700; font-size: 0.85rem;">{{ sub.transaction_id }}</code></td>
+                        <td>
+                            {% if sub.payment_screenshot %}
+                                <a href="{{ sub.payment_screenshot.url }}" target="_blank" class="btn btn-outline" style="padding: 0.35rem 0.75rem; font-size: 0.8rem; border-radius: 6px;">View Screenshot 🖼️</a>
+                            {% else %}
+                                <span style="color: var(--text-light); font-style: italic; font-size: 0.85rem;">No file uploaded</span>
+                            {% endif %}
+                        </td>
+                        <td style="text-align: center;">
+                            <div style="display: flex; gap: 8px; justify-content: center;">
+                                <a href="{% url 'approve_subscription' sub.id %}" class="btn btn-success" style="padding: 0.4rem 1rem; font-size: 0.82rem; border-radius: 6px;">Approve ✅</a>
+                                <a href="{% url 'reject_subscription' sub.id %}" class="btn" style="padding: 0.4rem 1rem; font-size: 0.82rem; border-radius: 6px; background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; text-decoration: none;" onclick="return confirm('Reject this payment submission?');">Reject ❌</a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div style="text-align: center; padding: 5rem 2rem; background: white; border-radius: var(--border-radius-lg); border: 1px dashed #cbd5e1;">
+            <span style="font-size: 3rem; display: block; margin-bottom: 1.5rem;">💳</span>
+            <h3 style="color: var(--text-dark); font-size: 1.3rem; margin-bottom: 0.5rem;">No Pending Payments</h3>
+            <p style="color: var(--text-light); margin-bottom: 1.5rem; max-width: 400px; margin-left: auto; margin-right: auto; font-size: 0.95rem; line-height: 1.5;">All premium subscription transaction payments have been successfully processed and verified.</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- 2. PROPERTY LISTING VERIFICATIONS TAB -->
+    <div id="prop-verifications-tab" class="tab-pane">
+        {% if pending_verifications %}
+        <div class="table-wrapper">
+            <table class="premium-table">
+                <thead>
+                    <tr>
+                        <th>Property</th>
+                        <th>Owner</th>
+                        <th>Phone</th>
+                        <th>Documents</th>
+                        <th>Owner's Notes</th>
+                        <th style="text-align: center;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for listing in pending_verifications %}
+                    <tr>
+                        <td>
+                            <strong style="color: var(--text-dark); font-weight: 700;">{{ listing.title }}</strong>
+                            <span style="font-size: 0.75rem; color: var(--text-light); display: block; margin-top: 0.2rem;">📍 {{ listing.location }}</span>
+                        </td>
+                        <td>{{ listing.owner.username }}</td>
+                        <td>{{ listing.phone }}</td>
+                        <td>
+                            {% if listing.verification_document %}
+                                <a href="{{ listing.verification_document.url }}" target="_blank" class="btn btn-outline" style="padding: 0.35rem 0.75rem; font-size: 0.8rem; border-radius: 6px;">View Documents 📄</a>
+                            {% else %}
+                                <span style="color: var(--text-light); font-style: italic; font-size: 0.85rem;">No file uploaded</span>
+                            {% endif %}
+                        </td>
+                        <td style="color: var(--text-light); max-width: 250px; white-space: normal; line-height: 1.4; font-size: 0.85rem;">
+                            {{ listing.verification_notes|default:"No notes submitted." }}
+                        </td>
+                        <td style="text-align: center;">
+                            <div style="display: flex; flex-direction: column; gap: 8px; align-items: center;">
+                                <div style="display: flex; gap: 6px;">
+                                    <a href="{% url 'approve_verification' listing.id %}" class="btn btn-success" style="padding: 0.4rem 1rem; font-size: 0.82rem; border-radius: 6px;">Verify 🛡️</a>
+                                    <button class="btn" style="padding: 0.4rem 1rem; font-size: 0.82rem; border-radius: 6px; background: #fee2e2; color: #991b1b; border: 1px solid #fecaca;" onclick="toggleRejectionForm('reject-form-{{ listing.id }}')">Reject ❌</button>
+                                </div>
+                                
+                                <!-- Hidden Rejection Reason Form -->
+                                <form id="reject-form-{{ listing.id }}" action="{% url 'reject_verification' listing.id %}" method="POST" style="display: none; width: 100%; margin-top: 8px;">
+                                    {% csrf_token %}
+                                    <input type="text" name="rejection_notes" placeholder="Reason for rejection..." required style="width: 100%; padding: 0.4rem; border: 1px solid #fca5a5; border-radius: 4px; font-size: 0.8rem; outline: none; margin-bottom: 4px;">
+                                    <button type="submit" class="btn" style="width: 100%; padding: 0.35rem; font-size: 0.75rem; border-radius: 4px; background: #ef4444; color: white;">Confirm Rejection</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div style="text-align: center; padding: 5rem 2rem; background: white; border-radius: var(--border-radius-lg); border: 1px dashed #cbd5e1;">
+            <span style="font-size: 3rem; display: block; margin-bottom: 1.5rem;">🛡️</span>
+            <h3 style="color: var(--text-dark); font-size: 1.3rem; margin-bottom: 0.5rem;">No Verification Requests</h3>
+            <p style="color: var(--text-light); margin-bottom: 1.5rem; max-width: 400px; margin-left: auto; margin-right: auto; font-size: 0.95rem; line-height: 1.5;">All property listings have been verified, or no owners have submitted validation requests.</p>
+        </div>
+        {% endif %}
+    </div>
+
+</div>
+
+<script>
+function switchTab(evt, tabId) {
+    const tabPanes = document.querySelectorAll('.tab-pane');
+    tabPanes.forEach(pane => pane.classList.remove('active'));
+    
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    tabBtns.forEach(btn => btn.classList.remove('active'));
+    
+    document.getElementById(tabId).classList.add('active');
+    evt.currentTarget.classList.add('active');
+}
+
+function toggleRejectionForm(formId) {
+    const form = document.getElementById(formId);
+    if (form.style.display === 'none') {
+        form.style.display = 'block';
+    } else {
+        form.style.display = 'none';
+    }
+}
+</script>
+{% endblock %}

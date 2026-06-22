@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Listing, ListingImage, Wishlist, Message, Review
+from .models import Listing, ListingImage, Wishlist, Message, Review, Lead
 
 class ListingImageInline(admin.TabularInline):
     model = ListingImage
@@ -7,10 +7,16 @@ class ListingImageInline(admin.TabularInline):
 
 @admin.register(Listing)
 class ListingAdmin(admin.ModelAdmin):
-    list_display = ('title', 'type', 'location', 'price', 'owner', 'is_sold', 'created_at')
-    list_filter = ('type', 'location', 'is_sold', 'created_at')
+    list_display = ('title', 'type', 'location', 'price', 'owner', 'is_verified', 'verification_status', 'is_sold', 'created_at')
+    list_filter = ('type', 'location', 'is_verified', 'verification_status', 'is_sold', 'created_at')
     search_fields = ('title', 'location', 'address', 'exact_location')
     inlines = [ListingImageInline]
+
+@admin.register(Lead)
+class LeadAdmin(admin.ModelAdmin):
+    list_display = ('name', 'email', 'phone', 'listing', 'lead_type', 'created_at')
+    list_filter = ('lead_type', 'created_at')
+    search_fields = ('name', 'email', 'phone', 'listing__title')
 
 @admin.register(Wishlist)
 class WishlistAdmin(admin.ModelAdmin):

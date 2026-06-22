@@ -14,6 +14,8 @@ class Subscription(models.Model):
     end_date = models.DateTimeField()
     transaction_id = models.CharField(max_length=100, blank=True, null=True)
     payment_status = models.CharField(max_length=20, default='Pending', choices=STATUS_CHOICES)
+    payment_screenshot = models.ImageField(upload_to='payment_screenshots/', blank=True, null=True)
+    plan_name = models.CharField(max_length=50, default='90 Days Premium')
 
     def __str__(self):
         return f"{self.user.username} - {self.payment_status} ({'Active' if self.is_active else 'Inactive'})"

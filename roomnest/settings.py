@@ -148,13 +148,8 @@ STORAGES = {
     },
 }
 
-# Legacy settings
-STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
-DEFAULT_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
-
 if 'RENDER' in os.environ:
     STORAGES["default"]["BACKEND"] = "cloudinary_storage.storage.MediaCloudinaryStorage"
-    DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
 
 # Prevent WhiteNoise from crashing on missing static files in CSS
 WHITENOISE_MANIFEST_STRICT = False

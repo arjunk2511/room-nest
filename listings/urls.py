@@ -10,6 +10,23 @@ urlpatterns = [
     path('wishlist/', views.wishlist, name='wishlist'),
     path('owner/dashboard/', views.owner_dashboard, name='owner_dashboard'),
     path('owner/toggle-sold/<int:listing_id>/', views.toggle_sold_status, name='toggle_sold_status'),
+    
+    # Dashboards
+    path('tenant/dashboard/', views.tenant_dashboard, name='tenant_dashboard'),
+    path('admin-dashboard/', views.admin_dashboard, name='admin_dashboard'),
+    
+    # Property Verifications
+    path('listing/request-verification/<int:listing_id>/', views.request_verification, name='request_verification'),
+    path('listing/approve-verification/<int:listing_id>/', views.approve_verification, name='approve_verification'),
+    path('listing/reject-verification/<int:listing_id>/', views.reject_verification, name='reject_verification'),
+    
+    # Subscription Verification approvals
+    path('subscription/approve/<int:subscription_id>/', views.approve_subscription, name='approve_subscription'),
+    path('subscription/reject/<int:subscription_id>/', views.reject_subscription, name='reject_subscription'),
+    
+    # Leads Export
+    path('leads/export-csv/', views.export_leads_csv, name='export_leads_csv'),
+    
     path('edit-property/<int:listing_id>/', views.edit_property, name='edit_property'),
     path('chat/<int:user_id>/', views.chat_view, name='chat'),
     path('inbox/', views.inbox_view, name='inbox'),

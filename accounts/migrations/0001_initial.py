@@ -21,11 +21,16 @@ def create_or_sync_table(table_name, model_name, fields):
             else:
                 cursor.execute(f"SELECT name FROM sqlite_master WHERE type='table' AND name='{table_name}'")
                 table_exists = len(cursor.fetchall()) > 0
-                
-        model = apps.get_model('accounts', model_name)
+        from django.apps import apps as django_apps
+        model = django_apps.get_model('accounts', model_name)
         
         if not table_exists:
-            schema_editor.create_model(model)
+            original_local_fields = model._meta.local_fields
+            model._meta.local_fields = [f for f in original_local_fields if f.name in fields]
+            try:
+                schema_editor.create_model(model)
+            finally:
+                model._meta.local_fields = original_local_fields
         else:
             for field_name in fields:
                 field = model._meta.get_field(field_name)

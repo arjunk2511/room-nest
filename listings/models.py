@@ -102,8 +102,22 @@ class Listing(models.Model):
     is_sold = models.BooleanField(default=False)
     views_count = models.PositiveIntegerField(default=0)
     whatsapp_clicks_count = models.PositiveIntegerField(default=0)
-
     
+    # Verification fields
+    is_verified = models.BooleanField(default=False, help_text="Verified by RoomNest admin")
+    verification_status = models.CharField(
+        max_length=20, 
+        default='Not Requested', 
+        choices=(
+            ('Not Requested', 'Not Requested'),
+            ('Pending', 'Pending'),
+            ('Verified', 'Verified'),
+            ('Rejected', 'Rejected')
+        )
+    )
+    verification_document = models.FileField(upload_to='verification_docs/', blank=True, null=True)
+    verification_notes = models.TextField(blank=True, default='')
+
     # Custom fields for dynamic categories
     listing_purpose = models.CharField(max_length=20, default='Rent') # Rent, Lease, Sale
     rooms_available = models.IntegerField(default=1) # PG
@@ -175,3 +189,26 @@ class Review(models.Model):
     
     class Meta:
         unique_together = ('listing', 'user')
+
+class Lead(models.Model):
+    listing = models.ForeignKey(Listing, on_delete=models.CASCADE, related_name='leads')
+    tenant = models.ForeignKey(User, on_delete=models.CASCADE, related_name='leads_generated', null=True, blank=True)
+    name = models.CharField(max_length=100)
+    email = models.EmailField()
+    phone = models.CharField(max_length=20)
+    message_content = models.TextField(blank=True, default='')
+    lead_type = models.CharField(
+        max_length=20, 
+        choices=(
+            ('WhatsApp', 'WhatsApp Inquiry'), 
+            ('Chat', 'Direct Chat Message')
+        )
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        ordering = ['-created_at']
+        
+    def __str__(self):
+        return f"{self.name} - {self.listing.title} ({self.lead_type})"
+

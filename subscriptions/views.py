@@ -18,20 +18,28 @@ def subscribe(request):
 
     if request.method == 'POST':
         transaction_id = request.POST.get('transaction_id', '').strip()
+        screenshot = request.FILES.get('payment_screenshot')
+        
         if not transaction_id:
             messages.error(request, "Please enter a valid Transaction ID / UTR Number.")
             return redirect('subscribe')
         
         # Save or update subscription
         end_date = timezone.now() + datetime.timedelta(days=90) # 90 days plan
+        
+        defaults = {
+            'is_active': False,
+            'end_date': end_date,
+            'transaction_id': transaction_id,
+            'payment_status': 'Pending',
+            'plan_name': '90 Days Premium'
+        }
+        if screenshot:
+            defaults['payment_screenshot'] = screenshot
+            
         Subscription.objects.update_or_create(
             user=request.user,
-            defaults={
-                'is_active': False,
-                'end_date': end_date,
-                'transaction_id': transaction_id,
-                'payment_status': 'Pending'
-            }
+            defaults=defaults
         )
         messages.success(request, "Payment details submitted! Your subscription is pending verification.")
         return redirect('home')
