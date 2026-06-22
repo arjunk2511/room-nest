@@ -13,15 +13,37 @@ ALLOWED_HOSTS = [
     "room-nest.onrender.com"
 ]
 
-# Support local development when running locally
-if 'RENDER' not in os.environ or os.environ.get('FORCE_DEBUG') == 'True':
-    ALLOWED_HOSTS.extend(['127.0.0.1', 'localhost', '[::1]'])
-
 CSRF_TRUSTED_ORIGINS = [
     "https://roomnest.online",
     "https://www.roomnest.online",
     "https://room-nest.onrender.com"
 ]
+
+# Support local development when running locally
+if 'RENDER' not in os.environ or os.environ.get('FORCE_DEBUG') == 'True':
+    # Allow local development and mobile testing
+    ALLOWED_HOSTS.extend(['127.0.0.1', 'localhost', '[::1]', '*'])
+    
+    # Dynamically resolve and trust local IP for network testing
+    import socket
+    try:
+        hostname = socket.gethostname()
+        local_ip = socket.gethostbyname(hostname)
+        ALLOWED_HOSTS.append(local_ip)
+        CSRF_TRUSTED_ORIGINS.extend([
+            f"http://{local_ip}:8000",
+            f"https://{local_ip}:8000",
+            f"http://{local_ip}",
+            f"https://{local_ip}",
+        ])
+    except Exception:
+        pass
+        
+    # Support local tunneling tools like ngrok
+    CSRF_TRUSTED_ORIGINS.extend([
+        "https://*.ngrok-free.app",
+        "https://*.ngrok.io",
+    ])
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -164,7 +186,7 @@ CLOUDINARY_STORAGE = {
 }
 
 # Production Security and Optimization Settings (Render & Custom Domain)
-if 'RENDER' in os.environ:
+if 'RENDER' in os.environ and os.environ.get('FORCE_DEBUG') != 'True':
     # Redirect all HTTP requests to HTTPS
     SECURE_SSL_REDIRECT = True
     
