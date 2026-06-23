@@ -2,16 +2,16 @@
 {% load performance_tags %}
 
 {% block content %}
-<div style="background: #f1f5f9; padding: 1.5rem 0; border-bottom: 1px solid #e2e8f0;">
-    <div class="container" style="max-width: 1200px; margin: 0 auto; padding: 0 1rem; display: flex; justify-content: space-between; align-items: center;">
-        <div>
-            <h1 style="font-size: 1.7rem; color: var(--text-dark); margin: 0; font-weight: 800;">Properties for Rent in Mysore</h1>
-            <p style="color: var(--text-light); margin: 5px 0 0 0; font-size: 0.95rem; font-weight: 500;">📍 Verified rooms, PGs, and shared apartments</p>
+<div class="search-header-banner">
+    <div class="search-header-container">
+        <div class="search-header-title">
+            <h1>Properties for Rent in Mysore</h1>
+            <p>📍 Verified rooms, PGs, and shared apartments</p>
         </div>
-        <div style="display: flex; gap: 10px; align-items: center;">
+        <div class="search-header-actions">
             {% load webpush_notifications %}
             {% webpush_button with_class="btn btn-primary" %}
-            <p style="background: var(--white); color: var(--primary); padding: 0.5rem 1rem; border-radius: 8px; font-weight: 700; border: 1px solid #e2e8f0; font-size: 0.95rem; margin: 0;">{{ total_count }} Homes Available</p>
+            <p class="search-header-badge">{{ total_count }} Homes Available</p>
         </div>
     </div>
 </div>
@@ -25,124 +25,131 @@
     <!-- Left Sidebar for Filters -->
     <aside class="search-sidebar" id="search-sidebar-drawer">
         <div class="drawer-header" style="display: none; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; border-bottom: 1px solid #e2e8f0; padding-bottom: 0.8rem;">
-            <h3 style="margin: 0; font-size: 1.15rem; font-weight: 700; color: var(--text-dark); display: flex; align-items: center; gap: 8px;">🎛️ Filter Rooms</h3>
-            <button type="button" onclick="toggleFilterDrawer()" style="background: none; border: none; font-size: 1.6rem; color: var(--text-light); cursor: pointer; padding: 0 0.4rem; display: flex; align-items: center; justify-content: center;">&times;</button>
+            <div class="drawer-handle"></div>
+            <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                <h3 style="margin: 0; font-size: 1.15rem; font-weight: 700; color: var(--text-dark); display: flex; align-items: center; gap: 8px;">🎛️ Filter Rooms</h3>
+                <button type="button" onclick="toggleFilterDrawer()" style="background: none; border: none; font-size: 1.6rem; color: var(--text-light); cursor: pointer; padding: 0 0.4rem; display: flex; align-items: center; justify-content: center;">&times;</button>
+            </div>
         </div>
         
-        <h3 class="desktop-filter-title" style="margin-bottom: 1.5rem; font-size: 1.2rem; color: var(--text-dark); border-bottom: 2px solid #f1f5f9; padding-bottom: 0.5rem; font-weight: 700; display: flex; align-items: center; gap: 8px;">
+        <h3 class="desktop-filter-title" style="margin: 1.5rem 1.5rem 0.5rem 1.5rem; font-size: 1.2rem; color: var(--text-dark); border-bottom: 2px solid #f1f5f9; padding-bottom: 0.5rem; font-weight: 700; display: flex; align-items: center; gap: 8px;">
             <span>🔍</span> Filter Listings
         </h3>
-        <form action="{% url 'search' %}" method="GET" style="display: flex; flex-direction: column; gap: 1.2rem;">
-            <div class="form-group" style="margin: 0;">
-                <label style="font-size: 0.85rem; font-weight: 700; color: var(--text-dark); margin-bottom: 0.4rem; display: block;">Mysore Locality</label>
-                <select name="location" style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; background: var(--white); font-size: 0.95rem;">
-                    <option value="">Any Area</option>
-                    <option value="Vijayanagar" {% if values.location == 'Vijayanagar' %}selected{% endif %}>Vijayanagar</option>
-                    <option value="Gokulam" {% if values.location == 'Gokulam' %}selected{% endif %}>Gokulam</option>
-                    <option value="Kuvempunagar" {% if values.location == 'Kuvempunagar' %}selected{% endif %}>Kuvempunagar</option>
-                    <option value="Saraswathipuram" {% if values.location == 'Saraswathipuram' %}selected{% endif %}>Saraswathipuram</option>
-                    <option value="Jayalakshmipuram" {% if values.location == 'Jayalakshmipuram' %}selected{% endif %}>Jayalakshmipuram</option>
-                    <option value="Vontikoppal" {% if values.location == 'Vontikoppal' %}selected{% endif %}>Vontikoppal</option>
-                    <option value="Hebbal" {% if values.location == 'Hebbal' %}selected{% endif %}>Hebbal</option>
-                    <option value="Bannimantap" {% if values.location == 'Bannimantap' %}selected{% endif %}>Bannimantap</option>
-                    <option value="Bogadi" {% if values.location == 'Bogadi' %}selected{% endif %}>Bogadi</option>
-                    <option value="Siddhartha Layout" {% if values.location == 'Siddhartha Layout' %}selected{% endif %}>Siddhartha Layout</option>
-                    <option value="Padvarahalli" {% if values.location == 'Padvarahalli' %}selected{% endif %}>Padvarahalli</option>
-                    <option value="Vinayakanagar" {% if values.location == 'Vinayakanagar' %}selected{% endif %}>Vinayakanagar</option>
-                    <option value="Other (Mysore)" {% if values.location == 'Other (Mysore)' %}selected{% endif %}>Other</option>
-                </select>
-            </div>
-            
-            <div class="form-group" style="margin: 0;">
-                <label style="font-size: 0.85rem; font-weight: 700; color: var(--text-dark); margin-bottom: 0.4rem; display: block;">Accommodation Type</label>
-                <select name="type" style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; background: var(--white); font-size: 0.95rem;">
-                    <option value="">Any Type</option>
-                    <option value="1BHK" {% if values.type == '1BHK' %}selected{% endif %}>1BHK</option>
-                    <option value="2BHK" {% if values.type == '2BHK' %}selected{% endif %}>2BHK</option>
-                    <option value="3BHK" {% if values.type == '3BHK' %}selected{% endif %}>3BHK</option>
-                    <option value="Single Room" {% if values.type == 'Single Room' %}selected{% endif %}>Single Room</option>
-                    <option value="PG (Men)" {% if values.type == 'PG (Men)' %}selected{% endif %}>PG (Men)</option>
-                    <option value="PG (Women)" {% if values.type == 'PG (Women)' %}selected{% endif %}>PG (Women)</option>
-                    <option value="Co-living" {% if values.type == 'Co-living' %}selected{% endif %}>Co-living</option>
-                    <option value="Flatmate" {% if values.type == 'Flatmate' %}selected{% endif %}>Flatmate / Shared Flat</option>
-                    <option value="Commercial Space" {% if values.type == 'Commercial Space' %}selected{% endif %}>Commercial Space</option>
-                    <option value="Office Space" {% if values.type == 'Office Space' %}selected{% endif %}>Office Space / Cabin</option>
-                </select>
-            </div>
-            
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+        <form action="{% url 'search' %}" method="GET" style="display: flex; flex-direction: column; height: 100%; margin: 0;">
+            <div class="drawer-scroll-content">
                 <div class="form-group" style="margin: 0;">
-                    <label style="font-size: 0.85rem; font-weight: 700; color: var(--text-dark); margin-bottom: 0.4rem; display: block;">Min Price</label>
-                    <input type="number" name="min_price" placeholder="₹ Min" value="{{ values.min_price }}" style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 0.95rem; background: var(--white);">
+                    <label style="font-size: 0.85rem; font-weight: 700; color: var(--text-dark); margin-bottom: 0.4rem; display: block;">Mysore Locality</label>
+                    <select name="location" style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; background: var(--white); font-size: 0.95rem;">
+                        <option value="">Any Area</option>
+                        <option value="Vijayanagar" {% if values.location == 'Vijayanagar' %}selected{% endif %}>Vijayanagar</option>
+                        <option value="Gokulam" {% if values.location == 'Gokulam' %}selected{% endif %}>Gokulam</option>
+                        <option value="Kuvempunagar" {% if values.location == 'Kuvempunagar' %}selected{% endif %}>Kuvempunagar</option>
+                        <option value="Saraswathipuram" {% if values.location == 'Saraswathipuram' %}selected{% endif %}>Saraswathipuram</option>
+                        <option value="Jayalakshmipuram" {% if values.location == 'Jayalakshmipuram' %}selected{% endif %}>Jayalakshmipuram</option>
+                        <option value="Vontikoppal" {% if values.location == 'Vontikoppal' %}selected{% endif %}>Vontikoppal</option>
+                        <option value="Hebbal" {% if values.location == 'Hebbal' %}selected{% endif %}>Hebbal</option>
+                        <option value="Bannimantap" {% if values.location == 'Bannimantap' %}selected{% endif %}>Bannimantap</option>
+                        <option value="Bogadi" {% if values.location == 'Bogadi' %}selected{% endif %}>Bogadi</option>
+                        <option value="Siddhartha Layout" {% if values.location == 'Siddhartha Layout' %}selected{% endif %}>Siddhartha Layout</option>
+                        <option value="Padvarahalli" {% if values.location == 'Padvarahalli' %}selected{% endif %}>Padvarahalli</option>
+                        <option value="Vinayakanagar" {% if values.location == 'Vinayakanagar' %}selected{% endif %}>Vinayakanagar</option>
+                        <option value="Other (Mysore)" {% if values.location == 'Other (Mysore)' %}selected{% endif %}>Other</option>
+                    </select>
                 </div>
+                
                 <div class="form-group" style="margin: 0;">
-                    <label style="font-size: 0.85rem; font-weight: 700; color: var(--text-dark); margin-bottom: 0.4rem; display: block;">Max Price</label>
-                    <input type="number" name="price" placeholder="₹ Max" value="{{ values.price }}" style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 0.95rem; background: var(--white);">
+                    <label style="font-size: 0.85rem; font-weight: 700; color: var(--text-dark); margin-bottom: 0.4rem; display: block;">Accommodation Type</label>
+                    <select name="type" style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; background: var(--white); font-size: 0.95rem;">
+                        <option value="">Any Type</option>
+                        <option value="1BHK" {% if values.type == '1BHK' %}selected{% endif %}>1BHK</option>
+                        <option value="2BHK" {% if values.type == '2BHK' %}selected{% endif %}>2BHK</option>
+                        <option value="3BHK" {% if values.type == '3BHK' %}selected{% endif %}>3BHK</option>
+                        <option value="Single Room" {% if values.type == 'Single Room' %}selected{% endif %}>Single Room</option>
+                        <option value="PG (Men)" {% if values.type == 'PG (Men)' %}selected{% endif %}>PG (Men)</option>
+                        <option value="PG (Women)" {% if values.type == 'PG (Women)' %}selected{% endif %}>PG (Women)</option>
+                        <option value="Co-living" {% if values.type == 'Co-living' %}selected{% endif %}>Co-living</option>
+                        <option value="Flatmate" {% if values.type == 'Flatmate' %}selected{% endif %}>Flatmate / Shared Flat</option>
+                        <option value="Commercial Space" {% if values.type == 'Commercial Space' %}selected{% endif %}>Commercial Space</option>
+                        <option value="Office Space" {% if values.type == 'Office Space' %}selected{% endif %}>Office Space / Cabin</option>
+                    </select>
                 </div>
-            </div>
-
-            <div class="form-group" style="margin: 0;">
-                <label style="font-size: 0.85rem; font-weight: 700; color: var(--text-dark); margin-bottom: 0.4rem; display: block;">Listing Purpose</label>
-                <select name="listing_purpose" style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; background: var(--white); font-size: 0.95rem;">
-                    <option value="">Any Purpose</option>
-                    <option value="Rent" {% if values.listing_purpose == 'Rent' %}selected{% endif %}>Rent</option>
-                    <option value="Lease" {% if values.listing_purpose == 'Lease' %}selected{% endif %}>Lease</option>
-                    <option value="Sale" {% if values.listing_purpose == 'Sale' %}selected{% endif %}>Sale</option>
-                </select>
-            </div>
-
-            <div class="form-group" style="margin: 0;">
-                <label style="font-size: 0.85rem; font-weight: 700; color: var(--text-dark); margin-bottom: 0.4rem; display: block;">Furnishing Status</label>
-                <select name="furnishing" style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; background: var(--white); font-size: 0.95rem;">
-                    <option value="">Any Status</option>
-                    <option value="Unfurnished" {% if values.furnishing == 'Unfurnished' %}selected{% endif %}>Unfurnished</option>
-                    <option value="Semi-Furnished" {% if values.furnishing == 'Semi-Furnished' %}selected{% endif %}>Semi-Furnished</option>
-                    <option value="Fully Furnished" {% if values.furnishing == 'Fully Furnished' %}selected{% endif %}>Fully Furnished</option>
-                </select>
-            </div>
-
-            <div class="form-group" style="margin: 0;">
-                <label style="font-size: 0.85rem; font-weight: 700; color: var(--text-dark); margin-bottom: 0.4rem; display: block;">Preferred Gender</label>
-                <select name="target_gender" style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; background: var(--white); font-size: 0.95rem;">
-                    <option value="">Anyone</option>
-                    <option value="Boys Only" {% if values.target_gender == 'Boys Only' %}selected{% endif %}>Male Only</option>
-                    <option value="Girls Only" {% if values.target_gender == 'Girls Only' %}selected{% endif %}>Female Only</option>
-                    <option value="Any" {% if values.target_gender == 'Any' %}selected{% endif %}>No Preference</option>
-                </select>
-            </div>
-
-            <!-- Amenities checkboxes -->
-            <div class="form-group" style="margin: 0;">
-                <label style="font-size: 0.85rem; font-weight: 700; color: var(--text-dark); margin-bottom: 0.4rem; display: block;">Amenities</label>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.4rem; font-size: 0.85rem;">
-                    <label style="display: flex; align-items: center; gap: 4px; cursor: pointer;">
-                        <input type="checkbox" name="facilities" value="WiFi" {% if "WiFi" in values.getlist %}checked{% endif %} style="accent-color: var(--primary);"> WiFi
-                    </label>
-                    <label style="display: flex; align-items: center; gap: 4px; cursor: pointer;">
-                        <input type="checkbox" name="facilities" value="AC" {% if "AC" in values.getlist %}checked{% endif %} style="accent-color: var(--primary);"> AC
-                    </label>
-                    <label style="display: flex; align-items: center; gap: 4px; cursor: pointer;">
-                        <input type="checkbox" name="facilities" value="Parking" {% if "Parking" in values.getlist %}checked{% endif %} style="accent-color: var(--primary);"> Parking
-                    </label>
-                    <label style="display: flex; align-items: center; gap: 4px; cursor: pointer;">
-                        <input type="checkbox" name="facilities" value="Food" {% if "Food" in values.getlist %}checked{% endif %} style="accent-color: var(--primary);"> Food
-                    </label>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+                    <div class="form-group" style="margin: 0;">
+                        <label style="font-size: 0.85rem; font-weight: 700; color: var(--text-dark); margin-bottom: 0.4rem; display: block;">Min Price</label>
+                        <input type="number" name="min_price" placeholder="₹ Min" value="{{ values.min_price }}" style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 0.95rem; background: var(--white);">
+                    </div>
+                    <div class="form-group" style="margin: 0;">
+                        <label style="font-size: 0.85rem; font-weight: 700; color: var(--text-dark); margin-bottom: 0.4rem; display: block;">Max Price</label>
+                        <input type="number" name="price" placeholder="₹ Max" value="{{ values.price }}" style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 0.95rem; background: var(--white);">
+                    </div>
                 </div>
-            </div>
 
-            <div class="form-group" style="margin: 0;">
-                <label style="font-size: 0.85rem; font-weight: 700; color: var(--text-dark); margin-bottom: 0.4rem; display: block;">Sort Listings By</label>
-                <select name="sort_by" style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; background: var(--white); font-size: 0.95rem;">
-                    <option value="newest" {% if values.sort_by == 'newest' %}selected{% endif %}>Newest First</option>
-                    <option value="price_asc" {% if values.sort_by == 'price_asc' %}selected{% endif %}>Price: Low to High</option>
-                    <option value="price_desc" {% if values.sort_by == 'price_desc' %}selected{% endif %}>Price: High to Low</option>
-                    <option value="popularity" {% if values.sort_by == 'popularity' %}selected{% endif %}>Popularity (Most Viewed)</option>
-                    <option value="rating" {% if values.sort_by == 'rating' %}selected{% endif %}>Reviews Rating</option>
-                </select>
+                <div class="form-group" style="margin: 0;">
+                    <label style="font-size: 0.85rem; font-weight: 700; color: var(--text-dark); margin-bottom: 0.4rem; display: block;">Listing Purpose</label>
+                    <select name="listing_purpose" style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; background: var(--white); font-size: 0.95rem;">
+                        <option value="">Any Purpose</option>
+                        <option value="Rent" {% if values.listing_purpose == 'Rent' %}selected{% endif %}>Rent</option>
+                        <option value="Lease" {% if values.listing_purpose == 'Lease' %}selected{% endif %}>Lease</option>
+                        <option value="Sale" {% if values.listing_purpose == 'Sale' %}selected{% endif %}>Sale</option>
+                    </select>
+                </div>
+
+                <div class="form-group" style="margin: 0;">
+                    <label style="font-size: 0.85rem; font-weight: 700; color: var(--text-dark); margin-bottom: 0.4rem; display: block;">Furnishing Status</label>
+                    <select name="furnishing" style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; background: var(--white); font-size: 0.95rem;">
+                        <option value="">Any Status</option>
+                        <option value="Unfurnished" {% if values.furnishing == 'Unfurnished' %}selected{% endif %}>Unfurnished</option>
+                        <option value="Semi-Furnished" {% if values.furnishing == 'Semi-Furnished' %}selected{% endif %}>Semi-Furnished</option>
+                        <option value="Fully Furnished" {% if values.furnishing == 'Fully Furnished' %}selected{% endif %}>Fully Furnished</option>
+                    </select>
+                </div>
+
+                <div class="form-group" style="margin: 0;">
+                    <label style="font-size: 0.85rem; font-weight: 700; color: var(--text-dark); margin-bottom: 0.4rem; display: block;">Preferred Gender</label>
+                    <select name="target_gender" style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; background: var(--white); font-size: 0.95rem;">
+                        <option value="">Anyone</option>
+                        <option value="Boys Only" {% if values.target_gender == 'Boys Only' %}selected{% endif %}>Male Only</option>
+                        <option value="Girls Only" {% if values.target_gender == 'Girls Only' %}selected{% endif %}>Female Only</option>
+                        <option value="Any" {% if values.target_gender == 'Any' %}selected{% endif %}>No Preference</option>
+                    </select>
+                </div>
+
+                <!-- Amenities checkboxes -->
+                <div class="form-group" style="margin: 0;">
+                    <label style="font-size: 0.85rem; font-weight: 700; color: var(--text-dark); margin-bottom: 0.4rem; display: block;">Amenities</label>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.4rem; font-size: 0.85rem;">
+                        <label style="display: flex; align-items: center; gap: 4px; cursor: pointer;">
+                            <input type="checkbox" name="facilities" value="WiFi" {% if "WiFi" in values.getlist %}checked{% endif %} style="accent-color: var(--primary);"> WiFi
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 4px; cursor: pointer;">
+                            <input type="checkbox" name="facilities" value="AC" {% if "AC" in values.getlist %}checked{% endif %} style="accent-color: var(--primary);"> AC
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 4px; cursor: pointer;">
+                            <input type="checkbox" name="facilities" value="Parking" {% if "Parking" in values.getlist %}checked{% endif %} style="accent-color: var(--primary);"> Parking
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 4px; cursor: pointer;">
+                            <input type="checkbox" name="facilities" value="Food" {% if "Food" in values.getlist %}checked{% endif %} style="accent-color: var(--primary);"> Food
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group" style="margin: 0;">
+                    <label style="font-size: 0.85rem; font-weight: 700; color: var(--text-dark); margin-bottom: 0.4rem; display: block;">Sort Listings By</label>
+                    <select name="sort_by" style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; background: var(--white); font-size: 0.95rem;">
+                        <option value="newest" {% if values.sort_by == 'newest' %}selected{% endif %}>Newest First</option>
+                        <option value="price_asc" {% if values.sort_by == 'price_asc' %}selected{% endif %}>Price: Low to High</option>
+                        <option value="price_desc" {% if values.sort_by == 'price_desc' %}selected{% endif %}>Price: High to Low</option>
+                        <option value="popularity" {% if values.sort_by == 'popularity' %}selected{% endif %}>Popularity (Most Viewed)</option>
+                        <option value="rating" {% if values.sort_by == 'rating' %}selected{% endif %}>Reviews Rating</option>
+                    </select>
+                </div>
             </div>
             
-            <button type="submit" class="btn" style="width: 100%; padding: 0.85rem; border-radius: 8px; font-weight: 700; margin-top: 0.5rem; background: #f59e0b; color: white; border: none; cursor: pointer; box-shadow: 0 4px 10px rgba(245, 158, 11, 0.25); transition: background-color 0.2s;" onmouseover="this.style.background='#d97706';" onmouseout="this.style.background='#f59e0b';">Apply Filters</button>
-            <a href="{% url 'search' %}" class="btn btn-outline" style="display: block; width: 100%; padding: 0.8rem; border-radius: 8px; font-weight: 600; text-align: center; text-decoration: none; border-color: #cbd5e1; color: var(--text-dark); background: #f8fafc; font-size: 0.9rem; transition: all 0.2s;" onmouseover="this.style.background='#f1f5f9';" onmouseout="this.style.background='#f8fafc';">Clear Filters</a>
+            <div class="drawer-actions-bar">
+                <button type="submit" class="btn btn-primary" style="background: #f59e0b; color: white; border: none; cursor: pointer; box-shadow: 0 4px 10px rgba(245, 158, 11, 0.25);">Apply Filters</button>
+                <a href="{% url 'search' %}" class="btn btn-outline" style="text-decoration: none; display: inline-flex; align-items: center; justify-content: center;">Reset Filters</a>
+            </div>
         </form>
     </aside>
 
@@ -192,24 +199,22 @@
                 <p style="color: var(--text-light); font-size: 0.95rem; line-height: 1.5; margin: 0 0 1.5rem 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; font-weight: 500;">{{ listing.description }}</p>
                 
                 <!-- Magicbricks WhatsApp Contact Sync Integration -->
-                <div class="hc-footer" style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: auto; align-items: center; justify-content: space-between;">
-                    <a href="{% url 'details' listing.id %}" class="btn btn-outline" style="padding: 0.55rem 1.2rem; font-size: 0.9rem; border-radius: 6px; font-weight: 600; border-color: #cbd5e1; color: var(--text-dark);">📄 View Details</a>
+                <div class="hc-footer-actions">
+                    <a href="{% url 'details' listing.id %}" class="btn btn-outline btn-details">📄 Details</a>
                     
-                    <div style="display: flex; gap: 8px;">
-                        {% if user.is_authenticated and has_subscription or user.is_authenticated and request.user == listing.owner %}
-                        <a href="tel:{{ listing.phone }}" class="btn btn-outline" style="padding: 0.55rem 1.2rem; font-size: 0.9rem; border-radius: 6px; border-color: #cbd5e1; color: var(--text-dark); font-weight: 600; display: flex; align-items: center; gap: 4px;">📞 Call</a>
-                        <button onclick="openWhatsApp('{{ listing.phone|escapejs }}', '{{ listing.title|escapejs }}')" class="btn" style="padding: 0.55rem 1.2rem; font-size: 0.9rem; border-radius: 6px; background: linear-gradient(135deg, #25D366 0%, #128C7E 100%); color: white; border: none; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 10px rgba(37,211,102,0.15); transition: all 0.25s;" onmouseover="this.style.transform='translateY(-1px)';" onmouseout="this.style.transform='translateY(0)';">
-                            <svg style="width: 16px; height: 16px; fill: white;" viewBox="0 0 448 512">
-                                <path d="M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L3 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157zm-157 341.6c-33.2 0-65.7-8.9-94-25.7l-6.7-4-69.8 18.3L72 359.2l-4.4-7c-18.5-29.4-28.2-63.3-28.2-98.2 0-101.7 82.8-184.5 184.6-184.5 49.3 0 95.6 19.2 130.4 54.1 34.8 34.9 56.2 81.2 56.1 130.5 0 101.8-84.9 184.6-186.6 184.6zm101.2-138.2c-5.5-2.8-32.8-16.2-37.9-18-5.1-1.9-8.8-2.8-12.5 2.8-3.7 5.6-14.3 18-17.6 21.8-3.2 3.7-6.5 4.2-12 1.4-32.6-16.3-54-29.1-75.5-66-5.7-9.8 5.7-9.1 16.3-30.3 1.8-3.7 .9-6.9-.5-9.7-1.4-2.8-12.5-30.1-17.1-41.2-4.5-10.8-9.1-9.3-12.5-9.5-3.2-.2-6.9-.2-10.6-.2-3.7 0-9.7 1.4-14.8 6.9-5.1 5.6-19.4 19-19.4 46.3 0 27.3 19.9 53.7 22.6 57.4 2.8 3.7 39.1 59.7 94.8 83.8 35.2 15.2 49 16.5 66.6 13.9 10.7-1.6 32.8-13.4 37.4-26.4 4.6-13 4.6-24.1 3.2-26.4-1.3-2.5-5-3.9-10.5-6.6z"/>
-                            </svg>
-                            WhatsApp
-                        </button>
-                        {% elif user.is_authenticated %}
-                        <a href="{% url 'subscribe' %}" class="btn btn-primary" style="padding: 0.55rem 1.2rem; font-size: 0.9rem; border-radius: 6px; font-weight: 700; background: linear-gradient(135deg, #e11d48 0%, #be123c 100%); border: none;">⭐ Upgrade Plan</a>
-                        {% else %}
-                        <a href="{% url 'login' %}?next={{ request.get_full_path }}" class="btn btn-primary" style="padding: 0.55rem 1.2rem; font-size: 0.9rem; border-radius: 6px; font-weight: 700;">🔒 Login to Contact</a>
-                        {% endif %}
-                    </div>
+                    {% if user.is_authenticated and has_subscription or user.is_authenticated and request.user == listing.owner %}
+                    <a href="tel:{{ listing.phone }}" class="btn btn-outline btn-call">📞 Call</a>
+                    <button onclick="openWhatsApp('{{ listing.phone|escapejs }}', '{{ listing.title|escapejs }}')" class="btn btn-whatsapp">
+                        <svg style="width: 16px; height: 16px; fill: currentColor;" viewBox="0 0 448 512">
+                            <path d="M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L3 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157zm-157 341.6c-33.2 0-65.7-8.9-94-25.7l-6.7-4-69.8 18.3L72 359.2l-4.4-7c-18.5-29.4-28.2-63.3-28.2-98.2 0-101.7 82.8-184.5 184.6-184.5 49.3 0 95.6 19.2 130.4 54.1 34.8 34.9 56.2 81.2 56.1 130.5 0 101.8-84.9 184.6-186.6 184.6zm101.2-138.2c-5.5-2.8-32.8-16.2-37.9-18-5.1-1.9-8.8-2.8-12.5 2.8-3.7 5.6-14.3 18-17.6 21.8-3.2 3.7-6.5 4.2-12 1.4-32.6-16.3-54-29.1-75.5-66-5.7-9.8 5.7-9.1 16.3-30.3 1.8-3.7 .9-6.9-.5-9.7-1.4-2.8-12.5-30.1-17.1-41.2-4.5-10.8-9.1-9.3-12.5-9.5-3.2-.2-6.9-.2-10.6-.2-3.7 0-9.7 1.4-14.8 6.9-5.1 5.6-19.4 19-19.4 46.3 0 27.3 19.9 53.7 22.6 57.4 2.8 3.7 39.1 59.7 94.8 83.8 35.2 15.2 49 16.5 66.6 13.9 10.7-1.6 32.8-13.4 37.4-26.4 4.6-13 4.6-24.1 3.2-26.4-1.3-2.5-5-3.9-10.5-6.6z"/>
+                        </svg>
+                        WhatsApp
+                    </button>
+                    {% elif user.is_authenticated %}
+                    <a href="{% url 'subscribe' %}" class="btn btn-primary btn-upgrade">⭐ Upgrade Plan</a>
+                    {% else %}
+                    <a href="{% url 'login' %}?next={{ request.get_full_path }}" class="btn btn-primary btn-login">🔒 Login to Contact</a>
+                    {% endif %}
                 </div>
             </div>
         </div>
