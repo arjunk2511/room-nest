@@ -1233,6 +1233,7 @@ footer {
     .search-sidebar {
         position: fixed !important;
         bottom: 0 !important;
+        top: auto !important;
         left: 0 !important;
         right: 0 !important;
         width: 100% !important;
@@ -1247,6 +1248,15 @@ footer {
         display: flex !important;
         flex-direction: column !important;
         background: var(--white) !important;
+        overflow: hidden !important;
+    }
+    
+    .search-sidebar form {
+        display: flex !important;
+        flex-direction: column !important;
+        flex: 1 !important;
+        min-height: 0 !important;
+        height: auto !important;
     }
     
     .search-sidebar.open {
