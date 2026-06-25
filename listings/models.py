@@ -144,6 +144,15 @@ class Listing(models.Model):
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        indexes = [
+            models.Index(fields=['is_sold', 'created_at']),
+            models.Index(fields=['location']),
+            models.Index(fields=['price']),
+            models.Index(fields=['type']),
+            models.Index(fields=['created_at']),
+        ]
+
     def __str__(self):
         return self.title
 
@@ -151,6 +160,20 @@ class Listing(models.Model):
         if self.image and not self.image.name.lower().endswith('.webp'):
             resize_and_compress_image(self.image)
         super().save(*args, **kwargs)
+        
+        # Smart cache invalidation (ignores background clicks/view count increases)
+        update_fields = kwargs.get('update_fields')
+        if update_fields:
+            fields_set = {f.name if hasattr(f, 'name') else f for f in update_fields}
+            if fields_set.issubset({'views_count', 'whatsapp_clicks_count'}):
+                return
+        from django.core.cache import cache
+        cache.delete(f"listing_detail_{self.id}")
+
+    def delete(self, *args, **kwargs):
+        from django.core.cache import cache
+        cache.delete(f"listing_detail_{self.id}")
+        super().delete(*args, **kwargs)
 
 class ListingImage(models.Model):
     listing = models.ForeignKey(Listing, related_name='images', on_delete=models.CASCADE)
@@ -179,6 +202,10 @@ class Message(models.Model):
 
     class Meta:
         ordering = ['timestamp']
+        indexes = [
+            models.Index(fields=['receiver', 'is_read']),
+            models.Index(fields=['sender', 'receiver', 'timestamp']),
+        ]
 
 class Review(models.Model):
     listing = models.ForeignKey(Listing, related_name='reviews', on_delete=models.CASCADE)
@@ -189,6 +216,16 @@ class Review(models.Model):
     
     class Meta:
         unique_together = ('listing', 'user')
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        from django.core.cache import cache
+        cache.delete(f"listing_detail_{self.listing_id}")
+
+    def delete(self, *args, **kwargs):
+        from django.core.cache import cache
+        cache.delete(f"listing_detail_{self.listing_id}")
+        super().delete(*args, **kwargs)
 
 class Lead(models.Model):
     listing = models.ForeignKey(Listing, on_delete=models.CASCADE, related_name='leads')

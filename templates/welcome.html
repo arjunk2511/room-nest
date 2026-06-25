@@ -140,6 +140,8 @@
         <a href="{% url 'search' %}" style="font-weight: 700; color: var(--primary); display: flex; align-items: center; gap: 4px; font-size: 0.95rem;">View All Listings ➔</a>
     </div>
     
+    {% load cache %}
+    {% cache 900 welcome_featured_listings_grid %}
     <div class="grid">
         {% for listing in listings %}
         <div class="card">
@@ -189,6 +191,7 @@
         </div>
         {% endfor %}
     </div>
+    {% endcache %}
 </section>
 
 <!-- 3. Why Choose RoomNest Section -->

@@ -67,6 +67,7 @@ INSTALLED_APPS = [
 SITE_ID = 1
 
 MIDDLEWARE = [
+    'roomnest.middleware.PerformanceMiddleware',  # Profile request/response query counts and times!
     'django.middleware.security.SecurityMiddleware',
     'django.middleware.gzip.GZipMiddleware',  # GZIP compress dynamic HTML content for 5x faster mobile speed!
     'whitenoise.middleware.WhiteNoiseMiddleware',
@@ -114,6 +115,14 @@ if not DATABASES['default']:
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     }
+
+# Cache Configuration (Sub-millisecond local memory cache)
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'roomnest-performance-cache',
+    }
+}
 
 AUTH_PASSWORD_VALIDATORS = [
     {

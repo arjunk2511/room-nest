@@ -2,24 +2,26 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .models import Listing, ListingImage, Wishlist, Message, Review, Lead
-from django.db.models import Q, Avg
+from django.db.models import Q, Avg, F, Count
 from django.contrib.auth.models import User
 from subscriptions.models import Subscription
 from django.utils import timezone
 from django.core.paginator import Paginator
 from django.http import JsonResponse, HttpResponse
 from django.views.decorators.http import require_POST
+from django.core.cache import cache
 import csv
 import datetime
 
 def home(request):
-    featured_listings = Listing.objects.filter(is_sold=False).select_related('owner').order_by('-created_at')[:6]
+    featured_listings = Listing.objects.filter(is_sold=False).select_related('owner__userprofile').order_by('-created_at')[:6]
     if not request.user.is_authenticated:
         return render(request, 'welcome.html', {'listings': featured_listings})
     return render(request, 'index.html', {'listings': featured_listings})
 
 def search(request):
-    listings = Listing.objects.filter(is_sold=False).select_related('owner').prefetch_related('reviews').order_by('-created_at')
+    # Optimize query by pre-joining the owner's profile and removing unused reviews prefetch
+    listings = Listing.objects.filter(is_sold=False).select_related('owner__userprofile').order_by('-created_at')
     
     location = request.GET.get('location')
     min_price = request.GET.get('min_price')
@@ -78,18 +80,26 @@ def search(request):
         'listings': page_obj,
         'page_obj': page_obj,
         'values': request.GET,
-        'total_count': listings.count(),
+        'total_count': page_obj.paginator.count,  # Reuses count executed by paginator to save 1 query!
         'has_subscription': has_subscription
     }
     return render(request, 'search.html', context)
 
 def details(request, listing_id):
-    listing = get_object_or_404(Listing, id=listing_id)
-    
-    # Increment view counter (skip incrementing if owner views their own listing)
+    # Fetch listing with all related images and reviews' users pre-joined and cached
+    cache_key = f"listing_detail_{listing_id}"
+    listing = cache.get(cache_key)
+    if not listing:
+        listing = get_object_or_404(
+            Listing.objects.select_related('owner__userprofile').prefetch_related('images', 'reviews__user'),
+            id=listing_id
+        )
+        cache.set(cache_key, listing, 900)  # Cache for 15 minutes
+
+    # Increment view counter atomically in the DB (saves slow model save, avoids cache invalidation!)
     if not request.user.is_authenticated or request.user != listing.owner:
+        Listing.objects.filter(id=listing.id).update(views_count=F('views_count') + 1)
         listing.views_count += 1
-        listing.save(update_fields=['views_count'])
 
     has_subscription = False
     is_wishlisted = False
@@ -113,8 +123,11 @@ def details(request, listing_id):
         is_sold=False
     ).exclude(id=listing.id).order_by('-created_at')[:3]
 
-    reviews = listing.reviews.all().order_by('-created_at')
-    avg_rating = reviews.aggregate(Avg('rating'))['rating__avg'] or 0
+    # Sort prefetched reviews in memory instead of executing a new SQL query!
+    reviews = sorted(listing.reviews.all(), key=lambda r: r.created_at, reverse=True)
+    
+    # Calculate average rating in Python to save another SQL query!
+    avg_rating = sum(r.rating for r in reviews) / len(reviews) if reviews else 0
 
     context = {
         'listing': listing,
@@ -232,13 +245,14 @@ def wishlist(request):
 
 @login_required
 def owner_dashboard(request):
-    listings = Listing.objects.filter(owner=request.user)
-    active_count = listings.filter(is_sold=False).count()
-    sold_count = listings.filter(is_sold=True).count()
+    # Fetch listings as a list once and reuse in memory to avoid 2 extra COUNT queries
+    listings_list = list(Listing.objects.filter(owner=request.user))
+    active_count = sum(1 for l in listings_list if not l.is_sold)
+    sold_count = len(listings_list) - active_count
     
     # Aggregate view stats and lead clicks across all properties
-    total_views = sum(l.views_count for l in listings)
-    total_whatsapp_clicks = sum(l.whatsapp_clicks_count for l in listings)
+    total_views = sum(l.views_count for l in listings_list)
+    total_whatsapp_clicks = sum(l.whatsapp_clicks_count for l in listings_list)
     
     # Retrieve leads for the owner's properties
     leads = Lead.objects.filter(listing__owner=request.user).select_related('listing', 'tenant').order_by('-created_at')
@@ -250,17 +264,25 @@ def owner_dashboard(request):
         end_date__gt=timezone.now()
     ).first()
     
-    # Retrieve active chat threads (leads)
+    # Fetch unread message counts in bulk (1 query instead of N!)
+    unread_counts = Message.objects.filter(
+        receiver=request.user,
+        is_read=False
+    ).values('sender').annotate(count=Count('id'))
+    unread_dict = {item['sender']: item['count'] for item in unread_counts}
+    
+    # Fetch messages with select_related for sender/receiver to avoid N+1 user queries
     chat_messages = Message.objects.filter(
         Q(sender=request.user) | Q(receiver=request.user)
-    ).order_by('-timestamp')
+    ).select_related('sender', 'receiver', 'listing').order_by('-timestamp')
+    
     chat_users = []
     seen_users = set()
     for msg in chat_messages:
         other_user = msg.receiver if msg.sender == request.user else msg.sender
         if other_user not in seen_users:
             seen_users.add(other_user)
-            unread_count = Message.objects.filter(sender=other_user, receiver=request.user, is_read=False).count()
+            unread_count = unread_dict.get(other_user.id, 0)
             chat_users.append({
                 'user': other_user,
                 'last_message': msg,
@@ -268,7 +290,7 @@ def owner_dashboard(request):
             })
             
     return render(request, 'owner_dashboard.html', {
-        'listings': listings,
+        'listings': listings_list,
         'active_count': active_count,
         'sold_count': sold_count,
         'total_views': total_views,
@@ -453,9 +475,16 @@ def chat_view(request, user_id):
 
 @login_required
 def inbox_view(request):
+    # Fetch unread message counts in bulk (1 query instead of N!)
+    unread_counts = Message.objects.filter(
+        receiver=request.user,
+        is_read=False
+    ).values('sender').annotate(count=Count('id'))
+    unread_dict = {item['sender']: item['count'] for item in unread_counts}
+    
     messages = Message.objects.filter(
         Q(sender=request.user) | Q(receiver=request.user)
-    ).order_by('-timestamp')
+    ).select_related('sender', 'receiver', 'listing').order_by('-timestamp')
     
     chat_users = []
     seen_users = set()
@@ -464,7 +493,7 @@ def inbox_view(request):
         other_user = msg.receiver if msg.sender == request.user else msg.sender
         if other_user not in seen_users:
             seen_users.add(other_user)
-            unread_count = Message.objects.filter(sender=other_user, receiver=request.user, is_read=False).count()
+            unread_count = unread_dict.get(other_user.id, 0)
             chat_users.append({
                 'user': other_user,
                 'last_message': msg,
@@ -537,17 +566,25 @@ def tenant_dashboard(request):
     # Inquiries (Leads generated by the tenant)
     inquiries = Lead.objects.filter(tenant=request.user).select_related('listing').order_by('-created_at')
     
+    # Fetch unread message counts in bulk (1 query instead of N!)
+    unread_counts = Message.objects.filter(
+        receiver=request.user,
+        is_read=False
+    ).values('sender').annotate(count=Count('id'))
+    unread_dict = {item['sender']: item['count'] for item in unread_counts}
+    
     # Retrieve active chat threads (inbox style)
     messages_query = Message.objects.filter(
         Q(sender=request.user) | Q(receiver=request.user)
-    ).order_by('-timestamp')
+    ).select_related('sender', 'receiver', 'listing').order_by('-timestamp')
+    
     chat_users = []
     seen_users = set()
     for msg in messages_query:
         other_user = msg.receiver if msg.sender == request.user else msg.sender
         if other_user not in seen_users:
             seen_users.add(other_user)
-            unread_count = Message.objects.filter(sender=other_user, receiver=request.user, is_read=False).count()
+            unread_count = unread_dict.get(other_user.id, 0)
             chat_users.append({
                 'user': other_user,
                 'last_message': msg,
