@@ -141,6 +141,22 @@
                 <span>RoomNest</span>
             </a>
             
+            <!-- Cities Dropdown -->
+            <div class="city-selector-dropdown">
+                <button class="city-select-btn" onclick="toggleCityDropdown(event)" aria-haspopup="true" aria-expanded="false">
+                    <span>📍 {% if current_city %}{{ current_city.name }}{% else %}All Cities{% endif %}</span>
+                    <svg class="chevron-icon" viewBox="0 0 24 24" width="14" height="14">
+                        <path d="M7 10l5 5 5-5H7z"/>
+                    </svg>
+                </button>
+                <div class="city-dropdown-menu" id="cityDropdownMenu">
+                    <a href="{% url 'search' %}" class="city-dropdown-item {% if not current_city %}active{% endif %}">All Cities (India)</a>
+                    {% for c in active_cities %}
+                        <a href="{% url 'city_page' c.slug %}" class="city-dropdown-item {% if current_city.id == c.id %}active{% endif %}">{{ c.name }}</a>
+                    {% endfor %}
+                </div>
+            </div>
+            
             <!-- Compact Central Search Bar -->
             <form action="{% url 'search' %}" method="GET" class="header-search" style="flex: 1; max-width: 320px; margin: 0 2rem; position: relative;">
                 <input type="text" name="location" placeholder="Search area in Mysore..." style="width: 100%; padding: 0.55rem 1rem 0.55rem 2.4rem; border-radius: 99px; border: 1px solid var(--border-color); outline: none; font-size: 0.85rem; background: #F8FAFC; transition: var(--transition-smooth);" onfocus="this.style.borderColor='var(--primary)'; this.style.background='var(--white)';" onblur="this.style.borderColor='var(--border-color)'; this.style.background='#F8FAFC';">
@@ -191,6 +207,13 @@
         <div class="drawer-links">
             <a href="{% url 'home' %}" onclick="toggleDrawer()">🏠 Home</a>
             <a href="{% url 'search' %}" onclick="toggleDrawer()">🔍 Search Rooms</a>
+            
+            <!-- Mobile Cities Section -->
+            <div style="margin: 1rem 0 0.25rem 0; padding-left: 4px; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.05em; border-bottom: 1px solid #F1F5F9; padding-bottom: 4px;">Explore Cities</div>
+            <a href="{% url 'search' %}" onclick="toggleDrawer()" class="{% if not current_city %}active{% endif %}">🇮🇳 All Cities</a>
+            {% for c in active_cities %}
+                <a href="{% url 'city_page' c.slug %}" onclick="toggleDrawer()" class="{% if current_city.id == c.id %}active{% endif %}">📍 {{ c.name }}</a>
+            {% endfor %}
             {% if user.is_authenticated %}
                 <a href="{% url 'tenant_dashboard' %}" onclick="toggleDrawer()">👤 Tenant Portal</a>
                 <a href="{% url 'owner_dashboard' %}" onclick="toggleDrawer()">💼 Owner Portal</a>
@@ -347,6 +370,37 @@
             document.body.style.overflow = 'hidden';
         }
     }
+
+    // Cities dropdown toggle
+    function toggleCityDropdown(event) {
+        event.stopPropagation();
+        const dropdown = document.querySelector('.city-selector-dropdown');
+        const menu = document.getElementById('cityDropdownMenu');
+        const btn = event.currentTarget;
+        const isOpen = dropdown.classList.contains('open');
+        
+        if (isOpen) {
+            dropdown.classList.remove('open');
+            menu.classList.remove('show');
+            btn.setAttribute('aria-expanded', 'false');
+        } else {
+            dropdown.classList.add('open');
+            menu.classList.add('show');
+            btn.setAttribute('aria-expanded', 'true');
+        }
+    }
+
+    // Close dropdown on click outside
+    window.addEventListener('click', function(e) {
+        const dropdown = document.querySelector('.city-selector-dropdown');
+        const menu = document.getElementById('cityDropdownMenu');
+        if (dropdown && dropdown.classList.contains('open') && !dropdown.contains(e.target)) {
+            dropdown.classList.remove('open');
+            menu.classList.remove('show');
+            const btn = dropdown.querySelector('.city-select-btn');
+            if (btn) btn.setAttribute('aria-expanded', 'false');
+        }
+    });
 
     // Password visibility toggle
     document.addEventListener("DOMContentLoaded", function() {

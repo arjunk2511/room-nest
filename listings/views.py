@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from .models import Listing, ListingImage, Wishlist, Message, Review, Lead
+from .models import Listing, ListingImage, Wishlist, Message, Review, Lead, City, Area
 from django.db.models import Q, Avg, F, Count
 from django.contrib.auth.models import User
 from subscriptions.models import Subscription
@@ -22,6 +22,30 @@ def home(request):
 def search(request):
     # Optimize query by pre-joining the owner's profile and removing unused reviews prefetch
     listings = Listing.objects.filter(is_sold=False).select_related('owner__userprofile').order_by('-created_at')
+    
+    # New V2 filters: city and area slugs
+    city_slug = request.GET.get('city')
+    area_slug = request.GET.get('area')
+    
+    current_city = getattr(request, 'current_city', None)
+    current_area = getattr(request, 'current_area', None)
+    
+    # Fetch City and Area if not already attached by area_page view
+    if city_slug and not current_city:
+        current_city = City.objects.filter(slug=city_slug, is_active=True).first()
+    if area_slug and not current_area:
+        current_area = Area.objects.filter(slug=area_slug, is_active=True).first()
+        
+    # Apply City & Area filtering
+    if current_city:
+        listings = listings.filter(city=current_city)
+    elif city_slug:
+        listings = listings.filter(city__slug=city_slug)
+        
+    if current_area:
+        listings = listings.filter(area=current_area)
+    elif area_slug:
+        listings = listings.filter(area__slug=area_slug)
     
     location = request.GET.get('location')
     min_price = request.GET.get('min_price')
@@ -75,13 +99,32 @@ def search(request):
             is_active=True,
             end_date__gt=timezone.now()
         ).exists()
+        
+    # Dynamic SEO titles & descriptions based on filtered parameters
+    seo_title = None
+    seo_description = None
+    
+    if current_city and current_area:
+        prop_type = request.GET.get('type', '')
+        type_str = f"{prop_type} " if prop_type else "Rooms, PGs & Flats "
+        seo_title = f"{type_str}for Rent in {current_area.name}, {current_city.name} | RoomNest"
+        seo_description = f"Discover verified {type_str.lower()}for rent in {current_area.name}, {current_city.name}. Connect directly with owners, pay zero brokerage, and find your next home with RoomNest."
+    elif current_city:
+        prop_type = request.GET.get('type', '')
+        type_str = f"{prop_type}s " if prop_type else "Rooms, PGs & Flats "
+        seo_title = f"{type_str}in {current_city.name} | RoomNest"
+        seo_description = f"Discover verified {type_str.lower()}across {current_city.name}. Connect directly with owners, pay zero brokerage, and find your next home with RoomNest."
     
     context = {
         'listings': page_obj,
         'page_obj': page_obj,
         'values': request.GET,
         'total_count': page_obj.paginator.count,  # Reuses count executed by paginator to save 1 query!
-        'has_subscription': has_subscription
+        'has_subscription': has_subscription,
+        'seo_title': seo_title,
+        'seo_description': seo_description,
+        'current_city': current_city,
+        'current_area': current_area
     }
     return render(request, 'search.html', context)
 
@@ -143,7 +186,18 @@ def details(request, listing_id):
 def add_property(request):
     if request.method == 'POST':
         title = request.POST['title']
-        location = request.POST['location']
+        
+        # City and Area ForeignKeys
+        city_id = request.POST.get('city')
+        area_id = request.POST.get('area')
+        city_obj = City.objects.filter(id=city_id).first() if city_id else None
+        area_obj = Area.objects.filter(id=area_id).first() if area_id else None
+        
+        # Location fallback mapped from Area name
+        location = area_obj.name if area_obj else 'Other (Mysore)'
+        if len(location) > 50:
+            location = location[:50]
+            
         price = request.POST['price']
         listing_type = request.POST['type']
         description = request.POST['description']
@@ -193,6 +247,8 @@ def add_property(request):
         listing = Listing.objects.create(
             title=title,
             location=location,
+            city=city_obj,
+            area=area_obj,
             price=price,
             type=listing_type,
             description=description,
@@ -347,7 +403,21 @@ def edit_property(request, listing_id):
     
     if request.method == 'POST':
         listing.title = request.POST['title']
-        listing.location = request.POST['location']
+        
+        # City and Area ForeignKeys
+        city_id = request.POST.get('city')
+        area_id = request.POST.get('area')
+        city_obj = City.objects.filter(id=city_id).first() if city_id else None
+        area_obj = Area.objects.filter(id=area_id).first() if area_id else None
+        
+        listing.city = city_obj
+        listing.area = area_obj
+        
+        location_val = area_obj.name if area_obj else 'Other (Mysore)'
+        if len(location_val) > 50:
+            location_val = location_val[:50]
+        listing.location = location_val
+        
         listing.price = request.POST['price']
         listing.type = request.POST['type']
         listing.description = request.POST['description']
@@ -755,4 +825,53 @@ def export_leads_csv(request):
         ])
         
     return response
+
+
+def city_page(request, city_slug):
+    # Fetch active city
+    city = get_object_or_404(City, slug=city_slug, is_active=True)
+    
+    # Get latest active listings in this city
+    featured_listings = Listing.objects.filter(
+        city=city, 
+        is_sold=False
+    ).select_related('owner__userprofile').order_by('-created_at')[:6]
+    
+    # Get active areas in this city
+    areas = city.areas.filter(is_active=True).order_by('name')
+    
+    # Active subscription check
+    has_subscription = False
+    if request.user.is_authenticated:
+        has_subscription = Subscription.objects.filter(
+            user=request.user,
+            is_active=True,
+            end_date__gt=timezone.now()
+        ).exists()
+        
+    return render(request, 'city_page.html', {
+        'city': city,
+        'listings': featured_listings,
+        'areas': areas,
+        'has_subscription': has_subscription
+    })
+
+
+def area_page(request, city_slug, area_slug):
+    # Verify city and area exist and are active
+    city = get_object_or_404(City, slug=city_slug, is_active=True)
+    area = get_object_or_404(Area, city=city, slug=area_slug, is_active=True)
+    
+    # Mutate request.GET to inject city and area slugs for the search view
+    query_params = request.GET.copy()
+    query_params['city'] = city.slug
+    query_params['area'] = area.slug
+    request.GET = query_params
+    
+    # Attach city and area objects to the request so search view can use them for dynamic SEO
+    request.current_city = city
+    request.current_area = area
+    
+    # Call search view directly to inherit all filters and layout
+    return search(request)
 

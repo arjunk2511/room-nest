@@ -44,6 +44,35 @@ def resize_and_compress_image(image_field, max_width=1200, quality=80):
         print(f"Error compressing uploaded image: {e}")
 
 
+class City(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    slug = models.SlugField(max_length=100, unique=True)
+    image = models.ImageField(upload_to='cities/', blank=True, null=True)
+    is_active = models.BooleanField(default=True)
+    description = models.TextField(blank=True, default='')
+
+    class Meta:
+        verbose_name_plural = "Cities"
+
+    def __str__(self):
+        return self.name
+
+class Area(models.Model):
+    city = models.ForeignKey(City, on_delete=models.CASCADE, related_name='areas')
+    name = models.CharField(max_length=100)
+    slug = models.SlugField(max_length=100)
+    is_active = models.BooleanField(default=True)
+
+    class Meta:
+        unique_together = ('city', 'slug')
+        indexes = [
+            models.Index(fields=['city', 'slug']),
+        ]
+
+    def __str__(self):
+        return f"{self.name} ({self.city.name})"
+
+
 class Listing(models.Model):
     TYPE_CHOICES = (
         ('1BHK', '1BHK'),
@@ -142,6 +171,8 @@ class Listing(models.Model):
     built_up_area = models.CharField(max_length=50, blank=True, default='') # Commercial / Office
     
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
+    city = models.ForeignKey(City, on_delete=models.SET_NULL, null=True, blank=True, related_name='listings')
+    area = models.ForeignKey(Area, on_delete=models.SET_NULL, null=True, blank=True, related_name='listings')
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

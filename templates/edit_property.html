@@ -23,21 +23,19 @@
 
             <div style="display: flex; gap: 1.5rem; flex-wrap: wrap; margin-bottom: 1.5rem;">
                 <div class="form-group" style="flex: 1; min-width: 250px;">
-                    <label for="location" style="font-weight: 600; color: var(--text-dark); margin-bottom: 0.5rem; display: block;">Mysore Locality</label>
-                    <select id="location" name="location" required style="width: 100%; padding: 0.9rem 1rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 1rem; background: var(--white);">
-                        <option value="Vijayanagar" {% if listing.location == 'Vijayanagar' %}selected{% endif %}>Vijayanagar</option>
-                        <option value="Gokulam" {% if listing.location == 'Gokulam' %}selected{% endif %}>Gokulam</option>
-                        <option value="Kuvempunagar" {% if listing.location == 'Kuvempunagar' %}selected{% endif %}>Kuvempunagar</option>
-                        <option value="Saraswathipuram" {% if listing.location == 'Saraswathipuram' %}selected{% endif %}>Saraswathipuram</option>
-                        <option value="Jayalakshmipuram" {% if listing.location == 'Jayalakshmipuram' %}selected{% endif %}>Jayalakshmipuram</option>
-                        <option value="Vontikoppal" {% if listing.location == 'Vontikoppal' %}selected{% endif %}>Vontikoppal</option>
-                        <option value="Hebbal" {% if listing.location == 'Hebbal' %}selected{% endif %}>Hebbal</option>
-                        <option value="Bannimantap" {% if listing.location == 'Bannimantap' %}selected{% endif %}>Bannimantap</option>
-                        <option value="Bogadi" {% if listing.location == 'Bogadi' %}selected{% endif %}>Bogadi</option>
-                        <option value="Siddhartha Layout" {% if listing.location == 'Siddhartha Layout' %}selected{% endif %}>Siddhartha Layout</option>
-                        <option value="Padvarahalli" {% if listing.location == 'Padvarahalli' %}selected{% endif %}>Padvarahalli</option>
-                        <option value="Vinayakanagar" {% if listing.location == 'Vinayakanagar' %}selected{% endif %}>Vinayakanagar</option>
-                        <option value="Other (Mysore)" {% if listing.location == 'Other (Mysore)' %}selected{% endif %}>Other (Mysore)</option>
+                    <label for="city" style="font-weight: 600; color: var(--text-dark); margin-bottom: 0.5rem; display: block;">Select City</label>
+                    <select id="city" name="city" required onchange="updateEditAreaOptions(this.value)" style="width: 100%; padding: 0.9rem 1rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 1rem; background: var(--white); cursor: pointer;">
+                        <option value="">Select City</option>
+                        {% for city in active_cities %}
+                            <option value="{{ city.id }}" {% if listing.city_id == city.id %}selected{% endif %}>{{ city.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="form-group" style="flex: 1; min-width: 250px;">
+                    <label for="area" style="font-weight: 600; color: var(--text-dark); margin-bottom: 0.5rem; display: block;">Select Area / Locality</label>
+                    <select id="area" name="area" required style="width: 100%; padding: 0.9rem 1rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 1rem; background: var(--white); cursor: pointer;">
+                        <option value="">Select Area</option>
                     </select>
                 </div>
                 
@@ -655,5 +653,70 @@ document.addEventListener("DOMContentLoaded", function() {
         updatePanels();
     }
 });
+</script>
+
+<!-- JSON metadata for City-Area relationships -->
+<script id="city-area-data" type="application/json">
+[
+  {% for city in active_cities %}
+    {
+      "id": {{ city.id }},
+      "name": "{{ city.name|escapejs }}",
+      "slug": "{{ city.slug|escapejs }}",
+      "areas": [
+        {% for area in city.areas.all %}
+          {
+            "id": {{ area.id }},
+            "name": "{{ area.name|escapejs }}",
+            "slug": "{{ area.slug|escapejs }}"
+          }{% if not forloop.last %},{% endif %}
+        {% endfor %}
+      ]
+    }{% if not forloop.last %},{% endif %}
+  {% endfor %}
+]
+</script>
+
+<script>
+    // Dynamically filter areas on city selection for edit property wizard
+    function updateEditAreaOptions(selectedCityId, preselectedAreaId = null) {
+        const areaSelect = document.getElementById('area');
+        if (!areaSelect) return;
+        
+        areaSelect.innerHTML = '<option value="">Select Area</option>';
+        
+        if (!selectedCityId) return;
+        
+        const dataBlock = document.getElementById('city-area-data');
+        if (!dataBlock) return;
+        
+        try {
+            const citiesData = JSON.parse(dataBlock.textContent);
+            const matchedCity = citiesData.find(c => String(c.id) === String(selectedCityId));
+            
+            if (matchedCity && matchedCity.areas) {
+                matchedCity.areas.forEach(area => {
+                    const option = document.createElement('option');
+                    option.value = area.id;
+                    option.textContent = area.name;
+                    if (preselectedAreaId && String(area.id) === String(preselectedAreaId)) {
+                        option.selected = true;
+                    }
+                    areaSelect.appendChild(option);
+                });
+            }
+        } catch (e) {
+            console.error("Error parsing city-area JSON data:", e);
+        }
+    }
+
+    // Pre-populate area options on page load
+    document.addEventListener("DOMContentLoaded", function() {
+        const citySelect = document.getElementById('city');
+        if (citySelect && citySelect.value) {
+            const currentAreaId = "{{ listing.area_id|default:'' }}";
+            updateEditAreaOptions(citySelect.value, currentAreaId);
+        }
+    });
 </script>
 {% endblock %}

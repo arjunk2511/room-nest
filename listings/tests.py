@@ -2,7 +2,7 @@ from django.test import TestCase, Client
 from django.urls import reverse
 from django.contrib.auth.models import User
 from django.utils import timezone
-from .models import Listing, Lead
+from .models import Listing, Lead, City, Area
 from subscriptions.models import Subscription
 import datetime
 
@@ -150,3 +150,53 @@ class RoomNestTestCase(TestCase):
         self.listing.refresh_from_db()
         self.assertTrue(self.listing.is_verified)
         self.assertEqual(self.listing.verification_status, 'Verified')
+
+
+class MultiCityTestCase(TestCase):
+    def setUp(self):
+        self.owner = User.objects.create_user(username='owner', password='ownerpassword', email='owner@roomnest.online')
+        self.client = Client()
+        
+        # Fetch pre-populated City and Area from migrations
+        self.city = City.objects.get(slug="bengaluru")
+        self.area = Area.objects.get(city=self.city, slug="whitefield")
+        
+        # Create Listing
+        self.listing = Listing.objects.create(
+            title="Premium Flat in Whitefield",
+            location="Whitefield",
+            city=self.city,
+            area=self.area,
+            price=15000.00,
+            deposit=30000.00,
+            type="2BHK",
+            available_from="Immediately",
+            owner=self.owner,
+            listing_purpose="Rent"
+        )
+
+    def test_city_page_view(self):
+        # Visit Bengaluru city landing page
+        response = self.client.get(reverse('city_page', args=[self.city.slug]))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Find Rooms, PGs & Flats in Bengaluru")
+        self.assertContains(response, "Whitefield")
+        self.assertContains(response, "Premium Flat in Whitefield")
+
+    def test_area_page_view(self):
+        # Visit Bengaluru/Whitefield area landing page
+        response = self.client.get(reverse('area_page', args=[self.city.slug, self.area.slug]))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Premium Flat in Whitefield")
+
+    def test_search_view_city_area_filters(self):
+        # Test filtering by city slug
+        response = self.client.get(reverse('search'), {'city': self.city.slug})
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Premium Flat in Whitefield")
+        
+        # Test filtering by area slug
+        response = self.client.get(reverse('search'), {'city': self.city.slug, 'area': self.area.slug})
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Premium Flat in Whitefield")
+

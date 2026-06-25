@@ -1,6 +1,6 @@
 from django.contrib.sitemaps import Sitemap
 from django.urls import reverse
-from .models import Listing
+from .models import Listing, City, Area
 
 class StaticViewSitemap(Sitemap):
     priority = 0.8
@@ -32,3 +32,32 @@ class ListingSitemap(Sitemap):
 
     def get_domain(self, site=None):
         return 'roomnest.online'
+
+
+class CitySitemap(Sitemap):
+    priority = 0.8
+    changefreq = 'weekly'
+
+    def items(self):
+        return City.objects.filter(is_active=True).order_by('name')
+
+    def location(self, item):
+        return reverse('city_page', args=[item.slug])
+
+    def get_domain(self, site=None):
+        return 'roomnest.online'
+
+
+class AreaSitemap(Sitemap):
+    priority = 0.7
+    changefreq = 'weekly'
+
+    def items(self):
+        return Area.objects.filter(is_active=True, city__is_active=True).select_related('city').order_by('city__name', 'name')
+
+    def location(self, item):
+        return reverse('area_page', args=[item.city.slug, item.slug])
+
+    def get_domain(self, site=None):
+        return 'roomnest.online'
+
