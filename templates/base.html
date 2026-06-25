@@ -9,6 +9,9 @@
     <meta name="keywords" content="RoomNest, rooms for rent Mysore, flatmates Mysore, PG in Mysore, zero brokerage rent">
     <meta name="author" content="RoomNest">
     
+    <!-- Canonical URL to prevent duplicate content SEO penalties -->
+    <link rel="canonical" href="https://roomnest.online{{ request.path }}">
+    
     <!-- Open Graph / Facebook SEO -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://roomnest.online{{ request.path }}">
@@ -34,6 +37,22 @@
     <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/favicon-16x16.png' %}?v=1.0">
     <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon-32x32.png' %}?v=1.0">
     <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/apple-touch-icon.png' %}?v=1.0">
+    
+    <!-- Global Organization Structured Schema Markup -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "RoomNest",
+      "url": "https://roomnest.online",
+      "logo": "https://roomnest.online/static/images/logo_icon.png",
+      "sameAs": [
+        "https://www.instagram.com/roomnest.online",
+        "https://www.facebook.com/roomnest.online",
+        "https://twitter.com/roomnest_online"
+      ]
+    }
+    </script>
     
     <style>
         /* Extra structural styling for mobile header and drawer menu */

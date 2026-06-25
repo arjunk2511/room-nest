@@ -1,14 +1,86 @@
 {% extends 'base.html' %}
 {% load performance_tags %}
 
-{% block seo_title %}{{ listing.title }} | RoomNest Mysore{% endblock %}
-{% block seo_description %}Rent this {{ listing.type }} in {{ listing.location }} for ₹{{ listing.price }}/month. Security deposit ₹{{ listing.deposit }}, available from {{ listing.available_from }}. Direct contact, zero brokerage!{% endblock %}
+{% block seo_title %}{{ listing.type }} for Rent in {{ listing.location }} | {{ listing.title }} | RoomNest{% endblock %}
+{% block seo_description %}Affordable {{ listing.type }} for rent in {{ listing.location }}, Mysore. Security deposit ₹{{ listing.deposit }}, available from {{ listing.available_from }}. View photos, amenities, and contact owner directly on RoomNest.{% endblock %}
 
-{% block og_title %}{{ listing.title }} | RoomNest Mysore{% endblock %}
-{% block og_description %}Rent this {{ listing.type }} in {{ listing.location }} for ₹{{ listing.price }}/month. Security deposit ₹{{ listing.deposit }}, available from {{ listing.available_from }}. Direct contact, zero brokerage!{% endblock %}
-{% block og_image %}{% if listing.image %}{{ listing.image.url }}{% else %}https://roomnest.online/static/images/logo_icon.png{% endif %}{% endblock %}
+{% block og_title %}{{ listing.type }} for Rent in {{ listing.location }} | RoomNest{% endblock %}
+{% block og_description %}Affordable {{ listing.type }} for rent in {{ listing.location }}, Mysore. Security deposit ₹{{ listing.deposit }}, available from {{ listing.available_from }}. View photos, amenities, and contact owner directly on RoomNest.{% endblock %}
+{% block og_image %}{% if listing.image %}{% if "http" in listing.image.url %}{{ listing.image.url }}{% else %}https://roomnest.online{{ listing.image.url }}{% endif %}{% else %}https://roomnest.online/static/images/logo_icon.png{% endif %}{% endblock %}
+
+{% block twitter_title %}{{ listing.type }} for Rent in {{ listing.location }} | RoomNest{% endblock %}
+{% block twitter_description %}Affordable {{ listing.type }} for rent in {{ listing.location }}, Mysore. Security deposit ₹{{ listing.deposit }}, available from {{ listing.available_from }}. View photos, amenities, and contact owner directly on RoomNest.{% endblock %}
+{% block twitter_image %}{% if listing.image %}{% if "http" in listing.image.url %}{{ listing.image.url }}{% else %}https://roomnest.online{{ listing.image.url }}{% endif %}{% else %}https://roomnest.online/static/images/logo_icon.png{% endif %}{% endblock %}
 
 {% block content %}
+<!-- Google Structured JSON-LD Schema Markups -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "RealEstateListing",
+  "name": "{{ listing.title|escapejs }}",
+  "datePosted": "{{ listing.created_at|date:'c' }}",
+  "description": "{{ listing.description|truncatechars:200|escapejs }}",
+  "url": "https://roomnest.online{% url 'details' listing.id %}",
+  "image": [
+    "{% if listing.image %}{% if 'http' in listing.image.url %}{{ listing.image.url }}{% else %}https://roomnest.online{{ listing.image.url }}{% endif %}{% else %}https://roomnest.online/static/images/logo_icon.png{% endif %}"
+  ],
+  "about": {
+    "@type": "Accommodation",
+    "name": "{{ listing.title|escapejs }}",
+    "description": "{{ listing.description|truncatechars:200|escapejs }}",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "{{ listing.address|escapejs }}",
+      "addressLocality": "{{ listing.location|escapejs }}",
+      "addressRegion": "Karnataka",
+      "addressCountry": "IN"
+    },
+    "offers": {
+      "@type": "Offer",
+      "price": "{{ listing.price|floatformat:0 }}",
+      "priceCurrency": "INR",
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "{{ listing.price|floatformat:0 }}",
+        "priceCurrency": "INR",
+        "referenceQuantity": {
+          "@type": "QuantitativeValue",
+          "value": "1",
+          "unitCode": "MON"
+        }
+      }
+    }
+  }
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://roomnest.online/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Search",
+      "item": "https://roomnest.online/search/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "{{ listing.title|escapejs }}",
+      "item": "https://roomnest.online{% url 'details' listing.id %}"
+    }
+  ]
+}
+</script>
 <!-- Set body class to avoid mobile overlap -->
 <script>
     document.body.classList.add('has-sticky-details-bar');
