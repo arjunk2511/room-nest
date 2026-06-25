@@ -4,77 +4,191 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block seo_title %}RoomNest - Find Your Perfect Room, PG, Flatmate, or Commercial Space{% endblock %}</title>
-    <meta name="description" content="{% block seo_description %}Discover comfortable and affordable rooms, PGs, flatmate hubs, offices, and commercial spaces for rent in Mysore. Direct owner contact, zero brokerage.{% endblock %}">
-    <meta name="keywords" content="RoomNest, rooms for rent Mysore, flatmates Mysore, PG in Mysore, PG for men Mysore, PG for women Mysore, commercial spaces for rent Mysore, office for rent Mysore, hostels Mysore, rent flat Mysore, shared apartments, room finder Mysore, zero brokerage rent">
+    <title>{% block seo_title %}RoomNest - Premium Property Rental Platform{% endblock %}</title>
+    <meta name="description" content="{% block seo_description %}Discover comfortable and affordable rooms, PGs, flatmate hubs, and commercial spaces for rent in Mysore. Direct owner contact, zero brokerage.{% endblock %}">
+    <meta name="keywords" content="RoomNest, rooms for rent Mysore, flatmates Mysore, PG in Mysore, zero brokerage rent">
     <meta name="author" content="RoomNest">
     
     <!-- Open Graph / Facebook SEO -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://roomnest.online{{ request.path }}">
-    <meta property="og:title" content="{% block og_title %}RoomNest - Find Your Perfect Room, PG, Flatmate in Mysore{% endblock %}">
-    <meta property="og:description" content="{% block og_description %}Discover comfortable and affordable rooms, PGs, flatmate hubs, offices, and commercial spaces for rent in Mysore. Direct owner contact, zero brokerage.{% endblock %}">
+    <meta property="og:title" content="{% block og_title %}RoomNest - Find Your Perfect Room, PG, Flatmate{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}Discover comfortable and affordable rooms, PGs, and commercial spaces with zero brokerage.{% endblock %}">
     <meta property="og:image" content="{% block og_image %}https://roomnest.online{% static 'images/logo_icon.png' %}{% endblock %}">
 
     <!-- Twitter SEO -->
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="https://roomnest.online{{ request.path }}">
-    <meta property="twitter:title" content="{% block twitter_title %}RoomNest - Find Your Perfect Room, PG, Flatmate in Mysore{% endblock %}">
-    <meta property="twitter:description" content="{% block twitter_description %}Discover comfortable and affordable rooms, PGs, flatmate hubs, offices, and commercial spaces for rent in Mysore. Direct owner contact, zero brokerage.{% endblock %}">
+    <meta property="twitter:title" content="{% block twitter_title %}RoomNest - Find Your Perfect Room, PG, Flatmate{% endblock %}">
+    <meta property="twitter:description" content="{% block twitter_description %}Discover rooms, PGs, and commercial spaces with zero brokerage.{% endblock %}">
     <meta property="twitter:image" content="{% block twitter_image %}https://roomnest.online{% static 'images/logo_icon.png' %}{% endblock %}">
-
-    <!-- Google Analytics Integration Support -->
-    {% block google_analytics %}
-    <!-- Customize this block with your GA4 tag script in your child templates if needed -->
-    {% endblock %}
 
     {% load webpush_notifications %}
     {% webpush_header %}
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'css/style.css' %}?v=2.7">
-    <!-- Favicon Configurations -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}?v=3.0">
     <link rel="shortcut icon" type="image/x-icon" href="{% static 'images/favicon.ico' %}?v=1.0">
     <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/favicon-16x16.png' %}?v=1.0">
     <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon-32x32.png' %}?v=1.0">
     <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/apple-touch-icon.png' %}?v=1.0">
+    
+    <style>
+        /* Extra structural styling for mobile header and drawer menu */
+        .mobile-search-trigger {
+            display: none;
+        }
+        .header-search {
+            display: flex;
+        }
+        
+        /* Mobile Drawer Menu style */
+        .mobile-drawer {
+            position: fixed;
+            top: 0;
+            right: -280px;
+            width: 280px;
+            height: 100%;
+            background: var(--white);
+            z-index: 9999;
+            box-shadow: -4px 0 30px rgba(15, 23, 42, 0.15);
+            display: flex;
+            flex-direction: column;
+            padding: 2rem 1.5rem;
+            transition: right 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .mobile-drawer.open {
+            right: 0;
+        }
+        .drawer-close {
+            align-self: flex-end;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--text-light);
+            cursor: pointer;
+            margin-bottom: 2rem;
+            padding: 4px;
+        }
+        .drawer-links {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+        .drawer-links a {
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #F1F5F9;
+        }
+        .drawer-links a:hover {
+            color: var(--primary);
+        }
+        .drawer-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(15, 23, 42, 0.4);
+            backdrop-filter: blur(4px);
+            z-index: 9998;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        .drawer-backdrop.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        
+        @media (max-width: 768px) {
+            .header-search {
+                display: none !important;
+            }
+        }
+    </style>
 </head>
 <body>
+    <!-- Global Compact Sticky Header -->
     <nav class="navbar">
         <div class="nav-container">
-            <a href="{% url 'home' %}" class="logo" style="display: flex; align-items: center; gap: 10px; text-decoration: none;">
-                <img src="{% static 'images/logo_icon.png' %}?v=1.3" alt="RoomNest Icon" style="height: 38px; object-fit: contain;">
-                <span style="font-family: 'Outfit', 'Inter', sans-serif; font-weight: 800; font-size: 1.6rem; background: linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -0.5px;">RoomNest</span>
+            <!-- Logo Left -->
+            <a href="{% url 'home' %}" class="logo">
+                <img src="{% static 'images/logo_icon.png' %}?v=1.3" alt="RoomNest Logo">
+                <span>RoomNest</span>
             </a>
+            
+            <!-- Compact Central Search Bar -->
+            <form action="{% url 'search' %}" method="GET" class="header-search" style="flex: 1; max-width: 320px; margin: 0 2rem; position: relative;">
+                <input type="text" name="location" placeholder="Search area in Mysore..." style="width: 100%; padding: 0.55rem 1rem 0.55rem 2.4rem; border-radius: 99px; border: 1px solid var(--border-color); outline: none; font-size: 0.85rem; background: #F8FAFC; transition: var(--transition-smooth);" onfocus="this.style.borderColor='var(--primary)'; this.style.background='var(--white)';" onblur="this.style.borderColor='var(--border-color)'; this.style.background='#F8FAFC';">
+                <span style="position: absolute; left: 0.9rem; top: 50%; transform: translateY(-50%); font-size: 0.85rem; color: var(--text-muted); pointer-events: none;">🔍</span>
+            </form>
+            
+            <!-- Desktop Links Right -->
             <div class="nav-links">
-                <a href="{% url 'home' %}">Home</a>
-                <a href="{% url 'search' %}">Search</a>
+                <a href="{% url 'home' %}" class="{% if request.resolver_match.url_name == 'home' %}active{% endif %}">Home</a>
+                <a href="{% url 'search' %}" class="{% if request.resolver_match.url_name == 'search' %}active{% endif %}">Search</a>
                 {% if user.is_authenticated %}
                     {% if user.is_superuser or user.is_staff %}
-                        <a href="{% url 'admin_dashboard' %}" style="color: #ea580c; font-weight: 700;">🛡️ Admin</a>
+                        <a href="{% url 'admin_dashboard' %}" style="color: #EA580C; font-weight: 700;">🛡️ Admin</a>
                     {% endif %}
-                    <a href="{% url 'tenant_dashboard' %}">Tenant Portal</a>
-                    <a href="{% url 'owner_dashboard' %}">Owner Portal</a>
-                    <a href="{% url 'add_property' %}">Post Property</a>
+                    <a href="{% url 'tenant_dashboard' %}" class="{% if request.resolver_match.url_name == 'tenant_dashboard' %}active{% endif %}">Tenant Portal</a>
+                    <a href="{% url 'owner_dashboard' %}" class="{% if request.resolver_match.url_name == 'owner_dashboard' %}active{% endif %}">Owner Portal</a>
+                    <a href="{% url 'add_property' %}" class="btn btn-primary" style="padding: 0.45rem 1rem; font-size: 0.85rem; border-radius: 8px; margin-left: 8px; color: white !important;">Post Property</a>
                 {% endif %}
             </div>
-            <div class="nav-auth">
+            
+            <!-- Desktop Auth Right -->
+            <div class="nav-auth" style="margin-left: 1rem;">
                 {% if user.is_authenticated %}
-                    <a href="{% url 'profile' %}" class="username" style="color: var(--text-dark); text-decoration: none; font-weight: 600; margin-right: 1.5rem; display: flex; align-items: center; gap: 8px;">
-                        <span style="width: 30px; height: 30px; border-radius: 50%; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-size: 0.9rem;">{{ user.username|make_list|first|upper }}</span>
-                        {{ user.username }}
+                    <a href="{% url 'profile' %}" class="username" style="display: flex; align-items: center; gap: 8px; font-weight: 600; text-decoration: none; color: var(--text-dark);">
+                        <span style="width: 28px; height: 28px; border-radius: 50%; background: var(--primary-light); color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 0.85rem; font-weight: 700; border: 1px solid rgba(37,99,235,0.1);">{{ user.username|slice:":1"|upper }}</span>
+                        <span class="desktop-only-name">{{ user.username }}</span>
                     </a>
-                    <a href="{% url 'logout' %}" class="btn btn-outline">Logout</a>
+                    <a href="{% url 'logout' %}" class="btn btn-outline" style="padding: 0.45rem 1rem; font-size: 0.85rem; border-radius: 8px;">Logout</a>
                 {% else %}
-                    <a href="{% url 'login' %}?next={{ request.path }}" class="btn btn-outline">Login</a>
-                    <a href="{% url 'register' %}?next={{ request.path }}" class="btn btn-primary">Register</a>
+                    <a href="{% url 'login' %}?next={{ request.path }}" class="btn btn-outline" style="padding: 0.45rem 1rem; font-size: 0.85rem; border-radius: 8px;">Login</a>
+                    <a href="{% url 'register' %}?next={{ request.path }}" class="btn btn-primary" style="padding: 0.45rem 1.1rem; font-size: 0.85rem; border-radius: 8px; color: white !important;">Register</a>
                 {% endif %}
             </div>
+            
+            <!-- Mobile Hamburger Button -->
+            <button class="hamburger" onclick="toggleDrawer()" aria-label="Toggle Menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
         </div>
     </nav>
 
+    <!-- Mobile Navigation Drawer -->
+    <div class="drawer-backdrop" id="drawer-backdrop" onclick="toggleDrawer()"></div>
+    <div class="mobile-drawer" id="mobile-drawer">
+        <button class="drawer-close" onclick="toggleDrawer()">&times;</button>
+        <div class="drawer-links">
+            <a href="{% url 'home' %}" onclick="toggleDrawer()">🏠 Home</a>
+            <a href="{% url 'search' %}" onclick="toggleDrawer()">🔍 Search Rooms</a>
+            {% if user.is_authenticated %}
+                <a href="{% url 'tenant_dashboard' %}" onclick="toggleDrawer()">👤 Tenant Portal</a>
+                <a href="{% url 'owner_dashboard' %}" onclick="toggleDrawer()">💼 Owner Portal</a>
+                <a href="{% url 'add_property' %}" onclick="toggleDrawer()">➕ Post a Property</a>
+                <a href="{% url 'profile' %}" onclick="toggleDrawer()">⚙️ Profile Settings</a>
+                {% if user.is_superuser or user.is_staff %}
+                    <a href="{% url 'admin_dashboard' %}" style="color: #EA580C;" onclick="toggleDrawer()">🛡️ Admin Dashboard</a>
+                {% endif %}
+                <a href="{% url 'logout' %}" style="color: #EF4444; margin-top: 1rem;" onclick="toggleDrawer()">🚪 Logout</a>
+            {% else %}
+                <a href="{% url 'login' %}?next={{ request.path }}" onclick="toggleDrawer()">🔑 Login</a>
+                <a href="{% url 'register' %}?next={{ request.path }}" onclick="toggleDrawer()">✨ Register</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Messages Container -->
     <div class="messages">
         {% if messages %}
             {% for message in messages %}
@@ -85,47 +199,47 @@
         {% endif %}
     </div>
 
+    <!-- Main Content Block -->
     <main>
         {% block content %}{% endblock %}
     </main>
 
-    <!-- Bottom Nav Bar for Mobile Devices -->
+    <!-- Sticky Bottom Navigation Bar for Mobile -->
     <div class="bottom-nav">
         <a href="{% url 'home' %}" class="bottom-nav-item">
-            <svg class="bottom-nav-icon" viewBox="0 0 24 24" fill="currentColor">
+            <svg class="bottom-nav-icon" viewBox="0 0 24 24">
                 <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
             </svg>
             <span>Home</span>
         </a>
         <a href="{% url 'search' %}" class="bottom-nav-item">
-            <svg class="bottom-nav-icon" viewBox="0 0 24 24" fill="currentColor">
+            <svg class="bottom-nav-icon" viewBox="0 0 24 24">
                 <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
             </svg>
             <span>Search</span>
         </a>
         {% if user.is_authenticated %}
         <a href="{% url 'tenant_dashboard' %}" class="bottom-nav-item">
-            <svg class="bottom-nav-icon" viewBox="0 0 24 24" fill="currentColor">
+            <svg class="bottom-nav-icon" viewBox="0 0 24 24">
                 <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
             </svg>
             <span>Tenant</span>
         </a>
-
         <a href="{% url 'owner_dashboard' %}" class="bottom-nav-item">
-            <svg class="bottom-nav-icon" viewBox="0 0 24 24" fill="currentColor">
+            <svg class="bottom-nav-icon" viewBox="0 0 24 24">
                 <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v-2H7v-2h7V9H7V7h7V5h5v12h-5z"/>
             </svg>
             <span>Owner</span>
         </a>
         <a href="{% url 'profile' %}" class="bottom-nav-item">
-            <svg class="bottom-nav-icon" viewBox="0 0 24 24" fill="currentColor">
+            <svg class="bottom-nav-icon" viewBox="0 0 24 24">
                 <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
             </svg>
             <span>Profile</span>
         </a>
         {% else %}
         <a href="{% url 'login' %}?next={{ request.path }}" class="bottom-nav-item">
-            <svg class="bottom-nav-icon" viewBox="0 0 24 24" fill="currentColor">
+            <svg class="bottom-nav-icon" viewBox="0 0 24 24">
                 <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
             </svg>
             <span>Login</span>
@@ -133,78 +247,100 @@
         {% endif %}
     </div>
 
-    <footer style="background: var(--white); border-top: 1px solid rgba(0,0,0,0.08); padding: 4rem 2rem 2rem 2rem; margin-top: auto; color: var(--text-light); transition: background-color 0.3s ease;">
+    <!-- Global Premium Footer -->
+    <footer style="background: var(--white); border-top: 1px solid rgba(15,23,42,0.05); padding: 4rem 1.5rem 2rem 1.5rem; margin-top: auto; color: var(--text-light);">
         <div style="max-width: 1200px; margin: 0 auto; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 3rem; text-align: left;">
-            <!-- Brand Info Column -->
-            <div style="flex: 1.5; min-width: 250px;">
-                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 1rem;">
-                    <img src="{% static 'images/logo_icon.png' %}?v=1.3" alt="RoomNest Icon" style="height: 44px; object-fit: contain;">
-                    <span style="font-family: 'Outfit', 'Inter', sans-serif; font-weight: 800; font-size: 1.75rem; background: linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -0.5px;">RoomNest</span>
+            <!-- Brand Column -->
+            <div style="flex: 1.5; min-width: 260px;">
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 1.2rem;">
+                    <img src="{% static 'images/logo_icon.png' %}?v=1.3" alt="RoomNest Icon" style="height: 36px; object-fit: contain;">
+                    <span style="font-family: 'Outfit', sans-serif; font-weight: 800; font-size: 1.6rem; background: linear-gradient(135deg, var(--primary) 0%, #3B82F6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -0.5px;">RoomNest</span>
                 </div>
-                <p style="font-size: 0.95rem; line-height: 1.6; margin-bottom: 1.5rem; color: var(--text-light);">
-                    Discover comfortable and affordable rooms, PGs, flatmate hubs, and commercial spaces across cities with direct owner contact and zero brokerage.
+                <p style="font-size: 0.92rem; line-height: 1.6; margin-bottom: 1.5rem; color: var(--text-light);">
+                    Redefining property rentals across Mysore. Find rooms, PGs, flatmates, and commercial spaces with verified direct owner contacts and zero brokerage.
                 </p>
-                <div style="display: flex; gap: 1rem;">
-                    <!-- Social icons (aesthetic SVG icons) -->
-                    <a href="#" style="color: var(--text-light); transition: color 0.3s;" title="Facebook">
+                <div style="display: flex; gap: 1.25rem; align-items: center;">
+                    <!-- Aesthetic Social Icons -->
+                    <a href="#" style="color: var(--text-muted); transition: color 0.2s;" title="Facebook" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">
                         <svg style="width: 20px; height: 20px; fill: currentColor;" viewBox="0 0 24 24"><path d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.667c0-.955.192-1.333 1.115-1.333h2.885v-5h-3.808c-3.596 0-5.192 1.583-5.192 4.615v3.385z"/></svg>
                     </a>
-                    <a href="#" style="color: var(--text-light); transition: color 0.3s;" title="Twitter">
+                    <a href="#" style="color: var(--text-muted); transition: color 0.2s;" title="Twitter" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">
                         <svg style="width: 20px; height: 20px; fill: currentColor;" viewBox="0 0 24 24"><path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"/></svg>
                     </a>
-                    <a href="https://www.instagram.com/roomnest.online?igsh=MXVsamk5dWN2aXNvYQ%3D%3D&utm_source=qr" target="_blank" style="color: var(--text-light); transition: color 0.3s;" title="Instagram">
+                    <a href="https://www.instagram.com/roomnest.online" target="_blank" style="color: var(--text-muted); transition: color 0.2s;" title="Instagram" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">
                         <svg style="width: 20px; height: 20px; fill: currentColor;" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204 0.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
                     </a>
                 </div>
             </div>
             
-            <!-- Quick Links Column -->
-            <div style="flex: 1; min-width: 200px;">
-                <h4 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 1.2rem; color: var(--text-dark);">Platform</h4>
-                <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.8rem;">
-                    <li><a href="{% url 'home' %}" style="color: var(--text-light); text-decoration: none; transition: color 0.3s; font-size: 0.95rem;">Home</a></li>
-                    <li><a href="{% url 'search' %}" style="color: var(--text-light); text-decoration: none; transition: color 0.3s; font-size: 0.95rem;">Search Rooms</a></li>
-                    <li><a href="{% url 'add_property' %}" style="color: var(--text-light); text-decoration: none; transition: color 0.3s; font-size: 0.95rem;">Post a Property</a></li>
+            <!-- Quick Links -->
+            <div style="flex: 1; min-width: 180px;">
+                <h4 style="font-size: 1rem; font-weight: 700; margin-bottom: 1.2rem; color: var(--text-dark);">Platform</h4>
+                <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.75rem;">
+                    <li><a href="{% url 'home' %}" style="color: var(--text-light); font-size: 0.9rem;">Home</a></li>
+                    <li><a href="{% url 'search' %}" style="color: var(--text-light); font-size: 0.9rem;">Search Rooms</a></li>
+                    <li><a href="{% url 'add_property' %}" style="color: var(--text-light); font-size: 0.9rem;">Post a Property</a></li>
                 </ul>
             </div>
             
-            <!-- Professional Links Column -->
-            <div style="flex: 1; min-width: 200px;">
-                <h4 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 1.2rem; color: var(--text-dark);">Company</h4>
-                <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.8rem;">
-                    <li><a href="{% url 'about_us' %}" style="color: var(--text-light); text-decoration: none; transition: color 0.3s; font-size: 0.95rem; font-weight: 500;">About Us</a></li>
-                    <li><a href="{% url 'contact_us' %}" style="color: var(--text-light); text-decoration: none; transition: color 0.3s; font-size: 0.95rem; font-weight: 500;">Contact Us</a></li>
-                    <li><a href="{% url 'privacy_policy' %}" style="color: var(--text-light); text-decoration: none; transition: color 0.3s; font-size: 0.95rem; font-weight: 500;">Privacy Policy</a></li>
-                    <li><a href="{% url 'terms_conditions' %}" style="color: var(--text-light); text-decoration: none; transition: color 0.3s; font-size: 0.95rem; font-weight: 500;">Terms & Conditions</a></li>
+            <!-- Company Links -->
+            <div style="flex: 1; min-width: 180px;">
+                <h4 style="font-size: 1rem; font-weight: 700; margin-bottom: 1.2rem; color: var(--text-dark);">Company</h4>
+                <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.75rem;">
+                    <li><a href="{% url 'about_us' %}" style="color: var(--text-light); font-size: 0.9rem;">About Us</a></li>
+                    <li><a href="{% url 'contact_us' %}" style="color: var(--text-light); font-size: 0.9rem;">Contact Us</a></li>
+                    <li><a href="{% url 'privacy_policy' %}" style="color: var(--text-light); font-size: 0.9rem;">Privacy Policy</a></li>
+                    <li><a href="{% url 'terms_conditions' %}" style="color: var(--text-light); font-size: 0.9rem;">Terms & Conditions</a></li>
                 </ul>
             </div>
         </div>
         
-        <!-- Bottom Section -->
-        <div style="max-width: 1200px; margin: 3rem auto 0 auto; padding-top: 2rem; border-top: 1px solid rgba(0,0,0,0.06); display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 1rem; font-size: 0.9rem;">
+        <!-- Bottom section -->
+        <div style="max-width: 1200px; margin: 3rem auto 0 auto; padding-top: 1.5rem; border-top: 1px solid rgba(15,23,42,0.06); display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 1rem; font-size: 0.85rem; color: var(--text-muted);">
             <p>&copy; 2026 RoomNest. All rights reserved.</p>
-            <p style="opacity: 0.8;">Made with ❤️ for smart room finding</p>
+            <p>Made with ❤️ for Mysore student housing</p>
         </div>
     </footer>
 
     <script src="{% static 'js/app.js' %}?v=2.2" defer></script>
     <script>
+    // Scroll event listener to shrink header
+    window.addEventListener('scroll', function() {
+        const navbar = document.querySelector('.navbar');
+        if (window.scrollY > 40) {
+            navbar.classList.add('scrolled');
+        } else {
+            navbar.classList.remove('scrolled');
+        }
+    });
+
+    // Mobile drawer toggle
+    function toggleDrawer() {
+        const drawer = document.getElementById('mobile-drawer');
+        const backdrop = document.getElementById('drawer-backdrop');
+        if (drawer.classList.contains('open')) {
+            drawer.classList.remove('open');
+            backdrop.classList.remove('active');
+            document.body.style.overflow = '';
+        } else {
+            drawer.classList.add('open');
+            backdrop.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+    }
+
+    // Password visibility toggle
     document.addEventListener("DOMContentLoaded", function() {
         const passwordInputs = document.querySelectorAll("input[type='password']");
         passwordInputs.forEach(input => {
-            // Create wrapper
             const wrapper = document.createElement("div");
             wrapper.style.position = "relative";
             wrapper.style.width = "100%";
             
-            // Insert wrapper before input
             input.parentNode.insertBefore(wrapper, input);
             wrapper.appendChild(input);
-            
-            // Padding right for eye logo
             input.style.paddingRight = "3rem";
             
-            // Create eye element
             const eyeBtn = document.createElement("button");
             eyeBtn.type = "button";
             eyeBtn.style.position = "absolute";
@@ -218,7 +354,7 @@
             eyeBtn.style.alignItems = "center";
             eyeBtn.style.justifyContent = "center";
             eyeBtn.style.padding = "0";
-            eyeBtn.style.color = "#64748b";
+            eyeBtn.style.color = "#64748B";
             eyeBtn.style.zIndex = "10";
             
             const eyeClosed = `

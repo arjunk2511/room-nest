@@ -13,9 +13,9 @@ import csv
 import datetime
 
 def home(request):
-    if not request.user.is_authenticated:
-        return render(request, 'welcome.html')
     featured_listings = Listing.objects.filter(is_sold=False).select_related('owner').order_by('-created_at')[:6]
+    if not request.user.is_authenticated:
+        return render(request, 'welcome.html', {'listings': featured_listings})
     return render(request, 'index.html', {'listings': featured_listings})
 
 def search(request):

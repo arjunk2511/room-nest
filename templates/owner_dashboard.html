@@ -4,60 +4,61 @@
 {% block seo_title %}Owner Dashboard - RoomNest{% endblock %}
 
 {% block content %}
-<div style="max-width: 1100px; margin: 3rem auto; padding: 0 1.5rem;" class="tab-container">
+<div style="max-width: 1200px; margin: 3rem auto; padding: 0 1.5rem;" class="tab-container">
     
-    <!-- User Profile & Dashboard Header Split Layout -->
-    <div style="background: linear-gradient(135deg, var(--primary) 0%, #1e1b4b 100%); color: white; border-radius: var(--border-radius-lg); padding: 2.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 2rem; box-shadow: var(--shadow-md);">
+    <!-- Dashboard Header Header Banner -->
+    <div style="background: linear-gradient(135deg, var(--secondary) 0%, #1E293B 100%); color: white; border-radius: var(--border-radius-lg); padding: 2.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 2rem; box-shadow: var(--shadow-md);">
         <div>
-            <span style="background: rgba(255,255,255,0.2); padding: 0.35rem 0.85rem; border-radius: 4px; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Owner Portal</span>
-            <h1 style="font-size: 2.2rem; font-weight: 800; margin-top: 0.5rem; margin-bottom: 0.2rem; color: white;">Welcome back, {{ request.user.username }}!</h1>
-            <p style="opacity: 0.85; margin: 0; font-size: 0.95rem;">Manage your properties, inspect leads, and negotiate rents directly with seekers in Mysore.</p>
+            <span style="background: rgba(37, 99, 235, 0.2); color: #93C5FD; padding: 0.35rem 0.85rem; border-radius: 6px; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; border: 1px solid rgba(147,197,253,0.15);">Owner Portal</span>
+            <h1 style="font-size: 2.2rem; font-weight: 800; margin-top: 0.6rem; margin-bottom: 0.2rem; color: white;">Welcome back, {{ request.user.username }}!</h1>
+            <p style="opacity: 0.9; margin: 0; font-size: 0.95rem; max-width: 580px; font-weight: 500;">Manage your properties, inspect seeker leads, and communicate directly with renters in Mysore.</p>
         </div>
         
-        <div style="background: rgba(255,255,255,0.1); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.15); border-radius: var(--border-radius-md); padding: 1.25rem 2rem; text-align: center;">
-            <span style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.8; display: block; margin-bottom: 0.25rem;">Account Status</span>
+        <!-- Account status pill -->
+        <div style="background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: var(--border-radius-md); padding: 1.25rem 2rem; text-align: center; min-width: 200px; backdrop-filter: blur(8px);">
+            <span style="font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; opacity: 0.85; display: block; margin-bottom: 0.4rem;">Account Status</span>
             {% if subscription %}
-                <span class="badge badge-verified" style="box-shadow: none; font-size: 0.8rem; padding: 0.4rem 0.9rem;">⭐ Premium Active</span>
-                <span style="font-size: 0.72rem; display: block; margin-top: 0.4rem; opacity: 0.8;">Expires {{ subscription.end_date|date:"Y-m-d" }}</span>
+                <span class="badge badge-verified" style="font-size: 0.8rem; padding: 0.4rem 0.9rem; background: #10B981; color: white; border: none; box-shadow: none;">⭐ Premium Active</span>
+                <span style="font-size: 0.72rem; display: block; margin-top: 0.4rem; opacity: 0.8; font-weight: 500;">Expires {{ subscription.end_date|date:"Y-m-d" }}</span>
             {% else %}
-                <span class="badge badge-rejected" style="box-shadow: none; font-size: 0.8rem; padding: 0.4rem 0.9rem; background: rgba(239,68,68,0.2); color: #fecaca; border-color: rgba(239,68,68,0.3);">Free Tier</span>
-                <a href="{% url 'subscribe' %}" style="font-size: 0.72rem; display: block; margin-top: 0.4rem; color: #a5b4fc; font-weight: 700; text-decoration: none; hover: text-decoration: underline;">Upgrade to Premium ➔</a>
+                <span class="badge badge-rejected" style="font-size: 0.8rem; padding: 0.4rem 0.9rem; background: rgba(239, 68, 68, 0.15); color: #FECACA; border-color: rgba(239, 68, 68, 0.2); box-shadow: none;">Free Tier</span>
+                <a href="{% url 'subscribe' %}" style="font-size: 0.75rem; display: block; margin-top: 0.5rem; color: #93C5FD; font-weight: 700; text-decoration: none;">Upgrade to Premium ➔</a>
             {% endif %}
         </div>
     </div>
 
-    <!-- 2x2 Grid Statistics Box -->
+    <!-- Minimal 4x1 Statistics Cards Grid -->
     <div class="stats-cards-grid">
         <div class="stat-card-premium">
-            <span style="font-size: 0.75rem; color: var(--text-light); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Total Listings</span>
-            <span style="font-size: 1.8rem; font-weight: 850; color: var(--text-dark); margin-top: 0.25rem; display: block;">{{ listings|length }}</span>
+            <span style="font-size: 0.72rem; color: var(--text-light); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Total Listings</span>
+            <span style="font-size: 1.85rem; font-weight: 850; color: var(--text-dark); margin-top: 0.25rem; display: block;">{{ listings|length }}</span>
         </div>
         <div class="stat-card-premium stat-card-success">
-            <span style="font-size: 0.75rem; color: var(--text-light); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Active Listings</span>
-            <span style="font-size: 1.8rem; font-weight: 850; color: var(--secondary); margin-top: 0.25rem; display: block;">{{ active_count }}</span>
+            <span style="font-size: 0.72rem; color: var(--text-light); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Active Stays</span>
+            <span style="font-size: 1.85rem; font-weight: 850; color: #10B981; margin-top: 0.25rem; display: block;">{{ active_count }}</span>
         </div>
         <div class="stat-card-premium stat-card-warning">
-            <span style="font-size: 0.75rem; color: var(--text-light); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Total Views</span>
-            <span style="font-size: 1.8rem; font-weight: 850; color: var(--primary); margin-top: 0.25rem; display: block;">{{ total_views }}</span>
+            <span style="font-size: 0.72rem; color: var(--text-light); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Total Views</span>
+            <span style="font-size: 1.85rem; font-weight: 850; color: var(--primary); margin-top: 0.25rem; display: block;">{{ total_views }}</span>
         </div>
         <div class="stat-card-premium stat-card-danger">
-            <span style="font-size: 0.75rem; color: var(--text-light); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Total Inquiries / Leads</span>
-            <span style="font-size: 1.8rem; font-weight: 850; color: #d97706; margin-top: 0.25rem; display: block;">{{ leads|length }}</span>
+            <span style="font-size: 0.72rem; color: var(--text-light); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Total Leads</span>
+            <span style="font-size: 1.85rem; font-weight: 850; color: #D97706; margin-top: 0.25rem; display: block;">{{ leads|length }}</span>
         </div>
     </div>
 
-    <!-- Tab Selection Header -->
+    <!-- Tabbed Navigation Header -->
     <div class="tab-header" style="margin-top: 1.5rem;">
         <button class="tab-btn active" onclick="switchTab(event, 'properties-tab')">📋 My Properties ({{ listings|length }})</button>
-        <button class="tab-btn" onclick="switchTab(event, 'leads-tab')">📊 Lead Management ({{ leads|length }})</button>
-        <button class="tab-btn" onclick="switchTab(event, 'chats-tab')">💬 Chat Threads ({{ chat_users|length }})</button>
-        <button class="tab-btn" onclick="switchTab(event, 'billing-tab')">💳 Subscription Plan</button>
+        <button class="tab-btn" onclick="switchTab(event, 'leads-tab')">📊 Seeker Leads ({{ leads|length }})</button>
+        <button class="tab-btn" onclick="switchTab(event, 'chats-tab')">💬 Active Chats ({{ chat_users|length }})</button>
+        <button class="tab-btn" onclick="switchTab(event, 'billing-tab')">💳 Billing Plan</button>
     </div>
 
-    <!-- 1. PROPERTIES TAB -->
+    <!-- 1. PROPERTIES TAB SECTION -->
     <div id="properties-tab" class="tab-pane active">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; border-bottom: 1px solid #e2e8f0; padding-bottom: 0.5rem;">
-            <h3 style="font-size: 1.25rem; font-weight: 800; color: var(--text-dark); margin: 0;">My Properties List</h3>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.8rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.75rem; flex-wrap: wrap; gap: 1rem;">
+            <h3 style="font-size: 1.25rem; font-weight: 800; color: var(--text-dark); margin: 0;">My Property Listings</h3>
             <a href="{% url 'add_property' %}" class="btn btn-primary" style="padding: 0.5rem 1.25rem; font-size: 0.88rem; border-radius: 8px;">➕ Add Property</a>
         </div>
         
@@ -65,94 +66,93 @@
         <div class="dashboard-listings-grid">
             {% for listing in listings %}
             <div class="hc-card">
-                <!-- Image Wrapper -->
                 <div class="hc-img-wrapper" style="position: relative;">
                     {% if listing.image %}
                         <img src="{{ listing.image.url|optimize_image:'w_600' }}" alt="{{ listing.title }}" class="hc-img" loading="lazy">
                     {% else %}
-                        <div style="width: 100%; height: 100%; background: #e2e8f0; display:flex; align-items:center; justify-content:center; color: #64748b; font-weight: 600;">No Image</div>
+                        <div style="width: 100%; height: 100%; background: #E2E8F0; display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-weight: 600;">No Image</div>
                     {% endif %}
                     
-                    <span style="position: absolute; top: 1rem; left: 1rem; background: {% if listing.is_sold %}#ef4444{% else %}#10b981{% endif %}; color: white; border-radius: 6px; font-size: 0.72rem; font-weight: 700; padding: 0.35rem 0.75rem; box-shadow: 0 2px 4px rgba(0,0,0,0.12); letter-spacing: 0.5px;">
-                        {% if listing.is_sold %}RENTED OUT{% else %}ACTIVE{% endif %}
+                    <!-- Rented status badge -->
+                    <span style="position: absolute; top: 1rem; left: 1rem; background: {% if listing.is_sold %}#EF4444{% else %}#10B981{% endif %}; color: white; border-radius: 6px; font-size: 0.7rem; font-weight: 700; padding: 0.35rem 0.75rem; box-shadow: var(--shadow-sm); letter-spacing: 0.5px; text-transform: uppercase; border: none;">
+                        {% if listing.is_sold %}Rented Out{% else %}Active{% endif %}
                     </span>
                     
-                    <!-- Property Verification Badge -->
+                    <!-- Verification status badge -->
                     <span style="position: absolute; top: 1rem; right: 1rem; z-index: 10;">
                         {% if listing.verification_status == 'Verified' %}
                             <span class="badge badge-verified">🛡️ Verified</span>
                         {% elif listing.verification_status == 'Pending' %}
-                            <span class="badge badge-pending">🔍 Pending</span>
+                            <span class="badge badge-pending">🔍 Reviewing</span>
                         {% elif listing.verification_status == 'Rejected' %}
                             <span class="badge badge-rejected">❌ Rejected</span>
                         {% else %}
-                            <span class="badge badge-default">Unverified</span>
+                            <span class="badge badge-default" style="background: rgba(15,23,42,0.6); color: white; backdrop-filter: blur(4px); border: none;">Unverified</span>
                         {% endif %}
                     </span>
                 </div>
                 
-                <!-- Card Body -->
                 <div class="hc-content">
                     <div class="hc-header" style="margin-bottom: 0.4rem;">
-                        <span style="font-size: 0.72rem; font-weight: 700; color: var(--primary); text-transform: uppercase;">{{ listing.type }}</span>
-                        <h3 class="hc-title">{{ listing.title }}</h3>
+                        <span style="font-size: 0.7rem; font-weight: 700; color: var(--primary); text-transform: uppercase; letter-spacing: 0.5px;">{{ listing.type }}</span>
+                        <h3 class="hc-title" title="{{ listing.title }}">{{ listing.title }}</h3>
                         <p class="hc-location">📍 {{ listing.location }}</p>
                     </div>
                     
-                    <div class="hc-price">
+                    <div class="hc-price" style="margin-bottom: 0.75rem;">
                         ₹{{ listing.price }}<span style="font-size: 0.8rem; color: var(--text-light); font-weight: 500;">/mo</span>
                     </div>
                     
-                    <!-- View Stats and Leads -->
-                    <div style="display: flex; gap: 8px; margin-bottom: 1rem; flex-wrap: wrap;">
-                        <span style="background: #eef2ff; color: #4338ca; padding: 0.25rem 0.5rem; border-radius: 6px; font-size: 0.72rem; font-weight: 700; border: 1px solid #c7d2fe;">
+                    <!-- Quick Metrics -->
+                    <div style="display: flex; gap: 8px; margin-bottom: 1.25rem; flex-wrap: wrap;">
+                        <span style="background: var(--primary-light); color: var(--primary); padding: 0.25rem 0.6rem; border-radius: 6px; font-size: 0.72rem; font-weight: 700; border: 1px solid rgba(37,99,235,0.06); display: inline-flex; align-items: center; gap: 2px;">
                             👁️ {{ listing.views_count }} views
                         </span>
-                        <span style="background: #ecfdf5; color: #047857; padding: 0.25rem 0.5rem; border-radius: 6px; font-size: 0.72rem; font-weight: 700; border: 1px solid #a7f3d0;">
-                            💬 {{ listing.whatsapp_clicks_count }} WhatsApp
+                        <span style="background: #ECFDF5; color: #047857; padding: 0.25rem 0.6rem; border-radius: 6px; font-size: 0.72rem; font-weight: 700; border: 1px solid #A7F3D0; display: inline-flex; align-items: center; gap: 2px;">
+                            💬 {{ listing.whatsapp_clicks_count }} WhatsApps
                         </span>
                     </div>
                     
-                    <!-- Custom Verification Request Action -->
+                    <!-- Verification Request widgets -->
                     {% if listing.verification_status == 'Not Requested' or listing.verification_status == 'Rejected' %}
-                        <div style="margin-bottom: 1.2rem; background: #f8fafc; border: 1px solid #e2e8f0; padding: 0.85rem; border-radius: 8px;">
+                        <div style="margin-bottom: 1.25rem; background: #FAFAFA; border: 1px solid var(--border-color); padding: 1rem; border-radius: 10px;">
                             {% if listing.verification_status == 'Rejected' %}
-                                <p style="color: #991b1b; font-size: 0.78rem; font-weight: 600; margin: 0 0 0.5rem 0; line-height: 1.3;">⚠️ Verification rejected: <span style="font-weight: normal;">{{ listing.verification_notes }}</span></p>
+                                <p style="color: #991B1B; font-size: 0.78rem; font-weight: 700; margin: 0 0 0.5rem 0; line-height: 1.4;">⚠️ Rejected: <span style="font-weight: 500;">{{ listing.verification_notes }}</span></p>
                             {% endif %}
-                            <button onclick="toggleVerificationForm('verification-form-{{ listing.id }}')" class="btn btn-outline" style="width: 100%; padding: 0.4rem; font-size: 0.78rem; border-radius: 6px; display: flex; align-items: center; justify-content: center; gap: 4px;">🛡️ Request Property Verification</button>
+                            <button onclick="toggleVerificationForm('verification-form-{{ listing.id }}')" class="btn btn-outline" style="width: 100%; padding: 0.45rem; font-size: 0.78rem; border-radius: 6px; display: flex; align-items: center; justify-content: center; gap: 4px; border-color: var(--border-color); color: var(--text-dark);">🛡️ Verify Property</button>
                             
-                            <form id="verification-form-{{ listing.id }}" action="{% url 'request_verification' listing.id %}" method="POST" enctype="multipart/form-data" style="display: none; margin-top: 10px;">
+                            <form id="verification-form-{{ listing.id }}" action="{% url 'request_verification' listing.id %}" method="POST" enctype="multipart/form-data" style="display: none; margin-top: 10px; border-top: 1px solid var(--border-color); padding-top: 10px;">
                                 {% csrf_token %}
-                                <label style="font-size: 0.75rem; font-weight: 700; color: var(--text-dark); display: block; margin-bottom: 4px;">Upload Document (PDF/Image):</label>
+                                <label style="font-size: 0.75rem; font-weight: 700; color: var(--text-dark); display: block; margin-bottom: 4px;">Ownership Proof (PDF/Image):</label>
                                 <input type="file" name="verification_document" required style="font-size: 0.75rem; width: 100%; margin-bottom: 8px;">
-                                <input type="text" name="verification_notes" placeholder="e.g. Electricity bill / ownership card" style="font-size: 0.78rem; width: 100%; padding: 0.4rem; border: 1px solid #cbd5e1; border-radius: 4px; outline: none; margin-bottom: 8px;">
-                                <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.4rem; font-size: 0.78rem; border-radius: 6px;">Submit Request</button>
+                                <input type="text" name="verification_notes" placeholder="e.g., electricity bill, tax receipt" style="font-size: 0.78rem; width: 100%; padding: 0.45rem; border: 1px solid var(--border-color); border-radius: 6px; outline: none; margin-bottom: 8px; background: white;">
+                                <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.45rem; font-size: 0.78rem; border-radius: 6px;">Submit Proof</button>
                             </form>
                         </div>
                     {% elif listing.verification_status == 'Pending' %}
-                        <div style="margin-bottom: 1.2rem; background: #fffbeb; border: 1px dashed #fcd34d; padding: 0.85rem; border-radius: 8px; text-align: center; color: #b45309; font-size: 0.82rem; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 4px;">
+                        <div style="margin-bottom: 1.25rem; background: #FFFBEB; border: 1px dashed #FCD34D; padding: 0.75rem; border-radius: 8px; text-align: center; color: #B45309; font-size: 0.82rem; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 4px;">
                             ⏳ Verification Under Review
                         </div>
                     {% endif %}
 
-                    <!-- Card Actions -->
-                    <div style="display: flex; flex-direction: column; gap: 6px; margin-top: auto; border-top: 1px solid #f1f5f9; padding-top: 0.85rem;">
+                    <!-- Dashboard Action Buttons -->
+                    <div style="display: flex; flex-direction: column; gap: 6px; margin-top: auto; border-top: 1px solid #F1F5F9; padding-top: 0.85rem;">
                         <div style="display: flex; gap: 6px; width: 100%;">
-                            <a href="{% url 'details' listing.id %}" class="btn btn-outline" style="flex: 1; padding: 0.45rem; font-size: 0.8rem; font-weight: 600; border-radius: 6px;">Preview</a>
-                            <a href="{% url 'edit_property' listing.id %}" class="btn" style="flex: 1; padding: 0.45rem; font-size: 0.8rem; font-weight: 600; border-radius: 6px; background: #e0e7ff; color: #3730a3; border: 1px solid #c7d2fe;" onmouseover="this.style.background='#c7d2fe';" onmouseout="this.style.background='#e0e7ff';">Edit ✏️</a>
+                            <a href="{% url 'details' listing.id %}" class="btn btn-outline" style="flex: 1; padding: 0.45rem; font-size: 0.8rem; font-weight: 700; border-radius: 6px; text-align: center;">Preview</a>
+                            <a href="{% url 'edit_property' listing.id %}" class="btn btn-outline" style="flex: 1; padding: 0.45rem; font-size: 0.8rem; font-weight: 700; border-radius: 6px; text-align: center; background: var(--primary-light); color: var(--primary) !important; border-color: rgba(37,99,235,0.1);">Edit ✏️</a>
                         </div>
                         
                         <div style="display: flex; gap: 6px; width: 100%;">
-                            <form action="{% url 'toggle_sold_status' listing.id %}" method="POST" style="flex: 1.4; margin: 0;">
+                            <form action="{% url 'toggle_sold_status' listing.id %}" method="POST" style="flex: 1.3; margin: 0;">
                                 {% csrf_token %}
-                                <button type="submit" class="btn" style="width: 100%; padding: 0.45rem; font-size: 0.8rem; font-weight: 700; border-radius: 6px; cursor: pointer; {% if listing.is_sold %}background: #d1fae5; color: #065f46; border: 1px solid #a7f3d0;{% else %}background: #fffbeb; color: #92400e; border: 1px solid #fef3c7;{% endif %}">
+                                <button type="submit" class="btn" style="width: 100%; padding: 0.45rem; font-size: 0.8rem; font-weight: 700; border-radius: 6px; cursor: pointer; {% if listing.is_sold %}background: #ECFDF5; color: #047857; border: 1px solid #A7F3D0;{% else %}background: #FFFBEB; color: #92400e; border: 1px solid #FEF3C7;{% endif %}">
                                     {% if listing.is_sold %}Mark Active{% else %}Mark Rented{% endif %}
                                 </button>
                             </form>
                             
-                            <form action="{% url 'delete_property' listing.id %}" method="POST" onsubmit="return confirm('⚠️ Permanent delete property listing?');" style="flex: 1; margin: 0;">
+                            <form action="{% url 'delete_property' listing.id %}" method="POST" onsubmit="return confirm('Permanent delete listing? This cannot be undone.');" style="flex: 1; margin: 0;">
                                 {% csrf_token %}
-                                <button type="submit" class="btn" style="width: 100%; padding: 0.45rem; font-size: 0.8rem; font-weight: 700; border-radius: 6px; background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; cursor: pointer;">
+                                <button type="submit" class="btn" style="width: 100%; padding: 0.45rem; font-size: 0.8rem; font-weight: 700; border-radius: 6px; background: #FFF1F2; color: #991B1B; border: 1px solid #FECDCD; cursor: pointer;">
                                     Delete
                                 </button>
                             </form>
@@ -163,38 +163,39 @@
             {% endfor %}
         </div>
         {% else %}
-        <div style="text-align: center; padding: 5rem 2rem; background: white; border-radius: 20px; border: 1px dashed #cbd5e1;">
-            <span style="font-size: 3rem; display: block; margin-bottom: 1.5rem;">🏡</span>
-            <h3 style="color: var(--text-dark); font-size: 1.3rem; margin-bottom: 0.5rem;">No Properties Listed Yet</h3>
-            <p style="color: var(--text-light); margin-bottom: 1.5rem; max-width: 400px; margin-left: auto; margin-right: auto; font-size: 0.92rem; line-height: 1.5;">Post your rooms or PGs on RoomNest to reach thousands of seekers in Mysore.</p>
-            <a href="{% url 'add_property' %}" class="btn btn-primary">Post Your First Property</a>
+        <!-- Empty Placeholder -->
+        <div style="text-align: center; padding: 5rem 2rem; background: var(--white); border-radius: var(--border-radius-lg); border: 1px dashed var(--border-color);">
+            <span style="font-size: 3rem; display: block; margin-bottom: 1rem;">🏡</span>
+            <h3 style="color: var(--text-dark); font-size: 1.3rem; margin-bottom: 0.5rem; font-weight: 850;">No properties listed yet</h3>
+            <p style="color: var(--text-light); margin-bottom: 1.5rem; max-width: 400px; margin-left: auto; margin-right: auto; font-size: 0.92rem; line-height: 1.5; font-weight: 500;">Post your flat, room, PG hostel, or IT workspace on RoomNest to reach thousands of Mysore seekers.</p>
+            <a href="{% url 'add_property' %}" class="btn btn-primary">Post Property Free</a>
         </div>
         {% endif %}
     </div>
 
-    <!-- 2. LEAD MANAGEMENT TAB -->
+    <!-- 2. LEAD MANAGEMENT TAB SECTION -->
     <div id="leads-tab" class="tab-pane">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; border-bottom: 1px solid #e2e8f0; padding-bottom: 0.5rem; flex-wrap: wrap; gap: 1rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.8rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.75rem; flex-wrap: wrap; gap: 1rem;">
             <div>
-                <h3 style="font-size: 1.25rem; font-weight: 800; color: var(--text-dark); margin: 0;">Tenant Leads Tracking</h3>
-                <p style="color: var(--text-light); font-size: 0.88rem; margin: 0.2rem 0 0 0;">View list of seekers who showed interest or sent messages.</p>
+                <h3 style="font-size: 1.25rem; font-weight: 800; color: var(--text-dark); margin: 0;">Renter Leads & Inquiries</h3>
+                <p style="color: var(--text-light); font-size: 0.85rem; margin: 0.2rem 0 0 0; font-weight: 500;">Track seekers who clicked to contact you or sent in-app messages.</p>
             </div>
             {% if subscription and leads %}
-                <a href="{% url 'export_leads_csv' %}" class="btn btn-success" style="padding: 0.5rem 1.25rem; font-size: 0.88rem; border-radius: 8px;">📊 Export Leads CSV</a>
+                <a href="{% url 'export_leads_csv' %}" class="btn btn-success" style="padding: 0.5rem 1.25rem; font-size: 0.85rem; border-radius: 8px;">📊 Export Leads CSV</a>
             {% elif leads %}
-                <button onclick="alert('Please upgrade to Premium subscription to export lead contact sheets.'); window.location.href='{% url 'subscribe' %}';" class="btn btn-success" style="padding: 0.5rem 1.25rem; font-size: 0.88rem; border-radius: 8px; opacity: 0.7;">📊 Export Leads CSV (Premium)</button>
+                <button onclick="alert('Please upgrade to a Premium plan to download lead spreadsheets.'); window.location.href='{% url 'subscribe' %}';" class="btn btn-success" style="padding: 0.5rem 1.25rem; font-size: 0.85rem; border-radius: 8px; opacity: 0.7;">📊 Export Leads (Premium)</button>
             {% endif %}
         </div>
 
         {% if not subscription %}
             <!-- Marketing Premium Upgrade Banner -->
-            <div style="background: linear-gradient(135deg, rgba(79,70,229,0.08) 0%, rgba(124,58,237,0.08) 100%); border: 1.5px solid rgba(79,70,229,0.25); border-radius: var(--border-radius-lg); padding: 2rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1.5rem; margin-bottom: 1.5rem;">
+            <div style="background: linear-gradient(135deg, rgba(37,99,235,0.08) 0%, rgba(59,130,246,0.08) 100%); border: 1.5px solid rgba(37,99,235,0.25); border-radius: var(--border-radius-lg); padding: 2rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1.5rem; margin-bottom: 2rem;">
                 <div style="flex: 2; min-width: 280px;">
-                    <strong style="color: var(--primary); font-size: 1.2rem; display: block; font-weight: 800; margin-bottom: 0.4rem;">🔑 Unlock Seekers' Direct Contact Details</strong>
-                    <p style="color: var(--text-dark); font-size: 0.92rem; line-height: 1.5; margin: 0;">Upgrade to a premium subscription to unmask tenant email addresses, direct phone numbers, download full lead spreadsheets, and get verified badges.</p>
+                    <strong style="color: var(--primary); font-size: 1.15rem; display: block; font-weight: 800; margin-bottom: 0.4rem;">🔑 Unlock Seekers' Contact Information</strong>
+                    <p style="color: var(--text-dark); font-size: 0.9rem; line-height: 1.5; margin: 0; font-weight: 500;">Upgrade to a premium subscription to unmask tenant email addresses, direct phone numbers, and download full lead spreadsheets.</p>
                 </div>
                 <div style="flex: 1; text-align: right; min-width: 150px;">
-                    <a href="{% url 'subscribe' %}" class="btn btn-primary" style="padding: 0.75rem 1.5rem; border-radius: 8px; font-size: 0.9rem;">Upgrade for ₹49</a>
+                    <a href="{% url 'subscribe' %}" class="btn btn-primary" style="padding: 0.7rem 1.5rem; border-radius: 8px; font-size: 0.88rem;">Upgrade for ₹49</a>
                 </div>
             </div>
         {% endif %}
@@ -204,11 +205,11 @@
             <table class="premium-table">
                 <thead>
                     <tr>
-                        <th>Seeker Name</th>
+                        <th>Seeker Details</th>
                         <th>Phone Number</th>
                         <th>Email Address</th>
-                        <th>Inquired Stay</th>
-                        <th>Contact Type</th>
+                        <th>Stay Inquired</th>
+                        <th>Inquiry Channel</th>
                         <th>Received Date</th>
                     </tr>
                 </thead>
@@ -216,17 +217,17 @@
                     {% for lead in leads %}
                     <tr>
                         <td>
-                            <strong style="color: var(--text-dark); font-weight: 700;">{{ lead.name }}</strong>
+                            <strong style="color: var(--text-dark); font-weight: 700; display: block;">{{ lead.name }}</strong>
                             {% if lead.tenant %}
-                                <span style="font-size: 0.72rem; color: var(--text-light); display: block;">Username: @{{ lead.tenant.username }}</span>
+                                <span style="font-size: 0.75rem; color: var(--text-light); font-weight: 500;">Username: @{{ lead.tenant.username }}</span>
                             {% endif %}
                         </td>
                         <td>
                             {% if subscription %}
-                                <strong style="color: var(--text-dark);">{{ lead.phone }}</strong>
+                                <strong style="color: var(--text-dark); font-weight: 700;">{{ lead.phone }}</strong>
                             {% else %}
                                 <span class="masked-text">📞 +91 9876543210</span>
-                                <span style="font-size: 0.7rem; color: #ea580c; background: #fff7ed; padding: 1px 4px; border-radius: 4px; font-weight: 600; display: inline-block;">Locked</span>
+                                <span style="font-size: 0.65rem; color: #D97706; background: #FEF3C7; padding: 1px 6px; border-radius: 4px; font-weight: 700; margin-left: 4px; display: inline-block;">Locked</span>
                             {% endif %}
                         </td>
                         <td>
@@ -234,95 +235,102 @@
                                 <span>{{ lead.email }}</span>
                             {% else %}
                                 <span class="masked-text">seeker***@gmail.com</span>
-                                <span style="font-size: 0.7rem; color: #ea580c; background: #fff7ed; padding: 1px 4px; border-radius: 4px; font-weight: 600; display: inline-block;">Locked</span>
+                                <span style="font-size: 0.65rem; color: #D97706; background: #FEF3C7; padding: 1px 6px; border-radius: 4px; font-weight: 700; margin-left: 4px; display: inline-block;">Locked</span>
                             {% endif %}
                         </td>
                         <td>
-                            <a href="{% url 'details' lead.listing.id %}" style="color: var(--primary); text-decoration: none; font-weight: 600;">{{ lead.listing.title }}</a>
-                            <span style="font-size: 0.75rem; color: var(--text-light); display: block;">Type: {{ lead.listing.type }} (₹{{ lead.listing.price }}/mo)</span>
+                            <a href="{% url 'details' lead.listing.id %}" style="color: var(--primary); text-decoration: none; font-weight: 700; font-size: 0.9rem;">{{ lead.listing.title }}</a>
+                            <span style="font-size: 0.75rem; color: var(--text-muted); display: block; font-weight: 600; margin-top: 1px;">{{ lead.listing.type }} (₹{{ lead.listing.price }}/mo)</span>
                         </td>
                         <td>
                             {% if lead.lead_type == 'WhatsApp' %}
-                                <span class="badge" style="background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; box-shadow: none; font-size: 0.7rem;">🟢 WhatsApp Click</span>
+                                <span class="badge" style="background: #ECFDF5; color: #047857; border: 1px solid #A7F3D0; box-shadow: none; font-size: 0.68rem; font-weight: 700;">🟢 WhatsApp Tap</span>
                             {% else %}
-                                <span class="badge" style="background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; box-shadow: none; font-size: 0.7rem;">💬 Chat Message</span>
+                                <span class="badge" style="background: var(--primary-light); color: var(--primary); border: 1px solid rgba(37,99,235,0.1); box-shadow: none; font-size: 0.68rem; font-weight: 700;">💬 Chat Thread</span>
                             {% endif %}
                         </td>
-                        <td style="color: var(--text-light);">{{ lead.created_at|date:"Y-m-d H:i" }}</td>
+                        <td style="color: var(--text-light); font-weight: 500;">{{ lead.created_at|date:"Y-m-d H:i" }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
         </div>
         {% else %}
-        <div style="text-align: center; padding: 5rem 2rem; background: white; border-radius: var(--border-radius-lg); border: 1px dashed #cbd5e1;">
-            <span style="font-size: 3rem; display: block; margin-bottom: 1.5rem;">📊</span>
-            <h3 style="color: var(--text-dark); font-size: 1.3rem; margin-bottom: 0.5rem;">No Leads Yet</h3>
-            <p style="color: var(--text-light); margin-bottom: 1.5rem; max-width: 400px; margin-left: auto; margin-right: auto; font-size: 0.95rem; line-height: 1.5;">When tenants inquire about your properties via WhatsApp clicks or direct messages, their details will display here.</p>
+        <div style="text-align: center; padding: 5rem 2rem; background: var(--white); border-radius: var(--border-radius-lg); border: 1px dashed var(--border-color);">
+            <span style="font-size: 3rem; display: block; margin-bottom: 1rem;">📊</span>
+            <h3 style="color: var(--text-dark); font-size: 1.3rem; margin-bottom: 0.5rem; font-weight: 850;">No Leads Received</h3>
+            <p style="color: var(--text-light); margin-bottom: 1.5rem; max-width: 400px; margin-left: auto; margin-right: auto; font-size: 0.92rem; line-height: 1.5; font-weight: 500;">When seekers tap to contact you on WhatsApp or send in-app messages, their contact details will display here.</p>
         </div>
         {% endif %}
     </div>
 
-    <!-- 3. CHATS TAB -->
+    <!-- 3. CHATS TAB SECTION -->
     <div id="chats-tab" class="tab-pane">
-        {% if chat_users %}
-        <div style="background: white; border: 1px solid rgba(15,23,42,0.06); border-radius: var(--border-radius-lg); box-shadow: var(--shadow-sm); overflow: hidden; max-width: 800px; margin: 0 auto;">
-            {% for chat in chat_users %}
-            <a href="{% url 'chat' chat.user.id %}" style="display: flex; justify-content: space-between; align-items: center; padding: 1.5rem 2rem; border-bottom: 1px solid #f1f5f9; text-decoration: none; color: inherit; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#f8fafc';" onmouseout="this.style.backgroundColor='transparent';">
-                <div style="display: flex; align-items: center; gap: 1.2rem;">
-                    <div style="width: 48px; height: 48px; border-radius: 50%; background: #e0e7ff; color: #4338ca; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.1rem; border: 2px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.05); text-transform: uppercase;">
-                        {{ chat.user.username|slice:":2" }}
+        <div style="max-width: 750px; margin: 0 auto;">
+            <div style="border-bottom: 1px solid var(--border-color); padding-bottom: 0.75rem; margin-bottom: 1.5rem;">
+                <h3 style="font-size: 1.25rem; font-weight: 800; color: var(--text-dark); margin: 0;">In-App Messages Inbox</h3>
+                <p style="color: var(--text-light); font-size: 0.85rem; margin: 0.2rem 0 0 0; font-weight: 500;">Direct chats with renters inquiring about your stay listings.</p>
+            </div>
+            
+            {% if chat_users %}
+            <div style="background: var(--white); border: 1px solid var(--border-color); border-radius: var(--border-radius-lg); box-shadow: var(--shadow); overflow: hidden;">
+                {% for chat in chat_users %}
+                <a href="{% url 'chat' chat.user.id %}" style="display: flex; justify-content: space-between; align-items: center; padding: 1.25rem 1.75rem; border-bottom: 1px solid #F1F5F9; text-decoration: none; color: inherit; transition: var(--transition-smooth);" onmouseover="this.style.backgroundColor='#F8FAFC';" onmouseout="this.style.backgroundColor='transparent';">
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <div style="width: 44px; height: 44px; border-radius: 50%; background: var(--primary-light); color: var(--primary); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1rem; border: 1px solid rgba(37,99,235,0.08); text-transform: uppercase;">
+                            {{ chat.user.username|slice:":2" }}
+                        </div>
+                        <div>
+                            <h4 style="font-size: 1rem; font-weight: 700; color: var(--text-dark); margin: 0 0 0.2rem 0;">{{ chat.user.username }}</h4>
+                            <p style="font-size: 0.88rem; color: var(--text-light); margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 350px; font-weight: 500;">
+                                {{ chat.last_message.content }}
+                            </p>
+                        </div>
                     </div>
-                    <div>
-                        <h4 style="font-size: 1.05rem; font-weight: 700; color: var(--text-dark); margin: 0 0 0.25rem 0;">{{ chat.user.username }}</h4>
-                        <p style="font-size: 0.88rem; color: var(--text-light); margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 400px;">
-                            {{ chat.last_message.content }}
-                        </p>
+                    <div style="text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 4px;">
+                        <span style="font-size: 0.78rem; color: var(--text-muted); font-weight: 500;">{{ chat.last_message.timestamp|date:"M d, H:i" }}</span>
+                        {% if chat.unread_count > 0 %}
+                            <span style="background: var(--primary); color: white; border-radius: 99px; font-size: 0.68rem; font-weight: 800; padding: 0.15rem 0.5rem;">{{ chat.unread_count }} new</span>
+                        {% endif %}
                     </div>
-                </div>
-                <div style="text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 6px;">
-                    <span style="font-size: 0.78rem; color: var(--text-light);">{{ chat.last_message.timestamp|date:"M d, H:i" }}</span>
-                    {% if chat.unread_count > 0 %}
-                        <span style="background: var(--primary); color: white; border-radius: 9999px; font-size: 0.72rem; font-weight: 700; padding: 0.2rem 0.5rem; display: inline-block;">{{ chat.unread_count }} new</span>
-                    {% endif %}
-                </div>
-            </a>
-            {% endfor %}
+                </a>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div style="text-align: center; padding: 5rem 2rem; background: var(--white); border-radius: var(--border-radius-lg); border: 1px dashed var(--border-color);">
+                <span style="font-size: 3rem; display: block; margin-bottom: 1rem;">💬</span>
+                <h3 style="color: var(--text-dark); font-size: 1.3rem; margin-bottom: 0.5rem; font-weight: 850;">No messages yet</h3>
+                <p style="color: var(--text-light); margin-bottom: 1.5rem; max-width: 400px; margin-left: auto; margin-right: auto; font-size: 0.92rem; line-height: 1.5; font-weight: 500;">Direct messaging threads with seekers will show up here once they message you.</p>
+            </div>
+            {% endif %}
         </div>
-        {% else %}
-        <div style="text-align: center; padding: 5rem 2rem; background: white; border-radius: var(--border-radius-lg); border: 1px dashed #cbd5e1;">
-            <span style="font-size: 3rem; display: block; margin-bottom: 1.5rem;">💬</span>
-            <h3 style="color: var(--text-dark); font-size: 1.3rem; margin-bottom: 0.5rem;">No Active Message Threads</h3>
-            <p style="color: var(--text-light); margin-bottom: 1.5rem; max-width: 400px; margin-left: auto; margin-right: auto; font-size: 0.95rem; line-height: 1.5;">Direct messaging threads with seekers will show up here.</p>
-        </div>
-        {% endif %}
     </div>
 
-    <!-- 4. BILLING TAB -->
+    <!-- 4. BILLING TAB SECTION -->
     <div id="billing-tab" class="tab-pane">
-        <div style="max-width: 600px; margin: 0 auto; background: white; border: 1px solid rgba(15,23,42,0.06); border-radius: var(--border-radius-lg); padding: 2.5rem; box-shadow: var(--shadow-sm);">
-            <h3 style="font-size: 1.35rem; font-weight: 800; color: var(--text-dark); margin: 0 0 1rem 0; border-bottom: 1px solid #f1f5f9; padding-bottom: 0.75rem;">Premium Account Status</h3>
+        <div style="max-width: 580px; margin: 0 auto; background: var(--white); border: 1px solid var(--border-color); border-radius: var(--border-radius-lg); padding: 2.5rem; box-shadow: var(--shadow);">
+            <h3 style="font-size: 1.3rem; font-weight: 800; color: var(--text-dark); margin: 0 0 1rem 0; border-bottom: 1px solid #F1F5F9; padding-bottom: 0.75rem;">Premium Verification Account</h3>
             
             {% if subscription %}
                 <div style="margin: 1.5rem 0; display: flex; align-items: center; gap: 1rem;">
-                    <div style="width: 54px; height: 54px; background: #eef2ff; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.7rem; color: var(--primary);">⭐</div>
+                    <div style="width: 54px; height: 54px; background: var(--primary-light); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; color: var(--primary); border: 1px solid rgba(37,99,235,0.08);">⭐</div>
                     <div>
-                        <span style="font-size: 1.25rem; font-weight: 800; color: var(--primary); display: block;">{{ subscription.plan_name }}</span>
-                        <span style="font-size: 0.85rem; color: var(--text-light); display: block; margin-top: 0.2rem;">Complete platform access, unlocked leads contact info.</span>
+                        <span style="font-size: 1.2rem; font-weight: 800; color: var(--primary); display: block;">{{ subscription.plan_name }}</span>
+                        <span style="font-size: 0.85rem; color: var(--text-light); display: block; margin-top: 0.2rem; font-weight: 500;">Complete owner lead details unlocked.</span>
                     </div>
                 </div>
                 
-                <div style="background: #f8fafc; border-radius: var(--border-radius-sm); padding: 1.2rem; display: flex; flex-direction: column; gap: 0.6rem; font-size: 0.92rem; margin-bottom: 1.5rem;">
-                    <div style="display:flex; justify-content:space-between;"><span style="color: var(--text-light);">Transaction UTR ID:</span><strong style="color: var(--text-dark);">{{ subscription.transaction_id }}</strong></div>
-                    <div style="display:flex; justify-content:space-between;"><span style="color: var(--text-light);">Activation Date:</span><strong style="color: var(--text-dark);">{{ subscription.start_date|date:"Y-m-d" }}</strong></div>
-                    <div style="display:flex; justify-content:space-between;"><span style="color: var(--text-light);">Expiration Date:</span><strong style="color: var(--text-dark);">{{ subscription.end_date|date:"Y-m-d" }}</strong></div>
+                <div style="background: #FAFAFA; border-radius: var(--border-radius-sm); border: 1px solid var(--border-color); padding: 1.2rem; display: flex; flex-direction: column; gap: 0.6rem; font-size: 0.9rem; margin-bottom: 1.5rem; font-weight: 500;">
+                    <div style="display: flex; justify-content: space-between;"><span style="color: var(--text-light);">UTR Reference:</span><strong style="color: var(--text-dark);">{{ subscription.transaction_id }}</strong></div>
+                    <div style="display: flex; justify-content: space-between;"><span style="color: var(--text-light);">Activation Date:</span><strong style="color: var(--text-dark);">{{ subscription.start_date|date:"Y-m-d" }}</strong></div>
+                    <div style="display: flex; justify-content: space-between;"><span style="color: var(--text-light);">Expiration Date:</span><strong style="color: var(--text-dark);">{{ subscription.end_date|date:"Y-m-d" }}</strong></div>
                 </div>
             {% else %}
-                <div style="margin: 1.5rem 0; text-align: center; padding: 2rem 0; background: #f8fafc; border-radius: var(--border-radius-md);">
+                <div style="margin: 1.5rem 0; text-align: center; padding: 2rem 1rem; background: #FAFAFA; border-radius: var(--border-radius-md); border: 1px solid var(--border-color);">
                     <span style="font-size: 2.2rem; display: block; margin-bottom: 0.8rem;">🔒</span>
-                    <span style="font-size: 1.15rem; font-weight: 700; color: var(--text-dark); display: block;">No Premium Plan Active</span>
-                    <p style="color: var(--text-light); font-size: 0.88rem; margin: 0.4rem 0 1.2rem 0; padding: 0 1.5rem; line-height: 1.4;">Get instant access to phone numbers, emails, export lead databases, and unlock advanced search metrics.</p>
-                    <a href="{% url 'subscribe' %}" class="btn btn-primary" style="font-size: 0.88rem; padding: 0.5rem 1.5rem;">Upgrade to Premium for ₹49</a>
+                    <span style="font-size: 1.1rem; font-weight: 800; color: var(--text-dark); display: block;">No active Premium Plan</span>
+                    <p style="color: var(--text-light); font-size: 0.88rem; margin: 0.4rem 0 1.25rem 0; padding: 0 1rem; line-height: 1.4; font-weight: 500;">Upgrade to unmask renter phone numbers, email addresses, download full lead spreadsheets, and build renter trust.</p>
+                    <a href="{% url 'subscribe' %}" class="btn btn-primary" style="font-size: 0.88rem; padding: 0.55rem 1.5rem;">Upgrade to Premium for ₹49</a>
                 </div>
             {% endif %}
         </div>
@@ -331,6 +339,7 @@
 </div>
 
 <script>
+// Switch between dashboard tabs
 function switchTab(evt, tabId) {
     const tabPanes = document.querySelectorAll('.tab-pane');
     tabPanes.forEach(pane => pane.classList.remove('active'));
@@ -342,6 +351,7 @@ function switchTab(evt, tabId) {
     evt.currentTarget.classList.add('active');
 }
 
+// Toggle document upload verification form
 function toggleVerificationForm(formId) {
     const form = document.getElementById(formId);
     if (form.style.display === 'none') {

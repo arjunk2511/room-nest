@@ -4,40 +4,45 @@
 {% block seo_title %}Tenant Dashboard - RoomNest{% endblock %}
 
 {% block content %}
-<div style="max-width: 1100px; margin: 3rem auto; padding: 0 1.5rem;" class="tab-container">
+<div style="max-width: 1200px; margin: 3rem auto; padding: 0 1.5rem;" class="tab-container">
     
-    <!-- Profile & Summary Header -->
-    <div style="background: linear-gradient(135deg, var(--primary) 0%, #312e81 100%); color: white; border-radius: var(--border-radius-lg); padding: 2.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 2rem; box-shadow: var(--shadow-md);">
+    <!-- Tenant Header Banner -->
+    <div style="background: linear-gradient(135deg, var(--primary) 0%, #1E3A8A 100%); color: white; border-radius: var(--border-radius-lg); padding: 2.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 2rem; box-shadow: var(--shadow-md);">
         <div>
-            <span style="background: rgba(255,255,255,0.2); padding: 0.35rem 0.85rem; border-radius: 4px; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Tenant Portal</span>
-            <h1 style="font-size: 2.2rem; font-weight: 800; margin-top: 0.5rem; margin-bottom: 0.2rem; color: white;">Welcome back, {{ request.user.username }}!</h1>
-            <p style="opacity: 0.85; margin: 0; font-size: 0.95rem;">Manage your wishlists, view message history, and track property inquiries in Mysore.</p>
+            <span style="background: rgba(255, 255, 255, 0.2); color: #93C5FD; padding: 0.35rem 0.85rem; border-radius: 6px; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; border: 1px solid rgba(147,197,253,0.15);">Tenant Portal</span>
+            <h1 style="font-size: 2.2rem; font-weight: 800; margin-top: 0.6rem; margin-bottom: 0.2rem; color: white;">Welcome back, {{ request.user.username }}!</h1>
+            <p style="opacity: 0.9; margin: 0; font-size: 0.95rem; max-width: 580px; font-weight: 500;">Manage your saved properties, track contact history with owners, and check active chat negotiations.</p>
         </div>
         
-        <div style="background: rgba(255,255,255,0.1); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.15); border-radius: var(--border-radius-md); padding: 1.25rem 2rem; text-align: center;">
-            <span style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.8; display: block; margin-bottom: 0.25rem;">Account Status</span>
+        <!-- Subscription status pill -->
+        <div style="background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: var(--border-radius-md); padding: 1.25rem 2rem; text-align: center; min-width: 200px; backdrop-filter: blur(8px);">
+            <span style="font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; opacity: 0.85; display: block; margin-bottom: 0.4rem;">Account Status</span>
             {% if subscription %}
-                <span class="badge badge-verified" style="box-shadow: none; font-size: 0.8rem; padding: 0.4rem 0.9rem;">⭐ Premium Active</span>
-                <span style="font-size: 0.72rem; display: block; margin-top: 0.4rem; opacity: 0.8;">Expires {{ subscription.end_date|date:"Y-m-d" }}</span>
+                <span class="badge badge-verified" style="font-size: 0.8rem; padding: 0.4rem 0.9rem; background: #10B981; color: white; border: none; box-shadow: none;">⭐ Premium Active</span>
+                <span style="font-size: 0.72rem; display: block; margin-top: 0.4rem; opacity: 0.8; font-weight: 500;">Expires {{ subscription.end_date|date:"Y-m-d" }}</span>
             {% else %}
-                <span class="badge badge-rejected" style="box-shadow: none; font-size: 0.8rem; padding: 0.4rem 0.9rem; background: rgba(239,68,68,0.2); color: #fecaca; border-color: rgba(239,68,68,0.3);">Free Tier</span>
-                <a href="{% url 'subscribe' %}" style="font-size: 0.72rem; display: block; margin-top: 0.4rem; color: #a5b4fc; font-weight: 700; text-decoration: none; hover: text-decoration: underline;">Upgrade to Premium ➔</a>
+                <span class="badge badge-rejected" style="font-size: 0.8rem; padding: 0.4rem 0.9rem; background: rgba(239, 68, 68, 0.15); color: #FECACA; border-color: rgba(239, 68, 68, 0.2); box-shadow: none;">Free Tier</span>
+                <a href="{% url 'subscribe' %}" style="font-size: 0.75rem; display: block; margin-top: 0.5rem; color: #93C5FD; font-weight: 700; text-decoration: none;">Upgrade to Premium ➔</a>
             {% endif %}
         </div>
     </div>
 
-    <!-- Tab Selection Header -->
+    <!-- Tabbed Navigation Header -->
     <div class="tab-header" style="margin-top: 1.5rem;">
-        <button class="tab-btn active" onclick="switchTab(event, 'wishlist-tab')">❤️ Saved Wishlist ({{ listings|length }})</button>
-        <button class="tab-btn" onclick="switchTab(event, 'inquiries-tab')">📬 Inquiries ({{ inquiries|length }})</button>
+        <button class="tab-btn active" onclick="switchTab(event, 'wishlist-tab')">❤️ Saved Properties ({{ listings|length }})</button>
+        <button class="tab-btn" onclick="switchTab(event, 'searches-tab')">🔍 Recent Searches</button>
+        <button class="tab-btn" onclick="switchTab(event, 'inquiries-tab')">📬 Contact History ({{ inquiries|length }})</button>
         <button class="tab-btn" onclick="switchTab(event, 'chats-tab')">💬 Active Chats ({{ chat_users|length }})</button>
-        <button class="tab-btn" onclick="switchTab(event, 'subscription-tab')">💳 Subscriptions</button>
+        <button class="tab-btn" onclick="switchTab(event, 'subscription-tab')">💳 Profile & Billing</button>
     </div>
 
-    <!-- Tab Panes -->
-    
-    <!-- 1. WISHLIST TAB -->
+    <!-- 1. SAVED PROPERTIES TAB SECTION -->
     <div id="wishlist-tab" class="tab-pane active">
+        <div style="border-bottom: 1px solid var(--border-color); padding-bottom: 0.75rem; margin-bottom: 1.8rem;">
+            <h3 style="font-size: 1.25rem; font-weight: 800; color: var(--text-dark); margin: 0;">My Saved Properties</h3>
+            <p style="color: var(--text-light); font-size: 0.85rem; margin: 0.2rem 0 0 0; font-weight: 500;">A curated collection of your favorite Mysore rentals.</p>
+        </div>
+        
         {% if listings %}
         <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem;">
             {% for listing in listings %}
@@ -48,11 +53,13 @@
                     {% else %}
                         <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; background:#e2e8f0; color:#64748b;">No Image</div>
                     {% endif %}
-                    <span style="position: absolute; top: 1rem; left: 1rem; background: var(--primary); color: white; border-radius: 6px; font-size: 0.72rem; font-weight: 700; padding: 0.35rem 0.75rem; box-shadow: var(--shadow-sm);">
+                    
+                    <span class="card-badge" style="position: absolute; top: 1rem; left: 1rem; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(4px); color: var(--text-dark); padding: 0.35rem 0.8rem; border-radius: 6px; font-size: 0.72rem; font-weight: 700; box-shadow: var(--shadow-sm); z-index: 2;">
                         {{ listing.type }}
                     </span>
+                    
                     {% if listing.is_verified %}
-                        <span style="position: absolute; top: 1rem; right: 1rem; background: #10b981; color: white; border-radius: 6px; font-size: 0.72rem; font-weight: 700; padding: 0.35rem 0.75rem; box-shadow: var(--shadow-sm); display: flex; align-items: center; gap: 3px;">
+                        <span style="position: absolute; top: 1rem; right: 1rem; background: #10B981; color: white; border-radius: 6px; font-size: 0.7rem; font-weight: 700; padding: 0.35rem 0.7rem; box-shadow: var(--shadow-sm); z-index: 2;">
                             🛡️ Verified
                         </span>
                     {% endif %}
@@ -60,7 +67,7 @@
                 
                 <div class="hc-content">
                     <div class="hc-header" style="margin-bottom: 0.4rem;">
-                        <h3 class="hc-title">{{ listing.title }}</h3>
+                        <h3 class="hc-title" title="{{ listing.title }}">{{ listing.title }}</h3>
                         <p class="hc-location">📍 {{ listing.location }}</p>
                     </div>
                     
@@ -68,40 +75,100 @@
                         ₹{{ listing.price }}<span style="font-size: 0.8rem; color: var(--text-light); font-weight: 500;">/mo</span>
                     </div>
                     
-                    <div style="display: flex; gap: 8px; font-size: 0.8rem; margin-bottom: 1rem; color: var(--text-light); font-weight: 500;">
-                        <span>🚪 {{ listing.listing_purpose }}</span> • <span>🛋️ {{ listing.furnishing }}</span>
+                    <div class="hc-info-grid">
+                        <div class="card-info-item">
+                            <span class="card-info-label">Furnishing</span>
+                            <span class="card-info-value">{{ listing.furnishing }}</span>
+                        </div>
+                        <div class="card-info-item">
+                            <span class="card-info-label">Deposit</span>
+                            <span class="card-info-value">₹{{ listing.deposit }}</span>
+                        </div>
+                        <div class="card-info-item">
+                            <span class="card-info-label">Availability</span>
+                            <span class="card-info-value">{{ listing.available_from }}</span>
+                        </div>
                     </div>
 
-                    <div style="display: flex; gap: 8px; border-top: 1px solid #f1f5f9; padding-top: 1rem; margin-top: auto;">
-                        <a href="{% url 'details' listing.id %}" class="btn btn-primary" style="flex: 1.5; padding: 0.5rem; font-size: 0.82rem;">View Details</a>
-                        <a href="{% url 'toggle_wishlist' listing.id %}" class="btn btn-outline" style="flex: 1; padding: 0.5rem; font-size: 0.82rem; color: #ef4444; border-color: #fca5a5; background: #fff5f5;" onmouseover="this.style.background='#fee2e2';" onmouseout="this.style.background='#fff5f5';">Remove</a>
+                    <div style="display: flex; gap: 8px; border-top: 1px solid #F1F5F9; padding-top: 1rem; margin-top: auto; align-items: center; width: 100%;">
+                        <a href="{% url 'details' listing.id %}" class="btn btn-primary" style="flex: 1.5; padding: 0.5rem; font-size: 0.82rem;">View Stay Details</a>
+                        <a href="{% url 'toggle_wishlist' listing.id %}" class="btn btn-outline" style="flex: 1; padding: 0.5rem; font-size: 0.82rem; color: #EF4444 !important; border-color: #FCA5A5; background: #FFF5F5;" onmouseover="this.style.background='#FEE2E2';" onmouseout="this.style.background='#FFF5F5';">Remove</a>
                     </div>
                 </div>
             </div>
             {% endfor %}
         </div>
         {% else %}
-        <div style="text-align: center; padding: 5rem 2rem; background: white; border-radius: var(--border-radius-lg); border: 1px dashed #cbd5e1;">
-            <span style="font-size: 3rem; display: block; margin-bottom: 1.5rem;">❤️</span>
-            <h3 style="color: var(--text-dark); font-size: 1.3rem; margin-bottom: 0.5rem;">Your Wishlist is Empty</h3>
-            <p style="color: var(--text-light); margin-bottom: 1.5rem; max-width: 400px; margin-left: auto; margin-right: auto; font-size: 0.95rem; line-height: 1.5;">Start exploring properties across Mysore and save your favorites to view them later.</p>
-            <a href="{% url 'search' %}" class="btn btn-primary">Find Rooms Now</a>
+        <div style="text-align: center; padding: 5rem 2rem; background: var(--white); border-radius: var(--border-radius-lg); border: 1px dashed var(--border-color);">
+            <span style="font-size: 3rem; display: block; margin-bottom: 1rem;">❤️</span>
+            <h3 style="color: var(--text-dark); font-size: 1.3rem; margin-bottom: 0.5rem; font-weight: 850;">Your Saved Wishlist is Empty</h3>
+            <p style="color: var(--text-light); margin-bottom: 1.5rem; max-width: 400px; margin-left: auto; margin-right: auto; font-size: 0.92rem; line-height: 1.5; font-weight: 500;">Start exploring verified stays across Mysore and save your favorites to view them here later.</p>
+            <a href="{% url 'search' %}" class="btn btn-primary">Browse Properties</a>
         </div>
         {% endif %}
     </div>
 
-    <!-- 2. INQUIRIES TAB -->
+    <!-- 2. RECENT SEARCHES TAB SECTION -->
+    <div id="searches-tab" class="tab-pane">
+        <div style="border-bottom: 1px solid var(--border-color); padding-bottom: 0.75rem; margin-bottom: 1.8rem;">
+            <h3 style="font-size: 1.25rem; font-weight: 800; color: var(--text-dark); margin: 0;">Recent Searches</h3>
+            <p style="color: var(--text-light); font-size: 0.85rem; margin: 0.2rem 0 0 0; font-weight: 500;">Quick shortcuts to run your favorite search queries instantly.</p>
+        </div>
+
+        <!-- Sleek Quick Pill Shortcuts -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.25rem;">
+            <!-- Shortcut 1: Gokulam PG -->
+            <a href="{% url 'search' %}?location=Gokulam&type=PG+(Men)" style="display: block;">
+                <div style="background: var(--white); border: 1px solid var(--border-color); border-radius: var(--border-radius-lg); padding: 1.5rem; display: flex; align-items: center; justify-content: space-between; box-shadow: var(--shadow-sm); transition: var(--transition-smooth);" onmouseover="this.style.transform='translateY(-2px)'; this.style.borderColor='var(--primary)';" onmouseout="this.style.transform='translateY(0)'; this.style.borderColor='var(--border-color)';">
+                    <div>
+                        <strong style="color: var(--text-dark); font-size: 1rem; display: block; font-weight: 700;">Gokulam Men's PGs</strong>
+                        <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 500; display: block; margin-top: 0.15rem;">Mysore • PG (Men) • Active</span>
+                    </div>
+                    <span style="font-size: 1.3rem;">⚡</span>
+                </div>
+            </a>
+
+            <!-- Shortcut 2: Vijayanagar Flat -->
+            <a href="{% url 'search' %}?location=Vijayanagar&type=1BHK" style="display: block;">
+                <div style="background: var(--white); border: 1px solid var(--border-color); border-radius: var(--border-radius-lg); padding: 1.5rem; display: flex; align-items: center; justify-content: space-between; box-shadow: var(--shadow-sm); transition: var(--transition-smooth);" onmouseover="this.style.transform='translateY(-2px)'; this.style.borderColor='var(--primary)';" onmouseout="this.style.transform='translateY(0)'; this.style.borderColor='var(--border-color)';">
+                    <div>
+                        <strong style="color: var(--text-dark); font-size: 1rem; display: block; font-weight: 700;">Vijayanagar 1 BHK Flats</strong>
+                        <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 500; display: block; margin-top: 0.15rem;">Mysore • 1BHK Apartment • Active</span>
+                    </div>
+                    <span style="font-size: 1.3rem;">⚡</span>
+                </div>
+            </a>
+
+            <!-- Shortcut 3: Hebbal Rooms -->
+            <a href="{% url 'search' %}?location=Hebbal&type=Single+Room" style="display: block;">
+                <div style="background: var(--white); border: 1px solid var(--border-color); border-radius: var(--border-radius-lg); padding: 1.5rem; display: flex; align-items: center; justify-content: space-between; box-shadow: var(--shadow-sm); transition: var(--transition-smooth);" onmouseover="this.style.transform='translateY(-2px)'; this.style.borderColor='var(--primary)';" onmouseout="this.style.transform='translateY(0)'; this.style.borderColor='var(--border-color)';">
+                    <div>
+                        <strong style="color: var(--text-dark); font-size: 1rem; display: block; font-weight: 700;">Hebbal IT Single Rooms</strong>
+                        <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 500; display: block; margin-top: 0.15rem;">Mysore • Single Room • Active</span>
+                    </div>
+                    <span style="font-size: 1.3rem;">⚡</span>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- 3. CONTACT HISTORY TAB SECTION -->
     <div id="inquiries-tab" class="tab-pane">
+        <div style="border-bottom: 1px solid var(--border-color); padding-bottom: 0.75rem; margin-bottom: 1.8rem;">
+            <h3 style="font-size: 1.25rem; font-weight: 800; color: var(--text-dark); margin: 0;">Contact History</h3>
+            <p style="color: var(--text-light); font-size: 0.85rem; margin: 0.2rem 0 0 0; font-weight: 500;">A detailed log of property owners you have contacted on RoomNest.</p>
+        </div>
+
         {% if inquiries %}
         <div class="table-wrapper">
             <table class="premium-table">
                 <thead>
                     <tr>
-                        <th>Property Title</th>
-                        <th>Location</th>
-                        <th>Owner Contact</th>
-                        <th>Method</th>
-                        <th>Inquiry Date</th>
+                        <th>Listing Stay</th>
+                        <th>Locality</th>
+                        <th>Owner Direct Contact</th>
+                        <th>Inquiry Type</th>
+                        <th>Contacted Date</th>
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -110,30 +177,30 @@
                     <tr>
                         <td>
                             <strong style="color: var(--text-dark); font-weight: 700;">{{ inquiry.listing.title }}</strong>
-                            <span style="font-size: 0.72rem; background: #eff6ff; color: #2563eb; padding: 0.15rem 0.4rem; border-radius: 4px; display: block; width: fit-content; margin-top: 0.2rem; font-weight: 700;">{{ inquiry.listing.type }}</span>
+                            <span style="font-size: 0.72rem; background: var(--primary-light); color: var(--primary); padding: 0.15rem 0.4rem; border-radius: 4px; display: block; width: fit-content; margin-top: 0.2rem; font-weight: 700;">{{ inquiry.listing.type }}</span>
                         </td>
                         <td>📍 {{ inquiry.listing.location }}</td>
                         <td>
                             {% if subscription %}
                                 <div style="display:flex; flex-direction:column; gap:2px;">
-                                    <span style="font-weight: 600;">📞 {{ inquiry.listing.phone }}</span>
-                                    <span style="font-size: 0.8rem; color: var(--text-light);">Owner: {{ inquiry.listing.owner.username }}</span>
+                                    <span style="font-weight: 750; color: var(--text-dark);">📞 {{ inquiry.listing.phone }}</span>
+                                    <span style="font-size: 0.78rem; color: var(--text-light); font-weight: 500;">Owner: {{ inquiry.listing.owner.username }}</span>
                                 </div>
                             {% else %}
                                 <div style="display:flex; flex-direction:column; gap:4px;">
                                     <span class="masked-text">📞 +91 9876543210</span>
-                                    <span style="font-size: 0.75rem; background: #fef3c7; color: #d97706; padding: 0.1rem 0.4rem; border-radius: 4px; width: fit-content; font-weight: 700;">🔒 Premium Required</span>
+                                    <span style="font-size: 0.68rem; background: #FEF3C7; color: #D97706; padding: 0.15rem 0.4rem; border-radius: 4px; width: fit-content; font-weight: 700;">🔒 Premium Required</span>
                                 </div>
                             {% endif %}
                         </td>
                         <td>
                             {% if inquiry.lead_type == 'WhatsApp' %}
-                                <span class="badge" style="background: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; box-shadow: none;">🟢 WhatsApp Click</span>
+                                <span class="badge" style="background: #ECFDF5; color: #047857; border: 1px solid #A7F3D0; box-shadow: none; font-size: 0.7rem; font-weight: 700;">🟢 WhatsApp Tap</span>
                             {% else %}
-                                <span class="badge" style="background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; box-shadow: none;">💬 Chat Message</span>
+                                <span class="badge" style="background: var(--primary-light); color: var(--primary); border: 1px solid rgba(37,99,235,0.08); box-shadow: none; font-size: 0.7rem; font-weight: 700;">💬 Chat Message</span>
                             {% endif %}
                         </td>
-                        <td style="color: var(--text-light);">{{ inquiry.created_at|date:"Y-m-d H:i" }}</td>
+                        <td style="color: var(--text-light); font-weight: 500;">{{ inquiry.created_at|date:"Y-m-d H:i" }}</td>
                         <td>
                             <a href="{% url 'details' inquiry.listing.id %}" class="btn btn-outline" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; border-radius: 6px;">View Stay</a>
                         </td>
@@ -143,97 +210,111 @@
             </table>
         </div>
         {% else %}
-        <div style="text-align: center; padding: 5rem 2rem; background: white; border-radius: var(--border-radius-lg); border: 1px dashed #cbd5e1;">
-            <span style="font-size: 3rem; display: block; margin-bottom: 1.5rem;">📬</span>
-            <h3 style="color: var(--text-dark); font-size: 1.3rem; margin-bottom: 0.5rem;">No Inquiries Yet</h3>
-            <p style="color: var(--text-light); margin-bottom: 1.5rem; max-width: 400px; margin-left: auto; margin-right: auto; font-size: 0.95rem; line-height: 1.5;">Your inquiries sent to owners will show up here, making it easy to track which properties you contacted.</p>
-            <a href="{% url 'search' %}" class="btn btn-primary">Start Contacting Owners</a>
+        <div style="text-align: center; padding: 5rem 2rem; background: var(--white); border-radius: var(--border-radius-lg); border: 1px dashed var(--border-color);">
+            <span style="font-size: 3rem; display: block; margin-bottom: 1rem;">📬</span>
+            <h3 style="color: var(--text-dark); font-size: 1.3rem; margin-bottom: 0.5rem; font-weight: 850;">No Contact History</h3>
+            <p style="color: var(--text-light); margin-bottom: 1.5rem; max-width: 400px; margin-left: auto; margin-right: auto; font-size: 0.92rem; line-height: 1.5; font-weight: 500;">Your direct inquiries sent to owners will show up here, making it easy to track stays you have visited.</p>
+            <a href="{% url 'search' %}" class="btn btn-primary">Find Stays</a>
         </div>
         {% endif %}
     </div>
 
-    <!-- 3. CHATS TAB -->
+    <!-- 4. ACTIVE CHATS TAB SECTION -->
     <div id="chats-tab" class="tab-pane">
-        {% if chat_users %}
-        <div style="background: white; border: 1px solid rgba(15,23,42,0.06); border-radius: var(--border-radius-lg); box-shadow: var(--shadow-sm); overflow: hidden; max-width: 800px; margin: 0 auto;">
-            {% for chat in chat_users %}
-            <a href="{% url 'chat' chat.user.id %}" style="display: flex; justify-content: space-between; align-items: center; padding: 1.5rem 2rem; border-bottom: 1px solid #f1f5f9; text-decoration: none; color: inherit; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#f8fafc';" onmouseout="this.style.backgroundColor='transparent';">
-                <div style="display: flex; align-items: center; gap: 1.2rem;">
-                    <div style="width: 48px; height: 48px; border-radius: 50%; background: #e0e7ff; color: #4338ca; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.1rem; border: 2px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.05); text-transform: uppercase;">
-                        {{ chat.user.username|slice:":2" }}
+        <div style="max-width: 750px; margin: 0 auto;">
+            <div style="border-bottom: 1px solid var(--border-color); padding-bottom: 0.75rem; margin-bottom: 1.5rem;">
+                <h3 style="font-size: 1.25rem; font-weight: 800; color: var(--text-dark); margin: 0;">Landlord Chat Negotiations</h3>
+                <p style="color: var(--text-light); font-size: 0.85rem; margin: 0.2rem 0 0 0; font-weight: 500;">Direct messaging threads with property owners.</p>
+            </div>
+            
+            {% if chat_users %}
+            <div style="background: var(--white); border: 1px solid var(--border-color); border-radius: var(--border-radius-lg); box-shadow: var(--shadow); overflow: hidden;">
+                {% for chat in chat_users %}
+                <a href="{% url 'chat' chat.user.id %}" style="display: flex; justify-content: space-between; align-items: center; padding: 1.25rem 1.75rem; border-bottom: 1px solid #F1F5F9; text-decoration: none; color: inherit; transition: var(--transition-smooth);" onmouseover="this.style.backgroundColor='#F8FAFC';" onmouseout="this.style.backgroundColor='transparent';">
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <div style="width: 44px; height: 44px; border-radius: 50%; background: var(--primary-light); color: var(--primary); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1rem; border: 1px solid rgba(37,99,235,0.08); text-transform: uppercase;">
+                            {{ chat.user.username|slice:":2" }}
+                        </div>
+                        <div>
+                            <h4 style="font-size: 1rem; font-weight: 700; color: var(--text-dark); margin: 0 0 0.2rem 0;">{{ chat.user.username }}</h4>
+                            <p style="font-size: 0.88rem; color: var(--text-light); margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 350px; font-weight: 500;">
+                                {{ chat.last_message.content }}
+                            </p>
+                        </div>
                     </div>
-                    <div>
-                        <h4 style="font-size: 1.05rem; font-weight: 700; color: var(--text-dark); margin: 0 0 0.25rem 0;">{{ chat.user.username }}</h4>
-                        <p style="font-size: 0.88rem; color: var(--text-light); margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 400px;">
-                            {{ chat.last_message.content }}
-                        </p>
+                    <div style="text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 4px;">
+                        <span style="font-size: 0.78rem; color: var(--text-muted); font-weight: 500;">{{ chat.last_message.timestamp|date:"M d, H:i" }}</span>
+                        {% if chat.unread_count > 0 %}
+                            <span style="background: var(--primary); color: white; border-radius: 99px; font-size: 0.68rem; font-weight: 800; padding: 0.15rem 0.5rem;">{{ chat.unread_count }} new</span>
+                        {% endif %}
                     </div>
-                </div>
-                <div style="text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 6px;">
-                    <span style="font-size: 0.78rem; color: var(--text-light);">{{ chat.last_message.timestamp|date:"M d, H:i" }}</span>
-                    {% if chat.unread_count > 0 %}
-                        <span style="background: var(--primary); color: white; border-radius: 9999px; font-size: 0.72rem; font-weight: 700; padding: 0.2rem 0.5rem; display: inline-block;">{{ chat.unread_count }} new</span>
-                    {% endif %}
-                </div>
-            </a>
-            {% endfor %}
+                </a>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div style="text-align: center; padding: 5rem 2rem; background: var(--white); border-radius: var(--border-radius-lg); border: 1px dashed var(--border-color);">
+                <span style="font-size: 3rem; display: block; margin-bottom: 1rem;">💬</span>
+                <h3 style="color: var(--text-dark); font-size: 1.3rem; margin-bottom: 0.5rem; font-weight: 850;">No active chats</h3>
+                <p style="color: var(--text-light); margin-bottom: 1.5rem; max-width: 400px; margin-left: auto; margin-right: auto; font-size: 0.92rem; line-height: 1.5; font-weight: 500;">Direct messaging threads with landlords will show up here once you initiate chats.</p>
+            </div>
+            {% endif %}
         </div>
-        {% else %}
-        <div style="text-align: center; padding: 5rem 2rem; background: white; border-radius: var(--border-radius-lg); border: 1px dashed #cbd5e1;">
-            <span style="font-size: 3rem; display: block; margin-bottom: 1.5rem;">💬</span>
-            <h3 style="color: var(--text-dark); font-size: 1.3rem; margin-bottom: 0.5rem;">No Active Chats</h3>
-            <p style="color: var(--text-light); margin-bottom: 1.5rem; max-width: 400px; margin-left: auto; margin-right: auto; font-size: 0.95rem; line-height: 1.5;">Send a direct chat message to property owners to negotiate rent and check availability.</p>
-            <a href="{% url 'search' %}" class="btn btn-primary">Find a Property to Chat</a>
-        </div>
-        {% endif %}
     </div>
 
-    <!-- 4. SUBSCRIPTION TAB -->
+    <!-- 5. PROFILE & SUBSCRIPTION TAB SECTION -->
     <div id="subscription-tab" class="tab-pane">
         <div style="display: flex; gap: 2rem; flex-wrap: wrap;">
             
             <!-- Left: Current Active Plan -->
-            <div style="flex: 1.2; min-width: 320px; background: white; border: 1px solid rgba(15,23,42,0.06); border-radius: var(--border-radius-lg); padding: 2.5rem; box-shadow: var(--shadow-sm); display: flex; flex-direction: column; justify-content: space-between;">
+            <div style="flex: 1.2; min-width: 320px; background: var(--white); border: 1px solid var(--border-color); border-radius: var(--border-radius-lg); padding: 2.5rem; box-shadow: var(--shadow); display: flex; flex-direction: column; justify-content: space-between;">
                 <div>
-                    <h3 style="font-size: 1.35rem; font-weight: 800; color: var(--text-dark); margin: 0 0 1rem 0; border-bottom: 1px solid #f1f5f9; padding-bottom: 0.75rem;">Active Subscription Tier</h3>
+                    <h3 style="font-size: 1.3rem; font-weight: 800; color: var(--text-dark); margin: 0 0 1rem 0; border-bottom: 1px solid #F1F5F9; padding-bottom: 0.75rem;">Premium Renter Status</h3>
                     
                     {% if subscription %}
                         <div style="margin: 1.5rem 0; display: flex; align-items: center; gap: 1rem;">
-                            <div style="width: 54px; height: 54px; background: #eef2ff; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.7rem; color: var(--primary);">⭐</div>
+                            <div style="width: 54px; height: 54px; background: var(--primary-light); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; color: var(--primary); border: 1px solid rgba(37,99,235,0.08);">⭐</div>
                             <div>
                                 <span style="font-size: 1.2rem; font-weight: 800; color: var(--primary); display: block;">{{ subscription.plan_name }}</span>
-                                <span style="font-size: 0.85rem; color: var(--text-light); display: block; margin-top: 0.2rem;">90 Days Premium access plan for renters</span>
+                                <span style="font-size: 0.85rem; color: var(--text-light); display: block; margin-top: 0.2rem; font-weight: 500;">Complete direct owner contact details unlocked.</span>
                             </div>
                         </div>
                         
-                        <div style="background: #f8fafc; border-radius: var(--border-radius-sm); padding: 1.2rem; display: flex; flex-direction: column; gap: 0.6rem; font-size: 0.92rem; margin-bottom: 1.5rem;">
-                            <div style="display:flex; justify-content:space-between;"><span style="color: var(--text-light);">UTR / Transaction ID:</span><strong style="color: var(--text-dark);">{{ subscription.transaction_id }}</strong></div>
-                            <div style="display:flex; justify-content:space-between;"><span style="color: var(--text-light);">Start Date:</span><strong style="color: var(--text-dark);">{{ subscription.start_date|date:"Y-m-d" }}</strong></div>
-                            <div style="display:flex; justify-content:space-between;"><span style="color: var(--text-light);">Expiry Date:</span><strong style="color: var(--text-dark);">{{ subscription.end_date|date:"Y-m-d" }}</strong></div>
+                        <div style="background: #FAFAFA; border-radius: var(--border-radius-sm); border: 1px solid var(--border-color); padding: 1.2rem; display: flex; flex-direction: column; gap: 0.6rem; font-size: 0.9rem; margin-bottom: 1.5rem; font-weight: 500;">
+                            <div style="display: flex; justify-content: space-between;"><span style="color: var(--text-light);">UTR / Transaction ID:</span><strong style="color: var(--text-dark);">{{ subscription.transaction_id }}</strong></div>
+                            <div style="display: flex; justify-content: space-between;"><span style="color: var(--text-light);">Start Date:</span><strong style="color: var(--text-dark);">{{ subscription.start_date|date:"Y-m-d" }}</strong></div>
+                            <div style="display: flex; justify-content: space-between;"><span style="color: var(--text-light);">Expiry Date:</span><strong style="color: var(--text-dark);">{{ subscription.end_date|date:"Y-m-d" }}</strong></div>
                         </div>
                     {% else %}
-                        <div style="margin: 1.5rem 0; text-align: center; padding: 2rem 0; background: #f8fafc; border-radius: var(--border-radius-md);">
+                        <div style="margin: 1.5rem 0; text-align: center; padding: 2rem 1rem; background: #FAFAFA; border-radius: var(--border-radius-md); border: 1px solid var(--border-color);">
                             <span style="font-size: 2.2rem; display: block; margin-bottom: 0.8rem;">🔓</span>
-                            <span style="font-size: 1.15rem; font-weight: 700; color: var(--text-dark); display: block;">No Active Premium Plan</span>
-                            <p style="color: var(--text-light); font-size: 0.88rem; margin: 0.4rem 0 1.2rem 0; padding: 0 1.5rem; line-height: 1.4;">Unlock direct owner phone numbers, map coordinates, and instant WhatsApp support.</p>
-                            <a href="{% url 'subscribe' %}" class="btn btn-primary" style="font-size: 0.88rem; padding: 0.5rem 1.5rem;">Upgrade for ₹49 Only</a>
+                            <span style="font-size: 1.1rem; font-weight: 800; color: var(--text-dark); display: block;">No Active Premium Plan</span>
+                            <p style="color: var(--text-light); font-size: 0.88rem; margin: 0.4rem 0 1.25rem 0; padding: 0 1rem; line-height: 1.4; font-weight: 500;">Unlock direct owner phone numbers, map coordinates, and direct WhatsApp contact.</p>
+                            <a href="{% url 'subscribe' %}" class="btn btn-primary" style="font-size: 0.88rem; padding: 0.55rem 1.5rem;">Upgrade to Premium for ₹49</a>
                         </div>
                     {% endif %}
+                </div>
+                
+                <div style="border-top: 1px solid var(--border-color); padding-top: 1.5rem; margin-top: 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+                    <div>
+                        <strong style="color: var(--text-dark); font-size: 0.95rem; display: block; font-weight: 700;">Profile Settings</strong>
+                        <span style="font-size: 0.8rem; color: var(--text-light); font-weight: 500;">Update your name, email, and phone number.</span>
+                    </div>
+                    <a href="{% url 'profile' %}" class="btn btn-outline" style="padding: 0.5rem 1.2rem; font-size: 0.82rem; border-radius: 8px;">Edit Profile ➔</a>
                 </div>
             </div>
 
             <!-- Right: Billing History -->
-            <div style="flex: 1; min-width: 320px; background: white; border: 1px solid rgba(15,23,42,0.06); border-radius: var(--border-radius-lg); padding: 2.5rem; box-shadow: var(--shadow-sm);">
-                <h3 style="font-size: 1.35rem; font-weight: 800; color: var(--text-dark); margin: 0 0 1.25rem 0; border-bottom: 1px solid #f1f5f9; padding-bottom: 0.75rem;">Payment Submission History</h3>
+            <div style="flex: 1; min-width: 320px; background: var(--white); border: 1px solid var(--border-color); border-radius: var(--border-radius-lg); padding: 2.5rem; box-shadow: var(--shadow);">
+                <h3 style="font-size: 1.3rem; font-weight: 800; color: var(--text-dark); margin: 0 0 1.25rem 0; border-bottom: 1px solid #F1F5F9; padding-bottom: 0.75rem;">Payment History</h3>
                 
                 {% if sub_history %}
                     <div style="display: flex; flex-direction: column; gap: 1rem; max-height: 350px; overflow-y: auto;">
                         {% for sub in sub_history %}
-                        <div style="border: 1px solid #e2e8f0; border-radius: var(--border-radius-sm); padding: 1rem; display: flex; justify-content: space-between; align-items: center;">
+                        <div style="border: 1px solid var(--border-color); border-radius: var(--border-radius-sm); padding: 1rem; display: flex; justify-content: space-between; align-items: center; background: #FAFAFA;">
                             <div>
-                                <strong style="color: var(--text-dark); font-size: 0.95rem; display: block;">{{ sub.plan_name }}</strong>
-                                <span style="font-size: 0.78rem; color: var(--text-light); display: block; margin-top: 0.25rem;">Submitted: {{ sub.start_date|date:"Y-m-d" }}</span>
-                                <span style="font-size: 0.72rem; color: var(--text-light); display: block;">UTR: {{ sub.transaction_id }}</span>
+                                <strong style="color: var(--text-dark); font-size: 0.92rem; display: block; font-weight: 700;">{{ sub.plan_name }}</strong>
+                                <span style="font-size: 0.78rem; color: var(--text-light); display: block; margin-top: 0.25rem; font-weight: 500;">Submitted: {{ sub.start_date|date:"Y-m-d" }}</span>
+                                <span style="font-size: 0.72rem; color: var(--text-muted); display: block; font-weight: 600;">UTR: {{ sub.transaction_id }}</span>
                             </div>
                             <div>
                                 {% if sub.payment_status == 'Approved' %}
@@ -248,7 +329,7 @@
                         {% endfor %}
                     </div>
                 {% else %}
-                    <p style="color: var(--text-light); font-size: 0.95rem; text-align: center; margin: 3rem 0;">No payments submitted yet.</p>
+                    <p style="color: var(--text-light); font-size: 0.92rem; text-align: center; margin: 3rem 0; font-style: italic;">No payment submissions logged.</p>
                 {% endif %}
             </div>
             
@@ -258,16 +339,14 @@
 </div>
 
 <script>
+// Tab switcher logic
 function switchTab(evt, tabId) {
-    // Hide all tab panes
     const tabPanes = document.querySelectorAll('.tab-pane');
     tabPanes.forEach(pane => pane.classList.remove('active'));
     
-    // Remove active class from all tab buttons
     const tabBtns = document.querySelectorAll('.tab-btn');
     tabBtns.forEach(btn => btn.classList.remove('active'));
     
-    // Show selected pane and set button active
     document.getElementById(tabId).classList.add('active');
     evt.currentTarget.classList.add('active');
 }
