@@ -15,9 +15,22 @@ import datetime
 
 def home(request):
     featured_listings = Listing.objects.filter(is_sold=False).select_related('owner__userprofile').order_by('-created_at')[:6]
+    has_subscription = False
+    if request.user.is_authenticated:
+        has_subscription = Subscription.objects.filter(
+            user=request.user,
+            is_active=True,
+            end_date__gt=timezone.now()
+        ).exists()
+    
+    context = {
+        'listings': featured_listings,
+        'has_subscription': has_subscription
+    }
+    
     if not request.user.is_authenticated:
-        return render(request, 'welcome.html', {'listings': featured_listings})
-    return render(request, 'index.html', {'listings': featured_listings})
+        return render(request, 'welcome.html', context)
+    return render(request, 'index.html', context)
 
 def search(request):
     # Optimize query by pre-joining the owner's profile and removing unused reviews prefetch

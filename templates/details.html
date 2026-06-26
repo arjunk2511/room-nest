@@ -107,29 +107,33 @@
 
     <!-- Modern Image Carousel Gallery -->
     <div style="position: relative; margin-bottom: 2.5rem;">
-        <div class="carousel-container">
-            <div class="carousel-slides">
+        <div class="swipe-gallery-wrapper">
+            <div class="swipe-gallery">
                 {% if listing.image %}
-                <img src="{{ listing.image.url|optimize_image:'w_1200' }}" alt="{{ listing.title }}">
+                <div class="swipe-gallery-item">
+                    <img src="{{ listing.image.url|optimize_image:'w_1200' }}" alt="{{ listing.title }}">
+                </div>
                 {% else %}
-                <div style="min-width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-weight: 600; font-size: 1.2rem; background: #E2E8F0;">No Image Available</div>
+                <div class="swipe-gallery-item" style="display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-weight: 600; font-size: 1.2rem; background: #E2E8F0;">No Image Available</div>
                 {% endif %}
                 
                 {% for img in listing.images.all %}
-                <img src="{{ img.image.url|optimize_image:'w_1200' }}" alt="Gallery Image {{ forloop.counter }}" loading="lazy">
+                <div class="swipe-gallery-item">
+                    <img src="{{ img.image.url|optimize_image:'w_1200' }}" alt="Gallery Image {{ forloop.counter }}" loading="lazy">
+                </div>
                 {% endfor %}
             </div>
             
             {% if listing.images.all %}
             <!-- Navigation Arrows -->
-            <button onclick="moveSlide(-1)" style="position: absolute; top: 50%; left: 20px; transform: translateY(-50%); background: rgba(255,255,255,0.95); border: 1px solid var(--border-color); width: 42px; height: 42px; border-radius: 50%; font-size: 1.1rem; cursor: pointer; box-shadow: var(--shadow); z-index: 10; display: flex; align-items: center; justify-content: center; color: var(--text-dark); transition: var(--transition-smooth);" onmouseover="this.style.background='var(--primary)'; this.style.color='white';" onmouseout="this.style.background='rgba(255,255,255,0.95)'; this.style.color='var(--text-dark)';">❮</button>
-            <button onclick="moveSlide(1)" style="position: absolute; top: 50%; right: 20px; transform: translateY(-50%); background: rgba(255,255,255,0.95); border: 1px solid var(--border-color); width: 42px; height: 42px; border-radius: 50%; font-size: 1.1rem; cursor: pointer; box-shadow: var(--shadow); z-index: 10; display: flex; align-items: center; justify-content: center; color: var(--text-dark); transition: var(--transition-smooth);" onmouseover="this.style.background='var(--primary)'; this.style.color='white';" onmouseout="this.style.background='rgba(255,255,255,0.95)'; this.style.color='var(--text-dark)';">❯</button>
+            <button onclick="moveSwipeSlide(-1)" class="gallery-nav-btn prev" aria-label="Previous image">❮</button>
+            <button onclick="moveSwipeSlide(1)" class="gallery-nav-btn next" aria-label="Next image">❯</button>
             
             <!-- Index dots -->
-            <div class="carousel-indicators">
-                <div class="indicator active"></div>
+            <div class="gallery-indicators">
+                <div class="gallery-indicator active" onclick="goToSwipeSlide(0)"></div>
                 {% for img in listing.images.all %}
-                <div class="indicator"></div>
+                <div class="gallery-indicator" onclick="goToSwipeSlide({{ forloop.counter }})"></div>
                 {% endfor %}
             </div>
             {% endif %}
@@ -140,12 +144,12 @@
         <div style="margin-top: 1rem;">
             <div class="thumbnail-strip">
                 {% if listing.image %}
-                <div class="thumbnail-item" onclick="goToSlide(0)">
+                <div class="thumbnail-item active" onclick="goToSwipeSlide(0)">
                     <img src="{{ listing.image.url|optimize_image:'w_150' }}" alt="Main Image" loading="lazy">
                 </div>
                 {% endif %}
                 {% for img in listing.images.all %}
-                <div class="thumbnail-item" onclick="goToSlide({{ forloop.counter }})">
+                <div class="thumbnail-item" onclick="goToSwipeSlide({{ forloop.counter }})">
                     <img src="{{ img.image.url|optimize_image:'w_150' }}" alt="Gallery Image {{ forloop.counter }}" loading="lazy">
                 </div>
                 {% endfor %}
@@ -571,19 +575,28 @@
                 </div>
                 
                 {% if request.user != listing.owner %}
-                <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                <div class="sticky-cta-bar">
+                    <!-- Price on Mobile Sticky Bar -->
+                    <div class="mobile-sticky-price">
+                        <span class="price-amt">₹{{ listing.price }}</span>
+                        <span class="price-lbl">per month</span>
+                    </div>
                     <!-- Call -->
-                    <a href="tel:{{ listing.phone }}" class="btn btn-outline" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: 700; border-color: var(--border-color);">
-                        📞 Call Landlord Direct
+                    <a href="tel:{{ listing.phone }}" class="btn btn-outline" style="display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: 700; border-color: var(--border-color);">
+                        📞 Call
                     </a>
                     <!-- WhatsApp -->
-                    <button onclick="openWhatsApp('{{ listing.phone|escapejs }}', '{{ listing.title|escapejs }}')" class="btn btn-whatsapp" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: 700; border: none; font-size: 0.95rem;">
-                        💬 Connect on WhatsApp
+                    <button onclick="openWhatsApp('{{ listing.phone|escapejs }}', '{{ listing.title|escapejs }}')" class="btn btn-whatsapp" style="display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: 700; border: none; font-size: 0.95rem;">
+                        💬 WhatsApp
                     </button>
+                    <!-- Book Visit -->
+                    <a href="#visit-booking-section" class="btn btn-primary" style="display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: 700;">
+                        📅 Book Visit
+                    </a>
                 </div>
                 
                 <!-- Visit Tour booking widget -->
-                <div style="margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px solid var(--border-color);">
+                <div id="visit-booking-section" style="margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px solid var(--border-color);">
                     <h4 style="margin: 0 0 1rem 0; font-size: 0.95rem; font-weight: 800; color: var(--text-dark);">🗓️ Request Property Tour</h4>
                     <div style="display: flex; flex-direction: column; gap: 0.75rem;">
                         <div>
@@ -626,15 +639,31 @@
                     <p style="margin: 0 0 1.25rem 0; color: #BE123C; font-size: 0.88rem; line-height: 1.5; font-weight: 500;">
                         A premium plan is required to unmask exact phone numbers, maps, and addresses to schedule tours.
                     </p>
-                    <a href="{% url 'subscribe' %}" class="btn btn-primary" style="width: 100%; padding: 0.75rem; border-radius: 10px; font-weight: 700; font-size: 0.92rem; box-shadow: 0 4px 12px rgba(225,29,72,0.25); background: linear-gradient(135deg, #E11D48 0%, #BE123C 100%); border: none;">
-                        Upgrade Plan (₹49) 🚀
-                    </a>
+                    <div class="sticky-cta-bar">
+                        <!-- Price on Mobile Sticky Bar -->
+                        <div class="mobile-sticky-price">
+                            <span class="price-amt">₹{{ listing.price }}</span>
+                            <span class="price-lbl">per month</span>
+                        </div>
+                        <a href="{% url 'subscribe' %}" class="btn btn-primary" style="width: 100%; border-radius: 8px; font-weight: 700; background: linear-gradient(135deg, #E11D48 0%, #BE123C 100%); border: none; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                            Upgrade Plan (₹49) 🚀
+                        </a>
+                    </div>
                 </div>
                 {% else %}
                 <div style="background: #F8FAFC; padding: 1.5rem; border-radius: var(--border-radius-lg); text-align: center; border: 1px solid var(--border-color);">
                     <div style="font-size: 1.8rem; margin-bottom: 0.6rem;">🔒</div>
                     <p style="margin: 0 0 1.25rem 0; color: var(--text-dark); font-size: 0.88rem; font-weight: 500; line-height: 1.4;">Login to RoomNest to unmask direct landowner contact details and map views.</p>
-                    <a href="{% url 'login' %}?next={{ request.path }}" class="btn btn-primary" style="width: 100%; padding: 0.75rem; border-radius: 10px; font-weight: 700;">Login to Unlock</a>
+                    <div class="sticky-cta-bar">
+                        <!-- Price on Mobile Sticky Bar -->
+                        <div class="mobile-sticky-price">
+                            <span class="price-amt">₹{{ listing.price }}</span>
+                            <span class="price-lbl">per month</span>
+                        </div>
+                        <a href="{% url 'login' %}?next={{ request.path }}" class="btn btn-primary" style="width: 100%; border-radius: 8px; font-weight: 700; display: flex; align-items: center; justify-content: center;">
+                            Login to Unlock
+                        </a>
+                    </div>
                 </div>
                 {% endif %}
             {% endif %}
@@ -642,83 +671,79 @@
     </aside>
 </div>
 
-<!-- Sticky Bottom CTA bar for Mobile viewports -->
-<div class="details-mobile-sticky-bar">
-    <div class="mobile-sticky-price">
-        <span class="price-amt">₹{{ listing.price }}</span>
-        <span class="price-lbl">per month</span>
-    </div>
-    <div style="display: flex; gap: 8px; flex: 1; justify-content: flex-end;">
-        {% if has_subscription %}
-            <a href="tel:{{ listing.phone }}" class="btn btn-outline" style="flex: 1; min-height: 40px; height: 40px; border-radius: 8px; font-size: 0.82rem !important; padding: 0.5rem !important; font-weight: 700;">📞 Call</a>
-            <button onclick="openWhatsApp('{{ listing.phone|escapejs }}', '{{ listing.title|escapejs }}')" class="btn btn-whatsapp" style="flex: 1.5; min-height: 40px; height: 40px; border-radius: 8px; font-size: 0.82rem !important; padding: 0.5rem !important; font-weight: 700;">💬 WhatsApp</button>
-        {% elif user.is_authenticated %}
-            <a href="{% url 'subscribe' %}" class="btn btn-primary" style="width: 100%; min-height: 40px; height: 40px; border-radius: 8px; font-size: 0.82rem !important; padding: 0.5rem !important; font-weight: 700;">⭐ Contact Owner</a>
-        {% else %}
-            <a href="{% url 'login' %}?next={{ request.path }}" class="btn btn-primary" style="width: 100%; min-height: 40px; height: 40px; border-radius: 8px; font-size: 0.82rem !important; padding: 0.5rem !important; font-weight: 700;">🔒 Login to Contact</a>
-        {% endif %}
-    </div>
-</div>
-
 <script>
-// Image Carousel Dots sync
+// Swipeable Gallery Scroll Snap Sync
 let currentSlide = 0;
-const slides = document.querySelector('.carousel-slides');
-const indicators = document.querySelectorAll('.indicator');
+const swipeGallery = document.querySelector('.swipe-gallery');
+const indicators = document.querySelectorAll('.gallery-indicator');
 const thumbs = document.querySelectorAll('.thumbnail-item');
-const totalSlides = {{ listing.images.all|length }} + 1;
+const totalSlides = {% if listing.images.all %}{{ listing.images.all|length }} + 1{% else %}1{% endif %};
 
 function syncGalleryUI() {
     if (indicators.length) {
         indicators.forEach((ind, index) => {
-            ind.style.opacity = index === currentSlide ? '1' : '0.5';
+            if (index === currentSlide) {
+                ind.classList.add('active');
+            } else {
+                ind.classList.remove('active');
+            }
         });
     }
     if (thumbs.length) {
         thumbs.forEach((thumb, index) => {
             if (index === currentSlide) {
-                thumb.style.borderColor = 'var(--primary)';
-                thumb.style.opacity = '1';
+                thumb.classList.add('active');
                 thumb.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
             } else {
-                thumb.style.borderColor = 'transparent';
-                thumb.style.opacity = '0.55';
+                thumb.classList.remove('active');
             }
         });
     }
 }
 
-function moveSlide(direction) {
-    currentSlide = (currentSlide + direction + totalSlides) % totalSlides;
-    if (slides) {
-        slides.style.transform = `translateX(-${currentSlide * 100}%)`;
-    }
-    syncGalleryUI();
-}
-
-function goToSlide(index) {
+function goToSwipeSlide(index) {
     currentSlide = index;
-    if (slides) {
-        slides.style.transform = `translateX(-${currentSlide * 100}%)`;
+    if (swipeGallery) {
+        swipeGallery.scrollTo({
+            left: index * swipeGallery.clientWidth,
+            behavior: 'smooth'
+        });
     }
     syncGalleryUI();
 }
 
-// Add touch swiping on mobile
-let startX = 0;
-let endX = 0;
-const carouselContainer = document.querySelector('.carousel-container');
+function moveSwipeSlide(direction) {
+    currentSlide = (currentSlide + direction + totalSlides) % totalSlides;
+    goToSwipeSlide(currentSlide);
+}
 
-if (carouselContainer) {
-    carouselContainer.addEventListener('touchstart', e => {
-        startX = e.changedTouches[0].screenX;
-    });
-    carouselContainer.addEventListener('touchend', e => {
-        endX = e.changedTouches[0].screenX;
-        if (startX - endX > 45) moveSlide(1); // Swipe left
-        if (endX - startX > 45) moveSlide(-1); // Swipe right
+if (swipeGallery) {
+    let scrollTimeout;
+    swipeGallery.addEventListener('scroll', () => {
+        clearTimeout(scrollTimeout);
+        scrollTimeout = setTimeout(() => {
+            const index = Math.round(swipeGallery.scrollLeft / swipeGallery.clientWidth);
+            if (index !== currentSlide && index >= 0 && index < totalSlides) {
+                currentSlide = index;
+                syncGalleryUI();
+            }
+        }, 50);
     });
 }
+
+// Smooth scroll to visit booking section
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+            target.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+        }
+    });
+});
 
 // WhatsApp direct contact
 function openWhatsApp(phone, title) {

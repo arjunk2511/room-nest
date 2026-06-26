@@ -3,10 +3,10 @@
 {% block seo_title %}Edit Profile & Account Settings | RoomNest{% endblock %}
 
 {% block content %}
-<div style="max-width: 1100px; margin: 4rem auto; padding: 0 1.5rem; display: flex; flex-wrap: wrap; gap: 2.5rem;">
+<div class="profile-layout">
     
     <!-- Left Column: User Profile & Subscription Card -->
-    <div style="flex: 1; min-width: 300px; display: flex; flex-direction: column; gap: 1.5rem;">
+    <div class="profile-sidebar">
         <!-- Avatar Profile card -->
         <div style="background: var(--white); border-radius: var(--border-radius-lg); padding: 2.5rem 2rem; text-align: center; box-shadow: var(--shadow); position: relative; overflow: hidden; border: 1px solid var(--border-color);">
             <!-- Background banner visual -->
@@ -57,7 +57,7 @@
     </div>
 
     <!-- Right Column: Tabbed Settings, Rewards, & Notifications -->
-    <div style="flex: 2; min-width: 300px;">
+    <div class="profile-main">
         <!-- Tab Navigation Header -->
         <div style="display: flex; border-bottom: 1px solid var(--border-color); margin-bottom: 1.5rem; background: var(--white); border-radius: var(--border-radius-md); overflow: hidden; padding: 4px;">
             <button class="profile-tab-btn" onclick="switchProfileTab(event, 'edit-profile-tab')" style="flex: 1; padding: 0.85rem; background: #F8FAFC; border: none; border-bottom: 3px solid var(--primary); font-weight: 700; color: var(--primary); cursor: pointer; transition: var(--transition-smooth); font-size: 0.9rem; font-family: 'Outfit', sans-serif;">⚙️ Profile Settings</button>
