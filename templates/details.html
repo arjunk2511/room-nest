@@ -104,65 +104,65 @@
             <p style="color: var(--text-light); margin: 2px 0 0 0; font-size: 0.9rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">per month</p>
         </div>
     </div>
-
-    <!-- Modern Image Carousel Gallery -->
-    <div style="position: relative; margin-bottom: 2.5rem;">
-        <div class="swipe-gallery-wrapper">
-            <div class="swipe-gallery">
-                {% if listing.image %}
-                <div class="swipe-gallery-item">
-                    <img src="{{ listing.image.url|optimize_image:'w_1200' }}" alt="{{ listing.title }}">
-                </div>
-                {% else %}
-                <div class="swipe-gallery-item" style="display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-weight: 600; font-size: 1.2rem; background: #E2E8F0;">No Image Available</div>
-                {% endif %}
-                
-                {% for img in listing.images.all %}
-                <div class="swipe-gallery-item">
-                    <img src="{{ img.image.url|optimize_image:'w_1200' }}" alt="Gallery Image {{ forloop.counter }}" loading="lazy">
-                </div>
-                {% endfor %}
-            </div>
-            
-            {% if listing.images.all %}
-            <!-- Navigation Arrows -->
-            <button onclick="moveSwipeSlide(-1)" class="gallery-nav-btn prev" aria-label="Previous image">❮</button>
-            <button onclick="moveSwipeSlide(1)" class="gallery-nav-btn next" aria-label="Next image">❯</button>
-            
-            <!-- Index dots -->
-            <div class="gallery-indicators">
-                <div class="gallery-indicator active" onclick="goToSwipeSlide(0)"></div>
-                {% for img in listing.images.all %}
-                <div class="gallery-indicator" onclick="goToSwipeSlide({{ forloop.counter }})"></div>
-                {% endfor %}
-            </div>
-            {% endif %}
-        </div>
-        
-        <!-- Gallery Thumbnail Preview Strip -->
-        {% if listing.images.all %}
-        <div style="margin-top: 1rem;">
-            <div class="thumbnail-strip">
-                {% if listing.image %}
-                <div class="thumbnail-item active" onclick="goToSwipeSlide(0)">
-                    <img src="{{ listing.image.url|optimize_image:'w_150' }}" alt="Main Image" loading="lazy">
-                </div>
-                {% endif %}
-                {% for img in listing.images.all %}
-                <div class="thumbnail-item" onclick="goToSwipeSlide({{ forloop.counter }})">
-                    <img src="{{ img.image.url|optimize_image:'w_150' }}" alt="Gallery Image {{ forloop.counter }}" loading="lazy">
-                </div>
-                {% endfor %}
-            </div>
-        </div>
-        {% endif %}
-    </div>
 </div>
 
 <div class="mb-details-layout">
     <!-- Main Content Area Left -->
     <div class="mb-details-main">
         
+        <!-- Modern Image Carousel Gallery (Moved inside Left column) -->
+        <div style="position: relative; width: 100%;">
+            <div class="swipe-gallery-wrapper">
+                <div class="swipe-gallery">
+                    {% if listing.image %}
+                    <div class="swipe-gallery-item">
+                        <img src="{{ listing.image.url|optimize_image:'w_1200' }}" alt="{{ listing.title }}">
+                    </div>
+                    {% else %}
+                    <div class="swipe-gallery-item" style="display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-weight: 600; font-size: 1.2rem; background: #E2E8F0;">No Image Available</div>
+                    {% endif %}
+                    
+                    {% for img in listing.images.all %}
+                    <div class="swipe-gallery-item">
+                        <img src="{{ img.image.url|optimize_image:'w_1200' }}" alt="Gallery Image {{ forloop.counter }}" loading="lazy">
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                {% if listing.images.all %}
+                <!-- Navigation Arrows -->
+                <button onclick="moveSwipeSlide(-1)" class="gallery-nav-btn prev" aria-label="Previous image">❮</button>
+                <button onclick="moveSwipeSlide(1)" class="gallery-nav-btn next" aria-label="Next image">❯</button>
+                
+                <!-- Index dots -->
+                <div class="gallery-indicators">
+                    <div class="gallery-indicator active" onclick="goToSwipeSlide(0)"></div>
+                    {% for img in listing.images.all %}
+                    <div class="gallery-indicator" onclick="goToSwipeSlide({{ forloop.counter }})"></div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+            
+            <!-- Gallery Thumbnail Preview Strip -->
+            {% if listing.images.all %}
+            <div style="margin-top: 1rem;">
+                <div class="thumbnail-strip">
+                    {% if listing.image %}
+                    <div class="thumbnail-item active" onclick="goToSwipeSlide(0)">
+                        <img src="{{ listing.image.url|optimize_image:'w_150' }}" alt="Main Image" loading="lazy">
+                    </div>
+                    {% endif %}
+                    {% for img in listing.images.all %}
+                    <div class="thumbnail-item" onclick="goToSwipeSlide({{ forloop.counter }})">
+                        <img src="{{ img.image.url|optimize_image:'w_150' }}" alt="Gallery Image {{ forloop.counter }}" loading="lazy">
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
         <!-- Overview & Key Specifications -->
         <div style="border-bottom: 1px solid var(--border-color); padding-bottom: 2rem;">
             <h2 style="font-size: 1.45rem; font-weight: 800; margin-bottom: 1.25rem;">Property Overview</h2>
@@ -187,271 +187,74 @@
             </div>
         </div>
 
-        <!-- Professional Landlord Verification Profile Card -->
-        <div style="background: #FAFAFA; border: 1px solid var(--border-color); border-radius: var(--border-radius-lg); padding: 1.5rem; display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; flex-wrap: wrap;">
-            <div style="display: flex; align-items: center; gap: 1rem;">
-                <div style="width: 54px; height: 54px; background: var(--primary-light); color: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.35rem; font-weight: 800; border: 1px solid rgba(37,99,235,0.1); text-transform: uppercase;">
-                    {{ listing.owner.username|slice:":1"|upper }}
-                </div>
-                <div>
-                    <div style="display: flex; align-items: center; gap: 6px;">
-                        <h4 style="margin: 0; font-size: 1.1rem; font-weight: 700; color: var(--text-dark);">Owner: {{ listing.owner.username }}</h4>
-                        {% if listing.owner.userprofile.is_verified %}
-                        <span style="background: #ECFDF5; color: #047857; font-size: 0.72rem; font-weight: 700; padding: 0.15rem 0.5rem; border-radius: 99px; border: 1px solid #A7F3D0;">🛡️ Verified Host</span>
-                        {% endif %}
-                    </div>
-                    <p style="margin: 0.25rem 0 0 0; font-size: 0.85rem; color: var(--text-light); font-weight: 500;">
-                        Response rate: <span style="color: #10B981; font-weight: 700;">99% (Under 10 mins)</span> • Registered since {{ listing.owner.date_joined|date:"Y" }}
-                    </p>
-                </div>
-            </div>
-            <div style="font-size: 0.85rem; text-align: right;">
-                <span style="color: var(--text-muted); font-weight: 600; display: block; text-transform: uppercase; letter-spacing: 0.5px; font-size: 0.72rem;">Listing Status</span>
-                <strong style="color: var(--text-dark); display: block; margin-top: 0.15rem; font-weight: 700;">🟢 Updated {{ listing.created_at|timesince }} ago</strong>
-            </div>
-        </div>
-
         <!-- Description Section -->
         <div>
             <h3 style="font-size: 1.3rem; font-weight: 800; color: var(--text-dark); margin-bottom: 0.8rem;">Property Description</h3>
             <p style="color: var(--text-light); font-size: 0.95rem; line-height: 1.6; white-space: pre-line; margin: 0;">{{ listing.description }}</p>
         </div>
 
-        <!-- Premium Amenities Grid Visual Section -->
-        <div>
-            <h3 style="font-size: 1.3rem; font-weight: 800; color: var(--text-dark); margin-bottom: 1rem;">✨ Key Amenities</h3>
-            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 0.85rem;">
-                {% for item in listing.facilities|split_by_comma %}
-                <div style="background: var(--white); border: 1px solid var(--border-color); padding: 1rem 0.5rem; border-radius: var(--border-radius-md); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 6px; box-shadow: var(--shadow-sm); transition: var(--transition-smooth);" onmouseover="this.style.borderColor='var(--primary)'; this.style.transform='translateY(-2px)';" onmouseout="this.style.borderColor='var(--border-color)'; this.style.transform='translateY(0)';" title="{{ item }}">
-                    <span style="font-size: 1.6rem; display: block;">
-                        {% if "wifi" in item|lower or "internet" in item|lower %}📶
-                        {% elif "parking" in item|lower or "car" in item|lower %}🚗
-                        {% elif "ac" in item|lower or "cool" in item|lower or "conditioner" in item|lower %}❄️
-                        {% elif "geyser" in item|lower or "water" in item|lower %}🚿
-                        {% elif "security" in item|lower or "guard" in item|lower %}🛡️
-                        {% elif "cctv" in item|lower or "camera" in item|lower %}📹
-                        {% elif "gym" in item|lower or "workout" in item|lower %}🏋️
-                        {% elif "power" in item|lower or "generator" in item|lower or "backup" in item|lower %}🔌
-                        {% elif "food" in item|lower or "meals" in item|lower %}🍲
-                        {% elif "lift" in item|lower or "elevator" in item|lower %}🛗
-                        {% elif "laundry" in item|lower or "wash" in item|lower %}🧺
-                        {% elif "bed" in item|lower or "mattress" in item|lower %}🛏️
-                        {% else %}⭐
-                        {% endif %}
-                    </span>
-                    <span style="font-weight: 700; font-size: 0.8rem; color: var(--text-dark); display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%;">{{ item }}</span>
-                </div>
-                {% empty %}
-                <p style="color: var(--text-light); font-style: italic; font-size: 0.9rem;">No premium facilities specified by owner.</p>
-                {% endfor %}
-            </div>
-        </div>
-
-        <!-- House Rules & Requirements -->
-        <div>
-            <h3 style="font-size: 1.3rem; font-weight: 800; color: var(--text-dark); margin-bottom: 1rem;">🏠 Tenant Guidelines & House Rules</h3>
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; background: #FAFAFA; border: 1px solid var(--border-color); padding: 1.25rem; border-radius: var(--border-radius-lg);">
-                <div>
-                    <span style="font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px; display: block; margin-bottom: 4px;">Food Preferences</span>
-                    <strong style="color: var(--text-dark); font-size: 0.92rem; font-weight: 700; display: block;">🍲 {{ listing.food_preference }}</strong>
-                </div>
-                <div>
-                    <span style="font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px; display: block; margin-bottom: 4px;">Curfew Hours</span>
-                    <strong style="color: var(--text-dark); font-size: 0.92rem; font-weight: 700; display: block;">🕒 {{ listing.curfew }}</strong>
-                </div>
-                <div>
-                    <span style="font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px; display: block; margin-bottom: 4px;">Visitors Policy</span>
-                    <strong style="color: var(--text-dark); font-size: 0.92rem; font-weight: 700; display: block;">👥 {{ listing.visitors }}</strong>
-                </div>
-            </div>
-        </div>
-
-        <!-- Specific Property Specifications -->
-        {% if listing.type == 'PG (Men)' or listing.type == 'PG (Women)' or listing.type == 'Co-living' or listing.type == 'Flatmate' or listing.type == 'Commercial Space' %}
-        <div>
-            <h3 style="font-size: 1.3rem; font-weight: 800; color: var(--text-dark); margin-bottom: 1rem;">📋 Additional Stay Specs</h3>
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; background: #FAFAFA; border: 1px solid var(--border-color); padding: 1.25rem; border-radius: var(--border-radius-lg);">
-                {% if listing.type == 'PG (Men)' or listing.type == 'PG (Women)' or listing.type == 'Co-living' or listing.type == 'Single Room' %}
-                <div>
-                    <span style="font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; display: block; margin-bottom: 2px;">Rooms Available</span>
-                    <strong style="color: var(--text-dark); font-size: 0.92rem; font-weight: 700;">🛏️ {{ listing.rooms_available }} Rooms</strong>
-                </div>
-                <div>
-                    <span style="font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; display: block; margin-bottom: 2px;">Room Sharing</span>
-                    <strong style="color: var(--text-dark); font-size: 0.92rem; font-weight: 700;">👥 {{ listing.sharing_count }} Sharing</strong>
-                </div>
-                {% endif %}
-                
-                {% if listing.type == 'Flatmate' %}
-                <div>
-                    <span style="font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; display: block; margin-bottom: 2px;">Flatmate Preferences</span>
-                    <strong style="color: var(--text-dark); font-size: 0.92rem; font-weight: 700;">🤝 {{ listing.flatmate_preference }}</strong>
-                </div>
-                {% endif %}
-                
-                {% if listing.type == 'Commercial Space' or listing.type == 'Office Space' %}
-                <div>
-                    <span style="font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; display: block; margin-bottom: 2px;">Space Purpose</span>
-                    <strong style="color: var(--text-dark); font-size: 0.92rem; font-weight: 700;">🏢 {{ listing.commercial_type }}</strong>
-                </div>
-                <div>
-                    <span style="font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; display: block; margin-bottom: 2px;">Built-up Area</span>
-                    <strong style="color: var(--text-dark); font-size: 0.92rem; font-weight: 700;">📐 {{ listing.built_up_area }}</strong>
-                </div>
-                {% endif %}
-            </div>
-        </div>
-        {% endif %}
-
-        <!-- Flatmate Compatibility Score Card (Integrated Lifestyle Quiz) -->
-        {% if listing.type == 'Flatmate' %}
-        <div style="background: linear-gradient(135deg, var(--primary-light) 0%, #DBEAFE 100%); border: 1px solid rgba(37,99,235,0.15); border-radius: var(--border-radius-lg); padding: 2rem;">
-            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem;">
-                <div>
-                    <h4 style="margin: 0; font-size: 1.15rem; color: #1E3A8A; font-weight: 800;">🤝 Roommate Compatibility Index</h4>
-                    <p style="margin: 0.25rem 0 0 0; color: #1E40AF; font-size: 0.88rem; font-weight: 500;">Take a quick 3-question lifestyle quiz to evaluate roommate compatibility.</p>
-                </div>
-                <div id="matching-score-badge" style="background: var(--primary); color: white; width: 64px; height: 64px; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: 800; font-size: 1.1rem; box-shadow: 0 4px 10px rgba(37,99,235,0.25);">
-                    <span id="matching-percent">--</span>
-                    <span style="font-size: 0.6rem; font-weight: 600; text-transform: uppercase; margin-top: -3px;">Match</span>
-                </div>
-            </div>
+        <!-- Location Map Section (Moved inside Left Column) -->
+        <div style="border-top: 1px solid var(--border-color); padding-top: 2rem;">
+            <h3 style="font-size: 1.3rem; font-weight: 800; color: var(--text-dark); margin-bottom: 1rem;">🗺️ Exact Property Location Map</h3>
             
-            <div id="quiz-box" style="background: var(--white); padding: 1.25rem; border-radius: var(--border-radius-md); border: 1px solid rgba(37,99,235,0.1);">
-                <div id="quiz-question-container">
-                    <p id="quiz-question" style="font-weight: 700; color: var(--text-dark); margin-top: 0; margin-bottom: 0.85rem; font-size: 0.95rem;">1. What is your curfew preference?</p>
-                    <div id="quiz-options" style="display: flex; flex-direction: column; gap: 0.65rem;">
-                        <!-- Options loaded dynamically -->
+            {% if has_subscription %}
+                <!-- Unlocked Map Info -->
+                <div style="background: #F8FAFC; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border: 1px solid var(--border-color); font-size: 0.9rem;">
+                    <span style="font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; display: block; margin-bottom: 2px;">Exact Address Destination</span>
+                    <strong style="font-size: 0.92rem; font-weight: 700; color: var(--text-dark); display: block; line-height: 1.4;">{{ listing.address }}</strong>
+                    {% if listing.exact_location %}
+                    <span style="font-size: 0.8rem; color: var(--text-light); display: block; margin-top: 4px;">Landmark: {{ listing.exact_location }}</span>
+                    {% endif %}
+                </div>
+
+                <!-- Leaflet Interactive Map -->
+                <div id="leaflet-map" style="width: 100%; height: 320px; border-radius: var(--border-radius-lg); border: 1px solid var(--border-color); z-index: 1;"></div>
+                
+                <!-- Directions Buttons -->
+                <div style="display: flex; gap: 10px; margin-top: 1rem;">
+                    <a href="https://www.google.com/maps/search/?api=1&query={{ listing.latitude|default:listing.address|urlencode }},{{ listing.longitude|default:'' }}" target="_blank" class="btn btn-outline" style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 0.85rem; padding: 0.5rem; border-radius: 8px; font-weight: 600; min-height: 40px;">
+                        🗺️ Open Google Maps
+                    </a>
+                    <a href="https://www.google.com/maps/dir/?api=1&destination={{ listing.latitude|default:listing.address|urlencode }},{{ listing.longitude|default:'' }}" target="_blank" class="btn btn-primary" style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 0.85rem; padding: 0.5rem; border-radius: 8px; font-weight: 600; min-height: 40px; color: white !important;">
+                        🚗 Get Directions
+                    </a>
+                </div>
+
+                <!-- Nearby Places Panel -->
+                <div style="margin-top: 2rem; border-top: 1px solid var(--border-color); padding-top: 1.5rem;">
+                    <h4 style="font-size: 1.15rem; font-weight: 800; color: var(--text-dark); margin-bottom: 1rem; display: flex; align-items: center; gap: 8px;">
+                        📍 Nearby Landmarks & Proximity
+                    </h4>
+                    
+                    <!-- Tabs -->
+                    <div style="display: flex; gap: 8px; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; margin-bottom: 1rem; overflow-x: auto; -webkit-overflow-scrolling: touch;">
+                        <button type="button" onclick="switchNearbyTab('schools')" class="nearby-tab active" id="tab-schools" style="background: none; border: none; font-weight: 700; font-size: 0.82rem; padding: 0.5rem 0.8rem; cursor: pointer; color: var(--primary); border-bottom: 2px solid var(--primary); white-space: nowrap; outline: none;">🎓 Education</button>
+                        <button type="button" onclick="switchNearbyTab('hospitals')" class="nearby-tab" id="tab-hospitals" style="background: none; border: none; font-weight: 600; font-size: 0.82rem; padding: 0.5rem 0.8rem; cursor: pointer; color: var(--text-light); border-bottom: 2px solid transparent; white-space: nowrap; outline: none;">🏥 Healthcare</button>
+                        <button type="button" onclick="switchNearbyTab('transit')" class="nearby-tab" id="tab-transit" style="background: none; border: none; font-weight: 600; font-size: 0.82rem; padding: 0.5rem 0.8rem; cursor: pointer; color: var(--text-light); border-bottom: 2px solid transparent; white-space: nowrap; outline: none;">🚌 Transport</button>
+                        <button type="button" onclick="switchNearbyTab('shopping')" class="nearby-tab" id="tab-shopping" style="background: none; border: none; font-weight: 600; font-size: 0.82rem; padding: 0.5rem 0.8rem; cursor: pointer; color: var(--text-light); border-bottom: 2px solid transparent; white-space: nowrap; outline: none;">🛍️ Food & Shop</button>
+                    </div>
+                    
+                    <!-- Tab Content -->
+                    <div id="nearby-places-list" style="display: flex; flex-direction: column; gap: 0.75rem;">
+                        <!-- Filled dynamically by JavaScript -->
                     </div>
                 </div>
-            </div>
-            
-            <div id="quiz-result-box" style="display: none; text-align: center; background: var(--white); padding: 1.5rem; border-radius: var(--border-radius-md); border: 1px solid var(--border-color);">
-                <h5 style="font-size: 1.05rem; color: var(--text-dark); margin: 0 0 0.4rem 0; font-weight: 800;">Calculation Complete! 🎉</h5>
-                <p id="quiz-feedback-text" style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0; line-height: 1.5;"></p>
-                <button onclick="restartQuiz()" class="btn btn-outline" style="margin-top: 1rem; padding: 0.4rem 1.2rem; font-size: 0.8rem; border-radius: 8px;">Retake Quiz</button>
-            </div>
-        </div>
-
-        <script>
-            // Compatibility Quiz Logic
-            const quizData = [
-                {
-                    q: "1. What is your preferred sleeping schedule?",
-                    opts: ["Early Bird (Sleep early, rise early)", "Night Owl (Late sleeping, late rising)", "Flexible / Any schedule"],
-                    scores: [90, 60, 85]
-                },
-                {
-                    q: "2. How often do you prefer having guests or visitors over?",
-                    opts: ["Rarely / Quiet study environment", "Occasionally on weekends", "Regularly / Friendly gatherings"],
-                    scores: [95, 75, 50]
-                },
-                {
-                    q: "3. What is your cleanliness expectation for shared areas?",
-                    opts: ["Extremely tidy / Daily cleaning list", "Moderate / Clean up after ourselves", "Relatively relaxed / Clean once a week"],
-                    scores: [90, 95, 70]
-                }
-            ];
-            
-            let currentQ = 0;
-            let totalScore = 0;
-            
-            function loadQuizQuestion() {
-                const questionEl = document.getElementById("quiz-question");
-                const optionsEl = document.getElementById("quiz-options");
-                
-                if (!questionEl) return;
-                
-                const currentData = quizData[currentQ];
-                questionEl.innerHTML = currentData.q;
-                optionsEl.innerHTML = "";
-                
-                currentData.opts.forEach((opt, idx) => {
-                    const btn = document.createElement("button");
-                    btn.type = "button";
-                    btn.className = "btn btn-outline";
-                    btn.style.width = "100%";
-                    btn.style.textAlign = "left";
-                    btn.style.padding = "0.7rem 1rem";
-                    btn.style.fontSize = "0.88rem";
-                    btn.style.borderRadius = "8px";
-                    btn.innerHTML = opt;
-                    btn.onclick = () => selectQuizOption(currentData.scores[idx]);
-                    optionsEl.appendChild(btn);
-                });
-            }
-            
-            function selectQuizOption(score) {
-                totalScore += score;
-                currentQ++;
-                if (currentQ < quizData.length) {
-                    loadQuizQuestion();
-                } else {
-                    displayQuizResult();
-                }
-            }
-            
-            function displayQuizResult() {
-                const finalMatch = Math.round(totalScore / quizData.length);
-                document.getElementById("quiz-box").style.display = "none";
-                const resultBox = document.getElementById("quiz-result-box");
-                resultBox.style.display = "block";
-                
-                document.getElementById("matching-percent").innerHTML = `${finalMatch}%`;
-                
-                let feedback = "";
-                if (finalMatch >= 85) {
-                    feedback = `Outstanding compatibility match score of ${finalMatch}%! Your lifestyle habits and schedule choices are fully aligned. This flatmate listing is highly recommended for you!`;
-                    document.getElementById("matching-score-badge").style.background = "#10B981";
-                } else if (finalMatch >= 70) {
-                    feedback = `Solid compatibility match score of ${finalMatch}%. You share a lot of common habits, though some differences in sleep schedules or cleanliness choices may require slight alignment negotiations.`;
-                    document.getElementById("matching-score-badge").style.background = "var(--primary)";
-                } else {
-                    feedback = `Compatibility match score of ${finalMatch}%. Your daily schedules and lifestyle preferences have notable differences, which could lead to negotiations. Review rules before booking.`;
-                    document.getElementById("matching-score-badge").style.background = "#EF4444";
-                }
-                document.getElementById("quiz-feedback-text").innerHTML = feedback;
-            }
-            
-            function restartQuiz() {
-                currentQ = 0;
-                totalScore = 0;
-                document.getElementById("quiz-result-box").style.display = "none";
-                document.getElementById("quiz-box").style.display = "block";
-                document.getElementById("matching-percent").innerHTML = "--";
-                document.getElementById("matching-score-badge").style.background = "var(--primary)";
-                loadQuizQuestion();
-            }
-            
-            document.addEventListener("DOMContentLoaded", loadQuizQuestion);
-        </script>
-        {% endif %}
-
-        <!-- Location Map Section -->
-        <div>
-            <h3 style="font-size: 1.3rem; font-weight: 800; color: var(--text-dark); margin-bottom: 1rem;">🗺️ Exact Property Location Map</h3>
-            <div class="map-container-relative" style="height: 320px;">
-                {% if has_subscription %}
-                    <iframe 
-                        width="100%" 
-                        height="320" 
-                        style="border:0;" 
-                        loading="lazy" 
-                        allowfullscreen 
-                        referrerpolicy="no-referrer-when-downgrade" 
-                        src="https://maps.google.com/maps?q={{ listing.address|urlencode }}&t=&z=15&ie=UTF8&iwloc=&output=embed">
-                    </iframe>
-                {% else %}
-                    <!-- Blurred map background -->
+            {% else %}
+                <!-- Blurred map background and locked overlay -->
+                <div class="map-container-relative" style="height: 320px; position: relative; border-radius: var(--border-radius-lg); overflow: hidden; border: 1px solid var(--border-color);">
                     <div style="width: 100%; height: 320px; background: url('https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&w=800&q=50') no-repeat center center; background-size: cover; filter: blur(5px); opacity: 0.85;"></div>
-                    <div class="map-locked-overlay">
-                        <span class="map-locked-icon">🔒</span>
+                    <div class="map-locked-overlay" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.65); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 2rem; z-index: 2; color: white;">
+                        <span class="map-locked-icon" style="font-size: 2.2rem; display: block; margin-bottom: 0.5rem;">🔒</span>
                         <h4 style="margin: 0 0 0.4rem 0; font-size: 1.15rem; font-weight: 800; color: white;">Exact Location Map Locked</h4>
                         <p style="margin: 0 0 1.25rem 0; font-size: 0.88rem; max-width: 330px; opacity: 0.95; line-height: 1.5; color: white;">Activate a premium plan to reveal the exact GPS map coordinates, complete address description, and direct contact widgets.</p>
-                        <a href="{% url 'subscribe' %}" class="btn btn-primary" style="font-size: 0.85rem; padding: 0.5rem 1.25rem;">Unlock Details (₹49)</a>
+                        {% if user.is_authenticated %}
+                            <a href="{% url 'subscribe' %}" class="btn btn-primary" style="font-size: 0.85rem; padding: 0.5rem 1.25rem; min-height: 38px; color: white !important;">Unlock Details (₹49)</a>
+                        {% else %}
+                            <a href="{% url 'login' %}?next={{ request.path }}" class="btn btn-primary" style="font-size: 0.85rem; padding: 0.5rem 1.25rem; min-height: 38px; color: white !important;">Login to Unlock</a>
+                        {% endif %}
                     </div>
-                {% endif %}
-            </div>
+                </div>
+            {% endif %}
         </div>
 
         <!-- Reviews & Testimonial Feed -->
@@ -510,46 +313,35 @@
                 {% endfor %}
             </div>
         </div>
-
-        <!-- Similar Properties Section -->
-        <div style="border-top: 1px solid var(--border-color); padding-top: 2.5rem;">
-            <h3 style="font-size: 1.3rem; font-weight: 800; color: var(--text-dark); margin-bottom: 1.25rem;">🏠 Similar Stays Nearby</h3>
-            
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.25rem;">
-                {% for sim in similar_listings %}
-                <div class="card" style="box-shadow: var(--shadow-sm);">
-                    <div class="card-img-wrapper" style="height: 150px;">
-                        {% if sim.image %}
-                        <img src="{{ sim.image.url|optimize_image:'w_600' }}" alt="{{ sim.title }}" class="card-img" loading="lazy">
-                        {% else %}
-                        <div style="background: #E2E8F0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 0.85rem; font-weight: 600;">No Image</div>
-                        {% endif %}
-                        <span class="card-badge" style="font-size: 0.65rem; padding: 0.25rem 0.6rem;">{{ sim.type }}</span>
-                    </div>
-                    <div class="card-content" style="padding: 1rem;">
-                        <strong style="font-size: 1.15rem; color: var(--primary); display: block; margin-bottom: 2px;">₹{{ sim.price }}/mo</strong>
-                        <h4 style="font-size: 0.95rem; font-weight: 700; color: var(--text-dark); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 0.5rem;" title="{{ sim.title }}">{{ sim.title }}</h4>
-                        <p style="color: var(--text-light); font-size: 0.78rem; margin-bottom: 1rem; font-weight: 500;">📍 {{ sim.location }}</p>
-                        <a href="{% url 'details' sim.id %}" class="btn btn-outline" style="width: 100%; padding: 0.4rem; font-size: 0.8rem; border-radius: 6px; text-align: center; display: block;">View Stay</a>
-                    </div>
-                </div>
-                {% empty %}
-                <p style="color: var(--text-light); font-style: italic; font-size: 0.9rem; grid-column: 1 / -1;">No similar properties listed nearby in this locality.</p>
-                {% endfor %}
-            </div>
-        </div>
     </div>
     
     <!-- Sticky Right Sidebar (Desktop) -->
     <aside class="mb-details-sidebar">
-        <div class="contact-card">
-            <h3 style="margin-bottom: 1.25rem; font-size: 1.25rem; color: var(--text-dark); font-weight: 800;">Contact Landlord</h3>
+        <div class="contact-card" style="display: flex; flex-direction: column; gap: 1.5rem;">
+            
+            <!-- Landlord Overview inside Contact Card -->
+            <div style="display: flex; align-items: center; gap: 0.85rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border-color);">
+                <div style="width: 44px; height: 44px; background: var(--primary-light); color: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; font-weight: 800; border: 1px solid rgba(37,99,235,0.1); text-transform: uppercase; flex-shrink: 0;">
+                    {{ listing.owner.username|slice:":1"|upper }}
+                </div>
+                <div style="min-width: 0;">
+                    <div style="display: flex; align-items: center; gap: 4px; flex-wrap: wrap;">
+                        <h4 style="margin: 0; font-size: 0.95rem; font-weight: 700; color: var(--text-dark); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 150px;">{{ listing.owner.username }}</h4>
+                        {% if listing.owner.userprofile.is_verified %}
+                        <span style="background: #ECFDF5; color: #047857; font-size: 0.65rem; font-weight: 700; padding: 0.1rem 0.4rem; border-radius: 99px; border: 1px solid #A7F3D0; white-space: nowrap;">🛡️ Verified</span>
+                        {% endif %}
+                    </div>
+                    <p style="margin: 2px 0 0 0; font-size: 0.75rem; color: var(--text-light); font-weight: 500; line-height: 1.2;">
+                        Response rate: <span style="color: #10B981; font-weight: 700;">99% (&lt;10m)</span>
+                    </p>
+                </div>
+            </div>
             
             {% if user.is_authenticated %}
-            <div style="margin-bottom: 1.5rem;">
+            <div style="margin-top: -0.5rem;">
                 <form action="{% url 'toggle_wishlist' listing.id %}" method="POST" style="margin: 0;">
                     {% csrf_token %}
-                    <button type="submit" class="btn btn-outline" style="width: 100%; border-color: var(--border-color); color: var(--text-dark); font-weight: 600;">
+                    <button type="submit" class="btn btn-outline" style="width: 100%; border-color: var(--border-color); color: var(--text-dark); font-weight: 600; min-height: 44px; font-size: 0.88rem; padding: 0.5rem 1rem; border-radius: 8px;">
                         {% if is_wishlisted %}❤️ Saved to Wishlist{% else %}🤍 Save Property Stay{% endif %}
                     </button>
                 </form>
@@ -557,74 +349,66 @@
             {% endif %}
 
             {% if has_subscription %}
-                <!-- Unlocked Info -->
-                <div style="background: #FAFAFA; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border: 1px solid var(--border-color);">
-                    <span style="font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; display: block; margin-bottom: 2px;">Landlord Phone Number</span>
-                    <strong style="font-size: 1.15rem; font-weight: 800; color: var(--text-dark);">{{ listing.phone }}</strong>
+                <!-- Unlocked Phone & Address Details -->
+                <div style="background: #F8FAFC; padding: 0.85rem; border-radius: 8px; border: 1px solid var(--border-color);">
+                    <span style="font-size: 0.68rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; display: block; margin-bottom: 2px;">Landlord Phone</span>
+                    <strong style="font-size: 1.1rem; font-weight: 800; color: var(--text-dark);">{{ listing.phone }}</strong>
                 </div>
                 
-                <div style="background: #FAFAFA; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; border: 1px solid var(--border-color);">
-                    <span style="font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; display: block; margin-bottom: 2px;">Exact Address Destination</span>
-                    <strong style="font-size: 0.9rem; font-weight: 600; color: var(--text-dark); display: block; line-height: 1.4;">{{ listing.address }}</strong>
+                <div style="background: #F8FAFC; padding: 0.85rem; border-radius: 8px; border: 1px solid var(--border-color);">
+                    <span style="font-size: 0.68rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; display: block; margin-bottom: 2px;">Exact Address</span>
+                    <strong style="font-size: 0.85rem; font-weight: 600; color: var(--text-dark); display: block; line-height: 1.4;">{{ listing.address }}</strong>
                     {% if listing.exact_location %}
-                    <span style="font-size: 0.8rem; color: var(--text-light); display: block; margin-top: 4px;">Landmark: {{ listing.exact_location }}</span>
+                    <span style="font-size: 0.78rem; color: var(--text-light); display: block; margin-top: 4px;">Landmark: {{ listing.exact_location }}</span>
                     {% endif %}
-                    <a href="https://www.google.com/maps/search/?api=1&query={{ listing.title|urlencode }}+{{ listing.location|urlencode }}+Mysore" target="_blank" class="btn btn-outline" style="width: 100%; margin-top: 0.85rem; display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 0.85rem; padding: 0.5rem; border-radius: 8px; font-weight: 600;">
-                        📍 Open Google Maps
-                    </a>
                 </div>
                 
                 {% if request.user != listing.owner %}
-                <div class="sticky-cta-bar">
-                    <!-- Price on Mobile Sticky Bar -->
-                    <div class="mobile-sticky-price">
-                        <span class="price-amt">₹{{ listing.price }}</span>
-                        <span class="price-lbl">per month</span>
-                    </div>
+                <div style="display: flex; flex-direction: column; gap: 0.75rem;">
                     <!-- Call -->
-                    <a href="tel:{{ listing.phone }}" class="btn btn-outline" style="display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: 700; border-color: var(--border-color);">
-                        📞 Call
+                    <a href="tel:{{ listing.phone }}" class="btn btn-outline" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: 700; border-color: var(--border-color); min-height: 44px; font-size: 0.88rem; border-radius: 8px;">
+                        📞 Call Landlord
                     </a>
                     <!-- WhatsApp -->
-                    <button onclick="openWhatsApp('{{ listing.phone|escapejs }}', '{{ listing.title|escapejs }}')" class="btn btn-whatsapp" style="display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: 700; border: none; font-size: 0.95rem;">
-                        💬 WhatsApp
+                    <button onclick="openWhatsApp('{{ listing.phone|escapejs }}', '{{ listing.title|escapejs }}')" class="btn btn-whatsapp" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: 700; border: none; min-height: 44px; font-size: 0.88rem; border-radius: 8px; color: white !important;">
+                        💬 WhatsApp Chat
                     </button>
                     <!-- Book Visit -->
-                    <a href="#visit-booking-section" class="btn btn-primary" style="display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: 700;">
-                        📅 Book Visit
+                    <a href="#visit-booking-section" class="btn btn-primary" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: 700; min-height: 44px; font-size: 0.88rem; border-radius: 8px; color: white !important;">
+                        📅 Book Visit Tour
                     </a>
                 </div>
                 
                 <!-- Visit Tour booking widget -->
-                <div id="visit-booking-section" style="margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px solid var(--border-color);">
-                    <h4 style="margin: 0 0 1rem 0; font-size: 0.95rem; font-weight: 800; color: var(--text-dark);">🗓️ Request Property Tour</h4>
-                    <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                <div id="visit-booking-section" style="padding-top: 1rem; border-top: 1px solid var(--border-color);">
+                    <h4 style="margin: 0 0 0.85rem 0; font-size: 0.9rem; font-weight: 800; color: var(--text-dark);">🗓️ Request Property Tour</h4>
+                    <div style="display: flex; flex-direction: column; gap: 0.65rem;">
                         <div>
-                            <label style="font-size: 0.75rem; font-weight: 700; color: var(--text-light); margin-bottom: 0.25rem; display: block;">Choose Date</label>
-                            <input type="date" id="visit-date" style="width: 100%; padding: 0.6rem; border-radius: 8px; border: 1px solid var(--border-color); outline: none; font-size: 0.88rem; background: white;">
+                            <label style="font-size: 0.7rem; font-weight: 700; color: var(--text-light); margin-bottom: 0.25rem; display: block;">Choose Date</label>
+                            <input type="date" id="visit-date" style="width: 100%; padding: 0.5rem; border-radius: 6px; border: 1px solid var(--border-color); outline: none; font-size: 0.82rem; background: white;">
                         </div>
                         <div>
-                            <label style="font-size: 0.75rem; font-weight: 700; color: var(--text-light); margin-bottom: 0.25rem; display: block;">Choose Slot</label>
-                            <select id="visit-slot" style="width: 100%; padding: 0.6rem; border-radius: 8px; border: 1px solid var(--border-color); outline: none; font-size: 0.88rem; background: white;">
+                            <label style="font-size: 0.7rem; font-weight: 700; color: var(--text-light); margin-bottom: 0.25rem; display: block;">Choose Slot</label>
+                            <select id="visit-slot" style="width: 100%; padding: 0.5rem; border-radius: 6px; border: 1px solid var(--border-color); outline: none; font-size: 0.82rem; background: white;">
                                 <option value="Morning (9 AM - 12 PM)">Morning (9 AM - 12 PM)</option>
                                 <option value="Afternoon (12 PM - 4 PM)">Afternoon (12 PM - 4 PM)</option>
                                 <option value="Evening (4 PM - 7 PM)">Evening (4 PM - 7 PM)</option>
                             </select>
                         </div>
-                        <button onclick="requestVisit('{{ listing.phone|escapejs }}', '{{ listing.title|escapejs }}')" class="btn btn-outline" style="width: 100%; padding: 0.7rem; border-radius: 8px; font-weight: 700; border-color: var(--primary); color: var(--primary);">
+                        <button onclick="requestVisit('{{ listing.phone|escapejs }}', '{{ listing.title|escapejs }}')" class="btn btn-outline" style="width: 100%; padding: 0.6rem; border-radius: 6px; font-weight: 700; border-color: var(--primary); color: var(--primary); font-size: 0.82rem; min-height: 38px;">
                             📅 Request Booking Slot
                         </button>
                     </div>
                 </div>
 
                 <!-- Share Listing Social Tray -->
-                <div style="margin-top: 1.25rem; padding-top: 1.25rem; border-top: 1px solid var(--border-color); text-align: center;">
-                    <p style="margin: 0 0 0.6rem 0; font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Share Property</p>
+                <div style="padding-top: 1rem; border-top: 1px solid var(--border-color); text-align: center;">
+                    <p style="margin: 0 0 0.5rem 0; font-size: 0.72rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Share Property</p>
                     <div style="display: flex; gap: 8px; justify-content: center;">
-                        <button onclick="shareOnWhatsApp('{{ listing.title|escapejs }}', '{{ listing.price|escapejs }}')" class="btn btn-outline" style="padding: 0.4rem 0.85rem; font-size: 0.8rem; font-weight: 700; border-radius: 6px; border-color: #A7F3D0; background: #ECFDF5; color: #047857 !important;">
+                        <button onclick="shareOnWhatsApp('{{ listing.title|escapejs }}', '{{ listing.price|escapejs }}')" class="btn btn-outline" style="padding: 0.35rem 0.75rem; font-size: 0.78rem; font-weight: 700; border-radius: 6px; border-color: #A7F3D0; background: #ECFDF5; color: #047857 !important; min-height: 34px;">
                             💬 WhatsApp
                         </button>
-                        <button onclick="copyListingLink()" class="btn btn-outline" style="padding: 0.4rem 0.85rem; font-size: 0.8rem; font-weight: 700; border-radius: 6px; border-color: var(--border-color);">
+                        <button onclick="copyListingLink()" class="btn btn-outline" style="padding: 0.35rem 0.75rem; font-size: 0.78rem; font-weight: 700; border-radius: 6px; border-color: var(--border-color); min-height: 34px;">
                             🔗 Copy Link
                         </button>
                     </div>
@@ -633,37 +417,23 @@
             {% else %}
                 <!-- Locked Info visual -->
                 {% if user.is_authenticated %}
-                <div style="background: linear-gradient(135deg, #FFF1F2 0%, #FFE4E6 100%); padding: 1.5rem; border-radius: var(--border-radius-lg); text-align: center; border: 1px solid #FECDD3; box-shadow: var(--shadow-sm);">
-                    <div style="font-size: 2rem; margin-bottom: 0.6rem;">💎</div>
-                    <h4 style="margin: 0 0 0.4rem 0; font-weight: 800; color: #9F1239; font-size: 1.1rem;">Unlock Owner Contacts</h4>
-                    <p style="margin: 0 0 1.25rem 0; color: #BE123C; font-size: 0.88rem; line-height: 1.5; font-weight: 500;">
+                <div style="background: linear-gradient(135deg, #FFF1F2 0%, #FFE4E6 100%); padding: 1.25rem; border-radius: var(--border-radius-lg); text-align: center; border: 1px solid #FECDD3; box-shadow: var(--shadow-sm);">
+                    <div style="font-size: 1.8rem; margin-bottom: 0.5rem;">💎</div>
+                    <h4 style="margin: 0 0 0.25rem 0; font-weight: 800; color: #9F1239; font-size: 1rem;">Unlock Owner Contacts</h4>
+                    <p style="margin: 0 0 1rem 0; color: #BE123C; font-size: 0.8rem; line-height: 1.4; font-weight: 500;">
                         A premium plan is required to unmask exact phone numbers, maps, and addresses to schedule tours.
                     </p>
-                    <div class="sticky-cta-bar">
-                        <!-- Price on Mobile Sticky Bar -->
-                        <div class="mobile-sticky-price">
-                            <span class="price-amt">₹{{ listing.price }}</span>
-                            <span class="price-lbl">per month</span>
-                        </div>
-                        <a href="{% url 'subscribe' %}" class="btn btn-primary" style="width: 100%; border-radius: 8px; font-weight: 700; background: linear-gradient(135deg, #E11D48 0%, #BE123C 100%); border: none; display: flex; align-items: center; justify-content: center; gap: 8px;">
-                            Upgrade Plan (₹49) 🚀
-                        </a>
-                    </div>
+                    <a href="{% url 'subscribe' %}" class="btn btn-primary" style="width: 100%; border-radius: 8px; font-weight: 700; background: linear-gradient(135deg, #E11D48 0%, #BE123C 100%); border: none; display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; font-size: 0.88rem; color: white !important;">
+                        Upgrade Plan (₹49) 🚀
+                    </a>
                 </div>
                 {% else %}
-                <div style="background: #F8FAFC; padding: 1.5rem; border-radius: var(--border-radius-lg); text-align: center; border: 1px solid var(--border-color);">
-                    <div style="font-size: 1.8rem; margin-bottom: 0.6rem;">🔒</div>
-                    <p style="margin: 0 0 1.25rem 0; color: var(--text-dark); font-size: 0.88rem; font-weight: 500; line-height: 1.4;">Login to RoomNest to unmask direct landowner contact details and map views.</p>
-                    <div class="sticky-cta-bar">
-                        <!-- Price on Mobile Sticky Bar -->
-                        <div class="mobile-sticky-price">
-                            <span class="price-amt">₹{{ listing.price }}</span>
-                            <span class="price-lbl">per month</span>
-                        </div>
-                        <a href="{% url 'login' %}?next={{ request.path }}" class="btn btn-primary" style="width: 100%; border-radius: 8px; font-weight: 700; display: flex; align-items: center; justify-content: center;">
-                            Login to Unlock
-                        </a>
-                    </div>
+                <div style="background: #F8FAFC; padding: 1.25rem; border-radius: var(--border-radius-lg); text-align: center; border: 1px solid var(--border-color);">
+                    <div style="font-size: 1.6rem; margin-bottom: 0.5rem;">🔒</div>
+                    <p style="margin: 0 0 1rem 0; color: var(--text-dark); font-size: 0.82rem; font-weight: 500; line-height: 1.4;">Login to RoomNest to unmask direct landowner contact details and map views.</p>
+                    <a href="{% url 'login' %}?next={{ request.path }}" class="btn btn-primary" style="width: 100%; border-radius: 8px; font-weight: 700; display: flex; align-items: center; justify-content: center; min-height: 44px; font-size: 0.88rem; color: white !important;">
+                        Login to Unlock
+                    </a>
                 </div>
                 {% endif %}
             {% endif %}
@@ -795,5 +565,175 @@ function copyListingLink() {
         alert('Listing link copied to clipboard!');
     });
 }
+
+// Leaflet Map and Nearby Places Initialization
+{% if has_subscription %}
+document.addEventListener("DOMContentLoaded", function() {
+    const lat = parseFloat("{{ listing.latitude|default:'' }}") || 12.3087;
+    const lng = parseFloat("{{ listing.longitude|default:'' }}") || 76.6529;
+    
+    // Initialize Leaflet Map
+    const map = L.map('leaflet-map').setView([lat, lng], 15);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+    
+    // Add Marker
+    L.marker([lat, lng]).addTo(map)
+        .bindPopup("<b>{{ listing.title|escapejs }}</b><br>{{ listing.location|escapejs }}")
+        .openPopup();
+    
+    // Initialize Nearby Places
+    loadNearbyPlaces("{{ listing.location|escapejs }}");
+});
+
+// Nearby Places Mock Data and Logic
+const nearbyData = {
+    schools: [
+        { name: "Mysore University", dist: "1.2 km", icon: "🏫" },
+        { name: "St. Joseph's Central School", dist: "2.1 km", icon: "🎓" }
+    ],
+    hospitals: [
+        { name: "Apollo BGS Hospital", dist: "2.8 km", icon: "🏥" },
+        { name: "KR Hospital", dist: "3.5 km", icon: "⚕️" }
+    ],
+    transit: [
+        { name: "Nearest Suburban Bus Stand", dist: "0.8 km", icon: "🚌" },
+        { name: "Mysore Junction Station", dist: "3.0 km", icon: "🚆" }
+    ],
+    shopping: [
+        { name: "Local Supermarket Circle", dist: "0.4 km", icon: "🛒" },
+        { name: "Devaraja Market bazaar", dist: "3.8 km", icon: "🛍️" }
+    ]
+};
+
+function loadNearbyPlaces(location) {
+    const loc = (location || "").toLowerCase();
+    let data = { ...nearbyData };
+    
+    if (loc.includes("gokulam")) {
+        data = {
+            schools: [
+                { name: "Nirmala High School", dist: "0.6 km", icon: "🏫" },
+                { name: "Aditya First Grade College", dist: "1.2 km", icon: "🎓" }
+            ],
+            hospitals: [
+                { name: "Adithya Hospital", dist: "0.8 km", icon: "🏥" },
+                { name: "Chandrakala Hospital", dist: "1.5 km", icon: "⚕️" }
+            ],
+            transit: [
+                { name: "Gokulam Bus Stop", dist: "0.2 km", icon: "🚌" },
+                { name: "Mysore Junction Railway Station", dist: "3.2 km", icon: "🚆" }
+            ],
+            shopping: [
+                { name: "Loyal World Supermarket", dist: "0.4 km", icon: "🛒" },
+                { name: "Corner House Ice Cream", dist: "0.3 km", icon: "🍦" }
+            ]
+        };
+    } else if (loc.includes("vijayanagar")) {
+        data = {
+            schools: [
+                { name: "National Public School", dist: "0.8 km", icon: "🏫" },
+                { name: "Amrita Vidyalayam", dist: "1.4 km", icon: "🎓" }
+            ],
+            hospitals: [
+                { name: "BM Hospital", dist: "1.1 km", icon: "🏥" },
+                { name: "Columbia Asia Hospital", dist: "4.5 km", icon: "⚕️" }
+            ],
+            transit: [
+                { name: "Vijayanagar Water Tank Bus Stop", dist: "0.3 km", icon: "🚌" },
+                { name: "Mysore Railway Station", dist: "4.0 km", icon: "🚆" }
+            ],
+            shopping: [
+                { name: "Abhishek Circle Market", dist: "0.5 km", icon: "🛒" },
+                { name: "Empire Restaurant", dist: "0.7 km", icon: "🍔" }
+            ]
+        };
+    } else if (loc.includes("hebbal")) {
+        data = {
+            schools: [
+                { name: "Kendriya Vidyalaya", dist: "1.0 km", icon: "🏫" },
+                { name: "East West International School", dist: "1.5 km", icon: "🎓" }
+            ],
+            hospitals: [
+                { name: "Columbia Asia Hospital", dist: "1.8 km", icon: "🏥" },
+                { name: "Narayana Multispeciality Hospital", dist: "3.5 km", icon: "⚕️" }
+            ],
+            transit: [
+                { name: "Hebbal Industrial Area Bus Stop", dist: "0.4 km", icon: "🚌" },
+                { name: "Mysore Railway Station", dist: "6.5 km", icon: "🚆" }
+            ],
+            shopping: [
+                { name: "Reliance Smart Superstore", dist: "0.9 km", icon: "🛒" },
+                { name: "Hebbal Lake Park Café", dist: "1.2 km", icon: "☕" }
+            ]
+        };
+    } else if (loc.includes("kuvempunagar")) {
+        data = {
+            schools: [
+                { name: "JSS Public School", dist: "0.7 km", icon: "🏫" },
+                { name: "Kuvempunagar Government College", dist: "0.9 km", icon: "🎓" }
+            ],
+            hospitals: [
+                { name: "Kamatchi Hospital", dist: "0.5 km", icon: "🏥" },
+                { name: "Apollo BGS Hospital", dist: "2.0 km", icon: "⚕️" }
+            ],
+            transit: [
+                { name: "Kuvempunagar Complex Bus Stand", dist: "0.4 km", icon: "🚌" },
+                { name: "Mysore Junction", dist: "4.8 km", icon: "🚆" }
+            ],
+            shopping: [
+                { name: "Panchavati Circle Shops", dist: "0.3 km", icon: "🛒" },
+                { name: "Food Palace Bakery", dist: "0.5 km", icon: "🍰" }
+            ]
+        };
+    }
+    
+    window.currentNearbyData = data;
+    switchNearbyTab('schools');
+}
+
+function switchNearbyTab(category) {
+    const tabs = document.querySelectorAll('.nearby-tab');
+    tabs.forEach(tab => {
+        if (tab.id === `tab-${category}`) {
+            tab.style.color = 'var(--primary)';
+            tab.style.borderBottomColor = 'var(--primary)';
+            tab.classList.add('active');
+        } else {
+            tab.style.color = 'var(--text-light)';
+            tab.style.borderBottomColor = 'transparent';
+            tab.classList.remove('active');
+        }
+    });
+    
+    const container = document.getElementById('nearby-places-list');
+    if (!container) return;
+    
+    const items = window.currentNearbyData ? window.currentNearbyData[category] : [];
+    container.innerHTML = "";
+    
+    items.forEach(item => {
+        const div = document.createElement('div');
+        div.style.display = 'flex';
+        div.style.alignItems = 'center';
+        div.style.justifyContent = 'space-between';
+        div.style.padding = '0.75rem 1rem';
+        div.style.background = '#F8FAFC';
+        div.style.borderRadius = '8px';
+        div.style.border = '1px solid var(--border-color)';
+        div.style.fontSize = '0.9rem';
+        
+        div.innerHTML = `
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <span style="font-size: 1.2rem;">${item.icon}</span>
+                <span style="font-weight: 600; color: var(--text-dark);">${item.name}</span>
+            </div>
+            <span style="font-weight: 700; color: var(--primary); font-size: 0.82rem; background: var(--primary-light); padding: 0.2rem 0.5rem; border-radius: 4px;">${item.dist}</span>
+        `;
+        container.appendChild(div);
+    });
+}
+{% endif %}
 </script>
 {% endblock %}

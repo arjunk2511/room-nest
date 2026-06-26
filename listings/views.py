@@ -16,16 +16,19 @@ import datetime
 def home(request):
     featured_listings = Listing.objects.filter(is_sold=False).select_related('owner__userprofile').order_by('-created_at')[:6]
     has_subscription = False
+    wishlist_ids = []
     if request.user.is_authenticated:
         has_subscription = Subscription.objects.filter(
             user=request.user,
             is_active=True,
             end_date__gt=timezone.now()
         ).exists()
+        wishlist_ids = list(Wishlist.objects.filter(user=request.user).values_list('listing_id', flat=True))
     
     context = {
         'listings': featured_listings,
-        'has_subscription': has_subscription
+        'has_subscription': has_subscription,
+        'wishlist_ids': wishlist_ids
     }
     
     if not request.user.is_authenticated:
@@ -106,12 +109,14 @@ def search(request):
     page_obj = paginator.get_page(page_number)
     
     has_subscription = False
+    wishlist_ids = []
     if request.user.is_authenticated:
         has_subscription = Subscription.objects.filter(
             user=request.user,
             is_active=True,
             end_date__gt=timezone.now()
         ).exists()
+        wishlist_ids = list(Wishlist.objects.filter(user=request.user).values_list('listing_id', flat=True))
         
     # Dynamic SEO titles & descriptions based on filtered parameters
     seo_title = None
@@ -134,6 +139,7 @@ def search(request):
         'values': request.GET,
         'total_count': page_obj.paginator.count,  # Reuses count executed by paginator to save 1 query!
         'has_subscription': has_subscription,
+        'wishlist_ids': wishlist_ids,
         'seo_title': seo_title,
         'seo_description': seo_description,
         'current_city': current_city,
@@ -220,6 +226,27 @@ def add_property(request):
         
         exact_location = request.POST.get('exact_location', '')
         
+        # Extract coordinates and Google Place ID
+        latitude = request.POST.get('latitude')
+        longitude = request.POST.get('longitude')
+        google_place_id = request.POST.get('google_place_id', '').strip()
+        
+        if latitude:
+            try:
+                latitude = float(latitude)
+            except ValueError:
+                latitude = None
+        else:
+            latitude = None
+            
+        if longitude:
+            try:
+                longitude = float(longitude)
+            except ValueError:
+                longitude = None
+        else:
+            longitude = None
+        
         deposit = request.POST.get('deposit', 0)
         available_from = request.POST.get('available_from', 'Immediately')
         food_preference = request.POST.get('food_preference', 'Any')
@@ -268,6 +295,9 @@ def add_property(request):
             facilities=facilities_str,
             address=address,
             exact_location=exact_location,
+            latitude=latitude,
+            longitude=longitude,
+            google_place_id=google_place_id,
             phone=phone,
             deposit=deposit,
             available_from=available_from,
@@ -326,7 +356,20 @@ def toggle_wishlist(request, listing_id):
 def wishlist(request):
     wishlist_items = Wishlist.objects.filter(user=request.user).select_related('listing', 'listing__owner').prefetch_related('listing__reviews')
     listings = [item.listing for item in wishlist_items]
-    return render(request, 'wishlist.html', {'listings': listings})
+    has_subscription = False
+    wishlist_ids = []
+    if request.user.is_authenticated:
+        has_subscription = Subscription.objects.filter(
+            user=request.user,
+            is_active=True,
+            end_date__gt=timezone.now()
+        ).exists()
+        wishlist_ids = list(Wishlist.objects.filter(user=request.user).values_list('listing_id', flat=True))
+    return render(request, 'wishlist.html', {
+        'listings': listings,
+        'has_subscription': has_subscription,
+        'wishlist_ids': wishlist_ids
+    })
 
 @login_required
 def owner_dashboard(request):
@@ -453,6 +496,29 @@ def edit_property(request, listing_id):
         listing.address = request.POST['address']
         listing.phone = request.POST['phone']
         listing.exact_location = request.POST.get('exact_location', '')
+        
+        # Extract coordinates and Google Place ID
+        latitude = request.POST.get('latitude')
+        longitude = request.POST.get('longitude')
+        google_place_id = request.POST.get('google_place_id', '').strip()
+        
+        if latitude:
+            try:
+                listing.latitude = float(latitude)
+            except ValueError:
+                listing.latitude = None
+        else:
+            listing.latitude = None
+            
+        if longitude:
+            try:
+                listing.longitude = float(longitude)
+            except ValueError:
+                listing.longitude = None
+        else:
+            listing.longitude = None
+            
+        listing.google_place_id = google_place_id
         listing.deposit = request.POST.get('deposit', 0)
         listing.available_from = request.POST.get('available_from', 'Immediately')
         listing.food_preference = request.POST.get('food_preference', 'Any')
@@ -918,18 +984,21 @@ def city_page(request, city_slug):
     
     # Active subscription check
     has_subscription = False
+    wishlist_ids = []
     if request.user.is_authenticated:
         has_subscription = Subscription.objects.filter(
             user=request.user,
             is_active=True,
             end_date__gt=timezone.now()
         ).exists()
+        wishlist_ids = list(Wishlist.objects.filter(user=request.user).values_list('listing_id', flat=True))
         
     return render(request, 'city_page.html', {
         'city': city,
         'listings': featured_listings,
         'areas': areas,
-        'has_subscription': has_subscription
+        'has_subscription': has_subscription,
+        'wishlist_ids': wishlist_ids
     })
 
 

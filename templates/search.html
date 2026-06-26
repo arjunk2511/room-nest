@@ -184,7 +184,7 @@
         {% for listing in listings %}
         <div class="hc-card">
             <!-- Image Wrapper -->
-            <div class="hc-img-wrapper">
+            <a href="{% url 'details' listing.id %}" class="hc-img-wrapper" style="display: block; position: relative; text-decoration: none;">
                 {% if listing.image %}
                 <img src="{{ listing.image.url|optimize_image:'w_600' }}" alt="{{ listing.title }}" class="hc-img" loading="lazy">
                 {% else %}
@@ -200,12 +200,12 @@
                     🛡️ Verified
                 </span>
                 {% endif %}
-            </div>
+            </a>
             
             <!-- Content -->
-            <div class="hc-content">
+            <div class="hc-content" style="display: flex; flex-direction: column; flex-grow: 1;">
                 <div class="hc-header">
-                    <h3 class="hc-title" title="{{ listing.title }}">{{ listing.title }}</h3>
+                    <h3 class="hc-title" title="{{ listing.title }}"><a href="{% url 'details' listing.id %}" style="color: inherit; text-decoration: none;">{{ listing.title }}</a></h3>
                     <p class="hc-location">📍 {{ listing.location }}</p>
                 </div>
                 
@@ -230,18 +230,37 @@
                 </div>
                 
                 <!-- Action CTA Buttons -->
-                <div class="hc-footer-actions">
-                    <a href="{% url 'details' listing.id %}" class="btn btn-outline btn-details">📄 Details</a>
-                    
-                    {% if user.is_authenticated and has_subscription or user.is_authenticated and request.user == listing.owner %}
-                        <a href="tel:{{ listing.phone }}" class="btn btn-outline btn-call">📞 Call</a>
-                        <button onclick="openWhatsApp('{{ listing.phone|escapejs }}', '{{ listing.title|escapejs }}')" class="btn btn-whatsapp">
-                            WhatsApp
-                        </button>
-                    {% elif user.is_authenticated %}
-                        <a href="{% url 'subscribe' %}" class="btn btn-primary btn-upgrade" style="grid-column: span 2;">⭐ Contact (Premium)</a>
+                <div class="hc-footer-actions" style="display: grid; grid-template-columns: auto 1fr 1fr; gap: 8px; width: 100%; margin-top: auto; align-items: center;">
+                    <!-- Save (wishlist heart) -->
+                    {% if user.is_authenticated %}
+                        <form action="{% url 'toggle_wishlist' listing.id %}" method="POST" style="margin: 0; display: flex; align-items: center;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-outline" style="min-height: 40px; width: 40px; height: 40px; padding: 0; border-radius: 8px; font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: var(--transition-smooth);" title="Save Property">
+                                {% if listing.id in wishlist_ids %}❤️{% else %}🤍{% endif %}
+                            </button>
+                        </form>
                     {% else %}
-                        <a href="{% url 'login' %}?next={{ request.get_full_path }}" class="btn btn-primary btn-login" style="grid-column: span 2;">🔒 Login to Contact</a>
+                        <a href="{% url 'login' %}?next={{ request.get_full_path }}" class="btn btn-outline" style="min-height: 40px; width: 40px; height: 40px; padding: 0; border-radius: 8px; font-size: 1.1rem; display: inline-flex; align-items: center; justify-content: center;" title="Save Property">
+                            🤍
+                        </a>
+                    {% endif %}
+
+                    <!-- Call -->
+                    {% if user.is_authenticated and has_subscription or user.is_authenticated and request.user == listing.owner %}
+                        <a href="tel:{{ listing.phone }}" class="btn btn-outline" style="min-height: 40px; padding: 0.5rem; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; gap: 4px; font-weight: 700; font-size: 0.85rem;" title="Call Owner">📞 Call</a>
+                    {% elif user.is_authenticated %}
+                        <a href="{% url 'details' listing.id %}" class="btn btn-outline" style="min-height: 40px; padding: 0.5rem; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; gap: 4px; font-weight: 700; font-size: 0.85rem; color: var(--text-muted) !important;" title="Unlock Call Contact">📞 Call 🔒</a>
+                    {% else %}
+                        <a href="{% url 'login' %}?next={{ request.get_full_path }}" class="btn btn-outline" style="min-height: 40px; padding: 0.5rem; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; gap: 4px; font-weight: 700; font-size: 0.85rem; color: var(--text-muted) !important;" title="Login to Call">📞 Call 🔒</a>
+                    {% endif %}
+
+                    <!-- WhatsApp -->
+                    {% if user.is_authenticated and has_subscription or user.is_authenticated and request.user == listing.owner %}
+                        <button onclick="openWhatsApp('{{ listing.phone|escapejs }}', '{{ listing.title|escapejs }}')" class="btn btn-whatsapp" style="min-height: 40px; padding: 0.5rem; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; gap: 4px; font-weight: 700; font-size: 0.85rem; color: white !important;" title="WhatsApp Owner">💬 Chat</button>
+                    {% elif user.is_authenticated %}
+                        <a href="{% url 'details' listing.id %}" class="btn btn-whatsapp" style="min-height: 40px; padding: 0.5rem; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; gap: 4px; font-weight: 700; font-size: 0.85rem; color: white !important;" title="Unlock WhatsApp Contact">💬 Chat 🔒</a>
+                    {% else %}
+                        <a href="{% url 'login' %}?next={{ request.get_full_path }}" class="btn btn-whatsapp" style="min-height: 40px; padding: 0.5rem; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; gap: 4px; font-weight: 700; font-size: 0.85rem; color: white !important;" title="Login to Chat">💬 Chat 🔒</a>
                     {% endif %}
                 </div>
             </div>

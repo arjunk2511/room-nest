@@ -2858,78 +2858,199 @@ footer {
 /* ==========================================================================
    Desktop Laptop Refinements (≥1024px)
    Scoped exclusively to laptop+ to preserve mobile design intact
-   Inspired by NoBroker, Housing.com, MagicBricks
+   Inspired by NoBroker, Housing.com, MagicBricks, Airbnb
    ========================================================================== */
 @media (min-width: 1024px) {
+    /* Main Header Height & Styles */
+    .main-header {
+        height: 70px !important;
+    }
+
+    .header-logo {
+        font-size: 1.5rem !important;
+        gap: 8px !important;
+    }
+
+    .header-logo img {
+        height: 34px !important;
+    }
+
+    /* Navigation Links and Fonts */
+    .nav-link-item {
+        font-size: 15px !important;
+        padding: 8px 12px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 5px !important;
+    }
+
+    .dropdown-btn {
+        font-size: 15px !important;
+        padding: 8px 12px !important;
+    }
+
+    .avatar-initial {
+        width: 34px !important;
+        height: 34px !important;
+        font-size: 14px !important;
+    }
+
+    /* Hover-activated Dropdown Menu */
+    .header-dropdown:hover .dropdown-menu {
+        display: block !important;
+        animation: headerFadeIn 0.15s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    }
+
+    /* Property Card Image 16:9 Aspect Ratio & Height limit */
+    .card-img-wrapper, .hc-img-wrapper {
+        aspect-ratio: 16 / 9 !important;
+        max-height: 220px !important;
+        overflow: hidden !important;
+        position: relative !important;
+        width: 100% !important;
+    }
+
+    .card-img, .hc-img {
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: cover !important;
+    }
+
     /* Compact property card content for tighter desktop cards */
     .card-content {
-        padding: 1.15rem;
+        padding: 1.15rem !important;
+    }
+    .card-footer-action {
+        padding: 0 1.15rem 1.15rem 1.15rem !important;
     }
     .card-price {
-        font-size: 1.25rem;
-        margin-bottom: 0.2rem;
+        font-size: 1.25rem !important;
+        margin-bottom: 0.2rem !important;
     }
     .card-title {
-        font-size: 0.95rem;
-        margin-bottom: 0.4rem;
+        font-size: 0.95rem !important;
+        margin-bottom: 0.4rem !important;
     }
     .card-info-label {
-        font-size: 0.65rem;
+        font-size: 0.65rem !important;
     }
     .card-info-value {
-        font-size: 0.82rem;
+        font-size: 0.82rem !important;
     }
 
     /* Compact search page property cards */
     .hc-content {
-        padding: 1rem 1.15rem;
+        padding: 1rem 1.15rem !important;
     }
     .hc-price {
-        font-size: 1.2rem;
-        margin-bottom: 0.5rem;
+        font-size: 1.2rem !important;
+        margin-bottom: 0.5rem !important;
     }
     .hc-title {
-        font-size: 0.95rem;
+        font-size: 0.95rem !important;
     }
     .hc-location {
-        font-size: 0.78rem;
+        font-size: 0.78rem !important;
     }
     .hc-info-grid .card-info-label {
-        font-size: 0.62rem;
+        font-size: 0.62rem !important;
     }
     .hc-info-grid .card-info-value {
-        font-size: 0.78rem;
+        font-size: 0.78rem !important;
     }
 
-    /* Search results: 2 columns alongside sidebar for balanced layout */
+    /* Responsive Grid: Laptop (3 columns) */
+    .grid {
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: 1.5rem !important;
+    }
+
+    /* Search results: 2 columns alongside sidebar on laptop */
     .search-results-area {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 1.25rem;
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 1.25rem !important;
     }
 
     /* Slightly narrower filter sidebar */
     .search-sidebar {
-        width: 260px;
+        width: 260px !important;
+    }
+
+    /* Homepage Hero Polishing */
+    .hero {
+        height: 380px !important;
+        max-height: 500px !important;
+        padding: 4rem 1.5rem 6rem 1.5rem !important;
+    }
+    .hero h1 {
+        font-size: 2.6rem !important;
+        margin-bottom: 0.75rem !important;
+    }
+    .hero p {
+        font-size: 1.1rem !important;
+        max-width: 600px !important;
     }
 
     /* Constrain details page image gallery height */
     .swipe-gallery-item {
-        max-height: 420px;
+        max-height: 420px !important;
     }
 
     /* Tighter footer spacing */
     footer {
-        padding: 3rem 1.5rem 1.5rem 1.5rem;
+        padding: 3rem 1.5rem 1.5rem 1.5rem !important;
     }
 
-    /* Details page: tighter main content section gaps */
+    /* Details page: two-column layout */
+    .mb-details-layout {
+        display: flex !important;
+        flex-direction: row !important;
+        gap: 2rem !important;
+    }
     .mb-details-main {
-        padding: 2rem;
-        gap: 1.75rem;
+        flex: 1.7 !important;
+        padding: 2rem !important;
+        gap: 1.75rem !important;
+    }
+    .mb-details-sidebar {
+        flex: 1 !important;
+        min-width: 300px !important;
+        max-width: 360px !important;
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 1.5rem !important;
+        height: fit-content !important;
+        position: sticky !important;
+        top: 90px !important;
     }
 
     /* Profile layout: slightly tighter sidebar */
     .profile-sidebar {
-        width: 320px;
+        width: 320px !important;
+    }
+}
+
+/* ==========================================================================
+   Desktop Refinements (≥1280px)
+   ========================================================================== */
+@media (min-width: 1280px) {
+    /* Maximum layout width extension for ultra-premium spaciousness */
+    .container, .header-container, .mb-details-layout, .search-header-container {
+        max-width: 1280px !important;
+    }
+
+    /* Responsive Grid: Desktop (4 columns) */
+    .grid {
+        grid-template-columns: repeat(4, 1fr) !important;
+    }
+
+    /* Search results: 3 columns alongside sidebar for spacious screen estate */
+    .search-results-area {
+        grid-template-columns: repeat(3, 1fr) !important;
+    }
+
+    /* Details page: spacious sidebar */
+    .mb-details-sidebar {
+        max-width: 380px !important;
     }
 }

@@ -315,60 +315,118 @@
                 <small style="color: var(--text-light); display: block; margin-top: 0.3rem;">Only verified subscribers will be shown this number.</small>
             </div>
 
-            <!-- Enhanced Location Input with Manual + Live Location Toggle -->
-            <div class="form-group" style="margin-bottom: 1.5rem;">
-                <label style="font-weight: 600; color: var(--text-dark); margin-bottom: 0.5rem; display: block;">
-                    Property Location
+            <!-- Step-by-Step Map & Location System (5-Step Leaflet Geocoding Workflow) -->
+            <div class="form-group" style="margin-bottom: 2rem;">
+                <label style="font-weight: 700; color: var(--text-dark); margin-bottom: 0.75rem; display: block; font-size: 1.1rem;">
+                    📍 Property Location & Address Selector
                 </label>
 
-                <!-- Mode Toggle Tabs -->
-                <div id="location-mode-tabs" style="display: flex; gap: 0; margin-bottom: 1rem; border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden;">
-                    <button type="button" id="tab-manual" onclick="setLocationMode('manual')"
-                        style="flex: 1; padding: 0.7rem; font-size: 0.88rem; font-weight: 600; border: none; cursor: pointer; background: var(--primary); color: white; transition: all 0.2s; font-family: inherit;">
-                        ✏️ Enter Address
-                    </button>
-                    <button type="button" id="tab-live" onclick="setLocationMode('live')"
-                        style="flex: 1; padding: 0.7rem; font-size: 0.88rem; font-weight: 600; border: none; cursor: pointer; background: #f8fafc; color: var(--text-light); transition: all 0.2s; font-family: inherit;">
-                        📍 Use Live Location
-                    </button>
-                </div>
-
-                <!-- Manual Address Input (default visible) -->
-                <div id="manual-address-section">
-                    <textarea id="address" name="address" rows="3" required
-                        placeholder="Enter your complete property address (e.g. #123, 2nd Cross, Gokulam, Mysore 570002)"
-                        style="width: 100%; padding: 0.9rem 1rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 1rem; font-family: inherit; resize: vertical;"></textarea>
-                </div>
-
-                <!-- Live Location Section (hidden by default) -->
-                <div id="live-location-section" style="display: none;">
-                    <div style="background: #f8fafc; padding: 1.5rem; border-radius: 10px; border: 1px solid var(--border-color); text-align: center;">
-                        <div style="font-size: 2.5rem; margin-bottom: 0.75rem;">📍</div>
-                        <button type="button" onclick="detectLiveLocation()" class="btn btn-primary"
-                            id="detect-location-btn"
-                            style="margin-bottom: 0.75rem; padding: 0.75rem 1.5rem; border-radius: 8px; font-size: 0.95rem; font-weight: 600; border: none; cursor: pointer;">
-                            Detect My Current Location
+                <!-- Step 1: Address Components -->
+                <div style="background: #FAFAFA; border: 1px solid var(--border-color); padding: 1.5rem; border-radius: 10px; margin-bottom: 1.5rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                    <div style="grid-column: 1 / -1;">
+                        <span style="background: var(--primary); color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; margin-bottom: 0.5rem; display: inline-block;">Step 1</span>
+                        <h4 style="margin: 0; font-size: 0.95rem; font-weight: 700; color: var(--text-dark);">Enter Full Property Address</h4>
+                    </div>
+                    
+                    <div style="display: flex; flex-direction: column; gap: 4px;">
+                        <label style="font-size: 0.8rem; font-weight: 600; color: var(--text-dark);">House / Flat / Plot Number</label>
+                        <input type="text" id="loc_house" placeholder="e.g. #123, Flat 2B" style="padding: 0.75rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 0.9rem; background: white;">
+                    </div>
+                    
+                    <div style="display: flex; flex-direction: column; gap: 4px;">
+                        <label style="font-size: 0.8rem; font-weight: 600; color: var(--text-dark);">Street / Road / Landmark</label>
+                        <input type="text" id="loc_street" placeholder="e.g. 3rd Cross, near temple" style="padding: 0.75rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 0.9rem; background: white;">
+                    </div>
+                    
+                    <div style="display: flex; flex-direction: column; gap: 4px;">
+                        <label style="font-size: 0.8rem; font-weight: 600; color: var(--text-dark);">Area / Locality</label>
+                        <input type="text" id="loc_area" placeholder="e.g. Gokulam" style="padding: 0.75rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 0.9rem; background: white;">
+                    </div>
+                    
+                    <div style="display: flex; flex-direction: column; gap: 4px;">
+                        <label style="font-size: 0.8rem; font-weight: 600; color: var(--text-dark);">City</label>
+                        <input type="text" id="loc_city" value="Mysore" style="padding: 0.75rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 0.9rem; background: #e2e8f0; cursor: not-allowed;" readonly>
+                    </div>
+                    
+                    <div style="display: flex; flex-direction: column; gap: 4px;">
+                        <label style="font-size: 0.8rem; font-weight: 600; color: var(--text-dark);">PIN Code</label>
+                        <input type="text" id="loc_pin" placeholder="e.g. 570002" style="padding: 0.75rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 0.9rem; background: white;">
+                    </div>
+                    
+                    <div style="grid-column: 1 / -1; display: flex; gap: 10px; margin-top: 0.5rem; flex-wrap: wrap;">
+                        <button type="button" onclick="searchAddressOnMap()" class="btn btn-primary" style="font-size: 0.88rem; padding: 0.6rem 1.25rem; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+                            🔍 Search & Preview Location (Step 2)
                         </button>
-                        <p id="live-location-status" style="font-size: 0.85rem; color: var(--text-light); margin: 0; font-weight: 500;">
-                            Tap the button above to share your GPS coordinates
-                        </p>
-                        <p id="live-location-fallback" style="display: none; font-size: 0.82rem; color: var(--text-muted); margin: 0.5rem 0 0 0;">
-                            Location unavailable?
-                            <a href="#" onclick="setLocationMode('manual'); return false;" style="color: var(--primary); font-weight: 600; text-decoration: none;">
-                                Enter address manually instead →
-                            </a>
-                        </p>
+                        
+                        <button type="button" onclick="detectLiveLocationGPS()" class="btn btn-outline" style="font-size: 0.88rem; padding: 0.6rem 1.25rem; border-radius: 8px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; background: #F0FDF4; border-color: #86EFAC; color: #166534 !important;" id="gps-btn">
+                            📍 Use My Current Location (Step 3)
+                        </button>
                     </div>
                 </div>
-            </div>
 
-            <!-- Exact Location / Google Maps Link -->
-            <div class="form-group">
-                <label for="exact_location" style="font-weight: 600; color: var(--text-dark); margin-bottom: 0.5rem; display: block;">Exact Location Landmark / Coordinates</label>
-                <input type="text" id="exact_location" name="exact_location"
-                    placeholder="Google Maps link or landmark info (optional)"
-                    style="width: 100%; padding: 0.9rem 1rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 1rem;">
-                <small id="location-status" style="color: var(--text-light); display: block; margin-top: 0.4rem; font-weight: 500;"></small>
+                <!-- Step 2: Map Preview and Marker Adjusting -->
+                <div id="map-preview-section" style="display: none; background: #FAFAFA; border: 1px solid var(--border-color); padding: 1.5rem; border-radius: 10px; margin-bottom: 1.5rem;">
+                    <div style="margin-bottom: 0.75rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                        <div>
+                            <span style="background: var(--primary); color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; margin-bottom: 0.25rem; display: inline-block;">Step 2 & 4</span>
+                            <h4 style="margin: 0; font-size: 0.95rem; font-weight: 700; color: var(--text-dark);">Confirm Map Location (Drag marker if needed)</h4>
+                        </div>
+                        <div style="font-size: 0.8rem; background: #DBEAFE; color: #1E40AF; padding: 0.25rem 0.6rem; border-radius: 6px; font-weight: 600;" id="coords-indicator">
+                            Lat: --, Lng: --
+                        </div>
+                    </div>
+
+                    <!-- Draggable Marker Map Container -->
+                    <div id="leaflet-picker-map" style="height: 320px; width: 100%; border-radius: 8px; border: 1px solid #cbd5e1; position: relative; z-index: 1;"></div>
+                    
+                    <!-- Confirmation Dialog prompt -->
+                    <div id="map-confirm-box" style="margin-top: 1rem; background: #ECFDF5; border: 1px solid #A7F3D0; padding: 1rem; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+                        <div>
+                            <p style="margin: 0; color: #065F46; font-weight: 700; font-size: 0.9rem;">Is this the correct property location?</p>
+                            <span style="font-size: 0.78rem; color: #047857; font-weight: 500;">Press Confirm below to lock the exact coordinates for buyers.</span>
+                        </div>
+                        <button type="button" onclick="confirmMapPin()" class="btn" style="background: #10B981; color: white; font-weight: 700; padding: 0.5rem 1.25rem; border: none; border-radius: 8px; cursor: pointer; font-size: 0.85rem;">
+                            Yes, This is Correct ✓
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 4: GPS Fail Fallback Map Link Paste -->
+                <div style="background: #FAFAFA; border: 1px solid var(--border-color); padding: 1.5rem; border-radius: 10px; margin-bottom: 1.5rem;">
+                    <div>
+                        <span style="background: #64748B; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; margin-bottom: 0.5rem; display: inline-block;">Step 4 (Fallback)</span>
+                        <h4 style="margin: 0 0 0.5rem 0; font-size: 0.95rem; font-weight: 700; color: var(--text-dark);">Paste Google Maps Link</h4>
+                        <p style="color: var(--text-light); font-size: 0.8rem; margin: 0 0 0.85rem 0; line-height: 1.4; font-weight: 500;">
+                            If GPS is unavailable or address search fails, search the location on Google Maps, copy the share link or coordinates, and paste it below. We will extract the location automatically.
+                        </p>
+                    </div>
+                    <input type="text" id="maps_link_paste" oninput="parseGoogleMapsLink(this.value)" placeholder="Paste Google Maps share link (e.g. https://maps.app.goo.gl/... or coordinate text)" style="width: 100%; padding: 0.75rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 0.9rem; background: white;">
+                    <div id="paste-success-msg" style="display: none; color: #10B981; font-size: 0.8rem; font-weight: 700; margin-top: 0.4rem;">
+                        ✓ Coordinates successfully extracted from link!
+                    </div>
+                </div>
+
+                <!-- Hidden inputs for Step 5 saving -->
+                <input type="hidden" id="latitude" name="latitude">
+                <input type="hidden" id="longitude" name="longitude">
+                <input type="hidden" id="google_place_id" name="google_place_id">
+                
+                <!-- Hidden address textarea that holds compiled full address for backend -->
+                <textarea id="address" name="address" style="display: none;" required></textarea>
+                
+                <!-- Display compiled address for user feedback -->
+                <div style="margin-top: 0.75rem;">
+                    <label style="font-weight: 600; color: var(--text-muted); font-size: 0.82rem; margin-bottom: 0.25rem; display: block;">Compiled Property Address (Saved in Database)</label>
+                    <div id="compiled-address-box" style="background: #f1f5f9; border: 1px solid #cbd5e1; padding: 1rem; border-radius: 8px; font-size: 0.92rem; color: #334155; font-family: monospace; line-height: 1.4; min-height: 48px; font-weight: 500;">
+                        No address entered yet.
+                    </div>
+                </div>
+                
+                <!-- Exact Location / Landmark (Google Maps links saved here too for backwards compatibility) -->
+                <div class="form-group" style="margin-top: 1rem;">
+                    <label for="exact_location" style="font-weight: 600; color: var(--text-dark); margin-bottom: 0.5rem; display: block;">Exact Location Landmark (Optional)</label>
+                    <input type="text" id="exact_location" name="exact_location" placeholder="e.g. 5 mins from JSS College, or specific building name" style="width: 100%; padding: 0.9rem 1rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 1rem; background: white;">
+                </div>
             </div>
         </div>
 
@@ -686,96 +744,245 @@ document.querySelector('form').addEventListener('submit', function(e) {
     }
 });
 
-function setLocationMode(mode) {
-    const manualSection = document.getElementById('manual-address-section');
-    const liveSection = document.getElementById('live-location-section');
-    const tabManual = document.getElementById('tab-manual');
-    const tabLive = document.getElementById('tab-live');
+// ==========================================================================
+// Interactive Map & Geocoding Workflow (Leaflet.js integration)
+// ==========================================================================
+let map = null;
+let marker = null;
 
-    if (mode === 'manual') {
-        manualSection.style.display = 'block';
-        liveSection.style.display = 'none';
-        tabManual.style.background = 'var(--primary)';
-        tabManual.style.color = 'white';
-        tabLive.style.background = '#f8fafc';
-        tabLive.style.color = 'var(--text-light)';
+function initMap(lat, lng) {
+    const mapPreviewSec = document.getElementById('map-preview-section');
+    mapPreviewSec.style.display = 'block';
+    
+    // Set coordinate inputs
+    document.getElementById('latitude').value = lat.toFixed(6);
+    document.getElementById('longitude').value = lng.toFixed(6);
+    document.getElementById('coords-indicator').innerText = `Lat: ${lat.toFixed(4)}, Lng: ${lng.toFixed(4)}`;
+
+    if (!map) {
+        map = L.map('leaflet-picker-map').setView([lat, lng], 15);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+        
+        marker = L.marker([lat, lng], { draggable: true }).addTo(map);
+        
+        marker.on('dragend', function (e) {
+            const position = marker.getLatLng();
+            updateCoords(position.lat, position.lng);
+        });
     } else {
-        manualSection.style.display = 'none';
-        liveSection.style.display = 'block';
-        tabLive.style.background = 'var(--primary)';
-        tabLive.style.color = 'white';
-        tabManual.style.background = '#f8fafc';
-        tabManual.style.color = 'var(--text-light)';
+        const newLatLng = new L.LatLng(lat, lng);
+        marker.setLatLng(newLatLng);
+        map.setView(newLatLng, 15);
+    }
+    
+    // Invalidate size to prevent Leaflet rendering bugs
+    setTimeout(() => {
+        map.invalidateSize();
+    }, 100);
+}
+
+function updateCoords(lat, lng) {
+    document.getElementById('latitude').value = lat.toFixed(6);
+    document.getElementById('longitude').value = lng.toFixed(6);
+    document.getElementById('coords-indicator').innerText = `Lat: ${lat.toFixed(4)}, Lng: ${lng.toFixed(4)}`;
+    
+    // Sync to exact_location coordinates string
+    const exactInput = document.getElementById('exact_location');
+    if (exactInput) {
+        exactInput.value = `https://www.google.com/maps?q=${lat.toFixed(6)},${lng.toFixed(6)}`;
     }
 }
 
-function detectLiveLocation() {
-    const statusEl = document.getElementById('live-location-status');
-    const fallbackEl = document.getElementById('live-location-fallback');
-    const addressInput = document.getElementById('address');
-    const exactInput = document.getElementById('exact_location');
-    const detectBtn = document.getElementById('detect-location-btn');
+function compileAddressFromInputs() {
+    const house = document.getElementById('loc_house').value.trim();
+    const street = document.getElementById('loc_street').value.trim();
+    const area = document.getElementById('loc_area').value.trim();
+    const city = document.getElementById('loc_city').value.trim();
+    const pin = document.getElementById('loc_pin').value.trim();
+    
+    const addressParts = [];
+    if (house) addressParts.push(house);
+    if (street) addressParts.push(street);
+    if (area) addressParts.push(area);
+    if (city) addressParts.push(city);
+    if (pin) addressParts.push(pin);
+    
+    const compiledAddr = addressParts.join(', ');
+    document.getElementById('address').value = compiledAddr;
+    document.getElementById('compiled-address-box').innerText = compiledAddr || 'No address entered yet.';
+}
 
-    if (!navigator.geolocation) {
-        statusEl.textContent = '❌ Geolocation is not supported by your browser.';
-        statusEl.style.color = '#ef4444';
-        fallbackEl.style.display = 'block';
+function searchAddressOnMap() {
+    const area = document.getElementById('loc_area').value.trim();
+    const city = document.getElementById('loc_city').value.trim();
+    const pin = document.getElementById('loc_pin').value.trim();
+    
+    if (!area || !pin) {
+        alert('Please enter at least the Locality/Area and PIN Code to locate the property.');
         return;
     }
+    
+    compileAddressFromInputs();
+    const compiledAddr = document.getElementById('address').value;
+    
+    const searchBtn = window.event ? window.event.target : null;
+    const oldText = searchBtn ? searchBtn.innerText : 'Search';
+    if (searchBtn) {
+        searchBtn.innerText = '⏳ Searching...';
+        searchBtn.disabled = true;
+    }
+    
+    const searchUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(compiledAddr + ', Karnataka, India')}&limit=1`;
+    
+    fetch(searchUrl)
+        .then(response => response.json())
+        .then(data => {
+            if (searchBtn) {
+                searchBtn.innerText = oldText;
+                searchBtn.disabled = false;
+            }
+            
+            if (data && data.length > 0) {
+                const result = data[0];
+                const lat = parseFloat(result.lat);
+                const lng = parseFloat(result.lon);
+                
+                document.getElementById('google_place_id').value = result.place_id || '';
+                
+                initMap(lat, lng);
+                document.getElementById('map-preview-section').scrollIntoView({ behavior: 'smooth' });
+            } else {
+                // Fallback to Area-only search
+                const fallbackQuery = `${area}, ${city}, Karnataka, India`;
+                fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(fallbackQuery)}&limit=1`)
+                    .then(r => r.json())
+                    .then(fallbackData => {
+                        if (fallbackData && fallbackData.length > 0) {
+                            const res = fallbackData[0];
+                            const lat = parseFloat(res.lat);
+                            const lng = parseFloat(res.lon);
+                            initMap(lat, lng);
+                            alert('We centered the map on your Area. Please drag the marker to your exact building.');
+                            document.getElementById('map-preview-section').scrollIntoView({ behavior: 'smooth' });
+                        } else {
+                            alert('Could not locate address on map. Please drag marker manually or paste a Google Maps link.');
+                        }
+                    })
+                    .catch(e => {
+                        alert('Could not locate address. Please use GPS or adjust the marker manually.');
+                    });
+            }
+        })
+        .catch(error => {
+            if (searchBtn) {
+                searchBtn.innerText = oldText;
+                searchBtn.disabled = false;
+            }
+            alert('Geocoding service unavailable. Please drag marker manually or paste a Google Maps link.');
+        });
+}
 
-    statusEl.textContent = '⏳ Detecting your location...';
-    statusEl.style.color = 'var(--primary)';
-    detectBtn.disabled = true;
-    detectBtn.style.opacity = '0.6';
-
+function detectLiveLocationGPS() {
+    const gpsBtn = document.getElementById('gps-btn');
+    const oldText = gpsBtn.innerText;
+    gpsBtn.innerText = '⏳ Accessing GPS...';
+    gpsBtn.disabled = true;
+    
+    if (!navigator.geolocation) {
+        alert('Geolocation is not supported by your browser.');
+        gpsBtn.innerText = oldText;
+        gpsBtn.disabled = false;
+        return;
+    }
+    
     navigator.geolocation.getCurrentPosition(
         (position) => {
+            gpsBtn.innerText = oldText;
+            gpsBtn.disabled = false;
+            
             const lat = position.coords.latitude;
             const lng = position.coords.longitude;
-            const mapsLink = `https://www.google.com/maps?q=${lat},${lng}`;
-
-            exactInput.value = mapsLink;
-            addressInput.value = `GPS: ${lat.toFixed(6)}, ${lng.toFixed(6)} — Please also type your full address below`;
-
-            statusEl.innerHTML = `✅ Location detected! <strong>${lat.toFixed(4)}, ${lng.toFixed(4)}</strong> — Switching to address entry...`;
-            statusEl.style.color = '#10b981';
-            detectBtn.disabled = false;
-            detectBtn.style.opacity = '1';
-
-            // Auto-switch to manual mode so user can refine the address
-            setTimeout(() => {
-                setLocationMode('manual');
-                addressInput.focus();
-                addressInput.setSelectionRange(0, addressInput.value.length);
-            }, 1500);
+            
+            initMap(lat, lng);
+            
+            // Attempt reverse geocoding to fill address fields
+            fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`)
+                .then(r => r.json())
+                .then(data => {
+                    if (data && data.address) {
+                        const addr = data.address;
+                        const road = addr.road || addr.suburb || '';
+                        const suburb = addr.neighbourhood || addr.suburb || '';
+                        const postcode = addr.postcode || '';
+                        
+                        if (road) document.getElementById('loc_street').value = road;
+                        if (suburb) document.getElementById('loc_area').value = suburb;
+                        if (postcode) document.getElementById('loc_pin').value = postcode;
+                        
+                        compileAddressFromInputs();
+                    }
+                })
+                .catch(e => {});
+                
+            document.getElementById('map-preview-section').scrollIntoView({ behavior: 'smooth' });
         },
         (error) => {
-            let msg = '❌ Unable to detect location. ';
-            switch (error.code) {
-                case error.PERMISSION_DENIED:
-                    msg += 'Permission was denied by user.';
-                    break;
-                case error.POSITION_UNAVAILABLE:
-                    msg += 'Location information is unavailable.';
-                    break;
-                case error.TIMEOUT:
-                    msg += 'The request timed out.';
-                    break;
+            gpsBtn.innerText = oldText;
+            gpsBtn.disabled = false;
+            let msg = 'Unable to access your GPS. ';
+            if (error.code === error.PERMISSION_DENIED) {
+                msg += 'Permission denied. Please paste a Google Maps link instead.';
+            } else {
+                msg += 'Coordinates unavailable.';
             }
-            statusEl.textContent = msg;
-            statusEl.style.color = '#ef4444';
-            fallbackEl.style.display = 'block';
-            detectBtn.disabled = false;
-            detectBtn.style.opacity = '1';
+            alert(msg);
         },
         { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
     );
 }
 
-// Legacy alias for backwards compatibility
-function getLocation() {
-    detectLiveLocation();
+function parseGoogleMapsLink(val) {
+    if (!val) return;
+    
+    // Parse lat,lng coordinates out of Google Maps URLs or direct text
+    const regex1 = /@(-?\d+\.\d+),(-?\d+\.\d+)/;
+    const regex2 = /q=(-?\d+\.\d+),(-?\d+\.\d+)/;
+    const regex3 = /(-?\d+\.\d+),\s*(-?\d+\.\d+)/;
+    
+    let match = val.match(regex1) || val.match(regex2) || val.match(regex3);
+    
+    if (match) {
+        const lat = parseFloat(match[1]);
+        const lng = parseFloat(match[2]);
+        
+        initMap(lat, lng);
+        
+        document.getElementById('paste-success-msg').style.display = 'block';
+        setTimeout(() => {
+            document.getElementById('paste-success-msg').style.display = 'none';
+        }, 3000);
+        
+        document.getElementById('map-preview-section').scrollIntoView({ behavior: 'smooth' });
+    }
 }
+
+function confirmMapPin() {
+    alert('✓ Property coordinates locked successfully!');
+}
+
+// Auto-compile on typing
+document.addEventListener("DOMContentLoaded", function() {
+    const ids = ['loc_house', 'loc_street', 'loc_area', 'loc_pin'];
+    ids.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            el.addEventListener('input', compileAddressFromInputs);
+        }
+    });
+});
 
 // Dynamic Category Fields Handler
 document.addEventListener("DOMContentLoaded", function() {

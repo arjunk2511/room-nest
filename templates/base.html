@@ -33,6 +33,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'css/style.css' %}?v=5.0">
+    <!-- Leaflet JS Map Assets -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
     <link rel="shortcut icon" type="image/x-icon" href="{% static 'images/favicon.ico' %}?v=1.0">
     <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/favicon-16x16.png' %}?v=1.0">
     <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon-32x32.png' %}?v=1.0">
@@ -177,35 +180,17 @@
             <!-- Right: Navigation Group -->
             <nav class="header-nav">
                 <div class="nav-links-group">
-                    <a href="{% url 'home' %}" class="nav-link-item {% if request.resolver_match.url_name == 'home' %}active{% endif %}">Home</a>
-                    <a href="{% url 'search' %}" class="nav-link-item {% if request.resolver_match.url_name == 'search' %}active{% endif %}">Search</a>
+                    <a href="{% url 'home' %}" class="nav-link-item {% if request.resolver_match.url_name == 'home' %}active{% endif %}">🏠 Home</a>
+                    <a href="{% url 'search' %}" class="nav-link-item {% if request.resolver_match.url_name == 'search' %}active{% endif %}">🔍 Search</a>
+                    <a href="{% url 'add_property' %}" class="nav-link-item {% if request.resolver_match.url_name == 'add_property' %}active{% endif %}">➕ Post Property</a>
+                    <a href="{% url 'wishlist' %}" class="nav-link-item {% if request.resolver_match.url_name == 'wishlist' %}active{% endif %}">❤️ Saved</a>
                     
-                    <!-- Explore Cities Dropdown -->
-                    <div class="header-dropdown" id="exploreDropdown">
-                        <button class="dropdown-btn" onclick="toggleDropdown('exploreDropdownContent')">
-                            Explore <span class="chevron">▼</span>
-                        </button>
-                        <div class="dropdown-menu" id="exploreDropdownContent">
-                            <div class="menu-section-title">Popular Cities</div>
-                            <a href="/mysore/" onclick="closeDropdowns()">📍 Mysore</a>
-                            <a href="/bengaluru/" onclick="closeDropdowns()">📍 Bengaluru</a>
-                            <a href="/hyderabad/" onclick="closeDropdowns()">📍 Hyderabad</a>
-                            <div class="menu-divider"></div>
-                            <a href="{% url 'search' %}" onclick="closeDropdowns()" class="menu-link-highlight">View All Cities →</a>
-                        </div>
-                    </div>
-                    
-                    <a href="{% url 'wishlist' %}" class="nav-link-item {% if request.resolver_match.url_name == 'wishlist' %}active{% endif %}">Saved</a>
-                </div>
-                
-                <div class="nav-actions-group">
-                    {% if user.is_authenticated %}
-                        <a href="{% url 'add_property' %}" class="btn btn-primary header-post-btn">Post Property</a>
-                        
-                        <!-- Profile Avatar Dropdown -->
-                        <div class="header-dropdown" id="profileDropdown">
-                            <button class="avatar-btn" onclick="toggleDropdown('profileDropdownContent')">
+                    <!-- Profile Dropdown (Authenticated or Guest) -->
+                    <div class="header-dropdown" id="profileDropdown">
+                        {% if user.is_authenticated %}
+                            <button class="dropdown-btn profile-nav-btn" onclick="toggleDropdown('profileDropdownContent')">
                                 <span class="avatar-initial">{{ user.username|slice:":1"|upper }}</span>
+                                <span class="profile-text">Profile</span> <span class="chevron">▼</span>
                             </button>
                             <div class="dropdown-menu menu-right" id="profileDropdownContent">
                                 {% if user.is_superuser or user.is_staff %}
@@ -214,17 +199,26 @@
                                 {% endif %}
                                 <a href="{% url 'profile' %}" onclick="closeDropdowns()">👤 My Profile</a>
                                 <a href="{% url 'owner_dashboard' %}" onclick="closeDropdowns()">💼 My Listings</a>
+                                <a href="{% url 'tenant_dashboard' %}" onclick="closeDropdowns()">🏠 Tenant Dashboard</a>
                                 <a href="{% url 'wishlist' %}" onclick="closeDropdowns()">❤️ Saved Properties</a>
-                                <a href="{% url 'profile' %}#rewards" onclick="closeDropdowns()">🎁 Rewards</a>
-                                <a href="{% url 'profile' %}" onclick="closeDropdowns()">⚙️ Settings</a>
+                                <a href="{% url 'profile' %}#rewards" onclick="closeDropdowns()">🎁 Rewards & Referrals</a>
                                 <div class="menu-divider"></div>
                                 <a href="{% url 'logout' %}" onclick="closeDropdowns()" class="menu-link-danger">🚪 Logout</a>
                             </div>
-                        </div>
-                    {% else %}
-                        <a href="{% url 'login' %}?next={{ request.path }}" class="btn btn-outline header-login-btn">Login</a>
-                        <a href="{% url 'register' %}?next={{ request.path }}" class="btn btn-primary header-register-btn">Register</a>
-                    {% endif %}
+                        {% else %}
+                            <button class="dropdown-btn profile-nav-btn" onclick="toggleDropdown('profileDropdownContent')">
+                                <span class="avatar-initial guest">👤</span>
+                                <span class="profile-text">Profile</span> <span class="chevron">▼</span>
+                            </button>
+                            <div class="dropdown-menu menu-right" id="profileDropdownContent">
+                                <a href="{% url 'login' %}?next={{ request.path }}" onclick="closeDropdowns()" class="menu-link-highlight">🔑 Login</a>
+                                <a href="{% url 'register' %}?next={{ request.path }}" onclick="closeDropdowns()">✨ Register Account</a>
+                                <div class="menu-divider"></div>
+                                <a href="{% url 'add_property' %}" onclick="closeDropdowns()">➕ Post Property</a>
+                                <a href="{% url 'search' %}" onclick="closeDropdowns()">🔍 Search Stays</a>
+                            </div>
+                        {% endif %}
+                    </div>
                 </div>
             </nav>
             
