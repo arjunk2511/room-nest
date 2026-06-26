@@ -2861,344 +2861,753 @@ footer {
 }
 
 /* ==========================================================================
-   Desktop Laptop Refinements (≥1024px)
-   Scoped exclusively to laptop+ to preserve mobile design intact
-   Inspired by NoBroker, Housing.com, MagicBricks, Airbnb
+   ROOMNEST V3 - COMPLETE DESKTOP & LAPTOP REBUILD (≥1024px)
+   A clean-slate, premium desktop interface system inspired by Airbnb and Stripe.
+   Strictly isolated to viewports >= 1024px to preserve mobile layout.
    ========================================================================== */
 @media (min-width: 1024px) {
-    /* Scoped explicit sizing */
-    .nav-emoji-icon {
-        font-size: 18px !important;
-        margin-right: 4px !important;
-        display: inline-block !important;
-        vertical-align: middle !important;
-    }
-
-    /* Navigation Icons */
-    .nav-links-group svg, .nav-link-item svg, .profile-nav-btn svg, .bottom-nav-icon {
-        width: 20px !important;
-        height: 20px !important;
-        flex-shrink: 0 !important;
-    }
-
-    /* Feature Icons */
-    .value-prop-icon svg, .feature-icon svg, [class*="feature"] svg, [class*="value-prop"] svg {
-        width: 24px !important;
-        height: 24px !important;
-        flex-shrink: 0 !important;
-    }
-
-    /* Property Feature Icons */
-    .property-feature-icon svg, [class*="property-feature"] svg, [class*="card-info"] svg {
-        width: 18px !important;
-        height: 18px !important;
-        flex-shrink: 0 !important;
-    }
-
-    /* Social Icons */
-    .footer-socials svg, .social-links svg, [class*="social"] svg {
-        width: 20px !important;
-        height: 20px !important;
-        flex-shrink: 0 !important;
-    }
-
-    /* Desktop Containers & Wrappers (Problem 3) */
-    .container, .header-container, .mb-details-layout, .search-header-container, .profile-container, .form-container, .dashboard-container {
+    /* --- 1. Global Reset & Desktop Containers --- */
+    .container, 
+    .header-container, 
+    .mb-details-layout, 
+    .search-header-container, 
+    .profile-layout, 
+    .dashboard-container,
+    .details-container {
         max-width: 1280px !important;
-        margin: 0 auto !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
         padding-left: 24px !important;
         padding-right: 24px !important;
         width: 100% !important;
     }
 
-    /* Compact Main Header & Typography (Problem 6) */
+    /* --- 2. Compact Main Navigation Header (70px) --- */
     .main-header {
         height: 70px !important;
-        display: flex !important;
-        align-items: center !important;
-        background: #ffffff !important;
-        border-bottom: 1px solid #E5E7EB !important;
+        background: var(--white) !important;
+        border-bottom: 1px solid var(--border-color) !important;
         position: sticky !important;
         top: 0 !important;
         z-index: 1000 !important;
+        box-shadow: 0 1px 3px rgba(15, 23, 42, 0.02) !important;
+        display: flex !important;
+        align-items: center !important;
+    }
+
+    .header-container {
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        height: 100% !important;
     }
 
     .header-logo {
-        font-size: 1.5rem !important;
+        font-size: 1.45rem !important;
+        font-weight: 800 !important;
         gap: 8px !important;
+        display: flex !important;
+        align-items: center !important;
+        flex-shrink: 0 !important;
     }
 
     .header-logo img {
         height: 34px !important;
+        width: auto !important;
+        object-fit: contain !important;
     }
 
-    /* Navigation Links and Fonts */
+    /* Center: Compact Header Search Bar */
+    .header-search-wrapper {
+        max-width: 440px !important;
+        width: 100% !important;
+        position: relative !important;
+        margin: 0 var(--space-3) !important;
+    }
+
+    .header-search-form select, 
+    .header-search-form input {
+        height: 40px !important;
+        padding: 0 1rem 0 2.5rem !important;
+        font-size: 0.9rem !important;
+        border-radius: 99px !important;
+        border: 1px solid var(--border-color) !important;
+        background: #F8FAFC !important;
+    }
+
+    /* Right: Nav Links Group */
+    .header-nav {
+        display: block !important;
+    }
+
+    .nav-links-group {
+        display: flex !important;
+        align-items: center !important;
+        gap: 24px !important;
+    }
+
     .nav-link-item {
         font-size: 15px !important;
         font-weight: 600 !important;
-        color: #4B5563 !important;
-        padding: 8px 12px !important;
+        color: var(--text-light) !important;
+        padding: 6px 0 !important;
         display: inline-flex !important;
         align-items: center !important;
-        gap: 5px !important;
+        gap: 6px !important;
+        border-bottom: 2px solid transparent !important;
+        transition: var(--transition-smooth) !important;
     }
 
-    .dropdown-btn {
-        font-size: 15px !important;
-        font-weight: 600 !important;
-        padding: 8px 12px !important;
+    .nav-link-item:hover,
+    .nav-link-item.active {
+        color: var(--primary) !important;
+        border-bottom-color: var(--primary) !important;
+    }
+
+    /* Profile Dropdown Component */
+    .header-dropdown {
+        position: relative !important;
+    }
+
+    .profile-nav-btn {
+        display: flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+        background: none !important;
+        border: none !important;
+        cursor: pointer !important;
+        padding: 4px 8px !important;
+        border-radius: 8px !important;
+        transition: var(--transition-smooth) !important;
+    }
+
+    .profile-nav-btn:hover {
+        background: #F8FAFC !important;
     }
 
     .avatar-initial {
-        width: 34px !important;
-        height: 34px !important;
-        font-size: 14px !important;
+        width: 32px !important;
+        height: 32px !important;
+        font-size: 13px !important;
+        font-weight: 700 !important;
+        border-radius: 50% !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        background: var(--primary-light) !important;
+        color: var(--primary) !important;
     }
 
-    /* Hover-activated Dropdown Menu */
+    .avatar-initial.guest {
+        background: #F1F5F9 !important;
+        color: var(--text-light) !important;
+    }
+
+    .dropdown-menu {
+        position: absolute !important;
+        top: 100% !important;
+        right: 0 !important;
+        margin-top: 8px !important;
+        background: var(--white) !important;
+        border: 1px solid var(--border-color) !important;
+        border-radius: 12px !important;
+        box-shadow: var(--shadow-lg) !important;
+        width: 220px !important;
+        padding: 8px 0 !important;
+        z-index: 1100 !important;
+        display: none !important;
+    }
+
     .header-dropdown:hover .dropdown-menu {
         display: block !important;
-        animation: headerFadeIn 0.15s cubic-bezier(0.16, 1, 0.3, 1) !important;
+        animation: slideDown 0.15s cubic-bezier(0.16, 1, 0.3, 1) !important;
     }
 
-    /* Property Card Premium Redesign (Problem 5) */
-    .card {
+    .dropdown-menu a {
+        display: block !important;
+        padding: 10px 16px !important;
+        font-size: 14px !important;
+        font-weight: 600 !important;
+        color: var(--text-dark) !important;
+        transition: var(--transition-smooth) !important;
+    }
+
+    .dropdown-menu a:hover {
+        background: #F8FAFC !important;
+        color: var(--primary) !important;
+    }
+
+    .menu-divider {
+        height: 1px !important;
+        background: var(--border-color) !important;
+        margin: 6px 0 !important;
+    }
+
+    /* Hide Mobile Controls */
+    .mobile-header-controls,
+    .mobile-search-trigger,
+    .mobile-search-overlay {
+        display: none !important;
+    }
+
+    /* --- 3. Strict Icon and SVG Sizing System --- */
+    .nav-emoji-icon {
+        font-size: 18px !important;
+        display: inline-block !important;
+        vertical-align: middle !important;
+        line-height: 1 !important;
+    }
+
+    /* Enforce explicit widths on SVGs and icons so they never stretch on desktop */
+    svg, .bottom-nav-icon, [class*="icon"] svg {
+        flex-shrink: 0 !important;
+    }
+
+    .nav-links-group svg, 
+    .nav-link-item svg, 
+    .profile-nav-btn svg {
+        width: 18px !important;
+        height: 18px !important;
+    }
+
+    .feature-icon svg, 
+    .value-prop-icon svg, 
+    [class*="value-prop"] svg {
+        width: 24px !important;
+        height: 24px !important;
+    }
+
+    .property-feature-icon svg, 
+    [class*="property-feature"] svg, 
+    [class*="card-info"] svg {
+        width: 18px !important;
+        height: 18px !important;
+    }
+
+    .footer-socials svg, 
+    .social-links svg {
+        width: 20px !important;
+        height: 20px !important;
+    }
+
+    /* --- 4. Homepage Redesign & Spacing --- */
+    .hero {
+        height: 380px !important;
+        min-height: 380px !important;
+        border-radius: 0 !important;
+        padding: 5rem 24px 7rem 24px !important;
+    }
+
+    .hero h1 {
+        font-size: 2.5rem !important;
+        font-weight: 850 !important;
+        margin-bottom: 0.75rem !important;
+    }
+
+    .hero p {
+        font-size: 1.1rem !important;
+        max-width: 620px !important;
+        margin-bottom: 0 !important;
+    }
+
+    /* Floating Search Box */
+    .search-wrapper {
+        margin: -3.5rem auto 3.5rem auto !important;
+        padding: 0 24px !important;
+        max-width: 920px !important;
+    }
+
+    .search-container {
+        border-radius: var(--border-radius-md) !important;
+        box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.08), 0 8px 16px -6px rgba(15, 23, 42, 0.04) !important;
+    }
+
+    .search-tabs {
+        padding: 0 1rem !important;
+    }
+
+    .search-tab {
+        padding: 1rem 1.25rem !important;
+        font-size: 0.92rem !important;
+    }
+
+    .search-form {
+        flex-direction: row !important;
+        padding: 1.25rem 1.5rem !important;
+        gap: 12px !important;
+    }
+
+    .search-field select, 
+    .search-field input {
+        height: 44px !important;
+        font-size: 0.9rem !important;
+        border-radius: 8px !important;
+    }
+
+    .search-btn {
+        height: 44px !important;
+        min-width: 140px !important;
+        border-radius: 8px !important;
+    }
+
+    /* Section spacing */
+    .container {
+        margin: 4.5rem auto !important;
+    }
+
+    .section-title {
+        font-size: 1.85rem !important;
+        margin-bottom: 0.5rem !important;
+    }
+
+    /* Fluid Grids: 3 Columns Laptop (1024px-1279px) */
+    .grid {
+        display: grid !important;
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: 24px !important;
+    }
+
+    /* Popular Cities Grid (Enforced exactly 3 columns) */
+    .popular-cities-grid {
+        display: grid !important;
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: 24px !important;
+    }
+
+    /* Value Props and Testimonials Grids */
+    .value-props-section .grid {
+        grid-template-columns: repeat(4, 1fr) !important;
+    }
+
+    .cta-download-section {
+        padding: 4rem 3rem !important;
+        border-radius: var(--border-radius-lg) !important;
+        margin: 4.5rem auto !important;
+        max-width: 1232px !important;
+    }
+
+    /* --- 5. Premium Property Cards --- */
+    .card, 
+    .hc-card {
         border-radius: 12px !important;
         box-shadow: 0 4px 20px rgba(15, 23, 42, 0.05) !important;
-        transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease !important;
+        transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease, border-color 0.3s ease !important;
+        border: 1px solid rgba(15, 23, 42, 0.05) !important;
         overflow: hidden !important;
         background: var(--white) !important;
+        display: flex !important;
+        flex-direction: column !important;
+        height: 100% !important;
     }
 
-    .card:hover {
+    .card:hover, 
+    .hc-card:hover {
         transform: translateY(-6px) !important;
-        box-shadow: 0 12px 30px rgba(15, 23, 42, 0.1) !important;
+        box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08) !important;
+        border-color: rgba(37, 99, 235, 0.1) !important;
     }
 
-    .card-img-wrapper, .hc-img-wrapper {
+    .card-img-wrapper, 
+    .hc-img-wrapper {
         aspect-ratio: 16 / 9 !important;
         max-height: 220px !important;
         height: 220px !important;
         overflow: hidden !important;
         position: relative !important;
         width: 100% !important;
+        background: #F1F5F9 !important;
     }
 
-    .card-img, .hc-img {
+    .card-img, 
+    .hc-img {
         width: 100% !important;
         height: 100% !important;
         object-fit: cover !important;
+        transition: transform 0.4s ease !important;
     }
 
-    /* Compact property card content for tighter desktop cards */
-    .card-content {
-        padding: 1.15rem !important;
+    .card:hover .card-img,
+    .hc-card:hover .hc-img {
+        transform: scale(1.05) !important;
     }
-    .card-footer-action {
-        padding: 0 1.15rem 1.15rem 1.15rem !important;
+
+    .card-content, 
+    .hc-content {
+        padding: 1.25rem !important;
+        flex: 1 !important;
+        display: flex !important;
+        flex-direction: column !important;
     }
-    .card-price {
-        font-size: 1.25rem !important;
-        margin-bottom: 0.2rem !important;
+
+    .card-price, 
+    .hc-price {
+        font-size: 1.35rem !important;
+        font-weight: 800 !important;
+        color: var(--text-dark) !important;
+        margin-bottom: 0.3rem !important;
     }
-    .card-title {
-        font-size: 0.95rem !important;
-        margin-bottom: 0.4rem !important;
+
+    .card-title, 
+    .hc-title {
+        font-size: 1rem !important;
+        font-weight: 700 !important;
+        margin-bottom: 0.5rem !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        color: var(--text-dark) !important;
     }
+
+    .card-info-row, 
+    .hc-info-grid {
+        display: flex !important;
+        gap: 12px !important;
+        margin-bottom: 1rem !important;
+        padding-bottom: 0.75rem !important;
+        border-bottom: 1px solid #F1F5F9 !important;
+    }
+
     .card-info-label {
         font-size: 0.65rem !important;
+        font-weight: 600 !important;
+        color: var(--text-muted) !important;
     }
+
     .card-info-value {
         font-size: 0.82rem !important;
+        font-weight: 700 !important;
+        color: var(--text-dark) !important;
     }
 
-    /* Compact search page property cards */
-    .hc-content {
-        padding: 1rem 1.15rem !important;
-    }
-    .hc-price {
-        font-size: 1.2rem !important;
-        margin-bottom: 0.5rem !important;
-    }
-    .hc-title {
-        font-size: 0.95rem !important;
-    }
-    .hc-location {
-        font-size: 0.78rem !important;
-    }
-    .hc-info-grid .card-info-label {
-        font-size: 0.62rem !important;
-    }
-    .hc-info-grid .card-info-value {
-        font-size: 0.78rem !important;
+    .card-footer-action, 
+    .hc-footer-actions {
+        padding: 0 1.25rem 1.25rem 1.25rem !important;
+        margin-top: auto !important;
+        display: grid !important;
+        grid-template-columns: auto 1fr 1fr !important;
+        gap: 8px !important;
     }
 
-    /* Responsive Grid: Laptop (3 columns) (Problem 4 & 7) */
-    .grid {
-        grid-template-columns: repeat(3, 1fr) !important;
-        gap: 1.5rem !important;
+    .card-footer-action .btn, 
+    .hc-footer-actions .btn {
+        min-height: 40px !important;
+        height: 40px !important;
+        font-size: 0.85rem !important;
+        border-radius: 8px !important;
+        padding: 0 0.5rem !important;
     }
 
-    /* Popular Cities Display as exactly 3 columns (Problem 4) */
-    .popular-cities-grid {
-        grid-template-columns: repeat(3, 1fr) !important;
-        gap: 1.5rem !important;
+    /* --- 6. Property Details Page Redesign (Two-Column Layout) --- */
+    .mb-details-layout {
+        display: flex !important;
+        flex-direction: row !important;
+        gap: 2.5rem !important;
+        align-items: flex-start !important;
+        margin-top: 1rem !important;
+        margin-bottom: 4rem !important;
     }
 
-    /* Search results: 2 columns alongside sidebar on laptop */
-    .search-results-area {
-        grid-template-columns: repeat(2, 1fr) !important;
-        gap: 1.25rem !important;
+    /* Left Side Content Area */
+    .mb-details-main {
+        flex: 1.76 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 2.5rem !important;
+        min-width: 0 !important; /* Prevent flex blowout */
+        background: var(--white) !important;
+        padding: 2.5rem !important;
+        border-radius: 16px !important;
+        border: 1px solid var(--border-color) !important;
+        box-shadow: var(--shadow) !important;
     }
 
-    /* Slightly narrower filter sidebar */
-    .search-sidebar {
-        width: 260px !important;
-    }
-
-    /* Homepage Hero Polishing */
-    .hero {
-        height: 380px !important;
-        max-height: 500px !important;
-        padding: 4rem 1.5rem 6rem 1.5rem !important;
-    }
-    .hero h1 {
-        font-size: 2.6rem !important;
-        margin-bottom: 0.75rem !important;
-    }
-    .hero p {
-        font-size: 1.1rem !important;
-        max-width: 600px !important;
-    }
-
-    /* Constrain details page image gallery height (Problem 2) */
+    /* Image gallery capped to max 500px to prevent dominating the viewport */
     .swipe-gallery-wrapper {
-        max-width: 100% !important;
-        height: 500px !important;
-        max-height: 550px !important;
-        border-radius: var(--border-radius-lg) !important;
+        height: 480px !important;
+        max-height: 500px !important;
+        border-radius: 12px !important;
         overflow: hidden !important;
         position: relative !important;
+        aspect-ratio: 16 / 9 !important;
+        background: #F1F5F9 !important;
     }
+
     .swipe-gallery {
         height: 100% !important;
         display: flex !important;
-        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
         overflow: hidden !important;
     }
+
     .swipe-gallery-item {
         flex: 0 0 100% !important;
         height: 100% !important;
-        max-height: 550px !important;
-        aspect-ratio: 16 / 9 !important;
         overflow: hidden !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
     }
+
     .swipe-gallery-item img {
         width: 100% !important;
         height: 100% !important;
         object-fit: cover !important;
     }
-    /* Thumbnail preview strip styling */
+
+    .gallery-nav-btn {
+        width: 44px !important;
+        height: 44px !important;
+        background: rgba(255, 255, 255, 0.9) !important;
+        color: var(--secondary) !important;
+        font-size: 1.1rem !important;
+        border-radius: 50% !important;
+        box-shadow: var(--shadow) !important;
+    }
+
+    .gallery-nav-btn:hover {
+        background: var(--white) !important;
+    }
+
+    /* Sleek scrollable thumbnails */
     .thumbnail-strip {
         display: flex !important;
-        gap: 12px !important;
-        margin-top: 12px !important;
+        gap: 10px !important;
+        margin-top: 10px !important;
         overflow-x: auto !important;
-        padding: 4px 0 !important;
+        padding: 2px 0 !important;
     }
+
     .thumbnail-item {
         flex: 0 0 80px !important;
-        height: 54px !important;
+        height: 52px !important;
         border-radius: 6px !important;
+        border: 2px solid transparent !important;
         overflow: hidden !important;
         cursor: pointer !important;
-        border: 2px solid transparent !important;
-        opacity: 0.6 !important;
-        transition: all 0.2s ease !important;
+        opacity: 0.65 !important;
+        transition: var(--transition-smooth) !important;
     }
-    .thumbnail-item.active, .thumbnail-item:hover {
+
+    .thumbnail-item.active,
+    .thumbnail-item:hover {
         border-color: var(--primary) !important;
         opacity: 1 !important;
     }
+
     .thumbnail-item img {
         width: 100% !important;
         height: 100% !important;
         object-fit: cover !important;
     }
 
-    /* Tighter footer spacing */
-    footer {
-        padding: 3rem 1.5rem 1.5rem 1.5rem !important;
+    /* Proximity Landmarks Tabs */
+    .nearby-tab {
+        font-size: 0.88rem !important;
+        padding: 0.6rem 1rem !important;
+        transition: var(--transition-smooth) !important;
     }
 
-    /* Details page: two-column layout */
-    .mb-details-layout {
-        display: flex !important;
-        flex-direction: row !important;
-        gap: 2rem !important;
+    .nearby-tab:hover {
+        color: var(--primary) !important;
     }
-    .mb-details-main {
-        flex: 1.7 !important;
-        padding: 2rem !important;
-        gap: 1.75rem !important;
-    }
+
+    /* Right Side Sticky Owner Sidebar */
     .mb-details-sidebar {
         flex: 1 !important;
-        min-width: 300px !important;
-        max-width: 360px !important;
+        min-width: 320px !important;
+        max-width: 380px !important;
+        position: sticky !important;
+        top: 94px !important; /* 70px header + 24px spacing */
+        height: fit-content !important;
         display: flex !important;
         flex-direction: column !important;
         gap: 1.5rem !important;
-        height: fit-content !important;
-        position: sticky !important;
-        top: 90px !important;
+        z-index: 10 !important;
     }
 
-    /* Profile layout: slightly tighter sidebar */
+    .contact-card {
+        padding: 2rem !important;
+        border-radius: 16px !important;
+        border: 1px solid var(--border-color) !important;
+        box-shadow: var(--shadow) !important;
+        background: var(--white) !important;
+    }
+
+    /* Disable mobile bottom details bar on desktop */
+    .details-mobile-sticky-bar {
+        display: none !important;
+    }
+
+    /* --- 7. Search Results Page Layout --- */
+    .search-page-layout {
+        display: flex !important;
+        gap: 24px !important;
+        max-width: 1280px !important;
+        margin: 24px auto 4rem auto !important;
+        padding: 0 24px !important;
+        align-items: flex-start !important;
+    }
+
+    /* Left Sidebar Filter */
+    .search-sidebar {
+        width: 280px !important;
+        flex-shrink: 0 !important;
+        background: var(--white) !important;
+        border: 1px solid var(--border-color) !important;
+        border-radius: 12px !important;
+        padding: 1.5rem !important;
+        box-shadow: var(--shadow-sm) !important;
+        position: sticky !important;
+        top: 146px !important; /* 70px header + 52px sticky filter bar + 24px gap */
+        height: calc(100vh - 170px) !important;
+        overflow-y: auto !important;
+        display: flex !important;
+        flex-direction: column !important;
+    }
+
+    .drawer-scroll-content {
+        flex: 1 !important;
+        overflow-y: auto !important;
+        padding-right: 4px !important;
+    }
+
+    .drawer-actions-bar {
+        margin-top: 1.5rem !important;
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 8px !important;
+    }
+
+    .desktop-filter-title {
+        display: flex !important;
+    }
+
+    /* Hide Mobile filter buttons */
+    .floating-filter-btn, 
+    .drawer-header {
+        display: none !important;
+    }
+
+    /* Right Search Results Listings Area: 2 Columns on Laptop */
+    .search-results-area {
+        flex: 1 !important;
+        display: grid !important;
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 20px !important;
+    }
+
+    .search-header-banner {
+        top: 70px !important; /* Sync with desktop header height */
+    }
+
+    /* --- 8. Profile Page Two-Column Redesign --- */
+    .profile-layout {
+        display: flex !important;
+        flex-direction: row !important;
+        gap: 2.5rem !important;
+        align-items: flex-start !important;
+        margin-top: 2.5rem !important;
+        margin-bottom: 4rem !important;
+    }
+
     .profile-sidebar {
         width: 320px !important;
+        flex-shrink: 0 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 1.5rem !important;
+    }
+
+    .profile-main {
+        flex: 1 !important;
+        width: auto !important;
+    }
+
+    /* Statistics dashboard grid */
+    .reward-stats-grid {
+        display: grid !important;
+        grid-template-columns: repeat(4, 1fr) !important;
+        gap: 16px !important;
+        margin-bottom: 2rem !important;
+    }
+
+    .reward-stat-card {
+        padding: 1.5rem 1.25rem !important;
+        border-radius: 10px !important;
+    }
+
+    .profile-tab-btn {
+        font-size: 0.95rem !important;
+        padding: 1rem !important;
+    }
+
+    /* --- 9. Dashboard Page (Owner / Tenant) --- */
+    .dashboard-container {
+        margin-top: 2.5rem !important;
+        margin-bottom: 4rem !important;
+    }
+
+    .dashboard-listings-grid {
+        display: grid !important;
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: 24px !important;
     }
 }
 
 /* ==========================================================================
-   Desktop Refinements (≥1280px)
+   ROOMNEST V3 - LARGE DESKTOP & WIDE SCREENS (≥1280px)
    ========================================================================== */
 @media (min-width: 1280px) {
-    /* Maximum layout width extension for ultra-premium spaciousness */
-    .container, .header-container, .mb-details-layout, .search-header-container {
-        max-width: 1280px !important;
-    }
-
-    /* Responsive Grid: Desktop (4 columns) (Problem 4 & 7) */
+    /* 4 Columns for recommended properties grid on large screens */
     .grid {
         grid-template-columns: repeat(4, 1fr) !important;
     }
 
-    /* Search results: 3 columns alongside sidebar for spacious screen estate */
+    /* 3 Columns for search results alongside the filter sidebar */
     .search-results-area {
         grid-template-columns: repeat(3, 1fr) !important;
     }
 
-    /* Details page: spacious sidebar */
     .mb-details-sidebar {
         max-width: 380px !important;
+    }
+
+    .mb-details-main {
+        flex: 1.9 !important;
+    }
+
+    /* 4 Columns for owner listings grid on desktop */
+    .dashboard-listings-grid {
+        grid-template-columns: repeat(4, 1fr) !important;
     }
 }
 
 /* ==========================================================================
-   Large Desktop Refinements (≥1440px) (Problem 8)
+   ROOMNEST V3 - EXTRA LARGE DESKTOP (≥1440px)
+   Maintain aesthetic margins and prevent stretched layouts
    ========================================================================== */
 @media (min-width: 1440px) {
-    .container, .header-container, .mb-details-layout, .search-header-container {
+    .container, 
+    .header-container, 
+    .mb-details-layout, 
+    .search-header-container, 
+    .profile-layout, 
+    .dashboard-container,
+    .details-container {
         max-width: 1360px !important;
     }
 }
 
 /* ==========================================================================
-   Ultra-wide Refinements (≥1920px) (Problem 8)
+   ROOMNEST V3 - ULTRA-WIDE MONITOR SUPPORT (≥1920px)
    ========================================================================== */
 @media (min-width: 1920px) {
-    .container, .header-container, .mb-details-layout, .search-header-container {
+    .container, 
+    .header-container, 
+    .mb-details-layout, 
+    .search-header-container, 
+    .profile-layout, 
+    .dashboard-container,
+    .details-container {
         max-width: 1440px !important;
     }
 }
