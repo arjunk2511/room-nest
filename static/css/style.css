@@ -2861,9 +2861,71 @@ footer {
    Inspired by NoBroker, Housing.com, MagicBricks, Airbnb
    ========================================================================== */
 @media (min-width: 1024px) {
-    /* Main Header Height & Styles */
+    /* Desktop SVG Sizing Reset (Problem 1 & 10) */
+    svg {
+        width: 20px !important;
+        height: 20px !important;
+        max-width: 100% !important;
+        max-height: 100% !important;
+        flex-shrink: 0 !important;
+        transform: none !important;
+    }
+
+    /* Scoped explicit sizing */
+    .nav-emoji-icon {
+        font-size: 18px !important;
+        margin-right: 4px !important;
+        display: inline-block !important;
+        vertical-align: middle !important;
+    }
+
+    /* Navigation Icons */
+    .nav-links-group svg, .nav-link-item svg, .profile-nav-btn svg, .bottom-nav-icon {
+        width: 20px !important;
+        height: 20px !important;
+        flex-shrink: 0 !important;
+    }
+
+    /* Feature Icons */
+    .value-prop-icon svg, .feature-icon svg, [class*="feature"] svg, [class*="value-prop"] svg {
+        width: 24px !important;
+        height: 24px !important;
+        flex-shrink: 0 !important;
+    }
+
+    /* Property Feature Icons */
+    .property-feature-icon svg, [class*="property-feature"] svg, [class*="card-info"] svg {
+        width: 18px !important;
+        height: 18px !important;
+        flex-shrink: 0 !important;
+    }
+
+    /* Social Icons */
+    .footer-socials svg, .social-links svg, [class*="social"] svg {
+        width: 20px !important;
+        height: 20px !important;
+        flex-shrink: 0 !important;
+    }
+
+    /* Desktop Containers & Wrappers (Problem 3) */
+    .container, .header-container, .mb-details-layout, .search-header-container, .profile-container, .form-container, .dashboard-container {
+        max-width: 1280px !important;
+        margin: 0 auto !important;
+        padding-left: 24px !important;
+        padding-right: 24px !important;
+        width: 100% !important;
+    }
+
+    /* Compact Main Header & Typography (Problem 6) */
     .main-header {
         height: 70px !important;
+        display: flex !important;
+        align-items: center !important;
+        background: #ffffff !important;
+        border-bottom: 1px solid #E5E7EB !important;
+        position: sticky !important;
+        top: 0 !important;
+        z-index: 1000 !important;
     }
 
     .header-logo {
@@ -2878,6 +2940,8 @@ footer {
     /* Navigation Links and Fonts */
     .nav-link-item {
         font-size: 15px !important;
+        font-weight: 600 !important;
+        color: #4B5563 !important;
         padding: 8px 12px !important;
         display: inline-flex !important;
         align-items: center !important;
@@ -2886,6 +2950,7 @@ footer {
 
     .dropdown-btn {
         font-size: 15px !important;
+        font-weight: 600 !important;
         padding: 8px 12px !important;
     }
 
@@ -2901,10 +2966,24 @@ footer {
         animation: headerFadeIn 0.15s cubic-bezier(0.16, 1, 0.3, 1) !important;
     }
 
-    /* Property Card Image 16:9 Aspect Ratio & Height limit */
+    /* Property Card Premium Redesign (Problem 5) */
+    .card {
+        border-radius: 12px !important;
+        box-shadow: 0 4px 20px rgba(15, 23, 42, 0.05) !important;
+        transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease !important;
+        overflow: hidden !important;
+        background: var(--white) !important;
+    }
+
+    .card:hover {
+        transform: translateY(-6px) !important;
+        box-shadow: 0 12px 30px rgba(15, 23, 42, 0.1) !important;
+    }
+
     .card-img-wrapper, .hc-img-wrapper {
         aspect-ratio: 16 / 9 !important;
         max-height: 220px !important;
+        height: 220px !important;
         overflow: hidden !important;
         position: relative !important;
         width: 100% !important;
@@ -2959,8 +3038,14 @@ footer {
         font-size: 0.78rem !important;
     }
 
-    /* Responsive Grid: Laptop (3 columns) */
+    /* Responsive Grid: Laptop (3 columns) (Problem 4 & 7) */
     .grid {
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: 1.5rem !important;
+    }
+
+    /* Popular Cities Display as exactly 3 columns (Problem 4) */
+    .popular-cities-grid {
         grid-template-columns: repeat(3, 1fr) !important;
         gap: 1.5rem !important;
     }
@@ -2991,9 +3076,59 @@ footer {
         max-width: 600px !important;
     }
 
-    /* Constrain details page image gallery height */
+    /* Constrain details page image gallery height (Problem 2) */
+    .swipe-gallery-wrapper {
+        max-width: 100% !important;
+        height: 500px !important;
+        max-height: 550px !important;
+        border-radius: var(--border-radius-lg) !important;
+        overflow: hidden !important;
+        position: relative !important;
+    }
+    .swipe-gallery {
+        height: 100% !important;
+        display: flex !important;
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        overflow: hidden !important;
+    }
     .swipe-gallery-item {
-        max-height: 420px !important;
+        flex: 0 0 100% !important;
+        height: 100% !important;
+        max-height: 550px !important;
+        aspect-ratio: 16 / 9 !important;
+        overflow: hidden !important;
+    }
+    .swipe-gallery-item img {
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: cover !important;
+    }
+    /* Thumbnail preview strip styling */
+    .thumbnail-strip {
+        display: flex !important;
+        gap: 12px !important;
+        margin-top: 12px !important;
+        overflow-x: auto !important;
+        padding: 4px 0 !important;
+    }
+    .thumbnail-item {
+        flex: 0 0 80px !important;
+        height: 54px !important;
+        border-radius: 6px !important;
+        overflow: hidden !important;
+        cursor: pointer !important;
+        border: 2px solid transparent !important;
+        opacity: 0.6 !important;
+        transition: all 0.2s ease !important;
+    }
+    .thumbnail-item.active, .thumbnail-item:hover {
+        border-color: var(--primary) !important;
+        opacity: 1 !important;
+    }
+    .thumbnail-item img {
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: cover !important;
     }
 
     /* Tighter footer spacing */
@@ -3039,7 +3174,7 @@ footer {
         max-width: 1280px !important;
     }
 
-    /* Responsive Grid: Desktop (4 columns) */
+    /* Responsive Grid: Desktop (4 columns) (Problem 4 & 7) */
     .grid {
         grid-template-columns: repeat(4, 1fr) !important;
     }
@@ -3052,5 +3187,23 @@ footer {
     /* Details page: spacious sidebar */
     .mb-details-sidebar {
         max-width: 380px !important;
+    }
+}
+
+/* ==========================================================================
+   Large Desktop Refinements (≥1440px) (Problem 8)
+   ========================================================================== */
+@media (min-width: 1440px) {
+    .container, .header-container, .mb-details-layout, .search-header-container {
+        max-width: 1360px !important;
+    }
+}
+
+/* ==========================================================================
+   Ultra-wide Refinements (≥1920px) (Problem 8)
+   ========================================================================== */
+@media (min-width: 1920px) {
+    .container, .header-container, .mb-details-layout, .search-header-container {
+        max-width: 1440px !important;
     }
 }

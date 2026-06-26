@@ -109,10 +109,13 @@
 <div class="mb-details-layout">
     <!-- Main Content Area Left -->
     <div class="mb-details-main">
-        
         <!-- Modern Image Carousel Gallery (Moved inside Left column) -->
         <div style="position: relative; width: 100%;">
-            <div class="swipe-gallery-wrapper">
+            <div class="swipe-gallery-wrapper" style="position: relative;">
+                <!-- Fullscreen Trigger Button -->
+                <button type="button" class="gallery-fullscreen-btn" onclick="openFullscreenGallery()" title="View Fullscreen" style="position: absolute; top: 1rem; right: 1rem; background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border: none; color: white; padding: 0.5rem 0.85rem; border-radius: 6px; font-size: 0.82rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; z-index: 10; transition: background 0.2s;">
+                    <span>⛶</span> Fullscreen
+                </button>
                 <div class="swipe-gallery">
                     {% if listing.image %}
                     <div class="swipe-gallery-item">
@@ -161,6 +164,16 @@
                 </div>
             </div>
             {% endif %}
+        </div>
+
+        <!-- Fullscreen Gallery Lightbox Modal -->
+        <div id="galleryLightboxModal" class="lightbox-modal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.95); z-index: 99999; align-items: center; justify-content: center; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);">
+            <button type="button" onclick="closeFullscreenGallery()" class="lightbox-close-btn" style="position: absolute; top: 1.5rem; right: 1.5rem; background: rgba(255, 255, 255, 0.15); border: none; color: white; font-size: 2rem; width: 48px; height: 48px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 100000; transition: background 0.2s;">&times;</button>
+            <button type="button" onclick="prevLightboxSlide()" class="lightbox-nav-btn prev" style="position: absolute; left: 1.5rem; background: rgba(255, 255, 255, 0.15); border: none; color: white; font-size: 1.5rem; width: 48px; height: 48px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 100000; transition: background 0.2s; color: white !important;">❮</button>
+            <button type="button" onclick="nextLightboxSlide()" class="lightbox-nav-btn next" style="position: absolute; right: 1.5rem; background: rgba(255, 255, 255, 0.15); border: none; color: white; font-size: 1.5rem; width: 48px; height: 48px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 100000; transition: background 0.2s; color: white !important;">❯</button>
+            <div class="lightbox-content" style="max-width: 90%; max-height: 85%; display: flex; align-items: center; justify-content: center;">
+                <img id="lightboxImage" src="" alt="Fullscreen Image" style="max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+            </div>
         </div>
 
         <!-- Overview & Key Specifications -->
@@ -500,6 +513,50 @@ if (swipeGallery) {
         }, 50);
     });
 }
+
+// Fullscreen Lightbox Gallery Logic
+const galleryImages = [
+    {% if listing.image %}"{{ listing.image.url }}"{% endif %},
+    {% for img in listing.images.all %}"{{ img.image.url }}"{% endfor %}
+].filter(Boolean);
+
+let lightboxIndex = 0;
+
+function openFullscreenGallery() {
+    lightboxIndex = currentSlide;
+    if (galleryImages.length > 0) {
+        document.getElementById('lightboxImage').src = galleryImages[lightboxIndex];
+        document.getElementById('galleryLightboxModal').style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+}
+
+function closeFullscreenGallery() {
+    document.getElementById('galleryLightboxModal').style.display = 'none';
+    document.body.style.overflow = '';
+}
+
+function prevLightboxSlide() {
+    if (galleryImages.length === 0) return;
+    lightboxIndex = (lightboxIndex - 1 + galleryImages.length) % galleryImages.length;
+    document.getElementById('lightboxImage').src = galleryImages[lightboxIndex];
+}
+
+function nextLightboxSlide() {
+    if (galleryImages.length === 0) return;
+    lightboxIndex = (lightboxIndex + 1) % galleryImages.length;
+    document.getElementById('lightboxImage').src = galleryImages[lightboxIndex];
+}
+
+// Add keyboard listeners for navigation and exit
+document.addEventListener('keydown', function(e) {
+    const modal = document.getElementById('galleryLightboxModal');
+    if (modal && modal.style.display === 'flex') {
+        if (e.key === 'Escape') closeFullscreenGallery();
+        if (e.key === 'ArrowLeft') prevLightboxSlide();
+        if (e.key === 'ArrowRight') nextLightboxSlide();
+    }
+});
 
 // Smooth scroll to visit booking section
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {

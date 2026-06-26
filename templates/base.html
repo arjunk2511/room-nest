@@ -180,10 +180,10 @@
             <!-- Right: Navigation Group -->
             <nav class="header-nav">
                 <div class="nav-links-group">
-                    <a href="{% url 'home' %}" class="nav-link-item {% if request.resolver_match.url_name == 'home' %}active{% endif %}">🏠 Home</a>
-                    <a href="{% url 'search' %}" class="nav-link-item {% if request.resolver_match.url_name == 'search' %}active{% endif %}">🔍 Search</a>
-                    <a href="{% url 'add_property' %}" class="nav-link-item {% if request.resolver_match.url_name == 'add_property' %}active{% endif %}">➕ Post Property</a>
-                    <a href="{% url 'wishlist' %}" class="nav-link-item {% if request.resolver_match.url_name == 'wishlist' %}active{% endif %}">❤️ Saved</a>
+                    <a href="{% url 'home' %}" class="nav-link-item {% if request.resolver_match.url_name == 'home' %}active{% endif %}"><span class="nav-emoji-icon">🏠</span> Home</a>
+                    <a href="{% url 'search' %}" class="nav-link-item {% if request.resolver_match.url_name == 'search' %}active{% endif %}"><span class="nav-emoji-icon">🔍</span> Search</a>
+                    <a href="{% url 'add_property' %}" class="nav-link-item {% if request.resolver_match.url_name == 'add_property' %}active{% endif %}"><span class="nav-emoji-icon">➕</span> Post Property</a>
+                    <a href="{% url 'wishlist' %}" class="nav-link-item {% if request.resolver_match.url_name == 'wishlist' %}active{% endif %}"><span class="nav-emoji-icon">❤️</span> Saved</a>
                     
                     <!-- Profile Dropdown (Authenticated or Guest) -->
                     <div class="header-dropdown" id="profileDropdown">
