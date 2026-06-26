@@ -271,16 +271,16 @@ a:hover {
 
 @media (min-width: 1024px) {
     .hero {
-        padding: 6rem 1.5rem 10rem 1.5rem;
-        min-height: 480px;
-        height: 550px;
+        padding: 4rem 1.5rem 8rem 1.5rem;
+        min-height: 380px;
+        height: 420px;
     }
     .hero h1 {
-        font-size: var(--font-heading-desktop);
+        font-size: 2.6rem;
         margin-bottom: 0.75rem;
     }
     .hero p {
-        font-size: 1.15rem;
+        font-size: 1.1rem;
         max-width: 600px;
     }
 }
@@ -465,7 +465,7 @@ a:hover {
 
 @media (min-width: 1440px) {
     .grid {
-        grid-template-columns: repeat(4, 1fr);
+        grid-template-columns: repeat(3, 1fr); /* Cap at 3 columns for premium spacing */
     }
 }
 
@@ -498,7 +498,7 @@ a:hover {
 
 @media (min-width: 1024px) {
     .card-img-wrapper {
-        aspect-ratio: 16 / 9; /* Desktop: 16:9 */
+        aspect-ratio: 3 / 2; /* Desktop: compact 3:2 (NoBroker/Housing.com inspired) */
     }
 }
 
@@ -858,7 +858,7 @@ footer {
 
 @media (min-width: 1024px) {
     .hc-img-wrapper {
-        aspect-ratio: 16 / 9; /* Desktop: 16:9 */
+        aspect-ratio: 3 / 2; /* Desktop: compact 3:2 */
     }
 }
 
@@ -1867,7 +1867,7 @@ footer {
 
 /* Main Header Container */
 .main-header {
-    height: 72px;
+    height: 64px;
     background: #ffffff !important;
     border-bottom: 1px solid #E5E7EB !important;
     position: sticky;
@@ -1894,11 +1894,11 @@ footer {
 .header-logo {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 7px;
     text-decoration: none;
     font-family: 'Outfit', sans-serif;
     font-weight: 800;
-    font-size: 1.55rem;
+    font-size: 1.35rem;
     color: #111827;
     background: linear-gradient(135deg, #2563EB 0%, #3B82F6 100%);
     -webkit-background-clip: text;
@@ -1906,7 +1906,7 @@ footer {
     flex-shrink: 0;
 }
 .header-logo img {
-    height: 36px;
+    height: 30px;
     width: auto;
     object-fit: contain;
 }
@@ -1915,7 +1915,7 @@ footer {
 .header-search-wrapper {
     position: relative;
     flex: 1;
-    max-width: 380px;
+    max-width: 440px;
     margin: 0 24px;
 }
 .header-search-form {
@@ -1933,12 +1933,12 @@ footer {
 }
 .header-search-form input {
     width: 100%;
-    padding: 10px 16px 10px 40px;
+    padding: 9px 14px 9px 38px;
     border-radius: 99px;
     border: 1px solid #E5E7EB;
     background: #F3F4F6;
     color: #111827;
-    font-size: 0.88rem;
+    font-size: 0.86rem;
     font-weight: 500;
     outline: none;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
@@ -2021,9 +2021,9 @@ footer {
 .nav-link-item {
     color: #4B5563;
     font-weight: 600;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     text-decoration: none;
-    padding: 8px 12px;
+    padding: 6px 10px;
     border-radius: 6px;
     transition: all 0.15s ease;
 }
@@ -2045,14 +2045,14 @@ footer {
 .dropdown-btn {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
+    gap: 5px;
     font-weight: 600;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     color: #4B5563;
     background: none;
     border: none;
     cursor: pointer;
-    padding: 8px 12px;
+    padding: 6px 10px;
     border-radius: 6px;
     transition: all 0.15s ease;
     font-family: 'Inter', sans-serif;
@@ -2140,8 +2140,8 @@ footer {
     outline: none;
 }
 .avatar-initial {
-    width: 36px;
-    height: 36px;
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
     background: #2563EB;
     color: #ffffff;
@@ -2149,7 +2149,7 @@ footer {
     align-items: center;
     justify-content: center;
     font-weight: 700;
-    font-size: 0.92rem;
+    font-size: 0.85rem;
     border: 2px solid #ffffff;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
     transition: transform 0.15s ease;
@@ -2160,18 +2160,18 @@ footer {
 
 /* Post Property CTA Button customization */
 .header-post-btn {
-    padding: 8px 16px !important;
-    font-size: 0.88rem !important;
+    padding: 7px 14px !important;
+    font-size: 0.82rem !important;
     border-radius: 8px !important;
 }
 .header-login-btn {
-    padding: 8px 16px !important;
-    font-size: 0.88rem !important;
+    padding: 7px 14px !important;
+    font-size: 0.82rem !important;
     border-radius: 8px !important;
 }
 .header-register-btn {
-    padding: 8px 16px !important;
-    font-size: 0.88rem !important;
+    padding: 7px 14px !important;
+    font-size: 0.82rem !important;
     border-radius: 8px !important;
 }
 
@@ -2852,5 +2852,84 @@ footer {
 @media (min-width: 768px) {
     .sticky-cta-bar .mobile-sticky-price {
         display: none;
+    }
+}
+
+/* ==========================================================================
+   Desktop Laptop Refinements (≥1024px)
+   Scoped exclusively to laptop+ to preserve mobile design intact
+   Inspired by NoBroker, Housing.com, MagicBricks
+   ========================================================================== */
+@media (min-width: 1024px) {
+    /* Compact property card content for tighter desktop cards */
+    .card-content {
+        padding: 1.15rem;
+    }
+    .card-price {
+        font-size: 1.25rem;
+        margin-bottom: 0.2rem;
+    }
+    .card-title {
+        font-size: 0.95rem;
+        margin-bottom: 0.4rem;
+    }
+    .card-info-label {
+        font-size: 0.65rem;
+    }
+    .card-info-value {
+        font-size: 0.82rem;
+    }
+
+    /* Compact search page property cards */
+    .hc-content {
+        padding: 1rem 1.15rem;
+    }
+    .hc-price {
+        font-size: 1.2rem;
+        margin-bottom: 0.5rem;
+    }
+    .hc-title {
+        font-size: 0.95rem;
+    }
+    .hc-location {
+        font-size: 0.78rem;
+    }
+    .hc-info-grid .card-info-label {
+        font-size: 0.62rem;
+    }
+    .hc-info-grid .card-info-value {
+        font-size: 0.78rem;
+    }
+
+    /* Search results: 2 columns alongside sidebar for balanced layout */
+    .search-results-area {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.25rem;
+    }
+
+    /* Slightly narrower filter sidebar */
+    .search-sidebar {
+        width: 260px;
+    }
+
+    /* Constrain details page image gallery height */
+    .swipe-gallery-item {
+        max-height: 420px;
+    }
+
+    /* Tighter footer spacing */
+    footer {
+        padding: 3rem 1.5rem 1.5rem 1.5rem;
+    }
+
+    /* Details page: tighter main content section gaps */
+    .mb-details-main {
+        padding: 2rem;
+        gap: 1.75rem;
+    }
+
+    /* Profile layout: slightly tighter sidebar */
+    .profile-sidebar {
+        width: 320px;
     }
 }
