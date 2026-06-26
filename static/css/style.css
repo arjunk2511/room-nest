@@ -1003,6 +1003,11 @@ footer {
     display: none;
 }
 
+/* Sticky Bottom Navigation Bar for Mobile (Hidden on Desktop by default) */
+.bottom-nav {
+    display: none;
+}
+
 /* Search Header Banner */
 .search-header-banner {
     background: var(--white);
@@ -2861,16 +2866,6 @@ footer {
    Inspired by NoBroker, Housing.com, MagicBricks, Airbnb
    ========================================================================== */
 @media (min-width: 1024px) {
-    /* Desktop SVG Sizing Reset (Problem 1 & 10) */
-    svg {
-        width: 20px !important;
-        height: 20px !important;
-        max-width: 100% !important;
-        max-height: 100% !important;
-        flex-shrink: 0 !important;
-        transform: none !important;
-    }
-
     /* Scoped explicit sizing */
     .nav-emoji-icon {
         font-size: 18px !important;
