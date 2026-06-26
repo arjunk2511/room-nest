@@ -32,7 +32,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'css/style.css' %}?v=3.0">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}?v=5.0">
     <link rel="shortcut icon" type="image/x-icon" href="{% static 'images/favicon.ico' %}?v=1.0">
     <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/favicon-16x16.png' %}?v=1.0">
     <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon-32x32.png' %}?v=1.0">
@@ -132,24 +132,24 @@
     </style>
 </head>
 <body>
-    <!-- Global Premium Sticky Header -->
-    <nav class="navbar">
-        <div class="nav-container">
+    <!-- Premium Sticky Main Header -->
+    <header class="main-header">
+        <div class="header-container">
             <!-- Left: Logo -->
-            <a href="{% url 'home' %}" class="logo">
+            <a href="{% url 'home' %}" class="header-logo">
                 <img src="{% static 'images/logo_icon.png' %}?v=1.3" alt="RoomNest Logo">
                 <span>RoomNest</span>
             </a>
             
-            <!-- Center: Large Autocomplete Search Bar (Desktop) -->
-            <div class="header-search-container">
+            <!-- Center: Large Autocomplete Search Bar -->
+            <div class="header-search-wrapper">
                 <form action="{% url 'search' %}" method="GET" class="header-search-form" id="headerSearchForm">
-                    <span class="search-bar-icon">🔍</span>
-                    <input type="text" name="location" id="headerSearchInput" placeholder="Search by City, Area, Locality or Property" autocomplete="off">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" name="location" id="headerSearchInput" placeholder="Search city, locality or property..." autocomplete="off">
                     <button type="submit" style="display: none;"></button>
                 </form>
                 
-                <!-- Autocomplete suggestions dropdown -->
+                <!-- Autocomplete Suggestions Panel -->
                 <div class="search-suggestions-dropdown" id="searchSuggestionsDropdown" style="display: none;">
                     <div class="suggestions-section" id="popularSearchesSection">
                         <div class="suggestions-title">🔥 Popular Searches</div>
@@ -174,107 +174,82 @@
                 </div>
             </div>
             
-            <!-- Right: Desktop Links & Auth Navigation -->
-            <div class="desktop-nav-group">
-                <div class="nav-links">
-                    <a href="{% url 'home' %}" class="{% if request.resolver_match.url_name == 'home' %}active{% endif %}">Home</a>
-                    <a href="{% url 'search' %}" class="{% if request.resolver_match.url_name == 'search' %}active{% endif %}">Search</a>
+            <!-- Right: Navigation Group -->
+            <nav class="header-nav">
+                <div class="nav-links-group">
+                    <a href="{% url 'home' %}" class="nav-link-item {% if request.resolver_match.url_name == 'home' %}active{% endif %}">Home</a>
+                    <a href="{% url 'search' %}" class="nav-link-item {% if request.resolver_match.url_name == 'search' %}active{% endif %}">Search</a>
                     
-                    <!-- Explore Dropdown -->
-                    <div class="nav-dropdown" id="exploreDropdown">
-                        <button class="dropdown-trigger" onclick="toggleDropdown('exploreDropdownContent')">
+                    <!-- Explore Cities Dropdown -->
+                    <div class="header-dropdown" id="exploreDropdown">
+                        <button class="dropdown-btn" onclick="toggleDropdown('exploreDropdownContent')">
                             Explore <span class="chevron">▼</span>
                         </button>
-                        <div class="dropdown-content" id="exploreDropdownContent">
-                            <div class="dropdown-header-title">Popular Cities</div>
-                            {% for c in active_cities %}
-                                <a href="{% url 'city_page' c.slug %}" onclick="closeDropdowns()">📍 {{ c.name }}</a>
-                            {% endfor %}
-                            <div class="dropdown-divider"></div>
-                            <a href="{% url 'search' %}" onclick="closeDropdowns()" class="dropdown-link-bold">View All Cities →</a>
+                        <div class="dropdown-menu" id="exploreDropdownContent">
+                            <div class="menu-section-title">Popular Cities</div>
+                            <a href="/mysore/" onclick="closeDropdowns()">📍 Mysore</a>
+                            <a href="/bengaluru/" onclick="closeDropdowns()">📍 Bengaluru</a>
+                            <a href="/hyderabad/" onclick="closeDropdowns()">📍 Hyderabad</a>
+                            <div class="menu-divider"></div>
+                            <a href="{% url 'search' %}" onclick="closeDropdowns()" class="menu-link-highlight">View All Cities →</a>
                         </div>
                     </div>
                     
-                    <!-- Earn Rewards highlighted link -->
-                    <a href="{% url 'earn_rewards' %}" class="nav-rewards-link {% if request.resolver_match.url_name == 'earn_rewards' %}active{% endif %}" style="color: #2563EB; font-weight: 700;">
-                        🎁 Earn Rewards
-                    </a>
-                    
-                    {% if user.is_authenticated %}
-                        {% if user.is_superuser or user.is_staff %}
-                            <a href="{% url 'admin_dashboard' %}" style="color: #EA580C; font-weight: 700;">🛡️ Admin</a>
-                        {% endif %}
-                        <a href="{% url 'add_property' %}" class="btn btn-primary nav-post-btn" style="padding: 0.45rem 1rem; font-size: 0.85rem; border-radius: 8px; margin-left: 8px; color: white !important;">Post Property</a>
-                    {% endif %}
+                    <a href="{% url 'wishlist' %}" class="nav-link-item {% if request.resolver_match.url_name == 'wishlist' %}active{% endif %}">Saved</a>
                 </div>
                 
-                <div class="nav-auth" style="margin-left: 0.5rem;">
+                <div class="nav-actions-group">
                     {% if user.is_authenticated %}
-                        <!-- Profile Avatar with Dropdown -->
-                        <div class="nav-dropdown" id="profileDropdown">
-                            <button class="avatar-trigger" onclick="toggleDropdown('profileDropdownContent')">
-                                <span class="avatar-circle">{{ user.username|slice:":1"|upper }}</span>
+                        <a href="{% url 'add_property' %}" class="btn btn-primary header-post-btn">Post Property</a>
+                        
+                        <!-- Profile Avatar Dropdown -->
+                        <div class="header-dropdown" id="profileDropdown">
+                            <button class="avatar-btn" onclick="toggleDropdown('profileDropdownContent')">
+                                <span class="avatar-initial">{{ user.username|slice:":1"|upper }}</span>
                             </button>
-                            <div class="dropdown-content dropdown-right" id="profileDropdownContent">
-                                <div class="dropdown-user-info">
-                                    <strong>{{ user.username }}</strong>
-                                    <span class="user-email">{{ user.email }}</span>
-                                </div>
-                                <div class="dropdown-divider"></div>
-                                <a href="{% url 'profile' %}" onclick="closeDropdowns()">👤 Profile</a>
+                            <div class="dropdown-menu menu-right" id="profileDropdownContent">
+                                {% if user.is_superuser or user.is_staff %}
+                                    <a href="{% url 'admin_dashboard' %}" onclick="closeDropdowns()" style="color: #EA580C; font-weight: 700;">🛡️ Admin Dashboard</a>
+                                    <div class="menu-divider"></div>
+                                {% endif %}
+                                <a href="{% url 'profile' %}" onclick="closeDropdowns()">👤 My Profile</a>
                                 <a href="{% url 'owner_dashboard' %}" onclick="closeDropdowns()">💼 My Listings</a>
                                 <a href="{% url 'wishlist' %}" onclick="closeDropdowns()">❤️ Saved Properties</a>
                                 <a href="{% url 'profile' %}#rewards" onclick="closeDropdowns()">🎁 Rewards</a>
                                 <a href="{% url 'profile' %}" onclick="closeDropdowns()">⚙️ Settings</a>
-                                <div class="dropdown-divider"></div>
-                                <a href="{% url 'logout' %}" style="color: #EF4444;" onclick="closeDropdowns()">🚪 Logout</a>
+                                <div class="menu-divider"></div>
+                                <a href="{% url 'logout' %}" onclick="closeDropdowns()" class="menu-link-danger">🚪 Logout</a>
                             </div>
                         </div>
                     {% else %}
-                        <a href="{% url 'login' %}?next={{ request.path }}" class="btn btn-outline" style="padding: 0.45rem 1rem; font-size: 0.85rem; border-radius: 8px;">Login</a>
-                        <a href="{% url 'register' %}?next={{ request.path }}" class="btn btn-primary" style="padding: 0.45rem 1.1rem; font-size: 0.85rem; border-radius: 8px; color: white !important;">Register</a>
+                        <a href="{% url 'login' %}?next={{ request.path }}" class="btn btn-outline header-login-btn">Login</a>
+                        <a href="{% url 'register' %}?next={{ request.path }}" class="btn btn-primary header-register-btn">Register</a>
                     {% endif %}
                 </div>
-            </div>
+            </nav>
             
-            <!-- Mobile Header Controls (Visible only on Mobile) -->
+            <!-- Mobile Controls -->
             <div class="mobile-header-controls">
-                <button class="mobile-hamburger" onclick="toggleDrawer()" aria-label="Toggle Menu">
+                <button class="mobile-search-btn" onclick="toggleMobileSearch()" aria-label="Toggle Search">🔍</button>
+                <a href="{% url 'add_property' %}" class="mobile-add-btn" aria-label="Post Property">➕</a>
+                <button class="mobile-hamburger-btn" onclick="toggleDrawer()" aria-label="Toggle Menu">
                     <span></span>
                     <span></span>
                     <span></span>
                 </button>
-                
-                <button class="mobile-search-toggle" onclick="toggleMobileSearch()" aria-label="Toggle Search">
-                    🔍
-                </button>
-                
-                <a href="{% url 'add_property' %}" class="mobile-post-btn" aria-label="Post Property">
-                    ➕
-                </a>
-                
-                {% if user.is_authenticated %}
-                    <a href="{% url 'profile' %}" class="mobile-avatar-link">
-                        <span class="mobile-avatar-circle">{{ user.username|slice:":1"|upper }}</span>
-                    </a>
-                {% else %}
-                    <a href="{% url 'login' %}?next={{ request.path }}" class="mobile-avatar-link" aria-label="Login">
-                        👤
-                    </a>
-                {% endif %}
             </div>
         </div>
         
-        <!-- Full width Mobile Search Overlay -->
+        <!-- Mobile Search Overlay -->
         <div class="mobile-search-overlay" id="mobileSearchOverlay">
             <div class="mobile-search-bar">
                 <span class="mobile-search-icon">🔍</span>
-                <input type="text" id="mobileSearchInput" placeholder="Search Mysore, Whitefield, Gachibowli..." autocomplete="off">
+                <input type="text" id="mobileSearchInput" placeholder="Search city, locality or property..." autocomplete="off">
                 <button class="mobile-search-close" onclick="toggleMobileSearch()">&times;</button>
             </div>
             <div class="mobile-suggestions" id="mobileSuggestionsList"></div>
         </div>
-    </nav>
+    </header>
 
     <!-- Mobile Navigation Drawer -->
     <div class="drawer-backdrop" id="drawer-backdrop" onclick="toggleDrawer()"></div>
@@ -285,23 +260,18 @@
             <a href="{% url 'search' %}" onclick="toggleDrawer()">🔍 Search</a>
             
             <div class="drawer-section-title">Explore Cities</div>
-            {% for c in active_cities %}
-                <a href="{% url 'city_page' c.slug %}" onclick="toggleDrawer()">📍 {{ c.name }}</a>
-            {% endfor %}
+            <a href="/mysore/" onclick="toggleDrawer()">📍 Mysore</a>
+            <a href="/bengaluru/" onclick="toggleDrawer()">📍 Bengaluru</a>
+            <a href="/hyderabad/" onclick="toggleDrawer()">📍 Hyderabad</a>
             
-            <div class="drawer-section-title">Portals & Actions</div>
+            <div class="drawer-section-title">Navigation</div>
+            <a href="{% url 'wishlist' %}" onclick="toggleDrawer()">❤️ Saved</a>
             <a href="{% url 'add_property' %}" onclick="toggleDrawer()">➕ Post Property</a>
-            <a href="{% url 'tenant_dashboard' %}" onclick="toggleDrawer()">👤 Tenant Portal</a>
-            <a href="{% url 'owner_dashboard' %}" onclick="toggleDrawer()">💼 Owner Portal</a>
-            <a href="{% url 'earn_rewards' %}" onclick="toggleDrawer()">🎁 Rewards (Earn ₹50)</a>
-            <a href="{% url 'wishlist' %}" onclick="toggleDrawer()">❤️ Saved Properties</a>
-            <a href="{% url 'profile' %}" onclick="toggleDrawer()">⚙️ Profile</a>
-            
-            {% if user.is_superuser or user.is_staff %}
-                <a href="{% url 'admin_dashboard' %}" style="color: #EA580C;" onclick="toggleDrawer()">🛡️ Admin Dashboard</a>
-            {% endif %}
-            
             {% if user.is_authenticated %}
+                <a href="{% url 'profile' %}" onclick="toggleDrawer()">👤 Profile</a>
+                {% if user.is_superuser or user.is_staff %}
+                    <a href="{% url 'admin_dashboard' %}" style="color: #EA580C;" onclick="toggleDrawer()">🛡️ Admin Dashboard</a>
+                {% endif %}
                 <a href="{% url 'logout' %}" style="color: #EF4444; margin-top: 1rem;" onclick="toggleDrawer()">🚪 Logout</a>
             {% else %}
                 <a href="{% url 'login' %}?next={{ request.path }}" onclick="toggleDrawer()">🔑 Login</a>
@@ -465,7 +435,7 @@
     }
     
     function closeDropdowns() {
-        const dropdowns = document.querySelectorAll('.dropdown-content');
+        const dropdowns = document.querySelectorAll('.dropdown-menu');
         dropdowns.forEach(d => d.classList.remove('show'));
     }
     
