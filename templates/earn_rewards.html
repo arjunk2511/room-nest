@@ -1,0 +1,197 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block seo_title %}Earn ₹50 Referral Rewards - Help RoomNest Grow | RoomNest{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 1000px; margin: 3rem auto; padding: 0 1.5rem;">
+    
+    <!-- Hero Section -->
+    <div class="reward-hero">
+        <span style="font-size: 3.5rem; display: block; margin-bottom: 1rem;">🎁</span>
+        <h1>Earn ₹50 For Every Successful Listing</h1>
+        <p>Know a property owner or spotted a rental board? Submit the property details and earn cash rewards when the listing is verified and successfully published.</p>
+    </div>
+
+    <!-- How It Works Section -->
+    <h2 style="text-align: center; margin-bottom: 1.5rem; font-size: 1.6rem; font-weight: 800; color: var(--text-dark);">How It Works</h2>
+    
+    <div class="reward-steps-grid">
+        <!-- Step 1 -->
+        <div class="reward-step-card">
+            <div class="reward-step-num">1</div>
+            <p>Spot a rental board or know an owner</p>
+            <div class="reward-step-arrow">➔</div>
+        </div>
+        <!-- Step 2 -->
+        <div class="reward-step-card">
+            <div class="reward-step-num">2</div>
+            <p>Get owner's permission to share</p>
+            <div class="reward-step-arrow">➔</div>
+        </div>
+        <!-- Step 3 -->
+        <div class="reward-step-card">
+            <div class="reward-step-num">3</div>
+            <p>Submit details via our simple form</p>
+            <div class="reward-step-arrow">➔</div>
+        </div>
+        <!-- Step 4 -->
+        <div class="reward-step-card">
+            <div class="reward-step-num">4</div>
+            <p>RoomNest team verifies the property</p>
+            <div class="reward-step-arrow">➔</div>
+        </div>
+        <!-- Step 5 -->
+        <div class="reward-step-card" style="background: #ECFDF5; border-color: #A7F3D0;">
+            <div class="reward-step-num" style="background: #10B981;">5</div>
+            <p style="color: #047857;">Earn ₹50 cash after publication!</p>
+        </div>
+    </div>
+
+    <!-- Main Grid: Submission Form & Owner Callout -->
+    <div style="display: flex; gap: 2.5rem; flex-wrap: wrap; margin-top: 3rem;">
+        
+        <!-- Left: Form Card -->
+        <div style="flex: 1.8; min-width: 320px;">
+            <div style="background: var(--white); border-radius: var(--border-radius-lg); padding: 2.5rem; box-shadow: var(--shadow); border: 1px solid var(--border-color);">
+                <h3 style="font-size: 1.3rem; font-weight: 800; color: var(--text-dark); margin-bottom: 1.5rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.75rem;">
+                    Submit Property Details
+                </h3>
+                
+                <form method="POST" enctype="multipart/form-data" style="display: flex; flex-direction: column; gap: 1.25rem;">
+                    {% csrf_token %}
+                    
+                    <!-- Submitter Details (Anti-Spam) -->
+                    <div style="display: flex; gap: 1.25rem; flex-wrap: wrap;">
+                        <div class="form-group" style="flex: 1; min-width: 200px; margin-bottom: 0;">
+                            <label style="font-size: 0.85rem; font-weight: 700; color: var(--text-dark); margin-bottom: 0.4rem; display: block;">Your Name *</label>
+                            <input type="text" name="submitted_by_name" value="{{ values.submitted_by_name|default:user.get_full_name|default:user.username }}" required placeholder="Your Name" style="width: 100%; padding: 0.75rem 1rem; border-radius: 8px; border: 1px solid var(--border-color); outline: none; font-size: 0.95rem; background: #F8FAFC; transition: var(--transition-smooth);" onfocus="this.style.borderColor='var(--primary)'; this.style.background='var(--white)';">
+                        </div>
+                        <div class="form-group" style="flex: 1; min-width: 200px; margin-bottom: 0;">
+                            <label style="font-size: 0.85rem; font-weight: 700; color: var(--text-dark); margin-bottom: 0.4rem; display: block;">Your Mobile Number *</label>
+                            <input type="text" name="submitted_by_mobile" value="{{ values.submitted_by_mobile|default:'' }}" required placeholder="Your Mobile Number" style="width: 100%; padding: 0.75rem 1rem; border-radius: 8px; border: 1px solid var(--border-color); outline: none; font-size: 0.95rem; background: #F8FAFC; transition: var(--transition-smooth);" onfocus="this.style.borderColor='var(--primary)'; this.style.background='var(--white)';">
+                        </div>
+                    </div>
+
+                    <!-- Divider -->
+                    <div style="height: 1px; background: var(--border-color); margin: 0.5rem 0;"></div>
+
+                    <!-- Owner Details -->
+                    <div style="display: flex; gap: 1.25rem; flex-wrap: wrap;">
+                        <div class="form-group" style="flex: 1; min-width: 200px; margin-bottom: 0;">
+                            <label style="font-size: 0.85rem; font-weight: 700; color: var(--text-dark); margin-bottom: 0.4rem; display: block;">Property Owner Name *</label>
+                            <input type="text" name="owner_name" value="{{ values.owner_name|default:'' }}" required placeholder="Owner Name" style="width: 100%; padding: 0.75rem 1rem; border-radius: 8px; border: 1px solid var(--border-color); outline: none; font-size: 0.95rem; background: #F8FAFC; transition: var(--transition-smooth);" onfocus="this.style.borderColor='var(--primary)'; this.style.background='var(--white)';">
+                        </div>
+                        <div class="form-group" style="flex: 1; min-width: 200px; margin-bottom: 0;">
+                            <label style="font-size: 0.85rem; font-weight: 700; color: var(--text-dark); margin-bottom: 0.4rem; display: block;">Owner Mobile Number *</label>
+                            <input type="text" name="owner_mobile" value="{{ values.owner_mobile|default:'' }}" required placeholder="Owner Mobile Number" style="width: 100%; padding: 0.75rem 1rem; border-radius: 8px; border: 1px solid var(--border-color); outline: none; font-size: 0.95rem; background: #F8FAFC; transition: var(--transition-smooth);" onfocus="this.style.borderColor='var(--primary)'; this.style.background='var(--white)';">
+                        </div>
+                    </div>
+
+                    <!-- Property Info -->
+                    <div style="display: flex; gap: 1.25rem; flex-wrap: wrap;">
+                        <div class="form-group" style="flex: 1; min-width: 200px; margin-bottom: 0;">
+                            <label style="font-size: 0.85rem; font-weight: 700; color: var(--text-dark); margin-bottom: 0.4rem; display: block;">Property Type *</label>
+                            <select name="property_type" required style="width: 100%; padding: 0.75rem 1rem; border-radius: 8px; border: 1px solid var(--border-color); outline: none; font-size: 0.95rem; background: #F8FAFC; transition: var(--transition-smooth);" onfocus="this.style.borderColor='var(--primary)'; this.style.background='var(--white)';">
+                                <option value="" disabled selected>Select Type</option>
+                                <option value="Room" {% if values.property_type == 'Room' %}selected{% endif %}>Room</option>
+                                <option value="PG" {% if values.property_type == 'PG' %}selected{% endif %}>PG</option>
+                                <option value="Flat" {% if values.property_type == 'Flat' %}selected{% endif %}>Flat</option>
+                                <option value="House" {% if values.property_type == 'House' %}selected{% endif %}>House</option>
+                                <option value="Commercial" {% if values.property_type == 'Commercial' %}selected{% endif %}>Commercial</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="flex: 1; min-width: 200px; margin-bottom: 0;">
+                            <label style="font-size: 0.85rem; font-weight: 700; color: var(--text-dark); margin-bottom: 0.4rem; display: block;">City *</label>
+                            <select name="city" required style="width: 100%; padding: 0.75rem 1rem; border-radius: 8px; border: 1px solid var(--border-color); outline: none; font-size: 0.95rem; background: #F8FAFC; transition: var(--transition-smooth);" onfocus="this.style.borderColor='var(--primary)'; this.style.background='var(--white)';">
+                                <option value="" disabled selected>Select City</option>
+                                {% for city in active_cities %}
+                                    <option value="{{ city.id }}" {% if values.city == city.id|slugify %}selected{% endif %}>{{ city.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label style="font-size: 0.85rem; font-weight: 700; color: var(--text-dark); margin-bottom: 0.4rem; display: block;">Property Address *</label>
+                        <textarea name="property_address" required rows="3" placeholder="Enter complete address, landmark, or location details..." style="width: 100%; padding: 0.75rem 1rem; border-radius: 8px; border: 1px solid var(--border-color); outline: none; font-size: 0.95rem; background: #F8FAFC; transition: var(--transition-smooth);" onfocus="this.style.borderColor='var(--primary)'; this.style.background='var(--white)';">{{ values.property_address|default:'' }}</textarea>
+                    </div>
+
+                    <div style="display: flex; gap: 1.25rem; flex-wrap: wrap;">
+                        <div class="form-group" style="flex: 1; min-width: 200px; margin-bottom: 0;">
+                            <label style="font-size: 0.85rem; font-weight: 700; color: var(--text-dark); margin-bottom: 0.4rem; display: block;">Property Photos (Image)</label>
+                            <input type="file" name="photo" accept="image/*" style="width: 100%; padding: 0.65rem 1rem; border-radius: 8px; border: 1px solid var(--border-color); outline: none; font-size: 0.9rem; background: #F8FAFC;">
+                            <small style="color: var(--text-light); display: block; margin-top: 0.35rem; font-size: 0.78rem;">Upload a photo of the rental board or property view if available.</small>
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label style="font-size: 0.85rem; font-weight: 700; color: var(--text-dark); margin-bottom: 0.4rem; display: block;">Additional Notes</label>
+                        <textarea name="notes" rows="2" placeholder="Any specific instructions, best time to call, rent expectations, etc..." style="width: 100%; padding: 0.75rem 1rem; border-radius: 8px; border: 1px solid var(--border-color); outline: none; font-size: 0.95rem; background: #F8FAFC; transition: var(--transition-smooth);" onfocus="this.style.borderColor='var(--primary)'; this.style.background='var(--white)';">{{ values.notes|default:'' }}</textarea>
+                    </div>
+
+                    <!-- Permission Checkbox -->
+                    <div style="display: flex; align-items: flex-start; gap: 10px; margin-top: 0.5rem;">
+                        <input type="checkbox" name="permission_confirmed" id="permission_confirmed" required style="width: 18px; height: 18px; cursor: pointer; margin-top: 2px;">
+                        <label for="permission_confirmed" style="font-size: 0.85rem; color: var(--text-light); font-weight: 600; cursor: pointer; user-select: none; line-height: 1.4;">
+                            I confirm that I have permission from the owner to share these details, or this is public information displayed on a rental board. *
+                        </label>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" style="align-self: flex-start; padding: 0.75rem 2.5rem; border-radius: 8px; font-size: 1rem; margin-top: 1rem; font-weight: 700; width: 100%;">
+                        🚀 Submit & Earn ₹50
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Right: Sidebar Owner Callout -->
+        <div style="flex: 1; min-width: 280px; display: flex; flex-direction: column; gap: 1.5rem;">
+            
+            <!-- Owner Callout Card -->
+            <div style="background: linear-gradient(135deg, #1E293B 0%, #0F172A 100%); color: white; border-radius: var(--border-radius-lg); padding: 2rem; box-shadow: var(--shadow); text-align: left;">
+                <span style="font-size: 2.5rem; display: block; margin-bottom: 1rem;">🏠</span>
+                <h3 style="font-size: 1.25rem; font-weight: 800; color: white; margin-bottom: 0.75rem; line-height: 1.3;">
+                    Are you a Property Owner?
+                </h3>
+                <p style="font-size: 0.9rem; opacity: 0.9; margin-bottom: 1.5rem; line-height: 1.5;">
+                    List your own property directly on RoomNest. Get verified and approved, and earn ₹50 directly credited to your dashboard as a listing bonus!
+                </p>
+                <ul style="list-style: none; padding: 0; margin: 0 0 1.5rem 0; display: flex; flex-direction: column; gap: 0.6rem; font-size: 0.85rem; opacity: 0.9;">
+                    <li style="display: flex; gap: 8px; align-items: center;">✅ 100% Free Direct Owner Listing</li>
+                    <li style="display: flex; gap: 8px; align-items: center;">✅ Get Verified Owner Badge</li>
+                    <li style="display: flex; gap: 8px; align-items: center;">✅ Earn ₹50 Listing Cash Reward</li>
+                </ul>
+                <a href="{% url 'add_property' %}" class="btn btn-primary btn-block" style="background: var(--primary); font-size: 0.9rem; padding: 0.75rem; border-radius: 8px; border: none;">
+                    List Your Property & Earn ₹50
+                </a>
+            </div>
+
+            <!-- Rules Card -->
+            <div style="background: var(--white); border-radius: var(--border-radius-lg); padding: 2rem; box-shadow: var(--shadow); border: 1px solid var(--border-color);">
+                <h3 style="font-size: 1.1rem; font-weight: 800; color: var(--text-dark); margin-bottom: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;">
+                    Reward Guidelines
+                </h3>
+                <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.75rem; font-size: 0.85rem; color: var(--text-light); line-height: 1.4;">
+                    <li style="display: flex; gap: 8px; align-items: flex-start;">
+                        <span style="color: #10B981; font-weight: bold;">✔</span>
+                        <span>Reward is credited ONLY when the property is verified, approved, and successfully published.</span>
+                    </li>
+                    <li style="display: flex; gap: 8px; align-items: flex-start;">
+                        <span style="color: #EF4444; font-weight: bold;">✘</span>
+                        <span>Duplicate submissions of already listed or referred properties are automatically rejected.</span>
+                    </li>
+                    <li style="display: flex; gap: 8px; align-items: flex-start;">
+                        <span style="color: #EF4444; font-weight: bold;">✘</span>
+                        <span>Fake numbers, incorrect address, or incomplete details are rejected.</span>
+                    </li>
+                    <li style="display: flex; gap: 8px; align-items: flex-start;">
+                        <span style="color: #EF4444; font-weight: bold;">✘</span>
+                        <span>A single owner contact number cannot receive multiple rewards for the same property.</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

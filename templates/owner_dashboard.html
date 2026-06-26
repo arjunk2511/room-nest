@@ -47,6 +47,22 @@
         </div>
     </div>
 
+    <!-- Premium Owner Listing Promo Banner -->
+    <div style="background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); border: 1px solid #bfdbfe; border-radius: 12px; padding: 1.25rem 1.5rem; margin-top: 1.5rem; margin-bottom: 1rem; display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
+        <div style="display: flex; align-items: center; gap: 1rem;">
+            <div style="font-size: 2rem; background: rgba(37, 99, 235, 0.1); width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">🎁</div>
+            <div>
+                <h4 style="margin: 0 0 0.25rem 0; font-size: 1.1rem; font-weight: 700; color: #1e3a8a;">Direct Owner Listing Reward: Earn ₹50!</h4>
+                <p style="margin: 0; font-size: 0.9rem; color: #1e40af; line-height: 1.4;">Did you know? Listing your own property directly on RoomNest earns you a ₹50 listing bonus! Ensure your property is verified, and once approved, the reward will be credited directly to your dashboard.</p>
+            </div>
+        </div>
+        <div style="display: flex; gap: 10px; flex-shrink: 0;">
+            <a href="{% url 'earn_rewards' %}" style="background: #2563EB; color: white; padding: 0.6rem 1.2rem; border-radius: 8px; font-weight: 600; font-size: 0.85rem; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; transition: background 0.2s; box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2);">
+                Learn More
+            </a>
+        </div>
+    </div>
+
     <!-- Tabbed Navigation Header -->
     <div class="tab-header" style="margin-top: 1.5rem;">
         <button class="tab-btn active" onclick="switchTab(event, 'properties-tab')">📋 My Properties ({{ listings|length }})</button>

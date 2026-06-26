@@ -41,6 +41,7 @@
     <div class="tab-header" style="margin-top: 2rem;">
         <button class="tab-btn active" onclick="switchTab(event, 'sub-approvals-tab')">💳 Subscription Verifications ({{ pending_subscriptions|length }})</button>
         <button class="tab-btn" onclick="switchTab(event, 'prop-verifications-tab')">🛡️ Property Listing Verifications ({{ pending_verifications|length }})</button>
+        <button class="tab-btn" onclick="switchTab(event, 'rewards-management-tab')">🎁 Reward & Referral Management ({{ pending_rewards|length }})</button>
     </div>
 
     <!-- 1. SUBSCRIPTION VERIFICATIONS TAB -->
@@ -147,12 +148,206 @@
             </table>
         </div>
         {% else %}
-        <div style="text-align: center; padding: 5rem 2rem; background: white; border-radius: var(--border-radius-lg); border: 1px dashed #cbd5e1;">
-            <span style="font-size: 3rem; display: block; margin-bottom: 1.5rem;">🛡️</span>
-            <h3 style="color: var(--text-dark); font-size: 1.3rem; margin-bottom: 0.5rem;">No Verification Requests</h3>
-            <p style="color: var(--text-light); margin-bottom: 1.5rem; max-width: 400px; margin-left: auto; margin-right: auto; font-size: 0.95rem; line-height: 1.5;">All property listings have been verified, or no owners have submitted validation requests.</p>
         </div>
         {% endif %}
+    </div>
+
+    <!-- 3. REWARD & REFERRAL MANAGEMENT TAB -->
+    <div id="rewards-management-tab" class="tab-pane">
+        
+        <!-- PENDING REWARDS SECTION -->
+        <h3 style="font-size: 1.25rem; font-weight: 800; color: var(--text-dark); margin-bottom: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; display: flex; align-items: center; gap: 8px; margin-top: 1.5rem;">
+            <span>⏳</span> Pending Rewards & Referrals ({{ pending_rewards|length }})
+        </h3>
+        
+        {% if pending_rewards %}
+        <div class="table-wrapper" style="margin-bottom: 3rem; overflow-x: auto;">
+            <table class="premium-table">
+                <thead>
+                    <tr>
+                        <th>User / Submitter</th>
+                        <th>Type</th>
+                        <th>Property Details</th>
+                        <th>Owner Info</th>
+                        <th>Documents & Notes</th>
+                        <th style="text-align: center;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for reward in pending_rewards %}
+                    <tr>
+                        <td>
+                            <strong style="color: var(--text-dark); font-weight: 700;">{{ reward.user.username }}</strong>
+                            <span style="font-size: 0.75rem; color: var(--text-light); display: block;">{{ reward.user.email }}</span>
+                        </td>
+                        <td>
+                            {% if reward.reward_type == 'Referral' %}
+                                <span class="badge" style="background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; font-size: 0.75rem; padding: 0.2rem 0.5rem; border-radius: 4px; font-weight: 700;">Referral</span>
+                            {% else %}
+                                <span class="badge" style="background: #fef3c7; color: #b45309; border: 1px solid #fde68a; font-size: 0.75rem; padding: 0.2rem 0.5rem; border-radius: 4px; font-weight: 700;">Direct Owner</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if reward.reward_type == 'Referral' %}
+                                <strong style="color: var(--text-dark);">{{ reward.submission.property_type }}</strong>
+                                <span style="font-size: 0.75rem; color: var(--text-light); display: block; margin-top: 0.2rem; white-space: normal; line-height: 1.3;">📍 {{ reward.submission.property_address }} ({{ reward.submission.city.name }})</span>
+                            {% else %}
+                                <strong style="color: var(--text-dark);">{{ reward.listing.title }}</strong>
+                                <span style="font-size: 0.75rem; color: var(--text-light); display: block; margin-top: 0.2rem; white-space: normal; line-height: 1.3;">📍 {{ reward.listing.address }} ({{ reward.listing.city.name }})</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if reward.reward_type == 'Referral' %}
+                                <strong style="color: var(--text-dark);">{{ reward.submission.owner_name }}</strong>
+                                <span style="font-size: 0.75rem; color: var(--text-light); display: block; margin-top: 0.2rem;">📞 {{ reward.submission.owner_mobile }}</span>
+                            {% else %}
+                                <strong style="color: var(--text-dark);">{{ reward.listing.owner.get_full_name|default:reward.listing.owner.username }}</strong>
+                                <span style="font-size: 0.75rem; color: var(--text-light); display: block; margin-top: 0.2rem;">📞 {{ reward.listing.phone }}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if reward.reward_type == 'Referral' %}
+                                {% if reward.submission.photo %}
+                                    <a href="{{ reward.submission.photo.url }}" target="_blank" class="btn btn-outline" style="padding: 0.35rem 0.75rem; font-size: 0.8rem; border-radius: 6px; margin-bottom: 6px; display: inline-flex;">View Photo 🖼️</a>
+                                {% else %}
+                                    <span style="color: var(--text-light); font-style: italic; font-size: 0.82rem; display: block; margin-bottom: 4px;">No photo uploaded</span>
+                                {% endif %}
+                                <span style="font-size: 0.82rem; color: var(--text-light); display: block; white-space: normal; line-height: 1.3;">{{ reward.submission.notes|default:"No notes." }}</span>
+                            {% else %}
+                                {% if reward.listing.verification_document %}
+                                    <a href="{{ reward.listing.verification_document.url }}" target="_blank" class="btn btn-outline" style="padding: 0.35rem 0.75rem; font-size: 0.8rem; border-radius: 6px; margin-bottom: 6px; display: inline-flex;">View Document 📄</a>
+                                {% else %}
+                                    <span style="color: var(--text-light); font-style: italic; font-size: 0.82rem; display: block; margin-bottom: 4px;">No document uploaded</span>
+                                {% endif %}
+                                <span style="font-size: 0.82rem; color: var(--text-light); display: block; white-space: normal; line-height: 1.3;">{{ reward.listing.verification_notes|default:"No notes." }}</span>
+                            {% endif %}
+                        </td>
+                        <td style="text-align: center;">
+                            <div style="display: flex; flex-direction: column; gap: 8px; align-items: center; justify-content: center;">
+                                <div style="display: flex; gap: 6px;">
+                                    <a href="{% url 'approve_reward_claim' reward.id %}" class="btn btn-success" style="padding: 0.4rem 1rem; font-size: 0.82rem; border-radius: 6px;">Approve ✅</a>
+                                    <button class="btn" style="padding: 0.4rem 1rem; font-size: 0.82rem; border-radius: 6px; background: #fee2e2; color: #991b1b; border: 1px solid #fecaca;" onclick="toggleRejectionForm('reject-reward-form-{{ reward.id }}')">Reject ❌</button>
+                                </div>
+                                
+                                <!-- Hidden Rejection Form -->
+                                <form id="reject-reward-form-{{ reward.id }}" action="{% url 'reject_reward_claim' reward.id %}" method="POST" style="display: none; width: 100%; margin-top: 8px;">
+                                    {% csrf_token %}
+                                    <input type="text" name="rejection_notes" placeholder="Reason for rejection..." required style="width: 100%; padding: 0.4rem; border: 1px solid #fca5a5; border-radius: 4px; font-size: 0.8rem; outline: none; margin-bottom: 4px;">
+                                    <button type="submit" class="btn" style="width: 100%; padding: 0.35rem; font-size: 0.75rem; border-radius: 4px; background: #ef4444; color: white;">Confirm Rejection</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div style="text-align: center; padding: 3rem 1rem; background: white; border-radius: var(--border-radius-lg); border: 1px dashed #cbd5e1; margin-bottom: 3rem;">
+            <span style="font-size: 2rem; display: block; margin-bottom: 1rem;">⏳</span>
+            <h4 style="color: var(--text-dark); font-size: 1.1rem; margin-bottom: 0.25rem;">No Pending Reward Claims</h4>
+            <p style="color: var(--text-light); font-size: 0.9rem; max-width: 400px; margin: 0 auto; line-height: 1.4;">All referral submissions and owner listing rewards have been processed.</p>
+        </div>
+        {% endif %}
+
+        <!-- APPROVED REWARDS SECTION (READY TO PAY) -->
+        <h3 style="font-size: 1.25rem; font-weight: 800; color: var(--text-dark); margin-bottom: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; display: flex; align-items: center; gap: 8px;">
+            <span>💰</span> Approved Rewards - Ready to Pay ({{ approved_rewards|length }})
+        </h3>
+        
+        {% if approved_rewards %}
+        <div class="table-wrapper" style="margin-bottom: 3rem; overflow-x: auto;">
+            <table class="premium-table">
+                <thead>
+                    <tr>
+                        <th>User</th>
+                        <th>Type</th>
+                        <th>Reward Amount</th>
+                        <th>Approved On</th>
+                        <th style="text-align: center;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for reward in approved_rewards %}
+                    <tr>
+                        <td>
+                            <strong style="color: var(--text-dark); font-weight: 700;">{{ reward.user.username }}</strong>
+                            <span style="font-size: 0.75rem; color: var(--text-light); display: block;">{{ reward.user.email }}</span>
+                        </td>
+                        <td>
+                            {% if reward.reward_type == 'Referral' %}
+                                <span class="badge" style="background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; font-size: 0.75rem; padding: 0.2rem 0.5rem; border-radius: 4px; font-weight: 700;">Referral</span>
+                            {% else %}
+                                <span class="badge" style="background: #fef3c7; color: #b45309; border: 1px solid #fde68a; font-size: 0.75rem; padding: 0.2rem 0.5rem; border-radius: 4px; font-weight: 700;">Direct Owner</span>
+                            {% endif %}
+                        </td>
+                        <td><strong style="color: #10b981; font-size: 1rem;">₹{{ reward.amount }}</strong></td>
+                        <td style="color: var(--text-light); font-size: 0.85rem;">{{ reward.updated_at|date:"F d, Y - H:i" }}</td>
+                        <td style="text-align: center;">
+                            <a href="{% url 'pay_reward_claim' reward.id %}" class="btn btn-success" style="padding: 0.4rem 1.2rem; font-size: 0.82rem; border-radius: 6px;">Mark as Paid 💵</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div style="text-align: center; padding: 3rem 1rem; background: white; border-radius: var(--border-radius-lg); border: 1px dashed #cbd5e1; margin-bottom: 3rem;">
+            <span style="font-size: 2rem; display: block; margin-bottom: 1rem;">💰</span>
+            <h4 style="color: var(--text-dark); font-size: 1.1rem; margin-bottom: 0.25rem;">No Rewards Awaiting Payout</h4>
+            <p style="color: var(--text-light); font-size: 0.9rem; max-width: 400px; margin: 0 auto; line-height: 1.4;">There are no approved rewards currently waiting to be paid out.</p>
+        </div>
+        {% endif %}
+
+        <!-- PAID REWARDS SECTION (HISTORY) -->
+        <h3 style="font-size: 1.25rem; font-weight: 800; color: var(--text-dark); margin-bottom: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; display: flex; align-items: center; gap: 8px;">
+            <span>✅</span> Paid Rewards History ({{ paid_rewards|length }})
+        </h3>
+        
+        {% if paid_rewards %}
+        <div class="table-wrapper" style="overflow-x: auto;">
+            <table class="premium-table">
+                <thead>
+                    <tr>
+                        <th>User</th>
+                        <th>Type</th>
+                        <th>Amount Paid</th>
+                        <th>Paid Date</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for reward in paid_rewards %}
+                    <tr>
+                        <td>
+                            <strong style="color: var(--text-dark); font-weight: 700;">{{ reward.user.username }}</strong>
+                            <span style="font-size: 0.75rem; color: var(--text-light); display: block;">{{ reward.user.email }}</span>
+                        </td>
+                        <td>
+                            {% if reward.reward_type == 'Referral' %}
+                                <span class="badge" style="background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; font-size: 0.75rem; padding: 0.2rem 0.5rem; border-radius: 4px; font-weight: 700;">Referral</span>
+                            {% else %}
+                                <span class="badge" style="background: #fef3c7; color: #b45309; border: 1px solid #fde68a; font-size: 0.75rem; padding: 0.2rem 0.5rem; border-radius: 4px; font-weight: 700;">Direct Owner</span>
+                            {% endif %}
+                        </td>
+                        <td><strong style="color: #059669; font-size: 1rem;">₹{{ reward.amount }}</strong></td>
+                        <td style="color: var(--text-light); font-size: 0.85rem;">{{ reward.updated_at|date:"F d, Y - H:i" }}</td>
+                        <td>
+                            <span class="badge-status status-approved">Paid ✔</span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div style="text-align: center; padding: 3rem 1rem; background: white; border-radius: var(--border-radius-lg); border: 1px dashed #cbd5e1; margin-bottom: 2rem;">
+            <span style="font-size: 2rem; display: block; margin-bottom: 1rem;">📈</span>
+            <h4 style="color: var(--text-dark); font-size: 1.1rem; margin-bottom: 0.25rem;">No Payout History</h4>
+            <p style="color: var(--text-light); font-size: 0.9rem; max-width: 400px; margin: 0 auto; line-height: 1.4;">No rewards have been marked as paid yet.</p>
+        </div>
+        {% endif %}
+
     </div>
 
 </div>

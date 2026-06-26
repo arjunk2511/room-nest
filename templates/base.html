@@ -132,71 +132,147 @@
     </style>
 </head>
 <body>
-    <!-- Global Compact Sticky Header -->
+    <!-- Global Premium Sticky Header -->
     <nav class="navbar">
         <div class="nav-container">
-            <!-- Logo Left -->
+            <!-- Left: Logo -->
             <a href="{% url 'home' %}" class="logo">
                 <img src="{% static 'images/logo_icon.png' %}?v=1.3" alt="RoomNest Logo">
                 <span>RoomNest</span>
             </a>
             
-            <!-- Cities Dropdown -->
-            <div class="city-selector-dropdown">
-                <button class="city-select-btn" onclick="toggleCityDropdown(event)" aria-haspopup="true" aria-expanded="false">
-                    <span>📍 {% if current_city %}{{ current_city.name }}{% else %}All Cities{% endif %}</span>
-                    <svg class="chevron-icon" viewBox="0 0 24 24" width="14" height="14">
-                        <path d="M7 10l5 5 5-5H7z"/>
-                    </svg>
-                </button>
-                <div class="city-dropdown-menu" id="cityDropdownMenu">
-                    <a href="{% url 'search' %}" class="city-dropdown-item {% if not current_city %}active{% endif %}">All Cities (India)</a>
-                    {% for c in active_cities %}
-                        <a href="{% url 'city_page' c.slug %}" class="city-dropdown-item {% if current_city.id == c.id %}active{% endif %}">{{ c.name }}</a>
-                    {% endfor %}
+            <!-- Center: Large Autocomplete Search Bar (Desktop) -->
+            <div class="header-search-container">
+                <form action="{% url 'search' %}" method="GET" class="header-search-form" id="headerSearchForm">
+                    <span class="search-bar-icon">🔍</span>
+                    <input type="text" name="location" id="headerSearchInput" placeholder="Search by City, Area, Locality or Property" autocomplete="off">
+                    <button type="submit" style="display: none;"></button>
+                </form>
+                
+                <!-- Autocomplete suggestions dropdown -->
+                <div class="search-suggestions-dropdown" id="searchSuggestionsDropdown" style="display: none;">
+                    <div class="suggestions-section" id="popularSearchesSection">
+                        <div class="suggestions-title">🔥 Popular Searches</div>
+                        <div class="suggestions-list" id="popularSuggestionsList"></div>
+                    </div>
+                    <div class="suggestions-section" id="recentSearchesSection" style="display: none;">
+                        <div class="suggestions-title">🕒 Recent Searches</div>
+                        <div class="suggestions-list" id="recentSuggestionsList"></div>
+                    </div>
+                    <div class="suggestions-section" id="citiesSection" style="display: none;">
+                        <div class="suggestions-title">🏙️ Cities</div>
+                        <div class="suggestions-list" id="citiesSuggestionsList"></div>
+                    </div>
+                    <div class="suggestions-section" id="areasSection" style="display: none;">
+                        <div class="suggestions-title">📍 Areas</div>
+                        <div class="suggestions-list" id="areasSuggestionsList"></div>
+                    </div>
+                    <div class="suggestions-section" id="typesSection" style="display: none;">
+                        <div class="suggestions-title">🏠 Property Types</div>
+                        <div class="suggestions-list" id="typesSuggestionsList"></div>
+                    </div>
                 </div>
             </div>
             
-            <!-- Compact Central Search Bar -->
-            <form action="{% url 'search' %}" method="GET" class="header-search" style="flex: 1; max-width: 320px; margin: 0 2rem; position: relative;">
-                <input type="text" name="location" placeholder="Search area in Mysore..." style="width: 100%; padding: 0.55rem 1rem 0.55rem 2.4rem; border-radius: 99px; border: 1px solid var(--border-color); outline: none; font-size: 0.85rem; background: #F8FAFC; transition: var(--transition-smooth);" onfocus="this.style.borderColor='var(--primary)'; this.style.background='var(--white)';" onblur="this.style.borderColor='var(--border-color)'; this.style.background='#F8FAFC';">
-                <span style="position: absolute; left: 0.9rem; top: 50%; transform: translateY(-50%); font-size: 0.85rem; color: var(--text-muted); pointer-events: none;">🔍</span>
-            </form>
-            
-            <!-- Desktop Links Right -->
-            <div class="nav-links">
-                <a href="{% url 'home' %}" class="{% if request.resolver_match.url_name == 'home' %}active{% endif %}">Home</a>
-                <a href="{% url 'search' %}" class="{% if request.resolver_match.url_name == 'search' %}active{% endif %}">Search</a>
-                {% if user.is_authenticated %}
-                    {% if user.is_superuser or user.is_staff %}
-                        <a href="{% url 'admin_dashboard' %}" style="color: #EA580C; font-weight: 700;">🛡️ Admin</a>
-                    {% endif %}
-                    <a href="{% url 'tenant_dashboard' %}" class="{% if request.resolver_match.url_name == 'tenant_dashboard' %}active{% endif %}">Tenant Portal</a>
-                    <a href="{% url 'owner_dashboard' %}" class="{% if request.resolver_match.url_name == 'owner_dashboard' %}active{% endif %}">Owner Portal</a>
-                    <a href="{% url 'add_property' %}" class="btn btn-primary" style="padding: 0.45rem 1rem; font-size: 0.85rem; border-radius: 8px; margin-left: 8px; color: white !important;">Post Property</a>
-                {% endif %}
-            </div>
-            
-            <!-- Desktop Auth Right -->
-            <div class="nav-auth" style="margin-left: 1rem;">
-                {% if user.is_authenticated %}
-                    <a href="{% url 'profile' %}" class="username" style="display: flex; align-items: center; gap: 8px; font-weight: 600; text-decoration: none; color: var(--text-dark);">
-                        <span style="width: 28px; height: 28px; border-radius: 50%; background: var(--primary-light); color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 0.85rem; font-weight: 700; border: 1px solid rgba(37,99,235,0.1);">{{ user.username|slice:":1"|upper }}</span>
-                        <span class="desktop-only-name">{{ user.username }}</span>
+            <!-- Right: Desktop Links & Auth Navigation -->
+            <div class="desktop-nav-group">
+                <div class="nav-links">
+                    <a href="{% url 'home' %}" class="{% if request.resolver_match.url_name == 'home' %}active{% endif %}">Home</a>
+                    <a href="{% url 'search' %}" class="{% if request.resolver_match.url_name == 'search' %}active{% endif %}">Search</a>
+                    
+                    <!-- Explore Dropdown -->
+                    <div class="nav-dropdown" id="exploreDropdown">
+                        <button class="dropdown-trigger" onclick="toggleDropdown('exploreDropdownContent')">
+                            Explore <span class="chevron">▼</span>
+                        </button>
+                        <div class="dropdown-content" id="exploreDropdownContent">
+                            <div class="dropdown-header-title">Popular Cities</div>
+                            {% for c in active_cities %}
+                                <a href="{% url 'city_page' c.slug %}" onclick="closeDropdowns()">📍 {{ c.name }}</a>
+                            {% endfor %}
+                            <div class="dropdown-divider"></div>
+                            <a href="{% url 'search' %}" onclick="closeDropdowns()" class="dropdown-link-bold">View All Cities →</a>
+                        </div>
+                    </div>
+                    
+                    <!-- Earn Rewards highlighted link -->
+                    <a href="{% url 'earn_rewards' %}" class="nav-rewards-link {% if request.resolver_match.url_name == 'earn_rewards' %}active{% endif %}" style="color: #2563EB; font-weight: 700;">
+                        🎁 Earn Rewards
                     </a>
-                    <a href="{% url 'logout' %}" class="btn btn-outline" style="padding: 0.45rem 1rem; font-size: 0.85rem; border-radius: 8px;">Logout</a>
-                {% else %}
-                    <a href="{% url 'login' %}?next={{ request.path }}" class="btn btn-outline" style="padding: 0.45rem 1rem; font-size: 0.85rem; border-radius: 8px;">Login</a>
-                    <a href="{% url 'register' %}?next={{ request.path }}" class="btn btn-primary" style="padding: 0.45rem 1.1rem; font-size: 0.85rem; border-radius: 8px; color: white !important;">Register</a>
-                {% endif %}
+                    
+                    {% if user.is_authenticated %}
+                        {% if user.is_superuser or user.is_staff %}
+                            <a href="{% url 'admin_dashboard' %}" style="color: #EA580C; font-weight: 700;">🛡️ Admin</a>
+                        {% endif %}
+                        <a href="{% url 'add_property' %}" class="btn btn-primary nav-post-btn" style="padding: 0.45rem 1rem; font-size: 0.85rem; border-radius: 8px; margin-left: 8px; color: white !important;">Post Property</a>
+                    {% endif %}
+                </div>
+                
+                <div class="nav-auth" style="margin-left: 0.5rem;">
+                    {% if user.is_authenticated %}
+                        <!-- Profile Avatar with Dropdown -->
+                        <div class="nav-dropdown" id="profileDropdown">
+                            <button class="avatar-trigger" onclick="toggleDropdown('profileDropdownContent')">
+                                <span class="avatar-circle">{{ user.username|slice:":1"|upper }}</span>
+                            </button>
+                            <div class="dropdown-content dropdown-right" id="profileDropdownContent">
+                                <div class="dropdown-user-info">
+                                    <strong>{{ user.username }}</strong>
+                                    <span class="user-email">{{ user.email }}</span>
+                                </div>
+                                <div class="dropdown-divider"></div>
+                                <a href="{% url 'profile' %}" onclick="closeDropdowns()">👤 Profile</a>
+                                <a href="{% url 'owner_dashboard' %}" onclick="closeDropdowns()">💼 My Listings</a>
+                                <a href="{% url 'wishlist' %}" onclick="closeDropdowns()">❤️ Saved Properties</a>
+                                <a href="{% url 'profile' %}#rewards" onclick="closeDropdowns()">🎁 Rewards</a>
+                                <a href="{% url 'profile' %}" onclick="closeDropdowns()">⚙️ Settings</a>
+                                <div class="dropdown-divider"></div>
+                                <a href="{% url 'logout' %}" style="color: #EF4444;" onclick="closeDropdowns()">🚪 Logout</a>
+                            </div>
+                        </div>
+                    {% else %}
+                        <a href="{% url 'login' %}?next={{ request.path }}" class="btn btn-outline" style="padding: 0.45rem 1rem; font-size: 0.85rem; border-radius: 8px;">Login</a>
+                        <a href="{% url 'register' %}?next={{ request.path }}" class="btn btn-primary" style="padding: 0.45rem 1.1rem; font-size: 0.85rem; border-radius: 8px; color: white !important;">Register</a>
+                    {% endif %}
+                </div>
             </div>
             
-            <!-- Mobile Hamburger Button -->
-            <button class="hamburger" onclick="toggleDrawer()" aria-label="Toggle Menu">
-                <span></span>
-                <span></span>
-                <span></span>
-            </button>
+            <!-- Mobile Header Controls (Visible only on Mobile) -->
+            <div class="mobile-header-controls">
+                <button class="mobile-hamburger" onclick="toggleDrawer()" aria-label="Toggle Menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                
+                <button class="mobile-search-toggle" onclick="toggleMobileSearch()" aria-label="Toggle Search">
+                    🔍
+                </button>
+                
+                <a href="{% url 'add_property' %}" class="mobile-post-btn" aria-label="Post Property">
+                    ➕
+                </a>
+                
+                {% if user.is_authenticated %}
+                    <a href="{% url 'profile' %}" class="mobile-avatar-link">
+                        <span class="mobile-avatar-circle">{{ user.username|slice:":1"|upper }}</span>
+                    </a>
+                {% else %}
+                    <a href="{% url 'login' %}?next={{ request.path }}" class="mobile-avatar-link" aria-label="Login">
+                        👤
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Full width Mobile Search Overlay -->
+        <div class="mobile-search-overlay" id="mobileSearchOverlay">
+            <div class="mobile-search-bar">
+                <span class="mobile-search-icon">🔍</span>
+                <input type="text" id="mobileSearchInput" placeholder="Search Mysore, Whitefield, Gachibowli..." autocomplete="off">
+                <button class="mobile-search-close" onclick="toggleMobileSearch()">&times;</button>
+            </div>
+            <div class="mobile-suggestions" id="mobileSuggestionsList"></div>
         </div>
     </nav>
 
@@ -206,22 +282,26 @@
         <button class="drawer-close" onclick="toggleDrawer()">&times;</button>
         <div class="drawer-links">
             <a href="{% url 'home' %}" onclick="toggleDrawer()">🏠 Home</a>
-            <a href="{% url 'search' %}" onclick="toggleDrawer()">🔍 Search Rooms</a>
+            <a href="{% url 'search' %}" onclick="toggleDrawer()">🔍 Search</a>
             
-            <!-- Mobile Cities Section -->
-            <div style="margin: 1rem 0 0.25rem 0; padding-left: 4px; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.05em; border-bottom: 1px solid #F1F5F9; padding-bottom: 4px;">Explore Cities</div>
-            <a href="{% url 'search' %}" onclick="toggleDrawer()" class="{% if not current_city %}active{% endif %}">🇮🇳 All Cities</a>
+            <div class="drawer-section-title">Explore Cities</div>
             {% for c in active_cities %}
-                <a href="{% url 'city_page' c.slug %}" onclick="toggleDrawer()" class="{% if current_city.id == c.id %}active{% endif %}">📍 {{ c.name }}</a>
+                <a href="{% url 'city_page' c.slug %}" onclick="toggleDrawer()">📍 {{ c.name }}</a>
             {% endfor %}
+            
+            <div class="drawer-section-title">Portals & Actions</div>
+            <a href="{% url 'add_property' %}" onclick="toggleDrawer()">➕ Post Property</a>
+            <a href="{% url 'tenant_dashboard' %}" onclick="toggleDrawer()">👤 Tenant Portal</a>
+            <a href="{% url 'owner_dashboard' %}" onclick="toggleDrawer()">💼 Owner Portal</a>
+            <a href="{% url 'earn_rewards' %}" onclick="toggleDrawer()">🎁 Rewards (Earn ₹50)</a>
+            <a href="{% url 'wishlist' %}" onclick="toggleDrawer()">❤️ Saved Properties</a>
+            <a href="{% url 'profile' %}" onclick="toggleDrawer()">⚙️ Profile</a>
+            
+            {% if user.is_superuser or user.is_staff %}
+                <a href="{% url 'admin_dashboard' %}" style="color: #EA580C;" onclick="toggleDrawer()">🛡️ Admin Dashboard</a>
+            {% endif %}
+            
             {% if user.is_authenticated %}
-                <a href="{% url 'tenant_dashboard' %}" onclick="toggleDrawer()">👤 Tenant Portal</a>
-                <a href="{% url 'owner_dashboard' %}" onclick="toggleDrawer()">💼 Owner Portal</a>
-                <a href="{% url 'add_property' %}" onclick="toggleDrawer()">➕ Post a Property</a>
-                <a href="{% url 'profile' %}" onclick="toggleDrawer()">⚙️ Profile Settings</a>
-                {% if user.is_superuser or user.is_staff %}
-                    <a href="{% url 'admin_dashboard' %}" style="color: #EA580C;" onclick="toggleDrawer()">🛡️ Admin Dashboard</a>
-                {% endif %}
                 <a href="{% url 'logout' %}" style="color: #EF4444; margin-top: 1rem;" onclick="toggleDrawer()">🚪 Logout</a>
             {% else %}
                 <a href="{% url 'login' %}?next={{ request.path }}" onclick="toggleDrawer()">🔑 Login</a>
@@ -371,36 +451,308 @@
         }
     }
 
-    // Cities dropdown toggle
-    function toggleCityDropdown(event) {
+    // Toggle dropdowns (Explore, Profile Avatar)
+    function toggleDropdown(id) {
         event.stopPropagation();
-        const dropdown = document.querySelector('.city-selector-dropdown');
-        const menu = document.getElementById('cityDropdownMenu');
-        const btn = event.currentTarget;
-        const isOpen = dropdown.classList.contains('open');
+        const el = document.getElementById(id);
+        const isOpen = el.classList.contains('show');
         
-        if (isOpen) {
-            dropdown.classList.remove('open');
-            menu.classList.remove('show');
-            btn.setAttribute('aria-expanded', 'false');
-        } else {
-            dropdown.classList.add('open');
-            menu.classList.add('show');
-            btn.setAttribute('aria-expanded', 'true');
+        closeDropdowns();
+        
+        if (!isOpen) {
+            el.classList.add('show');
+        }
+    }
+    
+    function closeDropdowns() {
+        const dropdowns = document.querySelectorAll('.dropdown-content');
+        dropdowns.forEach(d => d.classList.remove('show'));
+    }
+    
+    // Toggle Mobile Search Overlay
+    function toggleMobileSearch() {
+        const overlay = document.getElementById('mobileSearchOverlay');
+        if (overlay) {
+            if (overlay.style.display === 'flex') {
+                overlay.style.display = 'none';
+            } else {
+                overlay.style.display = 'flex';
+                const input = document.getElementById('mobileSearchInput');
+                if (input) input.focus();
+            }
         }
     }
 
-    // Close dropdown on click outside
+    // Close dropdowns and search suggestions on click outside
     window.addEventListener('click', function(e) {
-        const dropdown = document.querySelector('.city-selector-dropdown');
-        const menu = document.getElementById('cityDropdownMenu');
-        if (dropdown && dropdown.classList.contains('open') && !dropdown.contains(e.target)) {
-            dropdown.classList.remove('open');
-            menu.classList.remove('show');
-            const btn = dropdown.querySelector('.city-select-btn');
-            if (btn) btn.setAttribute('aria-expanded', 'false');
+        closeDropdowns();
+        const searchDropdown = document.getElementById('searchSuggestionsDropdown');
+        const searchInput = document.getElementById('headerSearchInput');
+        if (searchDropdown && searchInput && !searchInput.contains(e.target) && !searchDropdown.contains(e.target)) {
+            searchDropdown.style.display = 'none';
         }
     });
+
+    // Autocomplete Search Logic
+    const searchInput = document.getElementById('headerSearchInput');
+    const searchDropdown = document.getElementById('searchSuggestionsDropdown');
+    const mobileSearchInput = document.getElementById('mobileSearchInput');
+    const mobileSuggestions = document.getElementById('mobileSuggestionsList');
+    
+    function getRecentSearches() {
+        try {
+            return JSON.parse(localStorage.getItem('roomnest_recent_searches')) || [];
+        } catch(e) {
+            return [];
+        }
+    }
+    
+    function addRecentSearch(label, url) {
+        let recent = getRecentSearches();
+        recent = recent.filter(r => r.label !== label);
+        recent.unshift({ label, url });
+        recent = recent.slice(0, 5); // Keep top 5
+        localStorage.setItem('roomnest_recent_searches', JSON.stringify(recent));
+    }
+    
+    function renderPopularAndRecent(listEl, isMobile = false) {
+        listEl.innerHTML = '';
+        
+        // Render Recent
+        const recent = getRecentSearches();
+        if (recent.length > 0) {
+            const title = document.createElement('div');
+            title.className = 'suggestions-title';
+            title.innerText = '🕒 Recent Searches';
+            listEl.appendChild(title);
+            
+            recent.forEach(r => {
+                const item = document.createElement('a');
+                item.className = 'suggestion-item';
+                item.href = r.url;
+                item.innerHTML = `<span>🔍 ${r.label}</span>`;
+                item.addEventListener('click', () => addRecentSearch(r.label, r.url));
+                listEl.appendChild(item);
+            });
+        }
+        
+        // Render Popular
+        const title = document.createElement('div');
+        title.className = 'suggestions-title';
+        title.innerText = '🔥 Popular Searches';
+        listEl.appendChild(title);
+        
+        const popular = [
+            { label: "PG in Bengaluru", url: "/search/?city=bengaluru&type=PG+(Men)" },
+            { label: "1BHK in Mysore", url: "/search/?city=mysore&type=1BHK" },
+            { label: "Commercial Space in Hyderabad", url: "/search/?city=hyderabad&type=Commercial+Space" }
+        ];
+        
+        popular.forEach(p => {
+            const item = document.createElement('a');
+            item.className = 'suggestion-item';
+            item.href = p.url;
+            item.innerHTML = `<span>⚡ ${p.label}</span>`;
+            item.addEventListener('click', () => addRecentSearch(p.label, p.url));
+            listEl.appendChild(item);
+        });
+    }
+
+    async function handleTyping(val, containerEl, dropdownEl, isMobile = false) {
+        if (!val.trim()) {
+            if (isMobile) {
+                renderPopularAndRecent(containerEl, true);
+            } else {
+                renderPopularAndRecent(document.getElementById('popularSuggestionsList'));
+                document.getElementById('popularSearchesSection').style.display = 'block';
+                
+                const recent = getRecentSearches();
+                if (recent.length > 0) {
+                    renderRecentListDesktop();
+                    document.getElementById('recentSearchesSection').style.display = 'block';
+                } else {
+                    document.getElementById('recentSearchesSection').style.display = 'none';
+                }
+                
+                document.getElementById('citiesSection').style.display = 'none';
+                document.getElementById('areasSection').style.display = 'none';
+                document.getElementById('typesSection').style.display = 'none';
+                dropdownEl.style.display = 'block';
+            }
+            return;
+        }
+        
+        try {
+            const res = await fetch(`/api/search-suggestions/?q=${encodeURIComponent(val)}`);
+            const data = await res.json();
+            
+            if (isMobile) {
+                renderMobileSuggestions(data, containerEl);
+            } else {
+                renderDesktopSuggestions(data);
+            }
+        } catch (e) {
+            console.error(e);
+        }
+    }
+    
+    function renderRecentListDesktop() {
+        const listEl = document.getElementById('recentSuggestionsList');
+        listEl.innerHTML = '';
+        getRecentSearches().forEach(r => {
+            const item = document.createElement('a');
+            item.className = 'suggestion-item';
+            item.href = r.url;
+            item.innerHTML = `<span>🔍 ${r.label}</span>`;
+            item.addEventListener('click', () => addRecentSearch(r.label, r.url));
+            listEl.appendChild(item);
+        });
+    }
+
+    function renderDesktopSuggestions(data) {
+        document.getElementById('popularSearchesSection').style.display = 'none';
+        document.getElementById('recentSearchesSection').style.display = 'none';
+        
+        // Cities
+        const citiesList = document.getElementById('citiesSuggestionsList');
+        citiesList.innerHTML = '';
+        if (data.cities && data.cities.length > 0) {
+            data.cities.forEach(c => {
+                const item = document.createElement('a');
+                item.className = 'suggestion-item';
+                item.href = `/search/?city=${c.slug}`;
+                item.innerHTML = `<span>🏙️ ${c.name}</span><span class="suggestion-meta">City</span>`;
+                item.addEventListener('click', () => addRecentSearch(c.name, item.href));
+                citiesList.appendChild(item);
+            });
+            document.getElementById('citiesSection').style.display = 'block';
+        } else {
+            document.getElementById('citiesSection').style.display = 'none';
+        }
+        
+        // Areas
+        const areasList = document.getElementById('areasSuggestionsList');
+        areasList.innerHTML = '';
+        if (data.areas && data.areas.length > 0) {
+            data.areas.forEach(a => {
+                const item = document.createElement('a');
+                item.className = 'suggestion-item';
+                item.href = `/search/?city=${a.city_slug}&area=${a.slug}`;
+                item.innerHTML = `<span>📍 ${a.name}</span><span class="suggestion-meta">${a.city_name}</span>`;
+                item.addEventListener('click', () => addRecentSearch(`${a.name}, ${a.city_name}`, item.href));
+                areasList.appendChild(item);
+            });
+            document.getElementById('areasSection').style.display = 'block';
+        } else {
+            document.getElementById('areasSection').style.display = 'none';
+        }
+        
+        // Types
+        const typesList = document.getElementById('typesSuggestionsList');
+        typesList.innerHTML = '';
+        if (data.types && data.types.length > 0) {
+            data.types.forEach(t => {
+                const item = document.createElement('a');
+                item.className = 'suggestion-item';
+                item.href = `/search/?type=${encodeURIComponent(t.type_val)}`;
+                item.innerHTML = `<span>🏠 ${t.name}</span><span class="suggestion-meta">Type</span>`;
+                item.addEventListener('click', () => addRecentSearch(t.name, item.href));
+                typesList.appendChild(item);
+            });
+            document.getElementById('typesSection').style.display = 'block';
+        } else {
+            document.getElementById('typesSection').style.display = 'none';
+        }
+        
+        const hasResults = (data.cities && data.cities.length > 0) || 
+                           (data.areas && data.areas.length > 0) || 
+                           (data.types && data.types.length > 0);
+                           
+        searchDropdown.style.display = hasResults ? 'block' : 'none';
+    }
+    
+    function renderMobileSuggestions(data, containerEl) {
+        containerEl.innerHTML = '';
+        let hasResults = false;
+        
+        if (data.cities && data.cities.length > 0) {
+            hasResults = true;
+            const title = document.createElement('div');
+            title.className = 'suggestions-title';
+            title.innerText = '🏙️ Cities';
+            containerEl.appendChild(title);
+            
+            data.cities.forEach(c => {
+                const item = document.createElement('a');
+                item.className = 'suggestion-item';
+                item.href = `/search/?city=${c.slug}`;
+                item.innerHTML = `<span>🏙️ ${c.name}</span><span class="suggestion-meta">City</span>`;
+                item.addEventListener('click', () => addRecentSearch(c.name, item.href));
+                containerEl.appendChild(item);
+            });
+        }
+        
+        if (data.areas && data.areas.length > 0) {
+            hasResults = true;
+            const title = document.createElement('div');
+            title.className = 'suggestions-title';
+            title.innerText = '📍 Areas';
+            containerEl.appendChild(title);
+            
+            data.areas.forEach(a => {
+                const item = document.createElement('a');
+                item.className = 'suggestion-item';
+                item.href = `/search/?city=${a.city_slug}&area=${a.slug}`;
+                item.innerHTML = `<span>📍 ${a.name}</span><span class="suggestion-meta">${a.city_name}</span>`;
+                item.addEventListener('click', () => addRecentSearch(`${a.name}, ${a.city_name}`, item.href));
+                containerEl.appendChild(item);
+            });
+        }
+        
+        if (data.types && data.types.length > 0) {
+            hasResults = true;
+            const title = document.createElement('div');
+            title.className = 'suggestions-title';
+            title.innerText = '🏠 Property Types';
+            containerEl.appendChild(title);
+            
+            data.types.forEach(t => {
+                const item = document.createElement('a');
+                item.className = 'suggestion-item';
+                item.href = `/search/?type=${encodeURIComponent(t.type_val)}`;
+                item.innerHTML = `<span>🏠 ${t.name}</span><span class="suggestion-meta">Type</span>`;
+                item.addEventListener('click', () => addRecentSearch(t.name, item.href));
+                containerEl.appendChild(item);
+            });
+        }
+        
+        if (!hasResults) {
+            const noRes = document.createElement('div');
+            noRes.style.padding = '1.5rem';
+            noRes.style.textAlign = 'center';
+            noRes.style.color = 'var(--text-muted)';
+            noRes.innerText = 'No suggestions found';
+            containerEl.appendChild(noRes);
+        }
+    }
+
+    if (searchInput) {
+        searchInput.addEventListener('focus', function() {
+            handleTyping(this.value, null, searchDropdown, false);
+        });
+        searchInput.addEventListener('input', function() {
+            handleTyping(this.value, null, searchDropdown, false);
+        });
+    }
+    
+    if (mobileSearchInput) {
+        mobileSearchInput.addEventListener('focus', function() {
+            handleTyping(this.value, mobileSuggestions, null, true);
+        });
+        mobileSearchInput.addEventListener('input', function() {
+            handleTyping(this.value, mobileSuggestions, null, true);
+        });
+    }
 
     // Password visibility toggle
     document.addEventListener("DOMContentLoaded", function() {

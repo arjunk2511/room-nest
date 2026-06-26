@@ -2,7 +2,7 @@ from django.test import TestCase, Client
 from django.urls import reverse
 from django.contrib.auth.models import User
 from django.utils import timezone
-from .models import Listing, Lead, City, Area
+from .models import Listing, Lead, City, Area, PropertySubmission, Reward, Notification
 from subscriptions.models import Subscription
 import datetime
 
@@ -199,4 +199,176 @@ class MultiCityTestCase(TestCase):
         response = self.client.get(reverse('search'), {'city': self.city.slug, 'area': self.area.slug})
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Premium Flat in Whitefield")
+
+
+class ReferralsAndRewardsTestCase(TestCase):
+    def setUp(self):
+        self.owner = User.objects.create_user(username='reward_owner', password='ownerpassword', email='reward_owner@roomnest.online')
+        self.submitter = User.objects.create_user(username='reward_submitter', password='submitterpassword', email='reward_submitter@roomnest.online')
+        self.admin = User.objects.create_superuser(username='reward_admin', password='adminpassword', email='reward_admin@roomnest.online')
+        
+        # Ensure City exists
+        self.city, _ = City.objects.get_or_create(name="Bengaluru", slug="bengaluru", is_active=True)
+        self.area, _ = Area.objects.get_or_create(city=self.city, name="Banashankari", slug="banashankari", is_active=True)
+        
+        self.client = Client()
+
+    def test_referral_submission_success(self):
+        self.client.login(username='reward_submitter', password='submitterpassword')
+        
+        response = self.client.post(reverse('earn_rewards'), {
+            'submitted_by_name': 'Reward Submitter',
+            'submitted_by_mobile': '9876543210',
+            'owner_name': 'John Doe',
+            'owner_mobile': '9000000001',
+            'property_type': 'Flat',
+            'property_address': 'Flat 302, Outer Ring Road, Bengaluru',
+            'city': self.city.id,
+            'permission_confirmed': 'on',
+            'notes': 'Spotted tolet board near office.'
+        })
+        # Verify it redirects to profile upon success
+        self.assertEqual(response.status_code, 302)
+        
+        # Verify submission object is created
+        submission = PropertySubmission.objects.get(owner_mobile='9000000001')
+        self.assertEqual(submission.property_type, 'Flat')
+        self.assertEqual(submission.status, 'Pending')
+        
+        # Verify pending reward is created
+        reward = Reward.objects.get(submission=submission)
+        self.assertEqual(reward.user, self.submitter)
+        self.assertEqual(reward.reward_type, 'Referral')
+        self.assertEqual(reward.amount, 50.00)
+        self.assertEqual(reward.status, 'Pending')
+        
+        # Verify notification is sent
+        notification = Notification.objects.filter(user=self.submitter, title="Property Submitted").first()
+        self.assertIsNotNone(notification)
+
+    def test_referral_anti_spam_duplicate_prevention(self):
+        # Create an existing submission
+        PropertySubmission.objects.create(
+            submitter=self.submitter,
+            submitted_by_name='Reward Submitter',
+            submitted_by_mobile='9876543210',
+            owner_name='John Doe',
+            owner_mobile='9000000002',
+            property_type='Flat',
+            property_address='Flat 302, Outer Ring Road, Bengaluru',
+            city=self.city,
+            status='Pending'
+        )
+        
+        self.client.login(username='reward_submitter', password='submitterpassword')
+        
+        # Try submitting same owner_mobile & city
+        response = self.client.post(reverse('earn_rewards'), {
+            'submitted_by_name': 'Reward Submitter',
+            'submitted_by_mobile': '9876543210',
+            'owner_name': 'John Doe',
+            'owner_mobile': '9000000002',
+            'property_type': 'Flat',
+            'property_address': 'Flat 302, Outer Ring Road, Bengaluru',
+            'city': self.city.id,
+            'permission_confirmed': 'on'
+        })
+        # Verify it returns HTML with error (does not redirect)
+        self.assertEqual(response.status_code, 200)
+        # Check that error is in context or messages (using django messages framework)
+        messages_list = list(response.context['messages'])
+        self.assertTrue(any("already been submitted or listed" in str(m) for m in messages_list))
+
+    def test_direct_owner_listing_reward_approval_flow(self):
+        # Create a listing for self.owner
+        listing = Listing.objects.create(
+            title="Spacious Room in Banashankari",
+            location="Banashankari",
+            city=self.city,
+            area=self.area,
+            price=8000.00,
+            deposit=15000.00,
+            type="Single Room",
+            owner=self.owner,
+            listing_purpose="Rent",
+            phone="9000000003",
+            verification_status="Pending"
+        )
+        
+        # Create pending Reward for direct owner listing
+        reward = Reward.objects.create(
+            user=self.owner,
+            reward_type='DirectOwner',
+            listing=listing,
+            amount=50.00,
+            status='Pending'
+        )
+        
+        # Login as staff admin and approve verification
+        self.client.login(username='reward_admin', password='adminpassword')
+        response = self.client.get(reverse('approve_verification', args=[listing.id]))
+        self.assertEqual(response.status_code, 302)
+        
+        # Verify listing and reward are approved
+        listing.refresh_from_db()
+        reward.refresh_from_db()
+        self.assertTrue(listing.is_verified)
+        self.assertEqual(listing.verification_status, 'Verified')
+        self.assertEqual(reward.status, 'Approved')
+        
+        # Verify notifications are sent
+        notifications = Notification.objects.filter(user=self.owner)
+        self.assertTrue(notifications.filter(title="Reward Credited").exists())
+        self.assertTrue(notifications.filter(title="Property Approved").exists())
+
+    def test_unauthorized_access_to_reward_actions(self):
+        # Create a reward
+        submission = PropertySubmission.objects.create(
+            submitter=self.submitter,
+            submitted_by_name='Reward Submitter',
+            submitted_by_mobile='9876543210',
+            owner_name='John Doe',
+            owner_mobile='9000000004',
+            property_type='Flat',
+            property_address='Flat 302, Outer Ring Road, Bengaluru',
+            city=self.city,
+            status='Pending'
+        )
+        reward = Reward.objects.create(
+            user=self.submitter,
+            reward_type='Referral',
+            submission=submission,
+            amount=50.00,
+            status='Pending'
+        )
+        
+        # Attempt access as standard logged in user
+        self.client.login(username='reward_submitter', password='submitterpassword')
+        
+        # Try to approve reward
+        response = self.client.get(reverse('approve_reward_claim', args=[reward.id]))
+        self.assertEqual(response.status_code, 302) # Should redirect to home with error
+        reward.refresh_from_db()
+        self.assertEqual(reward.status, 'Pending') # Remains pending
+
+    def test_search_suggestions_api(self):
+        # Query Suggestions with empty q (returns popular searches)
+        response = self.client.get(reverse('search_suggestions'))
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertTrue(len(data['popular']) > 0)
+        
+        # Query Suggestions with prefix "Ban" (to match Bengaluru and Banashankari)
+        response = self.client.get(reverse('search_suggestions'), {'q': 'Ban'})
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        
+        # Verify Bengaluru is matched in cities (due to custom prefix handler)
+        cities = [c['name'] for c in data['cities']]
+        self.assertIn("Bengaluru", cities)
+        
+        # Verify Banashankari is matched in areas
+        areas = [a['name'] for a in data['areas']]
+        self.assertIn("Banashankari", areas)
+
 

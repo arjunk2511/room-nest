@@ -89,8 +89,30 @@ def profile_view(request):
         end_date__gte=timezone.now()
     ).first()
     
+    # Avoid circular imports by importing inside the view
+    from listings.models import Reward, PropertySubmission, Notification
+    from django.db.models import Sum
+    
+    rewards = Reward.objects.filter(user=request.user)
+    submissions = PropertySubmission.objects.filter(submitter=request.user)
+    notifications = Notification.objects.filter(user=request.user)
+    
+    successful_listings_count = rewards.filter(status__in=['Approved', 'Paid']).count()
+    pending_listings_count = rewards.filter(status='Pending').count()
+    rejected_listings_count = rewards.filter(status='Rejected').count()
+    
+    total_earnings = rewards.filter(status__in=['Approved', 'Paid']).aggregate(total=Sum('amount'))['total'] or 0.00
+    
     context = {
         'profile': user_profile,
-        'subscription': subscription
+        'subscription': subscription,
+        'rewards': rewards,
+        'submissions': submissions,
+        'notifications': notifications,
+        'successful_listings_count': successful_listings_count,
+        'pending_listings_count': pending_listings_count,
+        'rejected_listings_count': rejected_listings_count,
+        'total_earnings': total_earnings,
     }
     return render(request, 'profile.html', context)
+

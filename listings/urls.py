@@ -38,6 +38,14 @@ urlpatterns = [
     path('contact/', views.contact_us, name='contact_us'),
     path('owner/delete/<int:listing_id>/', views.delete_property, name='delete_property'),
     
+    # Rewards and referrals
+    path('rewards/', views.earn_rewards, name='earn_rewards'),
+    path('api/search-suggestions/', views.search_suggestions, name='search_suggestions'),
+    path('rewards-admin/approve/<int:reward_id>/', views.approve_reward_claim, name='approve_reward_claim'),
+    path('rewards-admin/reject/<int:reward_id>/', views.reject_reward_claim, name='reject_reward_claim'),
+    path('rewards-admin/pay/<int:reward_id>/', views.pay_reward_claim, name='pay_reward_claim'),
+    path('notifications/read-all/', views.read_all_notifications, name='read_all_notifications'),
+    
     # Dynamic city and area landing pages (placed at the end to avoid conflicts)
     path('<slug:city_slug>/', views.city_page, name='city_page'),
     path('<slug:city_slug>/<slug:area_slug>/', views.area_page, name='area_page'),

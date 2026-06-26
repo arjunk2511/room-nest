@@ -280,3 +280,86 @@ class Lead(models.Model):
     def __str__(self):
         return f"{self.name} - {self.listing.title} ({self.lead_type})"
 
+
+class PropertySubmission(models.Model):
+    PROPERTY_TYPES = (
+        ('Room', 'Room'),
+        ('PG', 'PG'),
+        ('Flat', 'Flat'),
+        ('House', 'House'),
+        ('Commercial', 'Commercial'),
+    )
+    
+    STATUS_CHOICES = (
+        ('Pending', 'Pending'),
+        ('Under Verification', 'Under Verification'),
+        ('Approved', 'Approved'),
+        ('Rejected', 'Rejected'),
+        ('Published', 'Published'),
+    )
+
+    submitter = models.ForeignKey(User, on_delete=models.CASCADE, related_name='property_submissions')
+    submitted_by_name = models.CharField(max_length=100)
+    submitted_by_mobile = models.CharField(max_length=20)
+    owner_name = models.CharField(max_length=100)
+    owner_mobile = models.CharField(max_length=20)
+    property_type = models.CharField(max_length=20, choices=PROPERTY_TYPES)
+    property_address = models.TextField()
+    city = models.ForeignKey(City, on_delete=models.SET_NULL, null=True, blank=True)
+    photo = models.ImageField(upload_to='submissions/', blank=True, null=True)
+    notes = models.TextField(blank=True, default='')
+    permission_confirmed = models.BooleanField(default=False)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Pending')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"Referral by {self.submitter.username} - {self.property_type} in {self.city.name if self.city else 'Unknown'}"
+
+
+class Reward(models.Model):
+    TYPE_CHOICES = (
+        ('Referral', 'Referral Submission'),
+        ('DirectOwner', 'Direct Owner Listing'),
+    )
+    
+    STATUS_CHOICES = (
+        ('Pending', 'Pending'),
+        ('Approved', 'Approved'),
+        ('Rejected', 'Rejected'),
+        ('Paid', 'Paid'),
+    )
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='rewards')
+    reward_type = models.CharField(max_length=20, choices=TYPE_CHOICES)
+    submission = models.ForeignKey(PropertySubmission, on_delete=models.SET_NULL, null=True, blank=True, related_name='rewards')
+    listing = models.ForeignKey(Listing, on_delete=models.SET_NULL, null=True, blank=True, related_name='rewards')
+    amount = models.DecimalField(max_digits=10, decimal_places=2, default=50.00)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Pending')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"₹{self.amount} {self.status} for {self.user.username} ({self.reward_type})"
+
+
+class Notification(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notifications')
+    title = models.CharField(max_length=150)
+    message = models.TextField()
+    is_read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"Notification for {self.user.username}: {self.title} (Read: {self.is_read})"
+
+
