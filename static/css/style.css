@@ -2509,6 +2509,18 @@ footer {
 .status-rejected { background: #FEE2E2; color: #DC2626; border: 1px solid #FCA5A5; }
 .status-paid { background: #D1FAE5; color: #059669; border: 1px solid #A7F3D0; }
 
+.desktop-only-similar {
+    display: none;
+}
+
+.profile-sidebar-nav {
+    display: none !important;
+}
+
+.mobile-profile-tabs {
+    display: flex !important;
+}
+
 /* Responsive Section Spacing Helpers */
 .value-props-section {
     background: var(--white);
@@ -2903,16 +2915,16 @@ footer {
     }
 
     .header-logo {
-        font-size: 1.45rem !important;
+        font-size: 1.35rem !important;
         font-weight: 800 !important;
-        gap: 8px !important;
+        gap: 7px !important;
         display: flex !important;
         align-items: center !important;
         flex-shrink: 0 !important;
     }
 
     .header-logo img {
-        height: 34px !important;
+        height: 30px !important;
         width: auto !important;
         object-fit: contain !important;
     }
@@ -2927,9 +2939,9 @@ footer {
 
     .header-search-form select, 
     .header-search-form input {
-        height: 40px !important;
-        padding: 0 1rem 0 2.5rem !important;
-        font-size: 0.9rem !important;
+        height: 38px !important;
+        padding: 9px 14px 9px 38px !important;
+        font-size: 0.86rem !important;
         border-radius: 99px !important;
         border: 1px solid var(--border-color) !important;
         background: #F8FAFC !important;
@@ -2943,25 +2955,25 @@ footer {
     .nav-links-group {
         display: flex !important;
         align-items: center !important;
-        gap: 24px !important;
+        gap: 16px !important;
     }
 
     .nav-link-item {
-        font-size: 15px !important;
+        font-size: 0.85rem !important;
         font-weight: 600 !important;
         color: var(--text-light) !important;
-        padding: 6px 0 !important;
+        padding: 6px 10px !important;
         display: inline-flex !important;
         align-items: center !important;
         gap: 6px !important;
-        border-bottom: 2px solid transparent !important;
+        border-radius: 6px !important;
         transition: var(--transition-smooth) !important;
     }
 
     .nav-link-item:hover,
     .nav-link-item.active {
         color: var(--primary) !important;
-        border-bottom-color: var(--primary) !important;
+        background: #EFF6FF !important;
     }
 
     /* Profile Dropdown Component */
@@ -3085,7 +3097,11 @@ footer {
     }
 
     .footer-socials svg, 
-    .social-links svg {
+    .social-links svg,
+    .btn svg,
+    button svg,
+    .action-icon svg,
+    [class*="action"] svg {
         width: 20px !important;
         height: 20px !important;
     }
@@ -3152,7 +3168,16 @@ footer {
 
     /* Section spacing */
     .container {
-        margin: 4.5rem auto !important;
+        margin: 4rem auto !important;
+    }
+
+    .value-props-section {
+        margin: 4rem auto !important;
+        padding: 4rem 24px !important;
+        background: #F8FAFC !important;
+        border-radius: 16px !important;
+        max-width: 1232px !important;
+        border: 1px solid rgba(15, 23, 42, 0.04) !important;
     }
 
     .section-title {
@@ -3182,7 +3207,7 @@ footer {
     .cta-download-section {
         padding: 4rem 3rem !important;
         border-radius: var(--border-radius-lg) !important;
-        margin: 4.5rem auto !important;
+        margin: 4rem auto !important;
         max-width: 1232px !important;
     }
 
@@ -3321,10 +3346,10 @@ footer {
         box-shadow: var(--shadow) !important;
     }
 
-    /* Image gallery capped to max 500px to prevent dominating the viewport */
+    /* Image gallery capped to max 520px to prevent dominating the viewport */
     .swipe-gallery-wrapper {
-        height: 480px !important;
-        max-height: 500px !important;
+        height: 520px !important;
+        max-height: 520px !important;
         border-radius: 12px !important;
         overflow: hidden !important;
         position: relative !important;
@@ -3454,7 +3479,7 @@ footer {
         background: var(--white) !important;
         border: 1px solid var(--border-color) !important;
         border-radius: 12px !important;
-        padding: 1.5rem !important;
+        padding: 1.25rem !important;
         box-shadow: var(--shadow-sm) !important;
         position: sticky !important;
         top: 146px !important; /* 70px header + 52px sticky filter bar + 24px gap */
@@ -3464,6 +3489,24 @@ footer {
         flex-direction: column !important;
     }
 
+    .search-sidebar .form-group {
+        margin-bottom: 0.85rem !important;
+    }
+
+    .search-sidebar .form-group label {
+        font-size: 0.78rem !important;
+        font-weight: 700 !important;
+        margin-bottom: 0.25rem !important;
+    }
+
+    .search-sidebar .form-group input,
+    .search-sidebar .form-group select {
+        padding: 0.5rem 0.75rem !important;
+        font-size: 0.85rem !important;
+        border-radius: 8px !important;
+        height: 36px !important;
+    }
+
     .drawer-scroll-content {
         flex: 1 !important;
         overflow-y: auto !important;
@@ -3471,10 +3514,21 @@ footer {
     }
 
     .drawer-actions-bar {
-        margin-top: 1.5rem !important;
+        margin-top: 1.25rem !important;
         display: flex !important;
         flex-direction: column !important;
         gap: 8px !important;
+    }
+
+    .search-sidebar .btn {
+        height: 36px !important;
+        min-height: 36px !important;
+        font-size: 0.82rem !important;
+        border-radius: 8px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        padding: 0 !important;
     }
 
     .desktop-filter-title {
@@ -3551,6 +3605,22 @@ footer {
         grid-template-columns: repeat(3, 1fr) !important;
         gap: 24px !important;
     }
+
+    .desktop-only-similar {
+        display: block !important;
+    }
+
+    .profile-sidebar-nav {
+        display: flex !important;
+    }
+
+    .mobile-profile-tabs {
+        display: none !important;
+    }
+
+    .stats-cards-grid {
+        grid-template-columns: repeat(3, 1fr) !important;
+    }
 }
 
 /* ==========================================================================
@@ -3578,6 +3648,10 @@ footer {
     /* 4 Columns for owner listings grid on desktop */
     .dashboard-listings-grid {
         grid-template-columns: repeat(4, 1fr) !important;
+    }
+
+    .stats-cards-grid {
+        grid-template-columns: repeat(6, 1fr) !important;
     }
 }
 

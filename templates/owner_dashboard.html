@@ -27,25 +27,130 @@
         </div>
     </div>
 
-    <!-- Minimal 4x1 Statistics Cards Grid -->
+    <!-- Minimal 6x1 Statistics Cards Grid -->
     <div class="stats-cards-grid">
         <div class="stat-card-premium">
             <span style="font-size: 0.72rem; color: var(--text-light); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Total Listings</span>
             <span style="font-size: 1.85rem; font-weight: 850; color: var(--text-dark); margin-top: 0.25rem; display: block;">{{ listings|length }}</span>
         </div>
         <div class="stat-card-premium stat-card-success">
-            <span style="font-size: 0.72rem; color: var(--text-light); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Active Stays</span>
-            <span style="font-size: 1.85rem; font-weight: 850; color: #10B981; margin-top: 0.25rem; display: block;">{{ active_count }}</span>
-        </div>
-        <div class="stat-card-premium stat-card-warning">
             <span style="font-size: 0.72rem; color: var(--text-light); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Total Views</span>
             <span style="font-size: 1.85rem; font-weight: 850; color: var(--primary); margin-top: 0.25rem; display: block;">{{ total_views }}</span>
         </div>
-        <div class="stat-card-premium stat-card-danger">
+        <div class="stat-card-premium stat-card-warning">
             <span style="font-size: 0.72rem; color: var(--text-light); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Total Leads</span>
-            <span style="font-size: 1.85rem; font-weight: 850; color: #D97706; margin-top: 0.25rem; display: block;">{{ leads|length }}</span>
+            <span style="font-size: 1.85rem; font-weight: 850; color: #10B981; margin-top: 0.25rem; display: block;">{{ leads|length }}</span>
+        </div>
+        <div class="stat-card-premium stat-card-danger">
+            <span style="font-size: 0.72rem; color: var(--text-light); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">WhatsApp Clicks</span>
+            <span style="font-size: 1.85rem; font-weight: 850; color: #D97706; margin-top: 0.25rem; display: block;">{{ total_whatsapp_clicks }}</span>
+        </div>
+        <div class="stat-card-premium" style="opacity: 0.85;">
+            <span style="font-size: 0.72rem; color: var(--text-light); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Saved Listings</span>
+            <span style="font-size: 1.25rem; font-weight: 800; color: var(--text-muted); margin-top: 0.65rem; display: block;">Coming Soon</span>
+        </div>
+        <div class="stat-card-premium" style="opacity: 0.85;">
+            <span style="font-size: 0.72rem; color: var(--text-light); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Revenue</span>
+            <span style="font-size: 1.25rem; font-weight: 800; color: var(--text-muted); margin-top: 0.65rem; display: block;">Coming Soon</span>
         </div>
     </div>
+
+    <!-- Analytics Chart Section -->
+    <div style="background: var(--white); border-radius: var(--border-radius-lg); border: 1px solid var(--border-color); padding: 2rem; box-shadow: var(--shadow); margin-top: 1.5rem; margin-bottom: 1rem;">
+        <h3 style="font-size: 1.25rem; font-weight: 800; color: var(--text-dark); margin: 0 0 1.5rem 0; display: flex; align-items: center; gap: 8px;">
+            📈 Property Performance Analytics
+        </h3>
+        <div style="width: 100%; height: 300px; position: relative;">
+            <canvas id="performanceChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Load Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const ctx = document.getElementById('performanceChart').getContext('2d');
+            
+            const labels = [
+                {% for l in listings %}
+                    "{{ l.title|truncatechars:18|escapejs }}"{% if not forloop.last %},{% endif %}
+                {% empty %}
+                    "No listings"
+                {% endfor %}
+            ];
+            
+            const viewsData = [
+                {% for l in listings %}
+                    {{ l.views_count }}{% if not forloop.last %},{% endif %}
+                {% empty %}
+                    0
+                {% endfor %}
+            ];
+            
+            const clicksData = [
+                {% for l in listings %}
+                    {{ l.whatsapp_clicks_count }}{% if not forloop.last %},{% endif %}
+                {% empty %}
+                    0
+                {% endfor %}
+            ];
+
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Views',
+                            data: viewsData,
+                            backgroundColor: '#3B82F6',
+                            borderRadius: 6,
+                            borderSkipped: false,
+                        },
+                        {
+                            label: 'WhatsApp Clicks',
+                            data: clicksData,
+                            backgroundColor: '#10B981',
+                            borderRadius: 6,
+                            borderSkipped: false,
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                font: {
+                                    family: "'Outfit', sans-serif",
+                                    weight: '600'
+                                },
+                                color: '#4B5563'
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { display: false },
+                            ticks: {
+                                font: { family: "'Inter', sans-serif" },
+                                color: '#6B7280'
+                            }
+                        },
+                        y: {
+                            grid: { color: '#F3F4F6' },
+                            ticks: {
+                                font: { family: "'Inter', sans-serif" },
+                                color: '#6B7280'
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
 
     <!-- Premium Owner Listing Promo Banner -->
     <div style="background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); border: 1px solid #bfdbfe; border-radius: 12px; padding: 1.25rem 1.5rem; margin-top: 1.5rem; margin-bottom: 1rem; display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">

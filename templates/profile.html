@@ -32,7 +32,7 @@
         </div>
 
         <!-- Subscription Card -->
-        <div style="background: var(--white); border-radius: var(--border-radius-lg); padding: 2rem; box-shadow: var(--shadow); border: 1px solid var(--border-color);">
+        <div style="background: var(--white); border-radius: var(--border-radius-lg); padding: 2rem; box-shadow: var(--shadow); border: 1px solid var(--border-color); margin-bottom: 1.5rem;">
             <h3 style="margin-bottom: 1.25rem; font-size: 1.15rem; display: flex; align-items: center; gap: 8px; font-weight: 800; color: var(--text-dark);">
                 <span style="color: var(--accent); font-size: 1.3rem;">⭐</span> My Subscription Plan
             </h3>
@@ -54,12 +54,25 @@
             </div>
             {% endif %}
         </div>
+
+        <!-- Sidebar Navigation (Only for Desktop/Laptop) -->
+        <div class="profile-sidebar-nav" style="background: var(--white); border-radius: var(--border-radius-lg); padding: 1.25rem; box-shadow: var(--shadow); border: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 0.5rem;">
+            <button class="profile-sidebar-btn active" onclick="switchProfileTab(event, 'edit-profile-tab')" style="display: flex; align-items: center; gap: 8px; width: 100%; padding: 0.85rem 1rem; border: none; background: #F8FAFC; color: var(--primary); font-weight: 700; border-radius: 8px; cursor: pointer; text-align: left; transition: var(--transition-smooth); font-size: 0.9rem; font-family: 'Outfit', sans-serif;">
+                ⚙️ Profile Settings
+            </button>
+            <button class="profile-sidebar-btn" onclick="switchProfileTab(event, 'rewards-tab')" style="display: flex; align-items: center; gap: 8px; width: 100%; padding: 0.85rem 1rem; border: none; background: transparent; color: var(--text-light); font-weight: 500; border-radius: 8px; cursor: pointer; text-align: left; transition: var(--transition-smooth); font-size: 0.9rem; font-family: 'Outfit', sans-serif;">
+                🎁 My Rewards
+            </button>
+            <button class="profile-sidebar-btn" onclick="switchProfileTab(event, 'notifications-tab')" style="display: flex; align-items: center; gap: 8px; width: 100%; padding: 0.85rem 1rem; border: none; background: transparent; color: var(--text-light); font-weight: 500; border-radius: 8px; cursor: pointer; text-align: left; transition: var(--transition-smooth); font-size: 0.9rem; font-family: 'Outfit', sans-serif;">
+                🔔 Notifications {% if notifications %}({{ notifications.count }}){% endif %}
+            </button>
+        </div>
     </div>
 
     <!-- Right Column: Tabbed Settings, Rewards, & Notifications -->
     <div class="profile-main">
         <!-- Tab Navigation Header -->
-        <div style="display: flex; border-bottom: 1px solid var(--border-color); margin-bottom: 1.5rem; background: var(--white); border-radius: var(--border-radius-md); overflow: hidden; padding: 4px;">
+        <div class="mobile-profile-tabs" style="display: flex; border-bottom: 1px solid var(--border-color); margin-bottom: 1.5rem; background: var(--white); border-radius: var(--border-radius-md); overflow: hidden; padding: 4px;">
             <button class="profile-tab-btn" onclick="switchProfileTab(event, 'edit-profile-tab')" style="flex: 1; padding: 0.85rem; background: #F8FAFC; border: none; border-bottom: 3px solid var(--primary); font-weight: 700; color: var(--primary); cursor: pointer; transition: var(--transition-smooth); font-size: 0.9rem; font-family: 'Outfit', sans-serif;">⚙️ Profile Settings</button>
             <button class="profile-tab-btn" onclick="switchProfileTab(event, 'rewards-tab')" style="flex: 1; padding: 0.85rem; background: transparent; border: none; border-bottom: 3px solid transparent; font-weight: 500; color: var(--text-light); cursor: pointer; transition: var(--transition-smooth); font-size: 0.9rem; font-family: 'Outfit', sans-serif;">🎁 My Rewards</button>
             <button class="profile-tab-btn" onclick="switchProfileTab(event, 'notifications-tab')" style="flex: 1; padding: 0.85rem; background: transparent; border: none; border-bottom: 3px solid transparent; font-weight: 500; color: var(--text-light); cursor: pointer; transition: var(--transition-smooth); font-size: 0.9rem; font-family: 'Outfit', sans-serif;">🔔 Notifications {% if notifications %}({{ notifications.count }}){% endif %}</button>
@@ -231,20 +244,36 @@ function switchProfileTab(evt, tabId) {
         btn.style.background = 'transparent';
         btn.style.fontWeight = '500';
     });
+
+    const sidebarBtns = document.querySelectorAll('.profile-sidebar-btn');
+    sidebarBtns.forEach(btn => {
+        btn.style.background = 'transparent';
+        btn.style.color = 'var(--text-light)';
+        btn.style.fontWeight = '500';
+    });
     
     const activePane = document.getElementById(tabId);
     if (activePane) activePane.style.display = 'block';
     
-    evt.currentTarget.style.borderBottomColor = 'var(--primary)';
-    evt.currentTarget.style.color = 'var(--primary)';
-    evt.currentTarget.style.background = '#F8FAFC';
-    evt.currentTarget.style.fontWeight = '700';
+    const triggers = document.querySelectorAll(`[onclick*="${tabId}"]`);
+    triggers.forEach(trigger => {
+        if (trigger.classList.contains('profile-tab-btn')) {
+            trigger.style.borderBottomColor = 'var(--primary)';
+            trigger.style.color = 'var(--primary)';
+            trigger.style.background = '#F8FAFC';
+            trigger.style.fontWeight = '700';
+        } else if (trigger.classList.contains('profile-sidebar-btn')) {
+            trigger.style.background = '#F8FAFC';
+            trigger.style.color = 'var(--primary)';
+            trigger.style.fontWeight = '700';
+        }
+    });
 }
 
 // Auto open rewards tab if URL has hash #rewards
 window.addEventListener('DOMContentLoaded', () => {
     if (window.location.hash === '#rewards') {
-        const rewardsBtn = document.querySelector('button[onclick*="rewards-tab"]');
+        const rewardsBtn = document.querySelector('[onclick*="rewards-tab"]');
         if (rewardsBtn) {
             rewardsBtn.click();
         }

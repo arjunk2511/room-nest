@@ -148,7 +148,7 @@
             <div class="header-search-wrapper">
                 <form action="{% url 'search' %}" method="GET" class="header-search-form" id="headerSearchForm">
                     <span class="search-icon">🔍</span>
-                    <input type="text" name="location" id="headerSearchInput" placeholder="Search city, locality or property..." autocomplete="off">
+                    <input type="text" name="location" id="headerSearchInput" placeholder="Search city, locality, area or property..." autocomplete="off">
                     <button type="submit" style="display: none;"></button>
                 </form>
                 
@@ -199,9 +199,9 @@
                                 {% endif %}
                                 <a href="{% url 'profile' %}" onclick="closeDropdowns()">👤 My Profile</a>
                                 <a href="{% url 'owner_dashboard' %}" onclick="closeDropdowns()">💼 My Listings</a>
-                                <a href="{% url 'tenant_dashboard' %}" onclick="closeDropdowns()">🏠 Tenant Dashboard</a>
                                 <a href="{% url 'wishlist' %}" onclick="closeDropdowns()">❤️ Saved Properties</a>
-                                <a href="{% url 'profile' %}#rewards" onclick="closeDropdowns()">🎁 Rewards & Referrals</a>
+                                <a href="{% url 'profile' %}#rewards" onclick="closeDropdowns()">🎁 Rewards</a>
+                                <a href="{% url 'profile' %}" onclick="closeDropdowns()">⚙️ Settings</a>
                                 <div class="menu-divider"></div>
                                 <a href="{% url 'logout' %}" onclick="closeDropdowns()" class="menu-link-danger">🚪 Logout</a>
                             </div>
