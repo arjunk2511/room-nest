@@ -3,24 +3,40 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'django-insecure-dummy-key-for-roomnest-project'
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-dummy-key-for-roomnest-project')
 
-DEBUG = 'RENDER' not in os.environ or os.environ.get('FORCE_DEBUG') == 'True'
+DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = [
-    "roomnest.online",
-    "www.roomnest.online",
-    "room-nest.onrender.com"
-]
+# Retrieve ALLOWED_HOSTS from environment, default to common production domains
+allowed_hosts_env = os.environ.get('ALLOWED_HOSTS')
+if allowed_hosts_env:
+    ALLOWED_HOSTS = [host.strip() for host in allowed_hosts_env.split(',') if host.strip()]
+else:
+    ALLOWED_HOSTS = [
+        "roomnest.online",
+        "www.roomnest.online",
+        "room-nest.onrender.com"
+    ]
 
-CSRF_TRUSTED_ORIGINS = [
-    "https://roomnest.online",
-    "https://www.roomnest.online",
-    "https://room-nest.onrender.com"
-]
+# Retrieve CSRF_TRUSTED_ORIGINS from environment
+csrf_origins_env = os.environ.get('CSRF_TRUSTED_ORIGINS')
+if csrf_origins_env:
+    CSRF_TRUSTED_ORIGINS = [origin.strip() for origin in csrf_origins_env.split(',') if origin.strip()]
+else:
+    CSRF_TRUSTED_ORIGINS = [
+        "https://roomnest.online",
+        "https://www.roomnest.online",
+        "https://room-nest.onrender.com"
+    ]
 
-# Support local development when running locally
-if 'RENDER' not in os.environ or os.environ.get('FORCE_DEBUG') == 'True':
+# Add Railway public domain if it exists in the environment
+railway_domain = os.environ.get('RAILWAY_PUBLIC_DOMAIN')
+if railway_domain:
+    ALLOWED_HOSTS.append(railway_domain)
+    CSRF_TRUSTED_ORIGINS.append(f"https://{railway_domain}")
+
+# Support local development when running locally or in debug mode
+if 'RENDER' not in os.environ and 'RAILWAY_ENVIRONMENT' not in os.environ or os.environ.get('FORCE_DEBUG') == 'True' or DEBUG:
     # Allow local development and mobile testing
     ALLOWED_HOSTS.extend(['127.0.0.1', 'localhost', '[::1]', '*'])
     
@@ -158,7 +174,7 @@ STORAGES = {
     },
 }
 
-if 'RENDER' in os.environ:
+if 'RENDER' in os.environ or 'CLOUDINARY_CLOUD_NAME' in os.environ:
     STORAGES["default"]["BACKEND"] = "cloudinary_storage.storage.MediaCloudinaryStorage"
 
 # Prevent WhiteNoise from crashing on missing static files in CSS
