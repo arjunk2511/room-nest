@@ -651,7 +651,6 @@ document.querySelector('form').addEventListener('submit', function(e) {
     // Progressive uploading loading button state
     const submitBtn = document.querySelector('button[type="submit"]');
     if (submitBtn) {
-        submitBtn.disabled = true;
         submitBtn.style.background = 'linear-gradient(135deg, #4f46e5 0%, #4338ca 100%)';
         submitBtn.style.opacity = '0.85';
         submitBtn.style.cursor = 'not-allowed';
@@ -662,6 +661,10 @@ document.querySelector('form').addEventListener('submit', function(e) {
             </svg>
             Saving Changes... (Uploading Photos)
         `;
+        // Disable on the next tick to prevent browsers from aborting the file upload
+        setTimeout(() => {
+            submitBtn.disabled = true;
+        }, 1);
     }
 });
 

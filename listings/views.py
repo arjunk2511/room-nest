@@ -278,6 +278,7 @@ def add_property(request):
         built_up_area = request.POST.get('built_up_area', '')
         
         images = request.FILES.getlist('images')
+        
         if len(images) < 3:
             messages.error(request, 'You must upload at least 3 photos to publish your listing.')
             return render(request, 'add_property.html', {

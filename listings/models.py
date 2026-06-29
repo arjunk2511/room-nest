@@ -12,6 +12,12 @@ def resize_and_compress_image(image_field, max_width=1200, quality=80):
     if not image_field:
         return
     try:
+        # Reset file pointer before reading to prevent 0-byte uploads
+        try:
+            image_field.seek(0)
+        except Exception:
+            pass
+            
         img = Image.open(image_field)
         
         # Convert color palette or alpha channels to compatible formats
@@ -42,6 +48,11 @@ def resize_and_compress_image(image_field, max_width=1200, quality=80):
         image_field.save(new_filename, ContentFile(buffer.read()), save=False)
     except Exception as e:
         print(f"Error compressing uploaded image: {e}")
+        # Ensure file pointer is reset to 0 so Django/Cloudinary can still read the original file
+        try:
+            image_field.seek(0)
+        except Exception:
+            pass
 
 
 class City(models.Model):
