@@ -642,6 +642,11 @@ dropzone.addEventListener('drop', async (e) => {
 });
 
 document.querySelector('form').addEventListener('submit', function(e) {
+    // Temporary logging for debugging image upload
+    console.log("DEBUG FRONTEND UPLOAD:");
+    console.log("realFileInput.files.length:", document.getElementById('real-file-input').files.length);
+    console.log("hiddenSubmitInput.files.length:", document.getElementById('images').files.length);
+
     if (selectedFiles.length > 0 && selectedFiles.length < 3) {
         e.preventDefault();
         alert('⚠️ If you choose to upload new photos, you must select at least 3 photos. Currently you have selected ' + selectedFiles.length + '.');

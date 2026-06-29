@@ -277,6 +277,11 @@ def add_property(request):
         commercial_type = request.POST.get('commercial_type', '')
         built_up_area = request.POST.get('built_up_area', '')
         
+        # Temporary logging for debugging image upload
+        import sys
+        print(f"DEBUG BACKEND UPLOAD: request.FILES = {request.FILES}", file=sys.stderr)
+        print(f"DEBUG BACKEND UPLOAD: request.FILES.getlist('images') = {request.FILES.getlist('images')}", file=sys.stderr)
+        
         images = request.FILES.getlist('images')
         
         if len(images) < 3:
@@ -554,6 +559,10 @@ def edit_property(request, listing_id):
         listing.facilities = ', '.join(facilities)
         
         # Handle new image files if uploaded
+        import sys
+        print(f"DEBUG BACKEND UPLOAD (EDIT): request.FILES = {request.FILES}", file=sys.stderr)
+        print(f"DEBUG BACKEND UPLOAD (EDIT): request.FILES.getlist('images') = {request.FILES.getlist('images')}", file=sys.stderr)
+        
         images = request.FILES.getlist('images')
         if images:
             if len(images) < 3:
