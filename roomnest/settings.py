@@ -7,6 +7,14 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-dummy-key-for-roomnes
 
 DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
+# Determine if running in production (either explicitly configured or automatically detected via common hosting provider env vars)
+IS_PRODUCTION = (
+    os.environ.get('IS_PRODUCTION', 'False') == 'True'
+    or os.environ.get('DJANGO_ENV') == 'production'
+    or 'RAILWAY_ENVIRONMENT' in os.environ
+    or 'RENDER' in os.environ
+)
+
 # Retrieve ALLOWED_HOSTS from environment, default to common production domains
 allowed_hosts_env = os.environ.get('ALLOWED_HOSTS')
 if allowed_hosts_env:
@@ -39,21 +47,18 @@ for origin in ["https://roomnest.online", "https://www.roomnest.online"]:
     if origin not in CSRF_TRUSTED_ORIGINS:
         CSRF_TRUSTED_ORIGINS.append(origin)
 
-# Add Railway public domain if it exists in the environment
-railway_domain = os.environ.get('RAILWAY_PUBLIC_DOMAIN')
-if railway_domain:
-    if railway_domain not in ALLOWED_HOSTS:
-        ALLOWED_HOSTS.append(railway_domain)
-    railway_origin = f"https://{railway_domain}"
-    if railway_origin not in CSRF_TRUSTED_ORIGINS:
-        CSRF_TRUSTED_ORIGINS.append(railway_origin)
+# Add any environment-provided public domains to ALLOWED_HOSTS and CSRF_TRUSTED_ORIGINS
+for env_var in ['RAILWAY_PUBLIC_DOMAIN', 'RENDER_EXTERNAL_HOSTNAME', 'PUBLIC_DOMAIN']:
+    domain = os.environ.get(env_var)
+    if domain:
+        if domain not in ALLOWED_HOSTS:
+            ALLOWED_HOSTS.append(domain)
+        origin = f"https://{domain}"
+        if origin not in CSRF_TRUSTED_ORIGINS:
+            CSRF_TRUSTED_ORIGINS.append(origin)
 
 # Support local development when running locally or in debug mode
-if (
-    ('RENDER' not in os.environ and 'RAILWAY_ENVIRONMENT' not in os.environ)
-    or os.environ.get('FORCE_DEBUG') == 'True'
-    or DEBUG
-):
+if not IS_PRODUCTION or os.environ.get('FORCE_DEBUG') == 'True' or DEBUG:
     # Allow local development and mobile testing
     ALLOWED_HOSTS.extend(['127.0.0.1', 'localhost', '[::1]', '*'])
     
@@ -191,7 +196,7 @@ STORAGES = {
     },
 }
 
-if 'RENDER' in os.environ or 'CLOUDINARY_CLOUD_NAME' in os.environ:
+if 'CLOUDINARY_CLOUD_NAME' in os.environ:
     STORAGES["default"]["BACKEND"] = "cloudinary_storage.storage.MediaCloudinaryStorage"
 
 # Prevent WhiteNoise from crashing on missing static files in CSS
@@ -216,22 +221,22 @@ AUTHENTICATION_BACKENDS = [
 
 # Reload trigger
 
-# Cloudinary credentials (add these to Render Environment Variables)
+# Cloudinary credentials (configured via environment variables)
 CLOUDINARY_STORAGE = {
     'CLOUD_NAME': os.environ.get('CLOUDINARY_CLOUD_NAME', 'your_cloud_name_here'),
     'API_KEY': os.environ.get('CLOUDINARY_API_KEY', 'your_api_key_here'),
     'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET', 'your_api_secret_here'),
 }
 
-# Production Security and Optimization Settings (Render & Custom Domain)
-if ('RAILWAY_ENVIRONMENT' in os.environ or 'RENDER' in os.environ) and os.environ.get('FORCE_DEBUG') != 'True':
+# Production Security and Optimization Settings
+if IS_PRODUCTION and os.environ.get('FORCE_DEBUG') != 'True':
     # Redirect all HTTP requests to HTTPS
     SECURE_SSL_REDIRECT = True
     
     # Trust the reverse proxy header for HTTPS detection
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
     
-    # Use headers passed by Render to get the real host and port
+    # Use headers passed by the reverse proxy to get the real host and port
     USE_X_FORWARDED_HOST = True
     USE_X_FORWARDED_PORT = True
     
