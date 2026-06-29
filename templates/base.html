@@ -407,15 +407,26 @@
 
     <script src="{% static 'js/app.min.js' %}" defer></script>
     <script>
-    // Scroll event listener to shrink header
+    // Scroll event listener to shrink header (optimized with passive listener and requestAnimationFrame)
+    let lastScrollY = 0;
+    let ticking = false;
     window.addEventListener('scroll', function() {
-        const navbar = document.querySelector('.navbar');
-        if (window.scrollY > 40) {
-            navbar.classList.add('scrolled');
-        } else {
-            navbar.classList.remove('scrolled');
+        lastScrollY = window.scrollY;
+        if (!ticking) {
+            window.requestAnimationFrame(function() {
+                const navbar = document.querySelector('.navbar');
+                if (navbar) {
+                    if (lastScrollY > 40) {
+                        navbar.classList.add('scrolled');
+                    } else {
+                        navbar.classList.remove('scrolled');
+                    }
+                }
+                ticking = false;
+            });
+            ticking = true;
         }
-    });
+    }, { passive: true });
 
     // Mobile drawer toggle
     function toggleDrawer() {
