@@ -4,6 +4,12 @@
 {% block seo_title %}{{ listing.type }} for Rent in {{ listing.location }} | {{ listing.title }} | RoomNest{% endblock %}
 {% block seo_description %}Affordable {{ listing.type }} for rent in {{ listing.location }}, Mysore. Security deposit ₹{{ listing.deposit }}, available from {{ listing.available_from }}. View photos, amenities, and contact owner directly on RoomNest.{% endblock %}
 
+{% block extra_head %}
+    <!-- Leaflet JS Map Assets -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+{% endblock %}
+
 {% block og_title %}{{ listing.type }} for Rent in {{ listing.location }} | RoomNest{% endblock %}
 {% block og_description %}Affordable {{ listing.type }} for rent in {{ listing.location }}, Mysore. Security deposit ₹{{ listing.deposit }}, available from {{ listing.available_from }}. View photos, amenities, and contact owner directly on RoomNest.{% endblock %}
 {% block og_image %}{% if listing.image %}{% if "http" in listing.image.url %}{{ listing.image.url }}{% else %}https://roomnest.online{{ listing.image.url }}{% endif %}{% else %}https://roomnest.online/static/images/logo_icon.png{% endif %}{% endblock %}
@@ -119,7 +125,7 @@
                 <div class="swipe-gallery">
                     {% if listing.image %}
                     <div class="swipe-gallery-item">
-                        <img src="{{ listing.image.url|optimize_image:'w_1200' }}" alt="{{ listing.title }}">
+                        <img src="{{ listing.image.url|optimize_image:'w_1200' }}" alt="Main image of {{ listing.title }}" width="800" height="533" decoding="async">
                     </div>
                     {% else %}
                     <div class="swipe-gallery-item" style="display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-weight: 600; font-size: 1.2rem; background: #E2E8F0;">No Image Available</div>
@@ -127,7 +133,7 @@
                     
                     {% for img in listing.images.all %}
                     <div class="swipe-gallery-item">
-                        <img src="{{ img.image.url|optimize_image:'w_1200' }}" alt="Gallery Image {{ forloop.counter }}" loading="lazy">
+                        <img src="{{ img.image.url|optimize_image:'w_1200' }}" alt="Gallery Image {{ forloop.counter }} of {{ listing.title }}" width="800" height="533" loading="lazy" decoding="async">
                     </div>
                     {% endfor %}
                 </div>
@@ -153,12 +159,12 @@
                 <div class="thumbnail-strip">
                     {% if listing.image %}
                     <div class="thumbnail-item active" onclick="goToSwipeSlide(0)">
-                        <img src="{{ listing.image.url|optimize_image:'w_150' }}" alt="Main Image" loading="lazy">
+                        <img src="{{ listing.image.url|optimize_image:'w_150' }}" alt="Main Image Thumbnail" width="75" height="50" loading="lazy" decoding="async">
                     </div>
                     {% endif %}
                     {% for img in listing.images.all %}
                     <div class="thumbnail-item" onclick="goToSwipeSlide({{ forloop.counter }})">
-                        <img src="{{ img.image.url|optimize_image:'w_150' }}" alt="Gallery Image {{ forloop.counter }}" loading="lazy">
+                        <img src="{{ img.image.url|optimize_image:'w_150' }}" alt="Gallery Image Thumbnail {{ forloop.counter }}" width="75" height="50" loading="lazy" decoding="async">
                     </div>
                     {% endfor %}
                 </div>
@@ -172,7 +178,7 @@
             <button type="button" onclick="prevLightboxSlide()" class="lightbox-nav-btn prev" style="position: absolute; left: 1.5rem; background: rgba(255, 255, 255, 0.15); border: none; color: white; font-size: 1.5rem; width: 48px; height: 48px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 100000; transition: background 0.2s; color: white !important;">❮</button>
             <button type="button" onclick="nextLightboxSlide()" class="lightbox-nav-btn next" style="position: absolute; right: 1.5rem; background: rgba(255, 255, 255, 0.15); border: none; color: white; font-size: 1.5rem; width: 48px; height: 48px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 100000; transition: background 0.2s; color: white !important;">❯</button>
             <div class="lightbox-content" style="max-width: 90%; max-height: 85%; display: flex; align-items: center; justify-content: center;">
-                <img id="lightboxImage" src="" alt="Fullscreen Image" style="max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+                <img id="lightboxImage" src="" alt="Fullscreen Image" loading="lazy" decoding="async" style="max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
             </div>
         </div>
 
@@ -337,7 +343,7 @@
                     <a href="{% url 'details' sim.id %}" style="text-decoration: none; color: inherit; display: flex; flex-direction: column; flex-grow: 1;">
                         <div style="aspect-ratio: 16 / 9; height: 130px; overflow: hidden; position: relative;">
                             {% if sim.image %}
-                            <img src="{{ sim.image.url }}" alt="{{ sim.title }}" style="width: 100%; height: 100%; object-fit: cover;">
+                            <img src="{{ sim.image.url|optimize_image:'w_600' }}" alt="Similar rental: {{ sim.title }}" width="230" height="130" loading="lazy" decoding="async" style="width: 100%; height: 100%; object-fit: cover;">
                             {% else %}
                             <div style="background: #E2E8F0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 0.8rem; font-weight: 600;">No Image</div>
                             {% endif %}

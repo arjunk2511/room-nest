@@ -189,7 +189,7 @@
             <div class="hc-card">
                 <div class="hc-img-wrapper" style="position: relative;">
                     {% if listing.image %}
-                        <img src="{{ listing.image.url|optimize_image:'w_600' }}" alt="{{ listing.title }}" class="hc-img" loading="lazy">
+                        <img src="{{ listing.image.url|optimize_image:'w_600' }}" alt="Owner listing: {{ listing.title }}" class="hc-img" width="360" height="240" loading="lazy" decoding="async">
                     {% else %}
                         <div style="width: 100%; height: 100%; background: #E2E8F0; display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-weight: 600;">No Image</div>
                     {% endif %}

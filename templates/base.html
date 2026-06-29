@@ -29,17 +29,34 @@
     {% load webpush_notifications %}
     {% webpush_header %}
 
+    <!-- Preconnect to Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'css/style.css' %}?v=5.0">
-    <!-- Leaflet JS Map Assets -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
-    <link rel="shortcut icon" type="image/x-icon" href="{% static 'images/favicon.ico' %}?v=1.0">
-    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/favicon-16x16.png' %}?v=1.0">
-    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon-32x32.png' %}?v=1.0">
-    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/apple-touch-icon.png' %}?v=1.0">
+
+    <!-- Async Google Fonts -->
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap">
+    </noscript>
+
+    <!-- Critical Inlined CSS (Above the fold) -->
+    <style>
+        :root{--primary:#2563EB;--primary-hover:#1D4ED8;--primary-light:#EFF6FF;--secondary:#0F172A;--secondary-hover:#1E293B;--accent:#F59E0B;--accent-hover:#D97706;--accent-light:#FEF3C7;--bg-color:#FAFAFA;--text-dark:#0F172A;--text-light:#475569;--text-muted:#94A3B8;--white:#FFFFFF;--border-color:#E2E8F0;--border-radius-sm:8px;--border-radius-md:12px;--border-radius-lg:16px;--border-radius-xl:24px;--shadow-sm:0 1px 3px 0 rgba(15,23,42,0.05);--shadow:0 4px 12px -2px rgba(15,23,42,0.04),0 2px 6px -1px rgba(15,23,42,0.02);--shadow-md:0 12px 24px -4px rgba(15,23,42,0.06),0 4px 12px -2px rgba(15,23,42,0.04);--shadow-lg:0 20px 32px -8px rgba(15,23,42,0.08),0 8px 16px -4px rgba(15,23,42,0.04);--glass-bg:rgba(255,255,255,0.9);--glass-border:rgba(226,232,240,0.8);--transition-smooth:all 0.25s cubic-bezier(0.4,0,0.2,1);--transition-bounce:all 0.4s cubic-bezier(0.34,1.56,0.64,1);--space-1:8px;--space-2:16px;--space-3:24px;--space-4:32px;--space-5:48px;--space-6:64px;--font-heading-mobile:28px;--font-heading-desktop:48px;--font-subheading:16px;--font-body:15px;--font-btn:15px}*{margin:0;padding:0;box-sizing:border-box;font-family:'Inter','Outfit',sans-serif;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}html{scroll-behavior:smooth}body{background-color:var(--bg-color);color:var(--text-dark);display:flex;flex-direction:column;min-height:100vh;overflow-x:hidden;line-height:1.5;font-size:var(--font-body)}main{flex:1}h1,h2,h3,h4,h5,h6{font-family:'Outfit',sans-serif;font-weight:700;color:var(--secondary);letter-spacing:-0.02em;line-height:1.25;word-wrap:break-word;overflow-wrap:break-word}h1{font-size:var(--font-heading-mobile)}@media(min-width:1024px){h1{font-size:var(--font-heading-desktop)}}a{color:var(--primary);text-decoration:none;transition:var(--transition-smooth)}a:hover{color:var(--primary-hover)}.btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:0.75rem 1.5rem;border-radius:9999px;font-weight:600;font-size:var(--font-btn);cursor:pointer;transition:var(--transition-smooth);border:none;gap:8px;outline:none;text-align:center;max-width:100%}.btn-primary{background:var(--primary);color:var(--white)!important;box-shadow:0 4px 14px 0 rgba(37,99,235,0.2)}.btn-primary:hover{background:var(--primary-hover);transform:translateY(-1px);box-shadow:0 6px 20px 0 rgba(37,99,235,0.3)}.btn-outline{background:var(--white);color:var(--text-dark)!important;border:1px solid var(--border-color);box-shadow:var(--shadow-sm)}.btn-outline:hover{background:#F8FAF9;border-color:var(--text-muted);transform:translateY(-1px);box-shadow:var(--shadow)}.hero{background:linear-gradient(rgba(15,23,42,0.55),rgba(15,23,42,0.75)),url('/static/images/hero_bg.webp') no-repeat center center;background-size:cover;color:var(--white);text-align:center;position:relative;display:flex;align-items:center;justify-content:center;padding:var(--space-3) var(--space-2) var(--space-5) var(--space-2);min-height:250px;height:260px}.hero h1{font-size:var(--font-heading-mobile);font-weight:800;margin-bottom:var(--space-1);color:var(--white)}.hero p{font-size:14px;opacity:0.95;max-width:500px;margin:0 auto;color:var(--white);font-weight:500;line-height:1.4}@media(min-width:768px){.hero{padding:var(--space-5) var(--space-3) var(--space-6) var(--space-3);min-height:380px;height:420px}.hero p{font-size:var(--font-subheading)}}@media(min-width:1024px){.hero{padding:4rem 1.5rem 8rem 1.5rem;min-height:380px;height:420px}.hero h1{font-size:2.6rem;margin-bottom:0.75rem}.hero p{font-size:1.1rem;max-width:600px}}.search-wrapper{max-width:900px;margin:-3rem auto 3rem auto;padding:0 var(--space-2);position:relative;z-index:10}@media(min-width:768px){.search-wrapper{margin:-5rem auto 4rem auto;padding:0 var(--space-3)}}.search-container{background:var(--white);border-radius:var(--border-radius-lg);box-shadow:var(--shadow-lg);overflow:hidden;border:1px solid rgba(15,23,42,0.04)}.search-tabs{display:flex;background:#F8FAFC;border-bottom:1px solid var(--border-color)}.search-tab{flex:1;text-align:center;padding:0.75rem var(--space-1);font-weight:600;color:var(--text-light);cursor:pointer;border-bottom:3px solid transparent;transition:var(--transition-smooth);user-select:none;font-size:0.8rem;white-space:nowrap}.search-tab:hover{color:var(--text-dark)}.search-tab.active{color:var(--primary);border-bottom-color:var(--primary);background:var(--white);font-weight:700}@media(min-width:768px){.search-tab{padding:1.1rem 1.5rem;font-size:0.95rem}}.search-form{display:flex;flex-direction:column;padding:var(--space-2);gap:var(--space-2)}@media(min-width:768px){.search-form{flex-direction:row;padding:1.5rem;gap:1rem;align-items:center}}.search-field{flex:1;position:relative}.search-field select,.search-field input{width:100%;padding:0.85rem 1rem 0.85rem 2.6rem;border:1px solid var(--border-color);border-radius:var(--border-radius-md);font-size:0.95rem;outline:none;color:var(--text-dark);background:var(--white);transition:var(--transition-smooth);appearance:none;-webkit-appearance:none}.search-field:has(select)::after{content:'▼';font-size:0.65rem;color:var(--text-muted);position:absolute;right:1rem;top:50%;transform:translateY(-50%);pointer-events:none}.search-field select:focus,.search-field input:focus{border-color:var(--primary);box-shadow:0 0 0 4px rgba(37,99,235,0.06)}.search-icon{position:absolute;left:0.9rem;top:50%;transform:translateY(-50%);color:var(--text-light);font-size:1.1rem}.search-btn{padding:0.85rem 2rem;font-size:1rem;border-radius:var(--border-radius-md);min-width:130px;font-weight:700}.main-header{height:64px;background:#ffffff!important;border-bottom:1px solid #E5E7EB!important;position:sticky;top:0;z-index:1000;display:flex;align-items:center;box-shadow:0 4px 6px -1px rgba(0,0,0,0.03),0 2px 4px -1px rgba(0,0,0,0.02);transition:all 0.2s ease}.header-container{width:100%;max-width:1200px;margin:0 auto;padding:0 24px;display:flex;justify-content:space-between;align-items:center;height:100%}.header-logo{display:flex;align-items:center;gap:7px;text-decoration:none;font-family:'Outfit',sans-serif;font-weight:800;font-size:1.35rem;color:#111827;background:linear-gradient(135deg,#2563EB 0%,#3B82F6 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;flex-shrink:0}.header-logo img{height:30px;width:auto;object-fit:contain}.header-search-wrapper{position:relative;flex:1;max-width:440px;margin:0 24px}.header-search-form{position:relative;width:100%;display:flex;align-items:center}.header-search-form input{width:100%;padding:9px 14px 9px 38px;border-radius:99px;border:1px solid #E5E7EB;background:#F3F4F6;color:#111827;font-size:0.86rem;font-weight:500;outline:none;transition:all 0.2s cubic-bezier(0.4,0,0.2,1);font-family:'Inter',sans-serif}.header-search-form input:focus{background:#ffffff;border-color:#2563EB;box-shadow:0 4px 12px rgba(37,99,235,0.06)}.header-nav{display:flex;align-items:center;gap:24px;flex-shrink:0}.nav-links-group{display:flex;align-items:center;gap:8px}.nav-link-item{color:#4B5563;font-weight:600;font-size:0.85rem;text-decoration:none;padding:6px 10px;border-radius:6px;transition:all 0.15s ease}.nav-link-item:hover,.nav-link-item.active{color:#2563EB;background:#EFF6FF}.header-dropdown{position:relative}.dropdown-btn{display:inline-flex;align-items:center;gap:5px;font-weight:600;font-size:0.85rem;color:#4B5563;background:none;border:none;cursor:pointer;padding:6px 10px;border-radius:6px;transition:all 0.15s ease;font-family:'Inter',sans-serif}.dropdown-btn:hover{color:#2563EB;background:#EFF6FF}.dropdown-menu{position:absolute;top:125%;left:0;background:#ffffff;border-radius:8px;border:1px solid #E5E7EB;box-shadow:0 10px 15px -3px rgba(0,0,0,0.08),0 4px 6px -2px rgba(0,0,0,0.04);min-width:220px;padding:6px;z-index:1010;display:none}.dropdown-menu.menu-right{left:auto;right:0}.dropdown-menu.show{display:block;animation:headerFadeIn 0.15s cubic-bezier(0.16,1,0.3,1)}.avatar-initial{width:32px;height:32px;border-radius:50%;background:#2563EB;color:#ffffff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.85rem;border:2px solid #ffffff;box-shadow:0 2px 4px rgba(0,0,0,0.08);transition:transform 0.15s ease}.mobile-header-controls{display:none;align-items:center;gap:12px}@media(max-width:768px){.mobile-header-controls{display:flex}.header-nav,.header-search-wrapper{display:none!important}}
+    </style>
+
+    <!-- Async core CSS -->
+    <link rel="preload" href="{% static 'css/style.min.css' %}" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript>
+        <link rel="stylesheet" href="{% static 'css/style.min.css' %}">
+    </noscript>
+
+    <!-- Extra head block for page-specific preloads, e.g. Leaflet or Hero Image -->
+    {% block extra_head %}{% endblock %}
+
+    <link rel="shortcut icon" type="image/x-icon" href="{% static 'images/favicon.ico' %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/favicon-16x16.png' %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon-32x32.png' %}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/apple-touch-icon.png' %}">
     
     <!-- Global Organization Structured Schema Markup -->
     <script type="application/ld+json">
@@ -140,7 +157,7 @@
         <div class="header-container">
             <!-- Left: Logo -->
             <a href="{% url 'home' %}" class="header-logo">
-                <img src="{% static 'images/logo_icon.png' %}?v=1.3" alt="RoomNest Logo">
+                <img src="{% static 'images/logo_icon.webp' %}" alt="RoomNest Logo" width="30" height="30" decoding="async" fetchpriority="high">
                 <span>RoomNest</span>
             </a>
             
@@ -148,7 +165,7 @@
             <div class="header-search-wrapper">
                 <form action="{% url 'search' %}" method="GET" class="header-search-form" id="headerSearchForm">
                     <span class="search-icon">🔍</span>
-                    <input type="text" name="location" id="headerSearchInput" placeholder="Search city, locality, area or property..." autocomplete="off">
+                    <input type="text" name="location" id="headerSearchInput" placeholder="Search city, locality, area or property..." autocomplete="off" aria-label="Search city, locality, area or property">
                     <button type="submit" style="display: none;"></button>
                 </form>
                 
@@ -238,7 +255,7 @@
         <div class="mobile-search-overlay" id="mobileSearchOverlay">
             <div class="mobile-search-bar">
                 <span class="mobile-search-icon">🔍</span>
-                <input type="text" id="mobileSearchInput" placeholder="Search city, locality or property..." autocomplete="off">
+                <input type="text" id="mobileSearchInput" placeholder="Search city, locality or property..." autocomplete="off" aria-label="Search city, locality or property">
                 <button class="mobile-search-close" onclick="toggleMobileSearch()">&times;</button>
             </div>
             <div class="mobile-suggestions" id="mobileSuggestionsList"></div>
@@ -339,7 +356,7 @@
             <!-- Brand Column -->
             <div style="flex: 1.5; min-width: 260px;">
                 <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 1.2rem;">
-                    <img src="{% static 'images/logo_icon.png' %}?v=1.3" alt="RoomNest Icon" style="height: 36px; object-fit: contain;">
+                    <img src="{% static 'images/logo_icon.webp' %}" alt="RoomNest Icon" width="36" height="36" decoding="async" loading="lazy" style="height: 36px; width: 36px; object-fit: contain;">
                     <span style="font-family: 'Outfit', sans-serif; font-weight: 800; font-size: 1.6rem; background: linear-gradient(135deg, var(--primary) 0%, #3B82F6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -0.5px;">RoomNest</span>
                 </div>
                 <p style="font-size: 0.92rem; line-height: 1.6; margin-bottom: 1.5rem; color: var(--text-light);">
@@ -388,7 +405,7 @@
         </div>
     </footer>
 
-    <script src="{% static 'js/app.js' %}?v=2.2" defer></script>
+    <script src="{% static 'js/app.min.js' %}" defer></script>
     <script>
     // Scroll event listener to shrink header
     window.addEventListener('scroll', function() {

@@ -370,7 +370,7 @@
             {% if listing.image %}
             <div style="margin-bottom: 1.5rem;">
                 <p style="font-weight: 600; color: var(--text-dark); margin-bottom: 0.5rem;">Current Main Image:</p>
-                <img src="{{ listing.image.url }}" alt="Main Image Preview" style="max-width: 200px; height: 130px; object-fit: cover; border-radius: 8px; border: 1px solid #cbd5e1;">
+                <img src="{{ listing.image.url }}" alt="Main Image Preview" width="200" height="130" loading="lazy" decoding="async" style="max-width: 200px; height: 130px; object-fit: cover; border-radius: 8px; border: 1px solid #cbd5e1;">
             </div>
             {% endif %}
 

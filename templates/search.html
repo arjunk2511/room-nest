@@ -186,7 +186,7 @@
             <!-- Image Wrapper -->
             <a href="{% url 'details' listing.id %}" class="hc-img-wrapper" style="display: block; position: relative; text-decoration: none;">
                 {% if listing.image %}
-                <img src="{{ listing.image.url|optimize_image:'w_600' }}" alt="{{ listing.title }}" class="hc-img" loading="lazy">
+                <img src="{{ listing.image.url|optimize_image:'w_600' }}" alt="Verified rental stay: {{ listing.title }}" class="hc-img" width="360" height="240" loading="lazy" decoding="async">
                 {% else %}
                 <div class="hc-img" style="background: #E2E8F0; display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-weight: 600; font-size: 1rem;">No Image Available</div>
                 {% endif %}

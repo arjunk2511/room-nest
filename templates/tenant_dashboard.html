@@ -49,7 +49,7 @@
             <div class="hc-card">
                 <div class="hc-img-wrapper">
                     {% if listing.image %}
-                        <img src="{{ listing.image.url|optimize_image:'w_600' }}" alt="{{ listing.title }}" class="hc-img" loading="lazy">
+                        <img src="{{ listing.image.url|optimize_image:'w_600' }}" alt="Wishlisted stay: {{ listing.title }}" class="hc-img" width="360" height="240" loading="lazy" decoding="async">
                     {% else %}
                         <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; background:#e2e8f0; color:#64748b;">No Image</div>
                     {% endif %}

@@ -14,7 +14,10 @@ import csv
 import datetime
 
 def home(request):
-    featured_listings = Listing.objects.filter(is_sold=False).select_related('owner__userprofile').order_by('-created_at')[:6]
+    featured_listings = cache.get('home_featured_listings')
+    if not featured_listings:
+        featured_listings = list(Listing.objects.filter(is_sold=False).select_related('owner__userprofile', 'city', 'area').order_by('-created_at')[:6])
+        cache.set('home_featured_listings', featured_listings, 900)  # Cache for 15 minutes
     has_subscription = False
     wishlist_ids = []
     if request.user.is_authenticated:
@@ -36,8 +39,8 @@ def home(request):
     return render(request, 'index.html', context)
 
 def search(request):
-    # Optimize query by pre-joining the owner's profile and removing unused reviews prefetch
-    listings = Listing.objects.filter(is_sold=False).select_related('owner__userprofile').order_by('-created_at')
+    # Optimize query by pre-joining the owner's profile and city/area
+    listings = Listing.objects.filter(is_sold=False).select_related('owner__userprofile', 'city', 'area').order_by('-created_at')
     
     # New V2 filters: city and area slugs
     city_slug = request.GET.get('city')
@@ -153,7 +156,7 @@ def details(request, listing_id):
     listing = cache.get(cache_key)
     if not listing:
         listing = get_object_or_404(
-            Listing.objects.select_related('owner__userprofile').prefetch_related('images', 'reviews__user'),
+            Listing.objects.select_related('owner__userprofile', 'city', 'area').prefetch_related('images', 'reviews__user'),
             id=listing_id
         )
         cache.set(cache_key, listing, 900)  # Cache for 15 minutes
@@ -970,17 +973,21 @@ def export_leads_csv(request):
 
 
 def city_page(request, city_slug):
-    # Fetch active city
-    city = get_object_or_404(City, slug=city_slug, is_active=True)
-    
-    # Get latest active listings in this city
-    featured_listings = Listing.objects.filter(
-        city=city, 
-        is_sold=False
-    ).select_related('owner__userprofile').order_by('-created_at')[:6]
-    
-    # Get active areas in this city
-    areas = city.areas.filter(is_active=True).order_by('name')
+    cache_key = f"city_page_data_{city_slug}"
+    page_data = cache.get(cache_key)
+    if not page_data:
+        city = get_object_or_404(City, slug=city_slug, is_active=True)
+        featured_listings = list(Listing.objects.filter(
+            city=city, 
+            is_sold=False
+        ).select_related('owner__userprofile', 'city', 'area').order_by('-created_at')[:6])
+        areas = list(city.areas.filter(is_active=True).order_by('name'))
+        page_data = {
+            'city': city,
+            'listings': featured_listings,
+            'areas': areas
+        }
+        cache.set(cache_key, page_data, 900)  # Cache for 15 minutes
     
     # Active subscription check
     has_subscription = False
@@ -994,9 +1001,9 @@ def city_page(request, city_slug):
         wishlist_ids = list(Wishlist.objects.filter(user=request.user).values_list('listing_id', flat=True))
         
     return render(request, 'city_page.html', {
-        'city': city,
-        'listings': featured_listings,
-        'areas': areas,
+        'city': page_data['city'],
+        'listings': page_data['listings'],
+        'areas': page_data['areas'],
         'has_subscription': has_subscription,
         'wishlist_ids': wishlist_ids
     })
