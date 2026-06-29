@@ -5,7 +5,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-dummy-key-for-roomnest-project')
 
-DEBUG = os.environ.get('DEBUG', 'True') == 'True'
+DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
 # Retrieve ALLOWED_HOSTS from environment, default to common production domains
 allowed_hosts_env = os.environ.get('ALLOWED_HOSTS')
@@ -18,6 +18,11 @@ else:
         "room-nest.onrender.com"
     ]
 
+# Ensure required production domains are in ALLOWED_HOSTS
+for host in ["roomnest.online", "www.roomnest.online"]:
+    if host not in ALLOWED_HOSTS:
+        ALLOWED_HOSTS.append(host)
+
 # Retrieve CSRF_TRUSTED_ORIGINS from environment
 csrf_origins_env = os.environ.get('CSRF_TRUSTED_ORIGINS')
 if csrf_origins_env:
@@ -29,14 +34,26 @@ else:
         "https://room-nest.onrender.com"
     ]
 
+# Ensure required production domains are in CSRF_TRUSTED_ORIGINS
+for origin in ["https://roomnest.online", "https://www.roomnest.online"]:
+    if origin not in CSRF_TRUSTED_ORIGINS:
+        CSRF_TRUSTED_ORIGINS.append(origin)
+
 # Add Railway public domain if it exists in the environment
 railway_domain = os.environ.get('RAILWAY_PUBLIC_DOMAIN')
 if railway_domain:
-    ALLOWED_HOSTS.append(railway_domain)
-    CSRF_TRUSTED_ORIGINS.append(f"https://{railway_domain}")
+    if railway_domain not in ALLOWED_HOSTS:
+        ALLOWED_HOSTS.append(railway_domain)
+    railway_origin = f"https://{railway_domain}"
+    if railway_origin not in CSRF_TRUSTED_ORIGINS:
+        CSRF_TRUSTED_ORIGINS.append(railway_origin)
 
 # Support local development when running locally or in debug mode
-if 'RENDER' not in os.environ and 'RAILWAY_ENVIRONMENT' not in os.environ or os.environ.get('FORCE_DEBUG') == 'True' or DEBUG:
+if (
+    ('RENDER' not in os.environ and 'RAILWAY_ENVIRONMENT' not in os.environ)
+    or os.environ.get('FORCE_DEBUG') == 'True'
+    or DEBUG
+):
     # Allow local development and mobile testing
     ALLOWED_HOSTS.extend(['127.0.0.1', 'localhost', '[::1]', '*'])
     
@@ -207,7 +224,7 @@ CLOUDINARY_STORAGE = {
 }
 
 # Production Security and Optimization Settings (Render & Custom Domain)
-if 'RENDER' in os.environ and os.environ.get('FORCE_DEBUG') != 'True':
+if ('RAILWAY_ENVIRONMENT' in os.environ or 'RENDER' in os.environ) and os.environ.get('FORCE_DEBUG') != 'True':
     # Redirect all HTTP requests to HTTPS
     SECURE_SSL_REDIRECT = True
     
