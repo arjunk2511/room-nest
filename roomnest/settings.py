@@ -23,11 +23,16 @@ else:
     ALLOWED_HOSTS = [
         "roomnest.online",
         "www.roomnest.online",
+        "room-nest-production.up.railway.app",
         "room-nest.onrender.com"
     ]
 
 # Ensure required production domains are in ALLOWED_HOSTS
-for host in ["roomnest.online", "www.roomnest.online"]:
+for host in [
+    "roomnest.online",
+    "www.roomnest.online",
+    "room-nest-production.up.railway.app"
+]:
     if host not in ALLOWED_HOSTS:
         ALLOWED_HOSTS.append(host)
 
@@ -39,11 +44,16 @@ else:
     CSRF_TRUSTED_ORIGINS = [
         "https://roomnest.online",
         "https://www.roomnest.online",
+        "https://room-nest-production.up.railway.app",
         "https://room-nest.onrender.com"
     ]
 
 # Ensure required production domains are in CSRF_TRUSTED_ORIGINS
-for origin in ["https://roomnest.online", "https://www.roomnest.online"]:
+for origin in [
+    "https://roomnest.online",
+    "https://www.roomnest.online",
+    "https://room-nest-production.up.railway.app"
+]:
     if origin not in CSRF_TRUSTED_ORIGINS:
         CSRF_TRUSTED_ORIGINS.append(origin)
 
@@ -142,17 +152,20 @@ WSGI_APPLICATION = 'roomnest.wsgi.application'
 import dj_database_url
 import os
 
-DATABASES = {
-    'default': dj_database_url.config(
-        default=os.environ.get("DATABASE_URL")
-    )
-}
-
-# Fallback for local development when DATABASE_URL is not set in environment
-if not DATABASES['default']:
-    DATABASES['default'] = {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+if os.environ.get("DATABASE_URL"):
+    DATABASES = {
+        "default": dj_database_url.config(
+            default=os.environ.get("DATABASE_URL"),
+            conn_max_age=600,
+            ssl_require=True,
+        )
+    }
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
+        }
     }
 
 # Cache Configuration (Sub-millisecond local memory cache)
