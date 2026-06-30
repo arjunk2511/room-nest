@@ -209,151 +209,157 @@ def details(request, listing_id):
 
 @login_required
 def add_property(request):
-    if request.method == 'POST':
-        title = request.POST['title']
-        
-        # City and Area ForeignKeys
-        city_id = request.POST.get('city')
-        area_id = request.POST.get('area')
-        city_obj = City.objects.filter(id=city_id).first() if city_id else None
-        area_obj = Area.objects.filter(id=area_id).first() if area_id else None
-        
-        # Location fallback mapped from Area name
-        location = area_obj.name if area_obj else 'Other (Mysore)'
-        if len(location) > 50:
-            location = location[:50]
+    import logging
+    logger = logging.getLogger(__name__)
+    try:
+        if request.method == 'POST':
+            title = request.POST['title']
             
-        price = request.POST['price']
-        listing_type = request.POST['type']
-        description = request.POST['description']
-        facilities = request.POST.getlist('facilities')
-        address = request.POST['address']
-        phone = request.POST['phone']
-        
-        exact_location = request.POST.get('exact_location', '')
-        
-        # Extract coordinates and Google Place ID
-        latitude = request.POST.get('latitude')
-        longitude = request.POST.get('longitude')
-        google_place_id = request.POST.get('google_place_id', '').strip()
-        
-        if latitude:
-            try:
-                latitude = float(latitude)
-            except ValueError:
-                latitude = None
-        else:
-            latitude = None
+            # City and Area ForeignKeys
+            city_id = request.POST.get('city')
+            area_id = request.POST.get('area')
+            city_obj = City.objects.filter(id=city_id).first() if city_id else None
+            area_obj = Area.objects.filter(id=area_id).first() if area_id else None
             
-        if longitude:
-            try:
-                longitude = float(longitude)
-            except ValueError:
-                longitude = None
-        else:
-            longitude = None
-        
-        deposit = request.POST.get('deposit', 0)
-        available_from = request.POST.get('available_from', 'Immediately')
-        food_preference = request.POST.get('food_preference', 'Any')
-        curfew = request.POST.get('curfew', 'No Curfew')
-        visitors = request.POST.get('visitors', 'Allowed')
-        landmark = request.POST.get('landmark', '')
-        nearby_food_options = request.POST.get('nearby_food_options', '')
-        
-        # New dynamic category fields
-        listing_purpose = request.POST.get('listing_purpose', 'Rent')
-        
-        try:
-            rooms_available = int(request.POST.get('rooms_available', 1))
-        except (ValueError, TypeError):
-            rooms_available = 1
-            
-        try:
-            sharing_count = int(request.POST.get('sharing_count', 1))
-        except (ValueError, TypeError):
-            sharing_count = 1
-            
-        flatmate_preference = request.POST.get('flatmate_preference', '')
-        target_gender = request.POST.get('target_gender', 'Any')
-        furnishing = request.POST.get('furnishing', 'Unfurnished')
-        commercial_type = request.POST.get('commercial_type', '')
-        built_up_area = request.POST.get('built_up_area', '')
-        
-        # Temporary logging for debugging image upload
-        import sys
-        print(f"DEBUG BACKEND UPLOAD: request.FILES = {request.FILES}", file=sys.stderr)
-        print(f"DEBUG BACKEND UPLOAD: request.FILES.getlist('images') = {request.FILES.getlist('images')}", file=sys.stderr)
-        
-        images = request.FILES.getlist('images')
-        
-        if len(images) < 1:
-            messages.error(request, 'You must upload at least 1 photo to publish your listing.')
-            return render(request, 'add_property.html', {
-                'error_msg': 'Minimum 1 photo required'
-            })
-        
-        main_image = images[0]
-        facilities_str = ', '.join(facilities)
-
-        listing = Listing.objects.create(
-            title=title,
-            location=location,
-            city=city_obj,
-            area=area_obj,
-            price=price,
-            type=listing_type,
-            description=description,
-            facilities=facilities_str,
-            address=address,
-            exact_location=exact_location,
-            latitude=latitude,
-            longitude=longitude,
-            google_place_id=google_place_id,
-            phone=phone,
-            deposit=deposit,
-            available_from=available_from,
-            food_preference=food_preference,
-            curfew=curfew,
-            visitors=visitors,
-            landmark=landmark,
-            nearby_food_options=nearby_food_options,
-            image=main_image,
-            owner=request.user,
-            listing_purpose=listing_purpose,
-            rooms_available=rooms_available,
-            sharing_count=sharing_count,
-            flatmate_preference=flatmate_preference,
-            target_gender=target_gender,
-            furnishing=furnishing,
-            commercial_type=commercial_type,
-            built_up_area=built_up_area
-        )
-        
-        # Save extra images (looping is required to trigger Cloudinary file upload and save logic)
-        if len(images) > 1:
-            for img in images[1:]:
-                ListingImage.objects.create(listing=listing, image=img)
-            
-        # Create a pending reward for the direct owner listing (Owner Bonus System)
-        Reward.objects.create(
-            user=request.user,
-            reward_type='DirectOwner',
-            listing=listing,
-            amount=50.00,
-            status='Pending'
-        )
-        
-        # Send a notification that listing is submitted
-        Notification.objects.create(
-            user=request.user,
-            title="Property Submitted",
-            message=f"Your property listing '{listing.title}' has been submitted and is pending verification. You will earn ₹50 once verified and published."
-        )
+            # Location fallback mapped from Area name
+            location = area_obj.name if area_obj else 'Other (Mysore)'
+            if len(location) > 50:
+                location = location[:50]
                 
-        return redirect('owner_dashboard')
-
-    return render(request, 'add_property.html')
+            price = request.POST['price']
+            listing_type = request.POST['type']
+            description = request.POST['description']
+            facilities = request.POST.getlist('facilities')
+            address = request.POST['address']
+            phone = request.POST['phone']
+            
+            exact_location = request.POST.get('exact_location', '')
+            
+            # Extract coordinates and Google Place ID
+            latitude = request.POST.get('latitude')
+            longitude = request.POST.get('longitude')
+            google_place_id = request.POST.get('google_place_id', '').strip()
+            
+            if latitude:
+                try:
+                    latitude = float(latitude)
+                except ValueError:
+                    latitude = None
+            else:
+                latitude = None
+                
+            if longitude:
+                try:
+                    longitude = float(longitude)
+                except ValueError:
+                    longitude = None
+            else:
+                longitude = None
+            
+            deposit = request.POST.get('deposit', 0)
+            available_from = request.POST.get('available_from', 'Immediately')
+            food_preference = request.POST.get('food_preference', 'Any')
+            curfew = request.POST.get('curfew', 'No Curfew')
+            visitors = request.POST.get('visitors', 'Allowed')
+            landmark = request.POST.get('landmark', '')
+            nearby_food_options = request.POST.get('nearby_food_options', '')
+            
+            # New dynamic category fields
+            listing_purpose = request.POST.get('listing_purpose', 'Rent')
+            
+            try:
+                rooms_available = int(request.POST.get('rooms_available', 1))
+            except (ValueError, TypeError):
+                rooms_available = 1
+                
+            try:
+                sharing_count = int(request.POST.get('sharing_count', 1))
+            except (ValueError, TypeError):
+                sharing_count = 1
+                
+            flatmate_preference = request.POST.get('flatmate_preference', '')
+            target_gender = request.POST.get('target_gender', 'Any')
+            furnishing = request.POST.get('furnishing', 'Unfurnished')
+            commercial_type = request.POST.get('commercial_type', '')
+            built_up_area = request.POST.get('built_up_area', '')
+            
+            # Temporary logging for debugging image upload
+            import sys
+            print(f"DEBUG BACKEND UPLOAD: request.FILES = {request.FILES}", file=sys.stderr)
+            print(f"DEBUG BACKEND UPLOAD: request.FILES.getlist('images') = {request.FILES.getlist('images')}", file=sys.stderr)
+            
+            images = request.FILES.getlist('images')
+            
+            if len(images) < 1:
+                messages.error(request, 'You must upload at least 1 photo to publish your listing.')
+                return render(request, 'add_property.html', {
+                    'error_msg': 'Minimum 1 photo required'
+                })
+            
+            main_image = images[0]
+            facilities_str = ', '.join(facilities)
+    
+            listing = Listing.objects.create(
+                title=title,
+                location=location,
+                city=city_obj,
+                area=area_obj,
+                price=price,
+                type=listing_type,
+                description=description,
+                facilities=facilities_str,
+                address=address,
+                exact_location=exact_location,
+                latitude=latitude,
+                longitude=longitude,
+                google_place_id=google_place_id,
+                phone=phone,
+                deposit=deposit,
+                available_from=available_from,
+                food_preference=food_preference,
+                curfew=curfew,
+                visitors=visitors,
+                landmark=landmark,
+                nearby_food_options=nearby_food_options,
+                image=main_image,
+                owner=request.user,
+                listing_purpose=listing_purpose,
+                rooms_available=rooms_available,
+                sharing_count=sharing_count,
+                flatmate_preference=flatmate_preference,
+                target_gender=target_gender,
+                furnishing=furnishing,
+                commercial_type=commercial_type,
+                built_up_area=built_up_area
+            )
+            
+            # Save extra images (looping is required to trigger Cloudinary file upload and save logic)
+            if len(images) > 1:
+                for img in images[1:]:
+                    ListingImage.objects.create(listing=listing, image=img)
+                
+            # Create a pending reward for the direct owner listing (Owner Bonus System)
+            Reward.objects.create(
+                user=request.user,
+                reward_type='DirectOwner',
+                listing=listing,
+                amount=50.00,
+                status='Pending'
+            )
+            
+            # Send a notification that listing is submitted
+            Notification.objects.create(
+                user=request.user,
+                title="Property Submitted",
+                message=f"Your property listing '{listing.title}' has been submitted and is pending verification. You will earn ₹50 once verified and published."
+            )
+                    
+            return redirect('owner_dashboard')
+    
+        return render(request, 'add_property.html')
+    except Exception:
+        logger.exception("ADD PROPERTY FAILED")
+        raise
 
 @login_required
 def toggle_wishlist(request, listing_id):
