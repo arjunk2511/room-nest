@@ -330,11 +330,10 @@ def add_property(request):
             built_up_area=built_up_area
         )
         
-        # Save extra images efficiently using bulk_create (single database query)
+        # Save extra images (looping is required to trigger Cloudinary file upload and save logic)
         if len(images) > 1:
-            ListingImage.objects.bulk_create([
-                ListingImage(listing=listing, image=img) for img in images[1:]
-            ])
+            for img in images[1:]:
+                ListingImage.objects.create(listing=listing, image=img)
             
         # Create a pending reward for the direct owner listing (Owner Bonus System)
         Reward.objects.create(
@@ -575,11 +574,10 @@ def edit_property(request, listing_id):
             # Update main image to first new image
             listing.image = images[0]
             
-            # Delete existing extra gallery images and save new ones efficiently using bulk_create
+            # Delete existing extra gallery images and save new ones
             listing.images.all().delete()
-            ListingImage.objects.bulk_create([
-                ListingImage(listing=listing, image=img) for img in images[1:]
-            ])
+            for img in images[1:]:
+                ListingImage.objects.create(listing=listing, image=img)
         
         listing.save()
         messages.success(request, 'Property listing updated successfully!')
