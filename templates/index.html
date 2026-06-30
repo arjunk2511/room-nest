@@ -13,7 +13,7 @@
 <section class="hero">
     <div style="max-width: 800px; margin: 0 auto; z-index: 2; position: relative;">
         <span style="background: rgba(37, 99, 235, 0.2); color: #93C5FD; padding: 0.35rem 0.85rem; border-radius: 99px; font-size: 0.82rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; display: inline-block; margin-bottom: 1.2rem; border: 1px solid rgba(147, 197, 253, 0.25);">⚡ Personal Dashboard</span>
-        <h1 id="dynamic-greeting">Welcome back, {{ user.username }}!</h1>
+        <h1 id="dynamic-greeting">Welcome back, {{ user.username }}! 👋</h1>
         <p style="margin-bottom: 2rem;">Ready to find your next stay? Search Mysore's latest verified rooms, PGs, and flatmate hubs.</p>
         
         <div style="display: flex; gap: 0.85rem; justify-content: center; flex-wrap: wrap;">
@@ -23,409 +23,232 @@
     </div>
 </section>
 
-<!-- Overlapping Unified Search Bar -->
-<div class="search-wrapper">
-    <div class="search-container">
-        <!-- Search Tabs for Type Filter -->
-        <div class="search-tabs">
-            <div class="search-tab active" onclick="setSearchType('')">🔍 All Stays</div>
-            <div class="search-tab" onclick="setSearchType('1BHK')">🏠 Rent Flat</div>
-            <div class="search-tab" onclick="setSearchType('PG (Men)')">🏢 PGs & Hostels</div>
-            <div class="search-tab" onclick="setSearchType('Co-living')">👥 Co-living</div>
-        </div>
-        
-        <!-- Search Form -->
-        <form action="{% url 'search' %}" method="GET" class="search-form">
-            <input type="hidden" name="type" id="search-type-input" value="">
-            
-            <!-- Select City -->
-            <div class="search-field">
-                <span class="search-icon">🏙️</span>
-                <select name="city" id="city-select" onchange="updateAreaOptions(this.value)" aria-label="Select City">
-                    <option value="">Select City (All India)</option>
-                    {% for city in active_cities %}
-                        <option value="{{ city.slug }}">{{ city.name }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            
-            <!-- Select Area -->
-            <div class="search-field">
-                <span class="search-icon">📍</span>
-                <select name="area" id="area-select" aria-label="Select Area">
-                    <option value="">Select Area (All Areas)</option>
-                </select>
-            </div>
-            
-            <!-- Property Type Select -->
-            <div class="search-field">
-                <span class="search-icon">🏠</span>
-                <select name="type_select" id="type-select-dropdown" onchange="syncSearchType(this.value)" aria-label="Select Property Type">
-                    <option value="">Select Property Type</option>
-                    <option value="1BHK">1 BHK Apartment</option>
-                    <option value="2BHK">2 BHK Apartment</option>
-                    <option value="Single Room">Single Room</option>
-                    <option value="PG (Men)">Men's PG</option>
-                    <option value="PG (Women)">Women's PG</option>
-                    <option value="Co-living">Co-living Space</option>
-                    <option value="Flatmate">Shared Flatmate</option>
-                    <option value="Commercial Space">Commercial Space</option>
-                </select>
-            </div>
-            
-            <!-- Budget Numeric Input -->
-            <div class="search-field">
-                <span class="search-icon">₹</span>
-                <input type="number" name="price" placeholder="Max Budget (₹/mo)" aria-label="Maximum Budget">
-            </div>
-            
-            <!-- Search Submit Button -->
-            <button type="submit" class="btn btn-primary search-btn">Search</button>
-        </form>
+<!-- Path Selection Tabs -->
+<div class="container" style="margin-top: -2rem; position: relative; z-index: 10; max-width: 800px; padding: 0 1rem;">
+    <div style="display: flex; background: var(--white); padding: 6px; border-radius: 12px; box-shadow: var(--shadow-lg); border: 1px solid var(--border-color); gap: 8px;">
+        <button id="tab-tenant" onclick="switchPath('tenant')" style="flex: 1; padding: 0.9rem; border: none; border-radius: 8px; font-weight: 700; font-size: 0.95rem; cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; justify-content: center; gap: 8px; background: var(--primary); color: white; outline: none;">
+            🔍 Find a Stay
+        </button>
+        <button id="tab-landlord" onclick="switchPath('landlord')" style="flex: 1; padding: 0.9rem; border: none; border-radius: 8px; font-weight: 700; font-size: 0.95rem; cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; justify-content: center; gap: 8px; background: transparent; color: var(--text-light); outline: none;">
+            📢 List & Manage Properties
+        </button>
     </div>
 </div>
 
-<!-- 1. Featured Properties Section -->
-<section class="container">
-    <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 2.5rem; flex-wrap: wrap; gap: 1rem;">
-        <div>
-            <h2 style="font-size: 1.85rem; font-weight: 800; margin: 0 0 0.4rem 0;">Recommended For You</h2>
-            <p style="color: var(--text-light); margin: 0; font-size: 0.95rem;">Fresh listings in Mysore curated to match your rental requirements.</p>
-        </div>
-        <a href="{% url 'search' %}" style="font-weight: 700; color: var(--primary); display: flex; align-items: center; gap: 4px; font-size: 0.95rem;">See All Listings ➔</a>
-    </div>
-    
-    {% load cache %}
-    {% cache 900 index_featured_listings_grid user.id %}
-    <div class="grid">
-        {% for listing in listings %}
-        <div class="card">
-            <a href="{% url 'details' listing.id %}" style="text-decoration: none; color: inherit; display: flex; flex-direction: column; flex-grow: 1;">
-                <div class="card-img-wrapper">
-                    {% if listing.image %}
-                    <img src="{{ listing.image.url|optimize_image:'w_600' }}" alt="Verified rental: {{ listing.title }}" class="card-img" width="360" height="240" loading="lazy" decoding="async">
-                    {% else %}
-                    <div style="background: #E2E8F0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-weight: 600; font-size: 1rem;">No Image Available</div>
-                    {% endif %}
-                    <span class="card-badge">{{ listing.type }}</span>
-                    {% if listing.owner.userprofile.is_verified %}
-                    <span style="position: absolute; top: 1rem; right: 1rem; background: #10B981; color: white; border-radius: 6px; font-size: 0.7rem; font-weight: 700; padding: 0.35rem 0.7rem; box-shadow: var(--shadow-sm); z-index: 2;">🛡️ Verified Owner</span>
-                    {% endif %}
+<!-- Tenant Path Content (Active by Default) -->
+<div id="path-tenant-content">
+    <!-- Overlapping Unified Search Bar -->
+    <div class="search-wrapper" style="margin-top: 2rem;">
+        <div class="search-container">
+            <!-- Search Form -->
+            <form action="{% url 'search' %}" method="GET" class="search-form" style="grid-template-columns: 1fr 1fr auto;">
+                <input type="hidden" name="type" id="search-type-input" value="">
+                
+                <!-- Select City -->
+                <div class="search-field">
+                    <span class="search-icon">🏙️</span>
+                    <select name="city" id="city-select" onchange="updateAreaOptions(this.value)" aria-label="Select City">
+                        <option value="">Select City (All India)</option>
+                        {% for city in active_cities %}
+                            <option value="{{ city.slug }}">{{ city.name }}</option>
+                        {% endfor %}
+                    </select>
                 </div>
                 
-                <div class="card-content" style="padding: 1.5rem; display: flex; flex-direction: column; flex-grow: 1;">
-                    <div class="card-price">₹{{ listing.price }}<span>/ month</span></div>
-                    <h3 class="card-title">{{ listing.title }}</h3>
-                    <p style="color: var(--text-light); font-size: 0.85rem; margin-bottom: 0.5rem; font-weight: 500; display: flex; align-items: center; gap: 4px;">
-                        <span>📍</span> {{ listing.location }}
-                    </p>
-                    <div style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 0.8rem; display: flex; align-items: center; gap: 4px;">
-                        <span>🕒</span> Posted {{ listing.created_at|timesince }} ago
+                <!-- Select Area -->
+                <div class="search-field">
+                    <span class="search-icon">📍</span>
+                    <select name="area" id="area-select" aria-label="Select Area">
+                        <option value="">Select Area (All Areas)</option>
+                    </select>
+                </div>
+                
+                <!-- Search Submit Button -->
+                <button type="submit" class="btn btn-primary search-btn" style="height: 100%;">Search</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Recommended Properties Section -->
+    <section class="container">
+        <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 2.5rem; flex-wrap: wrap; gap: 1rem;">
+            <div>
+                <h2 style="font-size: 1.85rem; font-weight: 800; margin: 0 0 0.4rem 0; font-family: 'Outfit', sans-serif;">Recommended For You</h2>
+                <p style="color: var(--text-light); margin: 0; font-size: 0.95rem;">Fresh listings in Mysore curated to match your rental requirements.</p>
+            </div>
+            <a href="{% url 'search' %}" style="font-weight: 700; color: var(--primary); display: flex; align-items: center; gap: 4px; font-size: 0.95rem; text-decoration: none;">See All Listings ➔</a>
+        </div>
+        
+        {% load cache %}
+        {% cache 900 index_featured_listings_grid user.id %}
+        <div class="grid">
+            {% for listing in listings %}
+            <div class="card">
+                <a href="{% url 'details' listing.id %}" style="text-decoration: none; color: inherit; display: flex; flex-direction: column; flex-grow: 1;">
+                    <div class="card-img-wrapper">
+                        {% if listing.image %}
+                        <img src="{{ listing.image.url|optimize_image:'w_600' }}" alt="Verified rental: {{ listing.title }}" class="card-img" width="360" height="240" loading="lazy" decoding="async">
+                        {% else %}
+                        <div style="background: #E2E8F0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-weight: 600; font-size: 1rem;">No Image Available</div>
+                        {% endif %}
+                        <span class="card-badge">{{ listing.type }}</span>
+                        {% if listing.owner.userprofile.is_verified %}
+                        <span style="position: absolute; top: 1rem; right: 1rem; background: #10B981; color: white; border-radius: 6px; font-size: 0.7rem; font-weight: 700; padding: 0.35rem 0.7rem; box-shadow: var(--shadow-sm); z-index: 2;">🛡️ Verified Owner</span>
+                        {% endif %}
                     </div>
                     
-                    <div class="card-info-row">
-                        <div class="card-info-item">
-                            <span class="card-info-label">Deposit</span>
-                            <span class="card-info-value">₹{{ listing.deposit }}</span>
+                    <div class="card-content" style="padding: 1.5rem; display: flex; flex-direction: column; flex-grow: 1;">
+                        <div class="card-price">₹{{ listing.price }}<span>/ month</span></div>
+                        <h3 class="card-title">{{ listing.title }}</h3>
+                        <p style="color: var(--text-light); font-size: 0.85rem; margin-bottom: 0.5rem; font-weight: 500; display: flex; align-items: center; gap: 4px;">
+                            <span>📍</span> {{ listing.location }}
+                        </p>
+                        <div style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 0.8rem; display: flex; align-items: center; gap: 4px;">
+                            <span>🕒</span> Posted {{ listing.created_at|timesince }} ago
                         </div>
-                        <div class="card-info-item">
-                            <span class="card-info-label">Furnishing</span>
-                            <span class="card-info-value">{{ listing.furnishing }}</span>
-                        </div>
-                        <div class="card-info-item">
-                            <span class="card-info-label">Available</span>
-                            <span class="card-info-value" title="{{ listing.available_from }}">{{ listing.available_from }}</span>
+                        
+                        <div class="card-info-row">
+                            <div class="card-info-item">
+                                <span class="card-info-label">Deposit</span>
+                                <span class="card-info-value">₹{{ listing.deposit }}</span>
+                            </div>
+                            <div class="card-info-item">
+                                <span class="card-info-label">Furnishing</span>
+                                <span class="card-info-value">{{ listing.furnishing }}</span>
+                            </div>
+                            <div class="card-info-item">
+                                <span class="card-info-label">Available</span>
+                                <span class="card-info-value" title="{{ listing.available_from }}">{{ listing.available_from }}</span>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </a>
-            
-            <div class="card-footer-action" style="display: grid; grid-template-columns: auto 1fr 1fr; gap: 8px; padding: 0 1.5rem 1.5rem 1.5rem; margin-top: auto; width: 100%; align-items: center; background: white; border-radius: 0 0 var(--border-radius-lg) var(--border-radius-lg);">
-                <!-- Save (wishlist heart) -->
-                {% if user.is_authenticated %}
-                    <form action="{% url 'toggle_wishlist' listing.id %}" method="POST" style="margin: 0; display: flex; align-items: center;">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-outline" style="min-height: 40px; width: 40px; height: 40px; padding: 0; border-radius: 8px; font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: var(--transition-smooth);" title="Save Property">
-                            {% if listing.id in wishlist_ids %}❤️{% else %}🤍{% endif %}
-                        </button>
-                    </form>
-                {% else %}
-                    <a href="{% url 'login' %}?next={{ request.path }}" class="btn btn-outline" style="min-height: 40px; width: 40px; height: 40px; padding: 0; border-radius: 8px; font-size: 1.1rem; display: inline-flex; align-items: center; justify-content: center;" title="Save Property">
-                        🤍
-                    </a>
-                {% endif %}
+                </a>
+                
+                <div class="card-footer-action" style="display: grid; grid-template-columns: auto 1fr 1fr; gap: 8px; padding: 0 1.5rem 1.5rem 1.5rem; margin-top: auto; width: 100%; align-items: center; background: white; border-radius: 0 0 var(--border-radius-lg) var(--border-radius-lg);">
+                    <!-- Save (wishlist heart) -->
+                    {% if user.is_authenticated %}
+                        <form action="{% url 'toggle_wishlist' listing.id %}" method="POST" style="margin: 0; display: flex; align-items: center;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-outline" style="min-height: 40px; width: 40px; height: 40px; padding: 0; border-radius: 8px; font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: var(--transition-smooth);" title="Save Property">
+                                {% if listing.id in wishlist_ids %}❤️{% else %}🤍{% endif %}
+                            </button>
+                        </form>
+                    {% else %}
+                        <a href="{% url 'login' %}?next={{ request.path }}" class="btn btn-outline" style="min-height: 40px; width: 40px; height: 40px; padding: 0; border-radius: 8px; font-size: 1.1rem; display: inline-flex; align-items: center; justify-content: center;" title="Save Property">
+                            🤍
+                        </a>
+                    {% endif %}
 
-                <!-- Call -->
-                {% if user.is_authenticated and has_subscription or user.is_authenticated and request.user == listing.owner %}
-                    <a href="tel:{{ listing.phone }}" class="btn btn-outline" style="min-height: 40px; padding: 0.5rem; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; gap: 4px; font-weight: 700; font-size: 0.85rem;" title="Call Owner">📞 Call</a>
-                {% elif user.is_authenticated %}
-                    <a href="{% url 'details' listing.id %}" class="btn btn-outline" style="min-height: 40px; padding: 0.5rem; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; gap: 4px; font-weight: 700; font-size: 0.85rem; color: var(--text-muted) !important;" title="Unlock Call Contact">📞 Call 🔒</a>
-                {% else %}
-                    <a href="{% url 'login' %}?next={{ request.path }}" class="btn btn-outline" style="min-height: 40px; padding: 0.5rem; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; gap: 4px; font-weight: 700; font-size: 0.85rem; color: var(--text-muted) !important;" title="Login to Call">📞 Call 🔒</a>
-                {% endif %}
+                    <!-- Call -->
+                    {% if user.is_authenticated and has_subscription or user.is_authenticated and request.user == listing.owner %}
+                        <a href="tel:{{ listing.phone }}" class="btn btn-outline" style="min-height: 40px; padding: 0.5rem; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; gap: 4px; font-weight: 700; font-size: 0.85rem;" title="Call Owner">📞 Call</a>
+                    {% elif user.is_authenticated %}
+                        <a href="{% url 'details' listing.id %}" class="btn btn-outline" style="min-height: 40px; padding: 0.5rem; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; gap: 4px; font-weight: 700; font-size: 0.85rem; color: var(--text-muted) !important;" title="Unlock Call Contact">📞 Call 🔒</a>
+                    {% else %}
+                        <a href="{% url 'login' %}?next={{ request.path }}" class="btn btn-outline" style="min-height: 40px; padding: 0.5rem; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; gap: 4px; font-weight: 700; font-size: 0.85rem; color: var(--text-muted) !important;" title="Login to Call">📞 Call 🔒</a>
+                    {% endif %}
 
-                <!-- WhatsApp -->
-                {% if user.is_authenticated and has_subscription or user.is_authenticated and request.user == listing.owner %}
-                    <button onclick="openWhatsApp('{{ listing.phone|escapejs }}', '{{ listing.title|escapejs }}')" class="btn btn-whatsapp" style="min-height: 40px; padding: 0.5rem; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; gap: 4px; font-weight: 700; font-size: 0.85rem; color: white !important;" title="WhatsApp Owner">💬 Chat</button>
-                {% elif user.is_authenticated %}
-                    <a href="{% url 'details' listing.id %}" class="btn btn-whatsapp" style="min-height: 40px; padding: 0.5rem; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; gap: 4px; font-weight: 700; font-size: 0.85rem; color: white !important;" title="Unlock WhatsApp Contact">💬 Chat 🔒</a>
-                {% else %}
-                    <a href="{% url 'login' %}?next={{ request.path }}" class="btn btn-whatsapp" style="min-height: 40px; padding: 0.5rem; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; gap: 4px; font-weight: 700; font-size: 0.85rem; color: white !important;" title="Login to Chat">💬 Chat 🔒</a>
-                {% endif %}
-            </div>
-        </div>
-        {% empty %}
-        <div style="text-align: center; grid-column: 1 / -1; padding: 4rem; background: var(--white); border-radius: var(--border-radius-lg); border: 1px dashed var(--border-color); color: var(--text-light);">
-            <p style="font-size: 1.1rem; font-weight: 500;">No recommendation properties found. Please check back later.</p>
-        </div>
-        {% endfor %}
-    </div>
-    {% endcache %}
-</section>
-
- <!-- 2. Popular Cities Section -->
-<section class="container">
-    <div style="text-align: center; margin-bottom: 2.5rem;">
-        <span style="color: var(--primary); font-weight: 700; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 0.5rem;">National Expansion</span>
-        <h2 style="font-size: 1.85rem; font-weight: 800; margin-bottom: 0.5rem; font-family: 'Outfit', sans-serif;">Explore Premium Stays Across India</h2>
-        <p style="color: var(--text-light); max-width: 500px; margin: 0 auto; font-size: 0.95rem;">Browse verified student housing, co-living hubs, and luxury apartments across our launch cities.</p>
-    </div>
-    
-    <div class="grid popular-cities-grid">
-        {% for city in active_cities %}
-        <a href="{% url 'city_page' city.slug %}" style="display: block; position: relative; border-radius: var(--border-radius-lg); overflow: hidden; box-shadow: var(--shadow); transition: var(--transition-smooth);" onmouseover="this.style.transform='translateY(-6px)'; this.style.boxShadow='var(--shadow-lg)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='var(--shadow)';">
-            <div style="height: 200px; position: relative; background: linear-gradient(180deg, rgba(15,23,42,0.1) 0%, rgba(15,23,42,0.8) 100%);">
-                {% if city.image %}
-                    <img src="{{ city.image.url }}" alt="Stays in {{ city.name }}" width="360" height="200" loading="lazy" decoding="async" style="width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; z-index: 1;">
-                {% else %}
-                    <div style="width: 100%; height: 100%; background: linear-gradient(135deg, {% if city.slug == 'mysore' %}#3B82F6 0%, #1D4ED8 100%{% elif city.slug == 'bengaluru' %}#10B981 0%, #047857 100%{% else %}#F59E0B 0%, #B45309 100%{% endif %}); position: absolute; top: 0; left: 0; z-index: 1;"></div>
-                {% endif %}
-                <div style="position: absolute; bottom: 0; left: 0; right: 0; padding: 1.5rem; z-index: 2; color: white;">
-                    <h3 style="font-size: 1.5rem; font-weight: 800; color: white; margin-bottom: 0.25rem; font-family: 'Outfit', sans-serif;">{{ city.name }}</h3>
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <span style="font-size: 0.85rem; opacity: 0.9; font-weight: 500;">{{ city.property_count }} Active Stays</span>
-                        <span style="font-size: 0.8rem; background: rgba(255,255,255,0.2); backdrop-filter: blur(4px); padding: 0.2rem 0.6rem; border-radius: 99px; font-weight: 700;">Explore ➔</span>
-                    </div>
+                    <!-- WhatsApp -->
+                    {% if user.is_authenticated and has_subscription or user.is_authenticated and request.user == listing.owner %}
+                        <button onclick="openWhatsApp('{{ listing.phone|escapejs }}', '{{ listing.title|escapejs }}')" class="btn btn-whatsapp" style="min-height: 40px; padding: 0.5rem; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; gap: 4px; font-weight: 700; font-size: 0.85rem; color: white !important;" title="WhatsApp Owner">💬 Chat</button>
+                    {% elif user.is_authenticated %}
+                        <a href="{% url 'details' listing.id %}" class="btn btn-whatsapp" style="min-height: 40px; padding: 0.5rem; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; gap: 4px; font-weight: 700; font-size: 0.85rem; color: white !important;" title="Unlock WhatsApp Contact">💬 Chat 🔒</a>
+                    {% else %}
+                        <a href="{% url 'login' %}?next={{ request.path }}" class="btn btn-whatsapp" style="min-height: 40px; padding: 0.5rem; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; gap: 4px; font-weight: 700; font-size: 0.85rem; color: white !important;" title="Login to Chat">💬 Chat 🔒</a>
+                    {% endif %}
                 </div>
             </div>
-        </a>
-        {% endfor %}
-    </div>
-</section>
+            {% empty %}
+            <div style="text-align: center; grid-column: 1 / -1; padding: 4rem; background: var(--white); border-radius: var(--border-radius-lg); border: 1px dashed var(--border-color); color: var(--text-light);">
+                <p style="font-size: 1.1rem; font-weight: 500;">No recommendation properties found. Please check back later.</p>
+            </div>
+            {% endfor %}
+        </div>
+        {% endcache %}
+    </section>
+</div>
 
+<!-- Landlord Path Content (Hidden by Default) -->
+<div id="path-landlord-content" style="display: none;">
+    <section class="container" style="margin-top: 3rem;">
+        <div style="background: var(--white); border: 1px solid var(--border-color); border-radius: var(--border-radius-lg); padding: 3rem 2rem; text-align: center; box-shadow: var(--shadow); max-width: 650px; margin: 0 auto;">
+            <div style="font-size: 3rem; margin-bottom: 1.5rem;">🏢</div>
+            <h2 style="font-size: 1.8rem; font-weight: 800; color: var(--text-dark); margin-bottom: 0.5rem; font-family: 'Outfit', sans-serif;">List Your Property with Zero Brokerage</h2>
+            <p style="color: var(--text-light); margin-bottom: 2rem; font-size: 1rem; line-height: 1.6;">
+                Reach thousands of tenants looking for flats, PGs, and rooms in Mysore. List your property in under 5 minutes and get direct owner inquiries.
+            </p>
+            <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                <a href="{% url 'add_property' %}" class="btn btn-primary" style="padding: 0.9rem 2rem; font-size: 1rem; font-weight: 700; border-radius: 8px; text-decoration: none; display: inline-flex; align-items: center; justify-content: center;">🚀 Post a New Property</a>
+                <a href="{% url 'owner_dashboard' %}" class="btn btn-outline" style="padding: 0.9rem 2rem; font-size: 1rem; font-weight: 700; border-radius: 8px; text-decoration: none; display: inline-flex; align-items: center; justify-content: center;">📊 View Owner Dashboard</a>
+            </div>
+        </div>
+    </section>
 
-<!-- 3. Why Choose RoomNest Section -->
-<section class="value-props-section">
-    <div style="max-width: 1200px; margin: 0 auto;">
-        <div style="text-align: center; margin-bottom: 3.5rem;">
-            <h2 style="font-size: 1.85rem; font-weight: 800; margin-bottom: 0.5rem;">Direct Rentals, Direct Savings</h2>
-            <p style="color: var(--text-light); max-width: 500px; margin: 0 auto; font-size: 0.95rem;">Experience direct peer-to-peer property renting that completely eliminates high agent commissions.</p>
+    <!-- Owner's Properties Summary -->
+    <section class="container" style="margin-top: 3rem;">
+        <div style="margin-bottom: 2rem; text-align: center;">
+            <h2 style="font-size: 1.65rem; font-weight: 800; margin-bottom: 0.5rem; font-family: 'Outfit', sans-serif;">Your Listed Properties</h2>
+            <p style="color: var(--text-light); margin: 0; font-size: 0.95rem;">A quick summary of your active listings on RoomNest.</p>
         </div>
         
         <div class="grid">
-            <div style="text-align: center; padding: 0 1rem;">
-                <div style="width: 55px; height: 55px; border-radius: 50%; background: var(--primary-light); color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 1.6rem; margin: 0 auto 1.25rem auto;">💸</div>
-                <h3 style="font-size: 1.15rem; margin-bottom: 0.5rem; color: var(--text-dark);">Zero Brokerage</h3>
-                <p style="color: var(--text-light); font-size: 0.9rem; line-height: 1.6;">Browse and contact landlords with absolute transparency. Pay zero brokerage fees, always.</p>
-            </div>
-
-            <!-- Value Prop 2 -->
-            <div style="text-align: center; padding: 0 1rem;">
-                <div style="width: 55px; height: 55px; border-radius: 50%; background: var(--primary-light); color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 1.6rem; margin: 0 auto 1.25rem auto;">🛡️</div>
-                <h3 style="font-size: 1.15rem; margin-bottom: 0.5rem; color: var(--text-dark);">Verified Listings</h3>
-                <p style="color: var(--text-light); font-size: 0.9rem; line-height: 1.6;">Verification seals guarantee that property photographs, amenities, and addresses match the real physical stay.</p>
-            </div>
-
-            <!-- Value Prop 3 -->
-            <div style="text-align: center; padding: 0 1rem;">
-                <div style="width: 55px; height: 55px; border-radius: 50%; background: var(--primary-light); color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 1.6rem; margin: 0 auto 1.25rem auto;">💬</div>
-                <h3 style="font-size: 1.15rem; margin-bottom: 0.5rem; color: var(--text-dark);">Connect Instantly</h3>
-                <p style="color: var(--text-light); font-size: 0.9rem; line-height: 1.6;">Contact property owners directly over WhatsApp or using our secure in-app messaging system.</p>
-            </div>
-
-            <!-- Value Prop 4 -->
-            <div style="text-align: center; padding: 0 1rem;">
-                <div style="width: 55px; height: 55px; border-radius: 50%; background: var(--primary-light); color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 1.6rem; margin: 0 auto 1.25rem auto;">🤝</div>
-                <h3 style="font-size: 1.15rem; margin-bottom: 0.5rem; color: var(--text-dark);">Hostels & Shared PGs</h3>
-                <p style="color: var(--text-light); font-size: 0.9rem; line-height: 1.6;">Curated listings specifically optimized for Mysore college students, research scholars, and IT executives.</p>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- 4. Testimonials Section -->
-<section class="container">
-    <div style="text-align: center; margin-bottom: 3.5rem;">
-        <h2 style="font-size: 1.85rem; font-weight: 800; margin-bottom: 0.5rem;">Loved by Renters in Mysore ❤️</h2>
-        <p style="color: var(--text-light); max-width: 500px; margin: 0 auto; font-size: 0.95rem;">Join thousands of students and working professionals who found their homes via RoomNest.</p>
-    </div>
-    
-    <div class="grid">
-        <!-- Testimonial 1 -->
-        <div style="background: var(--white); border: 1px solid var(--border-color); padding: 2rem; border-radius: var(--border-radius-lg); box-shadow: var(--shadow); display: flex; flex-direction: column; justify-content: space-between;">
-            <div>
-                <div style="color: var(--accent); font-size: 1rem; margin-bottom: 0.75rem;">★★★★★</div>
-                <p style="color: var(--text-light); font-style: italic; line-height: 1.6; font-size: 0.92rem; margin-bottom: 1.5rem;">"As a student at JSS University, finding an affordable PG in Mysore was extremely difficult. RoomNest helped me connect directly with PG owners in Gokulam, saving me huge brokerage fees!"</p>
-            </div>
-            <div style="display: flex; align-items: center; gap: 12px; border-top: 1px solid #F1F5F9; padding-top: 1rem;">
-                <div style="width: 38px; height: 38px; border-radius: 50%; background: var(--primary-light); color: var(--primary); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem;">RK</div>
-                <div>
-                    <strong style="color: var(--text-dark); font-size: 0.9rem; display: block;">Rohan K.</strong>
-                    <span style="color: var(--text-muted); font-size: 0.75rem; display: block;">JSS University Student</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Testimonial 2 -->
-        <div style="background: var(--white); border: 1px solid var(--border-color); padding: 2rem; border-radius: var(--border-radius-lg); box-shadow: var(--shadow); display: flex; flex-direction: column; justify-content: space-between;">
-            <div>
-                <div style="color: var(--accent); font-size: 1rem; margin-bottom: 0.75rem;">★★★★★</div>
-                <p style="color: var(--text-light); font-style: italic; line-height: 1.6; font-size: 0.92rem; margin-bottom: 1.5rem;">"Listing my 2BHK flat in Vijayanagar on RoomNest was completely seamless. Within 48 hours, I received multiple verification requests and rented it out to a professional IT family."</p>
-            </div>
-            <div style="display: flex; align-items: center; gap: 12px; border-top: 1px solid #F1F5F9; padding-top: 1rem;">
-                <div style="width: 38px; height: 38px; border-radius: 50%; background: #ECFDF5; color: #10B981; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem;">MG</div>
-                <div>
-                    <strong style="color: var(--text-dark); font-size: 0.9rem; display: block;">Mahesh G.</strong>
-                    <span style="color: var(--text-muted); font-size: 0.75rem; display: block;">Property Owner (Vijayanagar)</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Testimonial 3 -->
-        <div style="background: var(--white); border: 1px solid var(--border-color); padding: 2rem; border-radius: var(--border-radius-lg); box-shadow: var(--shadow); display: flex; flex-direction: column; justify-content: space-between;">
-            <div>
-                <div style="color: var(--accent); font-size: 1rem; margin-bottom: 0.75rem;">★★★★★</div>
-                <p style="color: var(--text-light); font-style: italic; line-height: 1.6; font-size: 0.92rem; margin-bottom: 1.5rem;">"The flatmate lifestyle compatibility match scoring tool is a total game changer! It helped me match with a quiet and compatible flatmate to split rent on our shared flat in Hebbal."</p>
-            </div>
-            <div style="display: flex; align-items: center; gap: 12px; border-top: 1px solid #F1F5F9; padding-top: 1rem;">
-                <div style="width: 38px; height: 38px; border-radius: 50%; background: #FEF3C7; color: #D97706; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem;">AP</div>
-                <div>
-                    <strong style="color: var(--text-dark); font-size: 0.9rem; display: block;">Ananya P.</strong>
-                    <span style="color: var(--text-muted); font-size: 0.75rem; display: block;">Software Engineer (Infosys)</span>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- 5. Download App / CTA Section -->
-<section class="cta-download-section">
-    <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 3rem; position: relative; z-index: 2;">
-        <!-- Left Text Area -->
-        <div style="flex: 1.2; min-width: 300px;">
-            <span style="background: rgba(37, 99, 235, 0.2); color: #93C5FD; padding: 0.35rem 0.85rem; border-radius: 99px; font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px;">Coming Soon</span>
-            <h2 style="color: var(--white); font-size: 2.2rem; font-weight: 800; margin-top: 0.8rem; margin-bottom: 0.75rem;">Search on the Go. Download RoomNest</h2>
-            <p style="opacity: 0.85; font-size: 0.98rem; line-height: 1.6; margin-bottom: 2rem; max-width: 520px;">
-                Get real-time notification alerts when new rooms matching your budget are posted in Mysore. Experience verified landlord listings directly from your phone.
-            </p>
-            <div style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: center;">
-                <!-- Store Badges -->
-                <a href="#" style="display: inline-block; background: #000000; border: 1px solid #334155; border-radius: 8px; padding: 0.5rem 1rem; color: white; transition: var(--transition-smooth);" onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor='#334155'">
-                    <span style="font-size: 0.65rem; text-transform: uppercase; display: block; opacity: 0.7; font-weight: 600;">GET IT ON</span>
-                    <strong style="font-size: 1rem; font-family: sans-serif; font-weight: 700; display: block; margin-top: -2px;">Google Play</strong>
-                </a>
-                <a href="#" style="display: inline-block; background: #000000; border: 1px solid #334155; border-radius: 8px; padding: 0.5rem 1rem; color: white; transition: var(--transition-smooth);" onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor='#334155'">
-                    <span style="font-size: 0.65rem; text-transform: uppercase; display: block; opacity: 0.7; font-weight: 600;">Download on the</span>
-                    <strong style="font-size: 1rem; font-family: sans-serif; font-weight: 700; display: block; margin-top: -2px;">App Store</strong>
-                </a>
-            </div>
-        </div>
-        
-        <!-- Right CSS Phone Mockup -->
-        <div style="flex: 0.8; display: flex; justify-content: center; min-width: 260px;">
-            <div style="width: 220px; height: 380px; background: #000000; border: 8px solid #334155; border-radius: 36px; padding: 10px; box-shadow: var(--shadow-lg); position: relative; overflow: hidden; display: flex; flex-direction: column;">
-                <!-- Speaker Notch -->
-                <div style="width: 80px; height: 16px; background: #334155; border-radius: 0 0 12px 12px; position: absolute; top: 0; left: 50%; transform: translateX(-50%); z-index: 5;"></div>
-                
-                <!-- Phone Inner screen -->
-                <div style="flex: 1; background: #F8FAFC; border-radius: 24px; padding: 1.5rem 0.85rem; display: flex; flex-direction: column; justify-content: space-between; overflow: hidden;">
-                    <div>
-                        <div style="display: flex; align-items: center; gap: 4px; margin-bottom: 1rem;">
-                            <img src="{% static 'images/logo_icon.webp' %}" alt="RoomNest Icon" width="18" height="18" loading="lazy" decoding="async" style="height: 18px; width: 18px; object-fit: contain;">
-                            <strong style="font-size: 0.75rem; color: var(--primary);">RoomNest</strong>
-                        </div>
-                        <div style="background: white; border: 1px solid #E2E8F0; border-radius: 8px; padding: 8px; box-shadow: var(--shadow-sm); margin-bottom: 8px;">
-                            <span style="font-size: 0.55rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; display: block;">Featured stay</span>
-                            <strong style="font-size: 0.68rem; color: var(--text-dark); display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 1px;">Luxury 1BHK Gokulam</strong>
-                            <strong style="font-size: 0.75rem; color: var(--primary); display: block; margin-top: 2px;">₹12,500/mo</strong>
-                        </div>
-                        <div style="background: white; border: 1px solid #E2E8F0; border-radius: 8px; padding: 8px; box-shadow: var(--shadow-sm);">
-                            <span style="font-size: 0.55rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; display: block;">Verified pg</span>
-                            <strong style="font-size: 0.68rem; color: var(--text-dark); display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 1px;">Sree PGs for Men</strong>
-                            <strong style="font-size: 0.75rem; color: var(--primary); display: block; margin-top: 2px;">₹5,500/mo</strong>
-                        </div>
+            {% for listing in user_listings %}
+            <div class="card" style="display: flex; flex-direction: column;">
+                <a href="{% url 'details' listing.id %}" style="text-decoration: none; color: inherit; display: flex; flex-direction: column; flex-grow: 1;">
+                    <div class="card-img-wrapper">
+                        {% if listing.image %}
+                        <img src="{{ listing.image.url|optimize_image:'w_600' }}" alt="{{ listing.title }}" class="card-img" width="360" height="240" loading="lazy">
+                        {% else %}
+                        <div style="background: #E2E8F0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-weight: 600;">No Image</div>
+                        {% endif %}
+                        <span class="card-badge">{{ listing.type }}</span>
                     </div>
-                    <div style="background: var(--primary); color: white; text-align: center; border-radius: 8px; padding: 6px; font-size: 0.68rem; font-weight: 700; cursor: pointer; box-shadow: 0 4px 10px rgba(37,99,235,0.2);">Explore 250+ Mysore PGs</div>
-                </div>
+                    <div class="card-content" style="padding: 1.5rem; display: flex; flex-direction: column; flex-grow: 1;">
+                        <div class="card-price">₹{{ listing.price }}<span>/ month</span></div>
+                        <h3 class="card-title">{{ listing.title }}</h3>
+                        <p style="color: var(--text-light); font-size: 0.85rem; margin-bottom: 0.5rem; font-weight: 500;">
+                            📍 {{ listing.location }}
+                        </p>
+                        <span style="background: {% if listing.is_sold %}#fee2e2; color: #991b1b;{% else %}#dcfce7; color: #15803d;{% endif %} padding: 0.25rem 0.6rem; border-radius: 4px; font-size: 0.75rem; font-weight: 700; width: fit-content; display: inline-block; margin-top: 0.5rem;">
+                            {% if listing.is_sold %}Rented/Sold{% else %}Active{% endif %}
+                        </span>
+                    </div>
+                </a>
             </div>
+            {% empty %}
+            <div style="text-align: center; grid-column: 1 / -1; padding: 3rem; background: var(--white); border-radius: var(--border-radius-lg); border: 1px dashed var(--border-color); color: var(--text-light); width: 100%;">
+                <p style="font-size: 1rem; font-weight: 500; margin-bottom: 1rem;">You haven't listed any properties yet.</p>
+                <a href="{% url 'add_property' %}" style="font-weight: 700; color: var(--primary); text-decoration: none;">Get started by posting your first property ➔</a>
+            </div>
+            {% endfor %}
         </div>
-    </div>
-</section>
+    </section>
+</div>
 
 <script>
-    // Dynamic Greeting based on Local Time
-    document.addEventListener("DOMContentLoaded", function() {
-        const hours = new Date().getHours();
-        let greet = "Welcome back";
-        if (hours < 12) greet = "Good morning";
-        else if (hours < 17) greet = "Good afternoon";
-        else greet = "Good evening";
+    // Dual Path Switching Logic
+    function switchPath(path) {
+        const tenantTab = document.getElementById('tab-tenant');
+        const landlordTab = document.getElementById('tab-landlord');
+        const tenantContent = document.getElementById('path-tenant-content');
+        const landlordContent = document.getElementById('path-landlord-content');
         
-        const greetingEl = document.getElementById("dynamic-greeting");
-        if (greetingEl) {
-            greetingEl.innerHTML = `${greet}, {{ user.username }}! 👋`;
-        }
-    });
-
-    // Set Search Type value based on tabs
-    function setSearchType(type) {
-        document.getElementById('search-type-input').value = type;
-        
-        // Sync active class
-        const tabs = document.querySelectorAll('.search-tab');
-        tabs.forEach(tab => {
-            tab.classList.remove('active');
-        });
-        
-        // Find clicked tab and activate
-        const eventTarget = window.event ? window.event.currentTarget : null;
-        if (eventTarget) {
-            eventTarget.classList.add('active');
-        }
-        
-        // Sync property type select dropdown if necessary
-        const selectDropdown = document.getElementById('type-select-dropdown');
-        if (selectDropdown) {
-            if (type === '1BHK') {
-                selectDropdown.value = '1BHK';
-            } else if (type === 'PG (Men)' || type === 'PG') {
-                selectDropdown.value = 'PG (Men)';
-            } else if (type === 'Co-living') {
-                selectDropdown.value = 'Co-living';
-            } else {
-                selectDropdown.value = '';
-            }
-        }
-    }
-    
-    // Sync Select Dropdown to search-tabs
-    function syncSearchType(value) {
-        document.getElementById('search-type-input').value = value;
-        
-        const tabs = document.querySelectorAll('.search-tab');
-        tabs.forEach(tab => {
-            tab.classList.remove('active');
-        });
-        
-        // Activate matching tab
-        if (value === '1BHK') {
-            tabs[1].classList.add('active');
-        } else if (value === 'PG (Men)' || value === 'PG (Women)') {
-            tabs[2].classList.add('active');
-        } else if (value === 'Co-living') {
-            tabs[3].classList.add('active');
+        if (path === 'tenant') {
+            tenantTab.style.background = 'var(--primary)';
+            tenantTab.style.color = 'white';
+            landlordTab.style.background = 'transparent';
+            landlordTab.style.color = 'var(--text-light)';
+            
+            tenantContent.style.display = 'block';
+            landlordContent.style.display = 'none';
         } else {
-            tabs[0].classList.add('active');
+            landlordTab.style.background = 'var(--primary)';
+            landlordTab.style.color = 'white';
+            tenantTab.style.background = 'transparent';
+            tenantTab.style.color = 'var(--text-light)';
+            
+            tenantContent.style.display = 'none';
+            landlordContent.style.display = 'block';
         }
     }
 </script>

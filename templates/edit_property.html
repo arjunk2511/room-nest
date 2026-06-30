@@ -1,30 +1,104 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block extra_head %}
+<!-- Load Leaflet CSS and JS in extra_head so the optional map works -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+<style>
+    .accordion-btn {
+        background: #f8fafc;
+        color: var(--text-dark);
+        cursor: pointer;
+        padding: 1.2rem;
+        width: 100%;
+        border: 1px solid #e2e8f0;
+        text-align: left;
+        outline: none;
+        font-size: 1.05rem;
+        font-weight: 700;
+        transition: 0.3s;
+        border-radius: 8px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .accordion-btn:hover {
+        background: #f1f5f9;
+        border-color: #cbd5e1;
+    }
+    .accordion-content {
+        padding: 0 1.2rem;
+        background-color: white;
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease-out;
+        border: 1px solid transparent;
+        border-top: none;
+        border-radius: 0 0 8px 8px;
+    }
+    .accordion-content.open {
+        padding: 1.5rem 1.2rem;
+        max-height: 1200px; /* high enough to fit content */
+        border-color: #e2e8f0;
+        margin-bottom: 1.5rem;
+    }
+    .accordion-arrow {
+        transition: transform 0.3s;
+    }
+    .accordion-arrow.open {
+        transform: rotate(180deg);
+    }
+    .step-card {
+        background: var(--white);
+        padding: 2.5rem;
+        border-radius: 16px;
+        border: 1px solid #e2e8f0;
+        box-shadow: var(--shadow-sm);
+    }
+</style>
+{% endblock %}
 
 {% block content %}
-<div style="max-width: 850px; margin: 3rem auto; padding: 0 1rem;">
+<div style="max-width: 800px; margin: 3rem auto; padding: 0 1rem;">
     <div style="text-align: center; margin-bottom: 2.5rem;">
-        <h1 style="font-size: 2.2rem; font-weight: 700; color: var(--text-dark); margin-bottom: 0.5rem;">Edit Your Property Listing</h1>
-        <p style="color: var(--text-light); font-size: 1.1rem; margin: 0;">Make changes to your property details below to update your listing instantly.</p>
+        <h1 style="font-size: 2.2rem; font-weight: 800; color: var(--text-dark); margin-bottom: 0.5rem; font-family: 'Outfit', sans-serif;">Edit Your Property</h1>
+        <p style="color: var(--text-light); font-size: 1.05rem; margin: 0;">Update your property details below to instantly refresh your listing.</p>
     </div>
 
     <form method="POST" enctype="multipart/form-data" style="display: flex; flex-direction: column; gap: 2rem;">
         {% csrf_token %}
         
-        <!-- Section 1: Basic Property Details -->
-        <div style="background: var(--white); padding: 2.5rem; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: var(--shadow-sm);">
-            <h3 style="font-size: 1.3rem; font-weight: 700; color: var(--text-dark); margin: 0 0 1.5rem 0; border-bottom: 2px solid #f1f5f9; padding-bottom: 0.8rem; display: flex; align-items: center; gap: 10px;">
-                <span style="background: var(--primary); color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.9rem;">1</span> Basic Details
+        <div class="step-card" style="display: flex; flex-direction: column; gap: 1.5rem;">
+            <h3 style="font-size: 1.3rem; font-weight: 800; color: var(--text-dark); margin: 0 0 0.5rem 0; border-bottom: 2px solid #f1f5f9; padding-bottom: 0.8rem; font-family: 'Outfit', sans-serif;">
+                🏠 Basic Info & Location
             </h3>
-            
-            <div class="form-group" style="margin-bottom: 1.5rem;">
-                <label for="title" style="font-weight: 600; color: var(--text-dark); margin-bottom: 0.5rem; display: block;">Property Title / Name</label>
-                <input type="text" id="title" name="title" required value="{{ listing.title }}" placeholder="e.g. Elegant 1BHK near Gokulam Park" style="width: 100%; padding: 0.9rem 1rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 1rem;">
+        
+            <div class="form-group">
+                <label for="title" style="font-weight: 600; color: var(--text-dark); margin-bottom: 0.5rem; display: block;">Property Title / Name <span style="color: #ef4444;">*</span></label>
+                <input type="text" id="title" name="title" required value="{{ listing.title }}" placeholder="e.g. Spacious 1BHK Apartment near Gokulam Park" style="width: 100%; padding: 0.85rem 1rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 0.95rem;">
             </div>
 
-            <div style="display: flex; gap: 1.5rem; flex-wrap: wrap; margin-bottom: 1.5rem;">
-                <div class="form-group" style="flex: 1; min-width: 250px;">
-                    <label for="city" style="font-weight: 600; color: var(--text-dark); margin-bottom: 0.5rem; display: block;">Select City</label>
-                    <select id="city" name="city" required onchange="updateEditAreaOptions(this.value)" style="width: 100%; padding: 0.9rem 1rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 1rem; background: var(--white); cursor: pointer;">
+            <div style="display: flex; gap: 1.2rem; flex-wrap: wrap;">
+                <div class="form-group" style="flex: 1; min-width: 220px;">
+                    <label for="type" style="font-weight: 600; color: var(--text-dark); margin-bottom: 0.5rem; display: block;">Property Type <span style="color: #ef4444;">*</span></label>
+                    <select id="type" name="type" required style="width: 100%; padding: 0.85rem 1rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 0.95rem; background: var(--white);">
+                        <option value="1BHK" {% if listing.type == '1BHK' %}selected{% endif %}>1BHK Apartment</option>
+                        <option value="2BHK" {% if listing.type == '2BHK' %}selected{% endif %}>2BHK Apartment</option>
+                        <option value="3BHK" {% if listing.type == '3BHK' %}selected{% endif %}>3BHK Apartment</option>
+                        <option value="Single Room" {% if listing.type == 'Single Room' %}selected{% endif %}>Single Room</option>
+                        <option value="PG (Men)" {% if listing.type == 'PG (Men)' %}selected{% endif %}>PG (Men)</option>
+                        <option value="PG (Women)" {% if listing.type == 'PG (Women)' %}selected{% endif %}>PG (Women)</option>
+                        <option value="Co-living" {% if listing.type == 'Co-living' %}selected{% endif %}>Co-living Space</option>
+                        <option value="Flatmate" {% if listing.type == 'Flatmate' %}selected{% endif %}>Flatmate / Shared Flat</option>
+                        <option value="Commercial Space" {% if listing.type == 'Commercial Space' %}selected{% endif %}>Commercial Space</option>
+                        <option value="Office Space" {% if listing.type == 'Office Space' %}selected{% endif %}>Office Space</option>
+                    </select>
+                </div>
+
+                <div class="form-group" style="flex: 1; min-width: 220px;">
+                    <label for="city" style="font-weight: 600; color: var(--text-dark); margin-bottom: 0.5rem; display: block;">City <span style="color: #ef4444;">*</span></label>
+                    <select id="city" name="city" required onchange="updateEditAreaOptions(this.value)" style="width: 100%; padding: 0.85rem 1rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 0.95rem; background: var(--white); cursor: pointer;">
                         <option value="">Select City</option>
                         {% for city in active_cities %}
                             <option value="{{ city.id }}" {% if listing.city_id == city.id %}selected{% endif %}>{{ city.name }}</option>
@@ -32,403 +106,460 @@
                     </select>
                 </div>
                 
-                <div class="form-group" style="flex: 1; min-width: 250px;">
-                    <label for="area" style="font-weight: 600; color: var(--text-dark); margin-bottom: 0.5rem; display: block;">Select Area / Locality</label>
-                    <select id="area" name="area" required style="width: 100%; padding: 0.9rem 1rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 1rem; background: var(--white); cursor: pointer;">
+                <div class="form-group" style="flex: 1; min-width: 220px;">
+                    <label for="area" style="font-weight: 600; color: var(--text-dark); margin-bottom: 0.5rem; display: block;">Area / Locality <span style="color: #ef4444;">*</span></label>
+                    <select id="area" name="area" required style="width: 100%; padding: 0.85rem 1rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 0.95rem; background: var(--white); cursor: pointer;">
                         <option value="">Select Area</option>
                     </select>
                 </div>
+            </div>
+
+            <!-- Visible, Required Address Textarea -->
+            <div class="form-group">
+                <label for="address_input" style="font-weight: 600; color: var(--text-dark); margin-bottom: 0.5rem; display: block;">Property Address <span style="color: #ef4444;">*</span></label>
+                <textarea id="address_input" oninput="syncAddress()" placeholder="Enter the full physical address" rows="3" required style="width: 100%; padding: 0.85rem 1rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 0.95rem; font-family: inherit; resize: vertical;">{{ listing.address }}</textarea>
+                <!-- Hidden compiled address actually sent to backend -->
+                <textarea id="address" name="address" style="display: none;" required>{{ listing.address }}</textarea>
+            </div>
+
+            <!-- Optional Map Section -->
+            <div>
+                <button type="button" onclick="toggleMapSelector()" class="btn btn-outline" style="font-size: 0.88rem; padding: 0.6rem 1.2rem; border-radius: 8px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; width: auto; border: 1px dashed var(--primary); color: var(--primary);">
+                    📍 Pin exact map location (Optional)
+                </button>
                 
-                <div class="form-group" style="flex: 1; min-width: 250px;">
-                    <label for="type" style="font-weight: 600; color: var(--text-dark); margin-bottom: 0.5rem; display: block;">Property Type</label>
-                    <select id="type" name="type" required style="width: 100%; padding: 0.9rem 1rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 1rem; background: var(--white);">
-                        <option value="1BHK" {% if listing.type == '1BHK' %}selected{% endif %}>1BHK</option>
-                        <option value="2BHK" {% if listing.type == '2BHK' %}selected{% endif %}>2BHK</option>
-                        <option value="3BHK" {% if listing.type == '3BHK' %}selected{% endif %}>3BHK</option>
-                        <option value="Single Room" {% if listing.type == 'Single Room' %}selected{% endif %}>Single Room</option>
-                        <option value="PG (Men)" {% if listing.type == 'PG (Men)' %}selected{% endif %}>PG (Men)</option>
-                        <option value="PG (Women)" {% if listing.type == 'PG (Women)' %}selected{% endif %}>PG (Women)</option>
-                        <option value="Co-living" {% if listing.type == 'Co-living' %}selected{% endif %}>Co-living</option>
-                        <option value="Flatmate" {% if listing.type == 'Flatmate' %}selected{% endif %}>Flatmate / Shared Flat</option>
-                        <option value="Commercial Space" {% if listing.type == 'Commercial Space' %}selected{% endif %}>Commercial Space</option>
-                        <option value="Office Space" {% if listing.type == 'Office Space' %}selected{% endif %}>Office Space / Office cabin</option>
-                    </select>
+                <div id="optional-map-section" style="display: none; margin-top: 1.5rem; background: #f8fafc; border: 1px solid #e2e8f0; padding: 1.5rem; border-radius: 12px; gap: 1rem; flex-direction: column;">
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        <button type="button" onclick="detectLiveLocationGPS()" class="btn btn-outline" style="font-size: 0.85rem; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; background: #F0FDF4; border-color: #86EFAC; color: #166534 !important;" id="gps-btn">
+                            🎯 Use Current GPS Location
+                        </button>
+                        <button type="button" onclick="searchAddressOnMap()" class="btn btn-outline" style="font-size: 0.85rem; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; background: #EFF6FF; border-color: #BFDBFE; color: #1E40AF !important;">
+                            🔍 Search Address on Map
+                        </button>
+                    </div>
+
+                    <div style="display: flex; flex-direction: column; gap: 4px; margin-top: 0.5rem;">
+                        <label style="font-size: 0.8rem; font-weight: 600; color: var(--text-light);">Or Paste Google Maps Link / Coordinates</label>
+                        <input type="text" id="maps_link_paste" oninput="parseGoogleMapsLink(this.value)" placeholder="Paste Google Maps share link (e.g. https://maps.app.goo.gl/...)" style="padding: 0.75rem; border-radius: 6px; border: 1px solid #cbd5e1; outline: none; font-size: 0.9rem; background: white;">
+                        <span id="paste-success-msg" style="display: none; color: #10B981; font-size: 0.8rem; font-weight: 700; margin-top: 0.25rem;">✓ Coordinates successfully extracted!</span>
+                    </div>
+
+                    <div id="leaflet-picker-map" style="height: 250px; width: 100%; border-radius: 8px; border: 1px solid #cbd5e1; z-index: 1; margin-top: 0.5rem;"></div>
+                    
+                    <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; color: var(--text-muted); background: #fff; padding: 0.5rem 0.8rem; border-radius: 6px; border: 1px solid #e2e8f0;" id="coords-indicator">
+                        Coordinates: {{ listing.latitude|default:'Not pinned' }}, {{ listing.longitude|default:'Not pinned' }}
+                    </div>
                 </div>
             </div>
 
-            <div class="form-group" style="margin-bottom: 1.5rem;">
-                <label for="landmark" style="font-weight: 600; color: var(--text-dark); margin-bottom: 0.5rem; display: block;">Key Landmark / Proximity</label>
-                <input type="text" id="landmark" name="landmark" required value="{{ listing.landmark }}" placeholder="e.g. 5 mins walk to JSS College, near Infosys Campus" style="width: 100%; padding: 0.9rem 1rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 1rem;">
+            <!-- Hidden inputs for coordinates -->
+            <input type="hidden" id="latitude" name="latitude" value="{{ listing.latitude|default:'' }}">
+            <input type="hidden" id="longitude" name="longitude" value="{{ listing.longitude|default:'' }}">
+            <input type="hidden" id="google_place_id" name="google_place_id" value="{{ listing.google_place_id|default:'' }}">
+        </div>
+
+        <div class="step-card" style="display: flex; flex-direction: column; gap: 1.5rem;">
+            <h3 style="font-size: 1.3rem; font-weight: 800; color: var(--text-dark); margin: 0; border-bottom: 2px solid #f1f5f9; padding-bottom: 0.8rem; font-family: 'Outfit', sans-serif;">
+                💰 Pricing & Description
+            </h3>
+
+            <div class="form-group">
+                <label for="price" style="font-weight: 600; color: var(--text-dark); margin-bottom: 0.5rem; display: block;">Monthly Rent (₹) <span style="color: #ef4444;">*</span></label>
+                <input type="number" id="price" name="price" required value="{{ listing.price|floatformat:0 }}" placeholder="e.g. 12000" style="width: 100%; padding: 0.85rem 1rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 0.95rem;">
             </div>
 
             <div class="form-group">
-                <label for="nearby_food_options" style="font-weight: 600; color: var(--text-dark); margin-bottom: 0.5rem; display: block;">Nearby Food Options (Mess / Tiffin / Restaurants)</label>
-                <input type="text" id="nearby_food_options" name="nearby_food_options" value="{{ listing.nearby_food_options }}" placeholder="e.g. XYZ Mess 2 mins away, Zomato/Swiggy readily available" style="width: 100%; padding: 0.9rem 1rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 1rem;">
+                <label for="description" style="font-weight: 600; color: var(--text-dark); margin-bottom: 0.5rem; display: block;">Property Description <span style="color: #ef4444;">*</span></label>
+                <textarea id="description" name="description" rows="5" required placeholder="Describe the space, ideal tenants, conditions, etc..." style="width: 100%; padding: 0.85rem 1rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 0.95rem; font-family: inherit; resize: vertical;">{{ listing.description }}</textarea>
             </div>
-        </div>
 
-        <!-- Section 1.5: Dynamic Category Specific Fields -->
-        <div id="dynamic-category-section" style="background: var(--white); padding: 2.5rem; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: var(--shadow-sm); display: none;">
-            <h3 style="font-size: 1.3rem; font-weight: 700; color: var(--text-dark); margin: 0 0 1.5rem 0; border-bottom: 2px solid #f1f5f9; padding-bottom: 0.8rem; display: flex; align-items: center; gap: 10px;">
-                ✨ Specific Details
-            </h3>
-            
-            <!-- Flat BHK Panel -->
-            <div id="panel-flat" class="category-panel" style="display: none;">
-                <div class="form-group">
-                    <label for="listing_purpose" style="font-weight: 600; color: var(--text-dark); margin-bottom: 0.5rem; display: block;">Listing Purpose (Sale / Lease / Rent)</label>
-                    <select id="listing_purpose" name="listing_purpose" style="width: 100%; padding: 0.9rem 1rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 1rem; background: var(--white);">
-                        <option value="Rent" {% if listing.listing_purpose == 'Rent' %}selected{% endif %}>Rent</option>
-                        <option value="Lease" {% if listing.listing_purpose == 'Lease' %}selected{% endif %}>Lease</option>
-                        <option value="Sale" {% if listing.listing_purpose == 'Sale' %}selected{% endif %}>Sale</option>
-                    </select>
-                </div>
-            </div>
-            
-            <!-- PG Panel -->
-            <div id="panel-pg" class="category-panel" style="display: none;">
-                <div style="display: flex; gap: 1.5rem; flex-wrap: wrap;">
-                    <div class="form-group" style="flex: 1; min-width: 200px;">
-                        <label for="rooms_available" style="font-weight: 600; color: var(--text-dark); margin-bottom: 0.5rem; display: block;">How many Rooms are Available?</label>
-                        <input type="number" id="rooms_available" name="rooms_available" value="{{ listing.rooms_available|default:1 }}" min="1" style="width: 100%; padding: 0.9rem 1rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 1rem;">
-                    </div>
-                    <div class="form-group" style="flex: 1; min-width: 200px;">
-                        <label for="sharing_count" style="font-weight: 600; color: var(--text-dark); margin-bottom: 0.5rem; display: block;">Members sharing in one room</label>
-                        <select id="sharing_count" name="sharing_count" style="width: 100%; padding: 0.9rem 1rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 1rem; background: var(--white);">
-                            <option value="1" {% if listing.sharing_count == 1 %}selected{% endif %}>1 (Single Occupancy / Private Room)</option>
-                            <option value="2" {% if listing.sharing_count == 2 %}selected{% endif %}>2 Sharing</option>
-                            <option value="3" {% if listing.sharing_count == 3 %}selected{% endif %}>3 Sharing</option>
-                            <option value="4" {% if listing.sharing_count == 4 %}selected{% endif %}>4 Sharing</option>
-                            <option value="5" {% if listing.sharing_count == 5 %}selected{% endif %}>Co-living Dorm</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Flatmate Panel -->
-            <div id="panel-flatmate" class="category-panel" style="display: none;">
-                <div class="form-group" style="margin-bottom: 1.5rem;">
-                    <label for="flatmate_preference" style="font-weight: 600; color: var(--text-dark); margin-bottom: 0.5rem; display: block;">Flatmate Lifestyle/Rules Preference</label>
-                    <input type="text" id="flatmate_preference" name="flatmate_preference" value="{{ listing.flatmate_preference }}" placeholder="e.g. Veg Only, IT Professionals, Students, etc." style="width: 100%; padding: 0.9rem 1rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 1rem;">
-                </div>
-                <div class="form-group" style="margin-bottom: 1.5rem;">
-                    <label for="target_gender" style="font-weight: 600; color: var(--text-dark); margin-bottom: 0.5rem; display: block;">Gender Preferred for Flatmate/Sharing</label>
-                    <select id="target_gender" name="target_gender" style="width: 100%; padding: 0.9rem 1rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 1rem; background: var(--white); cursor: pointer;">
-                        <option value="Any" {% if listing.target_gender == 'Any' %}selected{% endif %}>Any (Boys or Girls)</option>
-                        <option value="Boys Only" {% if listing.target_gender == 'Boys Only' %}selected{% endif %}>Boys Only (Male Preferred)</option>
-                        <option value="Girls Only" {% if listing.target_gender == 'Girls Only' %}selected{% endif %}>Girls Only (Female Preferred)</option>
-                    </select>
-                </div>
-            </div>
-            
-            <!-- Commercial / Office Panel -->
-            <div id="panel-commercial" class="category-panel" style="display: none;">
-                <div style="display: flex; gap: 1.5rem; flex-wrap: wrap;">
-                    <div class="form-group" style="flex: 1; min-width: 200px;">
-                        <label for="commercial_type" style="font-weight: 600; color: var(--text-dark); margin-bottom: 0.5rem; display: block;">Space Purpose / Sub-type</label>
-                        <select id="commercial_type" name="commercial_type" style="width: 100%; padding: 0.9rem 1rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 1rem; background: var(--white);">
-                            <option value="Shop / Showroom" {% if listing.commercial_type == 'Shop / Showroom' %}selected{% endif %}>Shop / Showroom</option>
-                            <option value="Office Cabin" {% if listing.commercial_type == 'Office Cabin' %}selected{% endif %}>Office Cabin</option>
-                            <option value="Warehouse / Godown" {% if listing.commercial_type == 'Warehouse / Godown' %}selected{% endif %}>Warehouse / Godown</option>
-                            <option value="Co-working Desk" {% if listing.commercial_type == 'Co-working Desk' %}selected{% endif %}>Co-working Desk</option>
-                            <option value="Other Commercial" {% if listing.commercial_type == 'Other Commercial' %}selected{% endif %}>Other Commercial Space</option>
-                        </select>
-                    </div>
-                    <div class="form-group" style="flex: 1; min-width: 200px;">
-                        <label for="built_up_area" style="font-weight: 600; color: var(--text-dark); margin-bottom: 0.5rem; display: block;">Built-up Area (Sq.Ft)</label>
-                        <input type="text" id="built_up_area" name="built_up_area" value="{{ listing.built_up_area }}" placeholder="e.g. 1500 Sq.Ft" style="width: 100%; padding: 0.9rem 1rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 1rem;">
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Section 2: Rent and Pricing -->
-        <div style="background: var(--white); padding: 2.5rem; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: var(--shadow-sm);">
-            <h3 style="font-size: 1.3rem; font-weight: 700; color: var(--text-dark); margin: 0 0 1.5rem 0; border-bottom: 2px solid #f1f5f9; padding-bottom: 0.8rem; display: flex; align-items: center; gap: 10px;">
-                <span style="background: var(--primary); color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.9rem;">2</span> Rental Details
-            </h3>
-
-            <div style="display: flex; gap: 1.5rem; flex-wrap: wrap; margin-bottom: 1.5rem;">
-                <div class="form-group" style="flex: 1; min-width: 200px;">
-                    <label for="price" style="font-weight: 600; color: var(--text-dark); margin-bottom: 0.5rem; display: block;">Monthly Rent (₹)</label>
-                    <input type="number" id="price" name="price" required value="{{ listing.price|floatformat:0 }}" placeholder="e.g. 12000" style="width: 100%; padding: 0.9rem 1rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 1rem;">
-                </div>
+            <!-- Collapsible Accordion for Optional Fields -->
+            <div>
+                <button type="button" class="accordion-btn" onclick="toggleAccordion()">
+                    <span>⚙️ Additional Details & Rules (Optional)</span>
+                    <span class="accordion-arrow">▼</span>
+                </button>
                 
-                <div class="form-group" style="flex: 1; min-width: 200px;">
-                    <label for="deposit" style="font-weight: 600; color: var(--text-dark); margin-bottom: 0.5rem; display: block;">Security Deposit / Advance (₹)</label>
-                    <input type="number" id="deposit" name="deposit" required value="{{ listing.deposit|floatformat:0 }}" placeholder="e.g. 40000" style="width: 100%; padding: 0.9rem 1rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 1rem;">
-                </div>
-            </div>
-
-            <div style="display: flex; gap: 1.5rem; flex-wrap: wrap; margin-top: 1.5rem;">
-                <div class="form-group" style="flex: 1; min-width: 250px;">
-                    <label for="available_from" style="font-weight: 600; color: var(--text-dark); margin-bottom: 0.5rem; display: block;">Availability Status</label>
-                    <input type="text" id="available_from" name="available_from" required value="{{ listing.available_from }}" placeholder="e.g. Immediately, 1st June, etc." style="width: 100%; padding: 0.9rem 1rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 1rem;">
-                </div>
-                
-                <div class="form-group" style="flex: 1; min-width: 250px;">
-                    <label for="furnishing" style="font-weight: 600; color: var(--text-dark); margin-bottom: 0.5rem; display: block;">Furnishing Status</label>
-                    <select id="furnishing" name="furnishing" required style="width: 100%; padding: 0.9rem 1rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 1rem; background: var(--white); cursor: pointer;">
-                        <option value="Unfurnished" {% if listing.furnishing == 'Unfurnished' %}selected{% endif %}>Unfurnished</option>
-                        <option value="Semi-Furnished" {% if listing.furnishing == 'Semi-Furnished' %}selected{% endif %}>Semi-Furnished</option>
-                        <option value="Fully Furnished" {% if listing.furnishing == 'Fully Furnished' %}selected{% endif %}>Fully Furnished</option>
-                    </select>
-                </div>
-            </div>
-        </div>
-
-        <!-- Section 3: Amenities and House Rules -->
-        <div style="background: var(--white); padding: 2.5rem; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: var(--shadow-sm);">
-            <h3 style="font-size: 1.3rem; font-weight: 700; color: var(--text-dark); margin: 0 0 1.5rem 0; border-bottom: 2px solid #f1f5f9; padding-bottom: 0.8rem; display: flex; align-items: center; gap: 10px;">
-                <span style="background: var(--primary); color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.9rem;">3</span> Amenities & Rules
-            </h3>
-
-            <div class="form-group" style="margin-bottom: 2rem;">
-                <label style="font-weight: 600; color: var(--text-dark); margin-bottom: 1rem; display: block;">Facilities / Amenities Available</label>
-                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 1rem;">
-                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; color: var(--text-dark); font-weight: 500;">
-                        <input type="checkbox" name="facilities" value="WiFi" {% if 'WiFi' in selected_facilities %}checked{% endif %} style="width: 18px; height: 18px;"> WiFi Internet
-                    </label>
-                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; color: var(--text-dark); font-weight: 500;">
-                        <input type="checkbox" name="facilities" value="Food" {% if 'Food' in selected_facilities %}checked{% endif %} style="width: 18px; height: 18px;"> Food Included
-                    </label>
-                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; color: var(--text-dark); font-weight: 500;">
-                        <input type="checkbox" name="facilities" value="AC" {% if 'AC' in selected_facilities %}checked{% endif %} style="width: 18px; height: 18px;"> Air Conditioner (AC)
-                    </label>
-                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; color: var(--text-dark); font-weight: 500;">
-                        <input type="checkbox" name="facilities" value="Parking" {% if 'Parking' in selected_facilities %}checked{% endif %} style="width: 18px; height: 18px;"> Parking Space
-                    </label>
-                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; color: var(--text-dark); font-weight: 500;">
-                        <input type="checkbox" name="facilities" value="Attached Bath" {% if 'Attached Bath' in selected_facilities %}checked{% endif %} style="width: 18px; height: 18px;"> Attached Bath
-                    </label>
-                </div>
-            </div>
-
-            <div style="background: #f8fafc; padding: 1.5rem; border-radius: 8px; border: 1px solid #e2e8f0;">
-                <div style="font-weight: 600; color: var(--text-dark); margin-bottom: 1rem; font-size: 1rem;">🏠 House Rules Configuration</div>
-                <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
-                    <div class="form-group" style="flex: 1; min-width: 180px;">
-                        <label for="food_preference" style="font-size: 0.85rem; font-weight: 600; color: var(--text-light); margin-bottom: 0.3rem; display: block;">Food Preference</label>
-                        <select id="food_preference" name="food_preference" style="width: 100%; padding: 0.7rem; border-radius: 6px; border: 1px solid #cbd5e1; background: var(--white); outline: none;">
-                            <option value="Any" {% if listing.food_preference == 'Any' %}selected{% endif %}>Any / Doesn't Matter</option>
-                            <option value="Veg Only" {% if listing.food_preference == 'Veg Only' %}selected{% endif %}>Pure Veg Only</option>
-                            <option value="Non-Veg Allowed" {% if listing.food_preference == 'Non-Veg Allowed' %}selected{% endif %}>Non-Veg Allowed</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group" style="flex: 1; min-width: 180px;">
-                        <label for="curfew" style="font-size: 0.85rem; font-weight: 600; color: var(--text-light); margin-bottom: 0.3rem; display: block;">Curfew Time</label>
-                        <select id="curfew" name="curfew" style="width: 100%; padding: 0.7rem; border-radius: 6px; border: 1px solid #cbd5e1; background: var(--white); outline: none;">
-                            <option value="No Curfew" {% if listing.curfew == 'No Curfew' %}selected{% endif %}>No Curfew</option>
-                            <option value="9 PM" {% if listing.curfew == '9 PM' %}selected{% endif %}>9 PM</option>
-                            <option value="10 PM" {% if listing.curfew == '10 PM' %}selected{% endif %}>10 PM</option>
-                            <option value="11 PM" {% if listing.curfew == '11 PM' %}selected{% endif %}>11 PM</option>
-                            <option value="Strict" {% if listing.curfew == 'Strict' %}selected{% endif %}>Strict</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group" style="flex: 1; min-width: 180px;">
-                        <label for="visitors" style="font-size: 0.85rem; font-weight: 600; color: var(--text-light); margin-bottom: 0.3rem; display: block;">Visitors Access</label>
-                        <select id="visitors" name="visitors" style="width: 100%; padding: 0.7rem; border-radius: 6px; border: 1px solid #cbd5e1; background: var(--white); outline: none;">
-                            <option value="Allowed" {% if listing.visitors == 'Allowed' %}selected{% endif %}>Allowed</option>
-                            <option value="Not Allowed" {% if listing.visitors == 'Not Allowed' %}selected{% endif %}>Not Allowed</option>
-                            <option value="Daytime Only" {% if listing.visitors == 'Daytime Only' %}selected{% endif %}>Daytime Only</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Section 4: Privacy & Contact Info -->
-        <div style="background: var(--white); padding: 2.5rem; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: var(--shadow-sm);">
-            <h3 style="font-size: 1.3rem; font-weight: 700; color: var(--text-dark); margin: 0 0 1.5rem 0; border-bottom: 2px solid #f1f5f9; padding-bottom: 0.8rem; display: flex; align-items: center; gap: 10px;">
-                <span style="background: var(--primary); color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.9rem;">4</span> Owner Contact & Location
-            </h3>
-
-            <!-- Step-by-Step Map & Location System (5-Step Leaflet Geocoding Workflow) -->
-            <div class="form-group" style="margin-bottom: 2rem;">
-                <label style="font-weight: 700; color: var(--text-dark); margin-bottom: 0.75rem; display: block; font-size: 1.1rem;">
-                    📍 Property Location & Address Selector
-                </label>
-
-                <!-- Step 1: Address Components -->
-                <div style="background: #FAFAFA; border: 1px solid var(--border-color); padding: 1.5rem; border-radius: 10px; margin-bottom: 1.5rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
-                    <div style="grid-column: 1 / -1;">
-                        <span style="background: var(--primary); color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; margin-bottom: 0.5rem; display: inline-block;">Step 1</span>
-                        <h4 style="margin: 0; font-size: 0.95rem; font-weight: 700; color: var(--text-dark);">Enter Full Property Address</h4>
-                    </div>
-                    
-                    <div style="display: flex; flex-direction: column; gap: 4px;">
-                        <label style="font-size: 0.8rem; font-weight: 600; color: var(--text-dark);">House / Flat / Plot Number</label>
-                        <input type="text" id="loc_house" placeholder="e.g. #123, Flat 2B" style="padding: 0.75rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 0.9rem; background: white;">
-                    </div>
-                    
-                    <div style="display: flex; flex-direction: column; gap: 4px;">
-                        <label style="font-size: 0.8rem; font-weight: 600; color: var(--text-dark);">Street / Road / Landmark</label>
-                        <input type="text" id="loc_street" placeholder="e.g. 3rd Cross, near temple" style="padding: 0.75rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 0.9rem; background: white;">
-                    </div>
-                    
-                    <div style="display: flex; flex-direction: column; gap: 4px;">
-                        <label style="font-size: 0.8rem; font-weight: 600; color: var(--text-dark);">Area / Locality</label>
-                        <input type="text" id="loc_area" value="{{ listing.location }}" placeholder="e.g. Gokulam" style="padding: 0.75rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 0.9rem; background: white;">
-                    </div>
-                    
-                    <div style="display: flex; flex-direction: column; gap: 4px;">
-                        <label style="font-size: 0.8rem; font-weight: 600; color: var(--text-dark);">City</label>
-                        <input type="text" id="loc_city" value="Mysore" style="padding: 0.75rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 0.9rem; background: #e2e8f0; cursor: not-allowed;" readonly>
-                    </div>
-                    
-                    <div style="display: flex; flex-direction: column; gap: 4px;">
-                        <label style="font-size: 0.8rem; font-weight: 600; color: var(--text-dark);">PIN Code</label>
-                        <input type="text" id="loc_pin" placeholder="e.g. 570002" style="padding: 0.75rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 0.9rem; background: white;">
-                    </div>
-                    
-                    <div style="grid-column: 1 / -1; display: flex; gap: 10px; margin-top: 0.5rem; flex-wrap: wrap;">
-                        <button type="button" onclick="searchAddressOnMap()" class="btn btn-primary" style="font-size: 0.88rem; padding: 0.6rem 1.25rem; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
-                            🔍 Search & Preview Location (Step 2)
-                        </button>
-                        
-                        <button type="button" onclick="detectLiveLocationGPS()" class="btn btn-outline" style="font-size: 0.88rem; padding: 0.6rem 1.25rem; border-radius: 8px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; background: #F0FDF4; border-color: #86EFAC; color: #166534 !important;" id="gps-btn">
-                            📍 Use My Current Location (Step 3)
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Step 2: Map Preview and Marker Adjusting -->
-                <div id="map-preview-section" style="display: none; background: #FAFAFA; border: 1px solid var(--border-color); padding: 1.5rem; border-radius: 10px; margin-bottom: 1.5rem;">
-                    <div style="margin-bottom: 0.75rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
-                        <div>
-                            <span style="background: var(--primary); color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; margin-bottom: 0.25rem; display: inline-block;">Step 2 & 4</span>
-                            <h4 style="margin: 0; font-size: 0.95rem; font-weight: 700; color: var(--text-dark);">Confirm Map Location (Drag marker if needed)</h4>
+                <div class="accordion-content" id="optional-accordion">
+                    <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                        <div style="display: flex; gap: 1.2rem; flex-wrap: wrap;">
+                            <div class="form-group" style="flex: 1; min-width: 200px;">
+                                <label for="deposit" style="font-weight: 600; color: var(--text-dark); margin-bottom: 0.5rem; display: block;">Security Deposit (₹)</label>
+                                <input type="number" id="deposit" name="deposit" value="{{ listing.deposit|floatformat:0 }}" style="width: 100%; padding: 0.85rem 1rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 0.95rem;">
+                            </div>
+                            <div class="form-group" style="flex: 1; min-width: 200px;">
+                                <label for="available_from" style="font-weight: 600; color: var(--text-dark); margin-bottom: 0.5rem; display: block;">Available From</label>
+                                <input type="text" id="available_from" name="available_from" value="{{ listing.available_from }}" style="width: 100%; padding: 0.85rem 1rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 0.95rem;">
+                            </div>
+                            <div class="form-group" style="flex: 1; min-width: 200px;">
+                                <label for="furnishing" style="font-weight: 600; color: var(--text-dark); margin-bottom: 0.5rem; display: block;">Furnishing Status</label>
+                                <select id="furnishing" name="furnishing" style="width: 100%; padding: 0.85rem 1rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 0.95rem; background: var(--white);">
+                                    <option value="Unfurnished" {% if listing.furnishing == 'Unfurnished' %}selected{% endif %}>Unfurnished</option>
+                                    <option value="Semi-Furnished" {% if listing.furnishing == 'Semi-Furnished' %}selected{% endif %}>Semi-Furnished</option>
+                                    <option value="Fully Furnished" {% if listing.furnishing == 'Fully Furnished' %}selected{% endif %}>Fully Furnished</option>
+                                </select>
+                            </div>
                         </div>
-                        <div style="font-size: 0.8rem; background: #DBEAFE; color: #1E40AF; padding: 0.25rem 0.6rem; border-radius: 6px; font-weight: 600;" id="coords-indicator">
-                            Lat: --, Lng: --
+
+                        <div style="display: flex; gap: 1.2rem; flex-wrap: wrap;">
+                            <div class="form-group" style="flex: 1; min-width: 250px;">
+                                <label for="landmark" style="font-weight: 600; color: var(--text-dark); margin-bottom: 0.5rem; display: block;">Landmark / Proximity</label>
+                                <input type="text" id="landmark" name="landmark" value="{{ listing.landmark }}" placeholder="e.g. Near Gokulam Mall, 5 mins from JSS College" style="width: 100%; padding: 0.85rem 1rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 0.95rem;">
+                            </div>
+                            <div class="form-group" style="flex: 1; min-width: 250px;">
+                                <label for="nearby_food_options" style="font-weight: 600; color: var(--text-dark); margin-bottom: 0.5rem; display: block;">Nearby Food / Mess Options</label>
+                                <input type="text" id="nearby_food_options" name="nearby_food_options" value="{{ listing.nearby_food_options }}" placeholder="e.g. Tiffin center next door, Swiggy available" style="width: 100%; padding: 0.85rem 1rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 0.95rem;">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label style="font-weight: 600; color: var(--text-dark); margin-bottom: 0.8rem; display: block;">Facilities / Amenities</label>
+                            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 0.8rem;">
+                                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 0.9rem;">
+                                    <input type="checkbox" name="facilities" value="WiFi" {% if 'WiFi' in selected_facilities %}checked{% endif %} style="width: 16px; height: 16px;"> WiFi Internet
+                                </label>
+                                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 0.9rem;">
+                                    <input type="checkbox" name="facilities" value="Food" {% if 'Food' in selected_facilities %}checked{% endif %} style="width: 16px; height: 16px;"> Food Included
+                                </label>
+                                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 0.9rem;">
+                                    <input type="checkbox" name="facilities" value="AC" {% if 'AC' in selected_facilities %}checked{% endif %} style="width: 16px; height: 16px;"> Air Conditioner
+                                </label>
+                                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 0.9rem;">
+                                    <input type="checkbox" name="facilities" value="Parking" {% if 'Parking' in selected_facilities %}checked{% endif %} style="width: 16px; height: 16px;"> Parking Space
+                                </label>
+                                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 0.9rem;">
+                                    <input type="checkbox" name="facilities" value="Attached Bath" {% if 'Attached Bath' in selected_facilities %}checked{% endif %} style="width: 16px; height: 16px;"> Attached Bath
+                                </label>
+                            </div>
+                        </div>
+
+                        <div style="background: #f8fafc; padding: 1.2rem; border-radius: 8px; border: 1px solid #e2e8f0;">
+                            <div style="font-weight: 700; color: var(--text-dark); margin-bottom: 1rem; font-size: 0.95rem;">🏠 House Rules</div>
+                            <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                                <div class="form-group" style="flex: 1; min-width: 160px;">
+                                    <label for="food_preference" style="font-size: 0.8rem; font-weight: 600; color: var(--text-light); margin-bottom: 0.25rem; display: block;">Food Preference</label>
+                                    <select id="food_preference" name="food_preference" style="width: 100%; padding: 0.6rem; border-radius: 6px; border: 1px solid #cbd5e1; background: var(--white); outline: none; font-size: 0.88rem;">
+                                        <option value="Any" {% if listing.food_preference == 'Any' %}selected{% endif %}>Any / Veg & Non-Veg</option>
+                                        <option value="Veg Only" {% if listing.food_preference == 'Veg Only' %}selected{% endif %}>Pure Veg Only</option>
+                                        <option value="Non-Veg Allowed" {% if listing.food_preference == 'Non-Veg Allowed' %}selected{% endif %}>Non-Veg Allowed</option>
+                                    </select>
+                                </div>
+                                <div class="form-group" style="flex: 1; min-width: 160px;">
+                                    <label for="curfew" style="font-size: 0.8rem; font-weight: 600; color: var(--text-light); margin-bottom: 0.25rem; display: block;">Curfew Time</label>
+                                    <select id="curfew" name="curfew" style="width: 100%; padding: 0.6rem; border-radius: 6px; border: 1px solid #cbd5e1; background: var(--white); outline: none; font-size: 0.88rem;">
+                                        <option value="No Curfew" {% if listing.curfew == 'No Curfew' %}selected{% endif %}>No Curfew</option>
+                                        <option value="9 PM" {% if listing.curfew == '9 PM' %}selected{% endif %}>9 PM</option>
+                                        <option value="10 PM" {% if listing.curfew == '10 PM' %}selected{% endif %}>10 PM</option>
+                                        <option value="11 PM" {% if listing.curfew == '11 PM' %}selected{% endif %}>11 PM</option>
+                                        <option value="Strict" {% if listing.curfew == 'Strict' %}selected{% endif %}>Strict</option>
+                                    </select>
+                                </div>
+                                <div class="form-group" style="flex: 1; min-width: 160px;">
+                                    <label for="visitors" style="font-size: 0.8rem; font-weight: 600; color: var(--text-light); margin-bottom: 0.25rem; display: block;">Visitors Access</label>
+                                    <select id="visitors" name="visitors" style="width: 100%; padding: 0.6rem; border-radius: 6px; border: 1px solid #cbd5e1; background: var(--white); outline: none; font-size: 0.88rem;">
+                                        <option value="Allowed" {% if listing.visitors == 'Allowed' %}selected{% endif %}>Allowed</option>
+                                        <option value="Not Allowed" {% if listing.visitors == 'Not Allowed' %}selected{% endif %}>Not Allowed</option>
+                                        <option value="Daytime Only" {% if listing.visitors == 'Daytime Only' %}selected{% endif %}>Daytime Only</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Dynamic Category Panels (Shown depending on Type) -->
+                        <div id="dynamic-category-section" style="border-top: 1px solid #e2e8f0; padding-top: 1.5rem; display: none;">
+                            <div style="font-weight: 700; color: var(--text-dark); margin-bottom: 1rem; font-size: 0.95rem;">📋 Category Specific Details</div>
+                            
+                            <!-- Flat BHK Panel -->
+                            <div id="panel-flat" class="category-panel" style="display: none;">
+                                <div class="form-group">
+                                    <label for="listing_purpose" style="font-weight: 600; color: var(--text-dark); margin-bottom: 0.5rem; display: block;">Listing Purpose</label>
+                                    <select id="listing_purpose" name="listing_purpose" style="width: 100%; padding: 0.75rem 1rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 0.9rem; background: var(--white);">
+                                        <option value="Rent" {% if listing.listing_purpose == 'Rent' %}selected{% endif %}>Rent</option>
+                                        <option value="Lease" {% if listing.listing_purpose == 'Lease' %}selected{% endif %}>Lease</option>
+                                        <option value="Sale" {% if listing.listing_purpose == 'Sale' %}selected{% endif %}>Sale</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <!-- PG Panel -->
+                            <div id="panel-pg" class="category-panel" style="display: none;">
+                                <div style="display: flex; gap: 1.2rem; flex-wrap: wrap;">
+                                    <div class="form-group" style="flex: 1; min-width: 200px;">
+                                        <label for="rooms_available" style="font-weight: 600; color: var(--text-dark); margin-bottom: 0.5rem; display: block;">Rooms Available</label>
+                                        <input type="number" id="rooms_available" name="rooms_available" value="{{ listing.rooms_available|default:1 }}" min="1" style="width: 100%; padding: 0.75rem 1rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 0.9rem;">
+                                    </div>
+                                    <div class="form-group" style="flex: 1; min-width: 200px;">
+                                        <label for="sharing_count" style="font-weight: 600; color: var(--text-dark); margin-bottom: 0.5rem; display: block;">Sharing Occupancy</label>
+                                        <select id="sharing_count" name="sharing_count" style="width: 100%; padding: 0.75rem 1rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 0.9rem; background: var(--white);">
+                                            <option value="1" {% if listing.sharing_count == 1 %}selected{% endif %}>1 (Single Occupancy)</option>
+                                            <option value="2" {% if listing.sharing_count == 2 %}selected{% endif %}>2 Sharing</option>
+                                            <option value="3" {% if listing.sharing_count == 3 %}selected{% endif %}>3 Sharing</option>
+                                            <option value="4" {% if listing.sharing_count == 4 %}selected{% endif %}>4 Sharing</option>
+                                            <option value="5" {% if listing.sharing_count == 5 %}selected{% endif %}>Co-living Dorm</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Flatmate Panel -->
+                            <div id="panel-flatmate" class="category-panel" style="display: none;">
+                                <div style="display: flex; flex-direction: column; gap: 1rem;">
+                                    <div class="form-group">
+                                        <label for="flatmate_preference" style="font-weight: 600; color: var(--text-dark); margin-bottom: 0.5rem; display: block;">Lifestyle Preference</label>
+                                        <input type="text" id="flatmate_preference" name="flatmate_preference" value="{{ listing.flatmate_preference }}" placeholder="e.g. Vegetarian, IT Professional, Student" style="width: 100%; padding: 0.75rem 1rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 0.9rem;">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="target_gender" style="font-weight: 600; color: var(--text-dark); margin-bottom: 0.5rem; display: block;">Preferred Gender</label>
+                                        <select id="target_gender" name="target_gender" style="width: 100%; padding: 0.75rem 1rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 0.9rem; background: var(--white);">
+                                            <option value="Any" {% if listing.target_gender == 'Any' %}selected{% endif %}>Any Gender</option>
+                                            <option value="Boys Only" {% if listing.target_gender == 'Boys Only' %}selected{% endif %}>Boys Only</option>
+                                            <option value="Girls Only" {% if listing.target_gender == 'Girls Only' %}selected{% endif %}>Girls Only</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Commercial Panel -->
+                            <div id="panel-commercial" class="category-panel" style="display: none;">
+                                <div style="display: flex; gap: 1.2rem; flex-wrap: wrap;">
+                                    <div class="form-group" style="flex: 1; min-width: 200px;">
+                                        <label for="commercial_type" style="font-weight: 600; color: var(--text-dark); margin-bottom: 0.5rem; display: block;">Commercial Sub-type</label>
+                                        <select id="commercial_type" name="commercial_type" style="width: 100%; padding: 0.75rem 1rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 0.9rem; background: var(--white);">
+                                            <option value="Shop / Showroom" {% if listing.commercial_type == 'Shop / Showroom' %}selected{% endif %}>Shop / Showroom</option>
+                                            <option value="Office Cabin" {% if listing.commercial_type == 'Office Cabin' %}selected{% endif %}>Office Cabin</option>
+                                            <option value="Warehouse / Godown" {% if listing.commercial_type == 'Warehouse / Godown' %}selected{% endif %}>Warehouse / Godown</option>
+                                            <option value="Co-working Desk" {% if listing.commercial_type == 'Co-working Desk' %}selected{% endif %}>Co-working Desk</option>
+                                            <option value="Other Commercial" {% if listing.commercial_type == 'Other Commercial' %}selected{% endif %}>Other Commercial Space</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group" style="flex: 1; min-width: 200px;">
+                                        <label for="built_up_area" style="font-weight: 600; color: var(--text-dark); margin-bottom: 0.5rem; display: block;">Built-up Area (Sq.Ft)</label>
+                                        <input type="text" id="built_up_area" name="built_up_area" value="{{ listing.built_up_area }}" placeholder="e.g. 1200 Sq.Ft" style="width: 100%; padding: 0.75rem 1rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 0.9rem;">
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-
-                    <!-- Draggable Marker Map Container -->
-                    <div id="leaflet-picker-map" style="height: 320px; width: 100%; border-radius: 8px; border: 1px solid #cbd5e1; position: relative; z-index: 1;"></div>
-                    
-                    <!-- Confirmation Dialog prompt -->
-                    <div id="map-confirm-box" style="margin-top: 1rem; background: #ECFDF5; border: 1px solid #A7F3D0; padding: 1rem; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
-                        <div>
-                            <p style="margin: 0; color: #065F46; font-weight: 700; font-size: 0.9rem;">Is this the correct property location?</p>
-                            <span style="font-size: 0.78rem; color: #047857; font-weight: 500;">Press Confirm below to lock the exact coordinates for buyers.</span>
-                        </div>
-                        <button type="button" onclick="confirmMapPin()" class="btn" style="background: #10B981; color: white; font-weight: 700; padding: 0.5rem 1.25rem; border: none; border-radius: 8px; cursor: pointer; font-size: 0.85rem;">
-                            Yes, This is Correct ✓
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Step 4: GPS Fail Fallback Map Link Paste -->
-                <div style="background: #FAFAFA; border: 1px solid var(--border-color); padding: 1.5rem; border-radius: 10px; margin-bottom: 1.5rem;">
-                    <div>
-                        <span style="background: #64748B; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; margin-bottom: 0.5rem; display: inline-block;">Step 4 (Fallback)</span>
-                        <h4 style="margin: 0 0 0.5rem 0; font-size: 0.95rem; font-weight: 700; color: var(--text-dark);">Paste Google Maps Link</h4>
-                        <p style="color: var(--text-light); font-size: 0.8rem; margin: 0 0 0.85rem 0; line-height: 1.4; font-weight: 500;">
-                            If GPS is unavailable or address search fails, search the location on Google Maps, copy the share link or coordinates, and paste it below. We will extract the location automatically.
-                        </p>
-                    </div>
-                    <input type="text" id="maps_link_paste" oninput="parseGoogleMapsLink(this.value)" placeholder="Paste Google Maps share link (e.g. https://maps.app.goo.gl/... or coordinate text)" style="width: 100%; padding: 0.75rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 0.9rem; background: white;">
-                    <div id="paste-success-msg" style="display: none; color: #10B981; font-size: 0.8rem; font-weight: 700; margin-top: 0.4rem;">
-                        ✓ Coordinates successfully extracted from link!
-                    </div>
-                </div>
-
-                <!-- Hidden inputs for Step 5 saving -->
-                <input type="hidden" id="latitude" name="latitude" value="{{ listing.latitude|default:'' }}">
-                <input type="hidden" id="longitude" name="longitude" value="{{ listing.longitude|default:'' }}">
-                <input type="hidden" id="google_place_id" name="google_place_id" value="{{ listing.google_place_id|default:'' }}">
-                
-                <!-- Hidden address textarea that holds compiled full address for backend -->
-                <textarea id="address" name="address" style="display: none;" required>{{ listing.address }}</textarea>
-                
-                <!-- Display compiled address for user feedback -->
-                <div style="margin-top: 0.75rem;">
-                    <label style="font-weight: 600; color: var(--text-muted); font-size: 0.82rem; margin-bottom: 0.25rem; display: block;">Compiled Property Address (Saved in Database)</label>
-                    <div id="compiled-address-box" style="background: #f1f5f9; border: 1px solid #cbd5e1; padding: 1rem; border-radius: 8px; font-size: 0.92rem; color: #334155; font-family: monospace; line-height: 1.4; min-height: 48px; font-weight: 500;">
-                        {{ listing.address|default:'No address entered yet.' }}
-                    </div>
-                </div>
-                
-                <!-- Exact Location / Landmark (Google Maps links saved here too for backwards compatibility) -->
-                <div class="form-group" style="margin-top: 1rem;">
-                    <label for="exact_location" style="font-weight: 600; color: var(--text-dark); margin-bottom: 0.5rem; display: block;">Exact Location Landmark (Optional)</label>
-                    <input type="text" id="exact_location" name="exact_location" value="{{ listing.exact_location }}" placeholder="e.g. 5 mins from JSS College, or specific building name" style="width: 100%; padding: 0.9rem 1rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 1rem; background: white;">
                 </div>
             </div>
         </div>
 
-        <!-- Section 5: Media Upload & Description -->
-        <div style="background: var(--white); padding: 2.5rem; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: var(--shadow-sm);">
-            <h3 style="font-size: 1.3rem; font-weight: 700; color: var(--text-dark); margin: 0 0 1.5rem 0; border-bottom: 2px solid #f1f5f9; padding-bottom: 0.8rem; display: flex; align-items: center; gap: 10px;">
-                <span style="background: var(--primary); color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.9rem;">5</span> Media & Description
+        <div class="step-card" style="display: flex; flex-direction: column; gap: 1.5rem;">
+            <h3 style="font-size: 1.3rem; font-weight: 800; color: var(--text-dark); margin: 0; border-bottom: 2px solid #f1f5f9; padding-bottom: 0.8rem; font-family: 'Outfit', sans-serif;">
+                📞 Photos & Contact
             </h3>
 
-            <!-- Show Current Main Image Preview -->
+            <div class="form-group">
+                <label for="phone" style="font-weight: 600; color: var(--text-dark); margin-bottom: 0.5rem; display: block;">Contact Phone Number <span style="color: #ef4444;">*</span></label>
+                <input type="text" id="phone" name="phone" required value="{{ listing.phone }}" placeholder="e.g. +91 9876543210" style="width: 100%; padding: 0.85rem 1rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 0.95rem;">
+            </div>
+
+            <!-- Current Main Image Preview -->
             {% if listing.image %}
-            <div style="margin-bottom: 1.5rem;">
+            <div>
                 <p style="font-weight: 600; color: var(--text-dark); margin-bottom: 0.5rem;">Current Main Image:</p>
-                <img src="{{ listing.image.url }}" alt="Main Image Preview" width="200" height="130" loading="lazy" decoding="async" style="max-width: 200px; height: 130px; object-fit: cover; border-radius: 8px; border: 1px solid #cbd5e1;">
+                <img src="{{ listing.image.url }}" alt="Main Image Preview" width="180" height="120" style="object-fit: cover; border-radius: 8px; border: 1px solid #cbd5e1;">
             </div>
             {% endif %}
 
-            <style>
-                @keyframes scaleIn {
-                    from { transform: scale(0.9); opacity: 0; }
-                    to { transform: scale(1); opacity: 1; }
-                }
-                @keyframes spin {
-                    from { transform: rotate(0deg); }
-                    to { transform: rotate(360deg); }
-                }
-                .upload-dropzone:hover {
-                    border-color: var(--primary) !important;
-                    background: rgba(79, 70, 229, 0.05) !important;
-                }
-            </style>
-
-            <div class="form-group" style="margin-bottom: 1.5rem;">
-                <label style="font-weight: 600; color: var(--text-dark); margin-bottom: 0.5rem; display: block;">Select New Property Photos (Optional) <span style="color: #ef4444;">* (If uploading, select min 3 photos)</span></label>
+            <div class="form-group">
+                <label style="font-weight: 600; color: var(--text-dark); margin-bottom: 0.5rem; display: block;">Upload New Photos <span style="color: #ef4444;">(Optional - Will replace all current photos; at least 1 required if uploading)</span></label>
                 
-                <!-- Premium Drag & Drop Area / Click area to add photos -->
-                <div id="image-upload-dropzone" class="upload-dropzone" style="border: 2px dashed #cbd5e1; padding: 2.2rem; border-radius: 12px; text-align: center; background: #f8fafc; cursor: pointer; transition: all 0.3s ease; position: relative;">
+                <div id="image-upload-dropzone" style="border: 2px dashed #cbd5e1; padding: 2.2rem; border-radius: 12px; text-align: center; background: #f8fafc; cursor: pointer; transition: all 0.3s ease; position: relative;">
                     <svg style="width: 44px; height: 44px; color: var(--text-light); margin-bottom: 0.8rem; pointer-events: none;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                     </svg>
-                    <p style="margin: 0; font-weight: 600; color: var(--text-dark); font-size: 1.05rem; pointer-events: none;">Add Property Photos</p>
-                    <p style="color: var(--text-light); font-size: 0.85rem; margin: 0.3rem 0 0 0; pointer-events: none;">Tap to select new photos to replace current ones (add multiple or one-by-one)</p>
+                    <p style="margin: 0; font-weight: 700; color: var(--text-dark); font-size: 1rem; pointer-events: none;">Select or Drag Photos</p>
+                    <p style="color: var(--text-light); font-size: 0.82rem; margin: 0.3rem 0 0 0; pointer-events: none;">JPEG, PNG, or WebP. Optimized automatically.</p>
                     <input type="file" id="real-file-input" accept="image/*" multiple style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; z-index: 5;">
                 </div>
                 
-                <!-- Hidden input that actually gets submitted to Django -->
                 <input type="file" id="images" name="images" accept="image/*" multiple style="display: none;">
-
-                <!-- Beautiful, interactive image preview grid with micro-animations -->
                 <div id="preview-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 12px; margin-top: 1.2rem;"></div>
-                
-                <!-- Visual Indicator of Status -->
-                <div id="upload-status-badge" style="margin-top: 1rem; display: none; align-items: center; gap: 8px; padding: 0.5rem 1rem; border-radius: 9999px; font-size: 0.9rem; font-weight: 600; width: fit-content; transition: all 0.3s;"></div>
-            </div>
-
-            <div class="form-group" style="margin-bottom: 0;">
-                <label for="description" style="font-weight: 600; color: var(--text-dark); margin-bottom: 0.5rem; display: block;">Property Description</label>
-                <textarea id="description" name="description" rows="4" required placeholder="Provide a detailed description of the space, amenities, conditions, etc..." style="width: 100%; padding: 0.9rem 1rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 1rem; font-family: inherit; resize: vertical;">{{ listing.description }}</textarea>
+                <div id="upload-status-badge" style="margin-top: 1rem; display: none; align-items: center; gap: 8px; padding: 0.4rem 0.9rem; border-radius: 99px; font-size: 0.85rem; font-weight: 600; width: fit-content; transition: all 0.3s;"></div>
             </div>
         </div>
 
+        <!-- Form Actions -->
         <div style="display: flex; gap: 15px; margin-top: 1rem;">
-            <a href="{% url 'owner_dashboard' %}" class="btn btn-outline" style="flex: 1; text-align: center; font-size: 1.15rem; padding: 1.2rem; border-radius: 10px; font-weight: 700; text-decoration: none; color: var(--text-dark); border-color: #cbd5e1;">Cancel</a>
-            <button type="submit" class="btn btn-primary" style="flex: 2; font-size: 1.15rem; padding: 1.2rem; border-radius: 10px; font-weight: 700; box-shadow: var(--shadow-lg);">💾 Save Changes</button>
+            <a href="{% url 'owner_dashboard' %}" class="btn btn-outline" style="flex: 1; text-align: center; font-size: 1.05rem; padding: 1rem; border-radius: 8px; font-weight: 700; text-decoration: none; color: var(--text-dark); border-color: #cbd5e1; display: flex; align-items: center; justify-content: center;">Cancel</a>
+            <button type="submit" class="btn btn-primary" style="flex: 2; font-size: 1.05rem; padding: 1rem; border-radius: 8px; font-weight: 700; border: none; cursor: pointer; box-shadow: var(--shadow-md);">💾 Save Changes</button>
         </div>
     </form>
 </div>
 
 <script>
+// Sync the visible Property Address textarea to the hidden compilation input
+function syncAddress() {
+    const rawVal = document.getElementById('address_input').value;
+    document.getElementById('address').value = rawVal;
+}
+
+// Collapsible Accordion & Category Specific Fields Logic
+function toggleAccordion() {
+    const content = document.getElementById('optional-accordion');
+    const arrow = document.querySelector('.accordion-arrow');
+    content.classList.toggle('open');
+    arrow.classList.toggle('open');
+}
+
+// Show specific category fields based on type
+document.addEventListener("DOMContentLoaded", function() {
+    const typeSelect = document.getElementById("type");
+    const dynamicSection = document.getElementById("dynamic-category-section");
+    const panels = {
+        flat: document.getElementById("panel-flat"),
+        pg: document.getElementById("panel-pg"),
+        flatmate: document.getElementById("panel-flatmate"),
+        commercial: document.getElementById("panel-commercial")
+    };
+
+    function updatePanels() {
+        const val = typeSelect.value;
+        for (let p in panels) {
+            if (panels[p]) panels[p].style.display = "none";
+        }
+        if (dynamicSection) dynamicSection.style.display = "none";
+
+        if (val === "1BHK" || val === "2BHK" || val === "3BHK") {
+            dynamicSection.style.display = "block";
+            panels.flat.style.display = "block";
+        } else if (val === "PG (Men)" || val === "PG (Women)" || val === "Co-living" || val === "Single Room") {
+            dynamicSection.style.display = "block";
+            panels.pg.style.display = "block";
+        } else if (val === "Flatmate") {
+            dynamicSection.style.display = "block";
+            panels.flatmate.style.display = "block";
+        } else if (val === "Commercial Space" || val === "Office Space") {
+            dynamicSection.style.display = "block";
+            panels.commercial.style.display = "block";
+        }
+    }
+
+    if (typeSelect) {
+        typeSelect.addEventListener("change", updatePanels);
+        updatePanels();
+    }
+});
+
+// ==========================================================================
+// Optional Map & Geocoding Logic
+// ==========================================================================
+let map = null;
+let marker = null;
+
+function toggleMapSelector() {
+    const mapSec = document.getElementById('optional-map-section');
+    if (mapSec.style.display === 'none') {
+        mapSec.style.display = 'flex';
+        const lat = parseFloat(document.getElementById('latitude').value) || 12.2958;
+        const lng = parseFloat(document.getElementById('longitude').value) || 76.6394;
+        setTimeout(() => initMap(lat, lng), 100);
+    } else {
+        mapSec.style.display = 'none';
+    }
+}
+
+function initMap(lat, lng) {
+    document.getElementById('latitude').value = lat.toFixed(6);
+    document.getElementById('longitude').value = lng.toFixed(6);
+    document.getElementById('coords-indicator').innerText = `Coordinates Pinned - Lat: ${lat.toFixed(4)}, Lng: ${lng.toFixed(4)}`;
+
+    if (!map) {
+        map = L.map('leaflet-picker-map').setView([lat, lng], 14);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '© OpenStreetMap'
+        }).addTo(map);
+        
+        marker = L.marker([lat, lng], { draggable: true }).addTo(map);
+        marker.on('dragend', function () {
+            const position = marker.getLatLng();
+            updateCoords(position.lat, position.lng);
+        });
+    } else {
+        const newLatLng = new L.LatLng(lat, lng);
+        marker.setLatLng(newLatLng);
+        map.setView(newLatLng, 14);
+    }
+    setTimeout(() => map.invalidateSize(), 150);
+}
+
+function updateCoords(lat, lng) {
+    document.getElementById('latitude').value = lat.toFixed(6);
+    document.getElementById('longitude').value = lng.toFixed(6);
+    document.getElementById('coords-indicator').innerText = `Coordinates Pinned - Lat: ${lat.toFixed(4)}, Lng: ${lng.toFixed(4)}`;
+}
+
+function searchAddressOnMap() {
+    const addressVal = document.getElementById('address_input').value.trim();
+    if (!addressVal) {
+        alert('Please type an address first to search on the map.');
+        return;
+    }
+    
+    fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(addressVal + ', Karnataka, India')}&limit=1`)
+        .then(response => response.json())
+        .then(data => {
+            if (data && data.length > 0) {
+                const result = data[0];
+                const lat = parseFloat(result.lat);
+                const lng = parseFloat(result.lon);
+                document.getElementById('google_place_id').value = result.place_id || '';
+                initMap(lat, lng);
+            } else {
+                alert('Could not find address location. Please pin manually on the map.');
+            }
+        })
+        .catch(() => {
+            alert('Geocoding service unavailable. Please drag the marker manually.');
+        });
+}
+
+function detectLiveLocationGPS() {
+    if (!navigator.geolocation) {
+        alert('GPS is not supported by your browser.');
+        return;
+    }
+    
+    const gpsBtn = document.getElementById('gps-btn');
+    gpsBtn.innerText = '⏳ Locating...';
+    
+    navigator.geolocation.getCurrentPosition(
+        (position) => {
+            gpsBtn.innerText = '🎯 Use Current GPS Location';
+            const lat = position.coords.latitude;
+            const lng = position.coords.longitude;
+            initMap(lat, lng);
+        },
+        () => {
+            gpsBtn.innerText = '🎯 Use Current GPS Location';
+            alert('Unable to retrieve GPS location. Please pin manually.');
+        },
+        { enableHighAccuracy: true, timeout: 5000 }
+    );
+}
+
+function parseGoogleMapsLink(val) {
+    if (!val) return;
+    const regex = /@(-?\d+\.\d+),(-?\d+\.\d+)/;
+    const match = val.match(regex);
+    if (match) {
+        const lat = parseFloat(match[1]);
+        const lng = parseFloat(match[2]);
+        initMap(lat, lng);
+        document.getElementById('paste-success-msg').style.display = 'block';
+        setTimeout(() => {
+            document.getElementById('paste-success-msg').style.display = 'none';
+        }, 3000);
+    }
+}
+
+// ==========================================================================
+// Image Upload & Compression Logic
+// ==========================================================================
 let selectedFiles = [];
 
-// Compress image on the fly using HTML5 Canvas (Converting to optimized, lightweight WebP in browser)
 function compressImage(file) {
     return new Promise((resolve) => {
         if (!file.type.startsWith('image/')) {
@@ -442,7 +573,7 @@ function compressImage(file) {
                 const canvas = document.createElement('canvas');
                 let width = img.width;
                 let height = img.height;
-                const MAX_WIDTH = 1000; // Perfect visual resolution for room cards
+                const MAX_WIDTH = 900;
                 if (width > MAX_WIDTH) {
                     height = Math.round((MAX_WIDTH / width) * height);
                     width = MAX_WIDTH;
@@ -462,12 +593,10 @@ function compressImage(file) {
                     } else {
                         resolve(file);
                     }
-                }, 'image/webp', 0.8); // 80% WebP quality balances pristine details and 90% size savings!
+                }, 'image/webp', 0.8);
             };
-            img.onerror = () => resolve(file);
             img.src = e.target.result;
         };
-        reader.onerror = () => resolve(file);
         reader.readAsDataURL(file);
     });
 }
@@ -476,9 +605,7 @@ const realFileInput = document.getElementById('real-file-input');
 const hiddenSubmitInput = document.getElementById('images');
 const previewGrid = document.getElementById('preview-grid');
 const statusBadge = document.getElementById('upload-status-badge');
-const dropzone = document.getElementById('image-upload-dropzone');
 
-// Update UI and Hidden Form Input
 function updateImagesUI() {
     previewGrid.innerHTML = '';
     
@@ -486,15 +613,9 @@ function updateImagesUI() {
         statusBadge.style.display = 'none';
     } else {
         statusBadge.style.display = 'inline-flex';
-        if (selectedFiles.length < 3) {
-            statusBadge.style.background = '#fee2e2';
-            statusBadge.style.color = '#991b1b';
-            statusBadge.innerHTML = `⚠️ Selected ${selectedFiles.length} / 3 required photos (Will replace current photos)`;
-        } else {
-            statusBadge.style.background = '#dcfce7';
-            statusBadge.style.color = '#15803d';
-            statusBadge.innerHTML = `✅ Selected ${selectedFiles.length} new photos (Ready to replace current photos!)`;
-        }
+        statusBadge.style.background = '#dcfce7';
+        statusBadge.style.color = '#15803d';
+        statusBadge.innerHTML = `✅ Selected ${selectedFiles.length} new photos`;
     }
     
     selectedFiles.forEach((file, index) => {
@@ -505,8 +626,6 @@ function updateImagesUI() {
         previewCard.style.borderRadius = '8px';
         previewCard.style.overflow = 'hidden';
         previewCard.style.border = '1px solid #cbd5e1';
-        previewCard.style.boxShadow = 'var(--shadow-sm)';
-        previewCard.style.animation = 'scaleIn 0.3s ease forwards';
         
         const img = document.createElement('img');
         img.style.width = '100%';
@@ -522,26 +641,22 @@ function updateImagesUI() {
         removeBtn.type = 'button';
         removeBtn.innerHTML = '×';
         removeBtn.style.position = 'absolute';
-        removeBtn.style.top = '6px';
-        removeBtn.style.right = '6px';
-        removeBtn.style.background = 'rgba(239, 68, 68, 0.95)';
+        removeBtn.style.top = '4px';
+        removeBtn.style.right = '4px';
+        removeBtn.style.background = 'rgba(239, 68, 68, 0.9)';
         removeBtn.style.color = 'white';
         removeBtn.style.border = 'none';
         removeBtn.style.borderRadius = '50%';
-        removeBtn.style.width = '24px';
-        removeBtn.style.height = '24px';
-        removeBtn.style.fontSize = '16px';
-        removeBtn.style.fontWeight = 'bold';
+        removeBtn.style.width = '20px';
+        removeBtn.style.height = '20px';
+        removeBtn.style.fontSize = '14px';
         removeBtn.style.cursor = 'pointer';
         removeBtn.style.display = 'flex';
         removeBtn.style.alignItems = 'center';
         removeBtn.style.justifyContent = 'center';
-        removeBtn.style.boxShadow = '0 2px 4px rgba(0,0,0,0.2)';
-        removeBtn.style.zIndex = '10';
         
         removeBtn.onclick = function(e) {
             e.preventDefault();
-            e.stopPropagation();
             selectedFiles.splice(index, 1);
             updateImagesUI();
         };
@@ -551,432 +666,45 @@ function updateImagesUI() {
         previewGrid.appendChild(previewCard);
     });
     
-    // Sync to Hidden File Input for Django Post
     const dataTransfer = new DataTransfer();
-    selectedFiles.forEach(file => {
-        dataTransfer.items.add(file);
-    });
+    selectedFiles.forEach(file => dataTransfer.items.add(file));
     hiddenSubmitInput.files = dataTransfer.files;
 }
 
-// Handle File Selection
 realFileInput.addEventListener('change', async function() {
     const files = Array.from(realFileInput.files);
-    
+    const dropzone = document.getElementById('image-upload-dropzone');
     const originalText = dropzone.querySelector('p').textContent;
-    const subText = dropzone.querySelector('p').nextElementSibling;
-    const originalSubtext = subText.textContent;
+    dropzone.querySelector('p').textContent = '⚡ Optimizing Photos...';
     
-    dropzone.querySelector('p').textContent = '⚡ Optimizing & Converting Photos...';
-    
-    let processedCount = 0;
     for (let file of files) {
-        processedCount++;
-        subText.textContent = `Processing image ${processedCount} of ${files.length}. Please wait...`;
-        
-        // Prevent duplicate files
-        if (!selectedFiles.some(f => f.name === file.name || (f.name.replace('.webp', '') === file.name.substring(0, file.name.lastIndexOf('.'))))) {
+        if (!selectedFiles.some(f => f.name === file.name || f.name.replace('.webp', '') === file.name.substring(0, file.name.lastIndexOf('.')))) {
             try {
                 const compressed = await compressImage(file);
                 selectedFiles.push(compressed);
-            } catch (err) {
-                selectedFiles.push(file); // fallback
+            } catch {
+                selectedFiles.push(file);
             }
         }
     }
     
     dropzone.querySelector('p').textContent = originalText;
-    subText.textContent = originalSubtext;
-    
     updateImagesUI();
-    // Clear value to allow picking the same file again if deleted
     realFileInput.value = '';
 });
 
-// Drag & Drop effects
-dropzone.addEventListener('dragover', (e) => {
-    e.preventDefault();
-    dropzone.style.borderColor = 'var(--primary)';
-    dropzone.style.background = 'rgba(79, 70, 229, 0.05)';
-});
-
-dropzone.addEventListener('dragleave', () => {
-    dropzone.style.borderColor = '#cbd5e1';
-    dropzone.style.background = '#f8fafc';
-});
-
-dropzone.addEventListener('drop', async (e) => {
-    e.preventDefault();
-    dropzone.style.borderColor = '#cbd5e1';
-    dropzone.style.background = '#f8fafc';
-    
-    const files = Array.from(e.dataTransfer.files);
-    
-    const originalText = dropzone.querySelector('p').textContent;
-    const subText = dropzone.querySelector('p').nextElementSibling;
-    const originalSubtext = subText.textContent;
-    
-    dropzone.querySelector('p').textContent = '⚡ Optimizing & Converting Photos...';
-
-    let processedCount = 0;
-    for (let file of files) {
-        if (file.type.startsWith('image/')) {
-            processedCount++;
-            subText.textContent = `Processing image ${processedCount} of ${files.length}. Please wait...`;
-            
-            if (!selectedFiles.some(f => f.name === file.name || (f.name.replace('.webp', '') === file.name.substring(0, file.name.lastIndexOf('.'))))) {
-                try {
-                    const compressed = await compressImage(file);
-                    selectedFiles.push(compressed);
-                } catch (err) {
-                    selectedFiles.push(file); // fallback
-                }
-            }
-        }
-    }
-    
-    dropzone.querySelector('p').textContent = originalText;
-    subText.textContent = originalSubtext;
-    
-    updateImagesUI();
-});
-
+// Form Submit Validation
 document.querySelector('form').addEventListener('submit', function(e) {
-    // Temporary logging for debugging image upload
-    console.log("DEBUG FRONTEND UPLOAD:");
-    console.log("realFileInput.files.length:", document.getElementById('real-file-input').files.length);
-    console.log("hiddenSubmitInput.files.length:", document.getElementById('images').files.length);
-
-    if (selectedFiles.length > 0 && selectedFiles.length < 3) {
+    if (selectedFiles.length > 0 && selectedFiles.length < 1) {
         e.preventDefault();
-        alert('⚠️ If you choose to upload new photos, you must select at least 3 photos. Currently you have selected ' + selectedFiles.length + '.');
+        alert('⚠️ You must upload at least 1 photo if you decide to replace existing photos.');
         return false;
     }
     
-    // Progressive uploading loading button state
     const submitBtn = document.querySelector('button[type="submit"]');
     if (submitBtn) {
-        submitBtn.style.background = 'linear-gradient(135deg, #4f46e5 0%, #4338ca 100%)';
-        submitBtn.style.opacity = '0.85';
-        submitBtn.style.cursor = 'not-allowed';
-        submitBtn.innerHTML = `
-            <svg style="animation: spin 1s linear infinite; width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 3; display: inline-block; vertical-align: middle; margin-right: 8px;" viewBox="0 0 24 24">
-                <circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,0.2)"></circle>
-                <path d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" fill="white"></path>
-            </svg>
-            Saving Changes... (Uploading Photos)
-        `;
-        // Disable on the next tick to prevent browsers from aborting the file upload
-        setTimeout(() => {
-            submitBtn.disabled = true;
-        }, 1);
-    }
-});
-
-// ==========================================================================
-// Interactive Map & Geocoding Workflow (Leaflet.js integration)
-// ==========================================================================
-let map = null;
-let marker = null;
-
-function initMap(lat, lng) {
-    const mapPreviewSec = document.getElementById('map-preview-section');
-    mapPreviewSec.style.display = 'block';
-    
-    // Set coordinate inputs
-    document.getElementById('latitude').value = lat.toFixed(6);
-    document.getElementById('longitude').value = lng.toFixed(6);
-    document.getElementById('coords-indicator').innerText = `Lat: ${lat.toFixed(4)}, Lng: ${lng.toFixed(4)}`;
-
-    if (!map) {
-        map = L.map('leaflet-picker-map').setView([lat, lng], 15);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 19,
-            attribution: '© OpenStreetMap contributors'
-        }).addTo(map);
-        
-        marker = L.marker([lat, lng], { draggable: true }).addTo(map);
-        
-        marker.on('dragend', function (e) {
-            const position = marker.getLatLng();
-            updateCoords(position.lat, position.lng);
-        });
-    } else {
-        const newLatLng = new L.LatLng(lat, lng);
-        marker.setLatLng(newLatLng);
-        map.setView(newLatLng, 15);
-    }
-    
-    // Invalidate size to prevent Leaflet rendering bugs
-    setTimeout(() => {
-        map.invalidateSize();
-    }, 100);
-}
-
-function updateCoords(lat, lng) {
-    document.getElementById('latitude').value = lat.toFixed(6);
-    document.getElementById('longitude').value = lng.toFixed(6);
-    document.getElementById('coords-indicator').innerText = `Lat: ${lat.toFixed(4)}, Lng: ${lng.toFixed(4)}`;
-    
-    // Sync to exact_location coordinates string
-    const exactInput = document.getElementById('exact_location');
-    if (exactInput) {
-        exactInput.value = `https://www.google.com/maps?q=${lat.toFixed(6)},${lng.toFixed(6)}`;
-    }
-}
-
-function compileAddressFromInputs() {
-    const house = document.getElementById('loc_house').value.trim();
-    const street = document.getElementById('loc_street').value.trim();
-    const area = document.getElementById('loc_area').value.trim();
-    const city = document.getElementById('loc_city').value.trim();
-    const pin = document.getElementById('loc_pin').value.trim();
-    
-    const addressParts = [];
-    if (house) addressParts.push(house);
-    if (street) addressParts.push(street);
-    if (area) addressParts.push(area);
-    if (city) addressParts.push(city);
-    if (pin) addressParts.push(pin);
-    
-    const compiledAddr = addressParts.join(', ');
-    document.getElementById('address').value = compiledAddr;
-    document.getElementById('compiled-address-box').innerText = compiledAddr || 'No address entered yet.';
-}
-
-function searchAddressOnMap() {
-    const area = document.getElementById('loc_area').value.trim();
-    const city = document.getElementById('loc_city').value.trim();
-    const pin = document.getElementById('loc_pin').value.trim();
-    
-    if (!area || !pin) {
-        alert('Please enter at least the Locality/Area and PIN Code to locate the property.');
-        return;
-    }
-    
-    compileAddressFromInputs();
-    const compiledAddr = document.getElementById('address').value;
-    
-    const searchBtn = window.event ? window.event.target : null;
-    const oldText = searchBtn ? searchBtn.innerText : 'Search';
-    if (searchBtn) {
-        searchBtn.innerText = '⏳ Searching...';
-        searchBtn.disabled = true;
-    }
-    
-    const searchUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(compiledAddr + ', Karnataka, India')}&limit=1`;
-    
-    fetch(searchUrl)
-        .then(response => response.json())
-        .then(data => {
-            if (searchBtn) {
-                searchBtn.innerText = oldText;
-                searchBtn.disabled = false;
-            }
-            
-            if (data && data.length > 0) {
-                const result = data[0];
-                const lat = parseFloat(result.lat);
-                const lng = parseFloat(result.lon);
-                
-                document.getElementById('google_place_id').value = result.place_id || '';
-                
-                initMap(lat, lng);
-                document.getElementById('map-preview-section').scrollIntoView({ behavior: 'smooth' });
-            } else {
-                // Fallback to Area-only search
-                const fallbackQuery = `${area}, ${city}, Karnataka, India`;
-                fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(fallbackQuery)}&limit=1`)
-                    .then(r => r.json())
-                    .then(fallbackData => {
-                        if (fallbackData && fallbackData.length > 0) {
-                            const res = fallbackData[0];
-                            const lat = parseFloat(res.lat);
-                            const lng = parseFloat(res.lon);
-                            initMap(lat, lng);
-                            alert('We centered the map on your Area. Please drag the marker to your exact building.');
-                            document.getElementById('map-preview-section').scrollIntoView({ behavior: 'smooth' });
-                        } else {
-                            alert('Could not locate address on map. Please drag marker manually or paste a Google Maps link.');
-                        }
-                    })
-                    .catch(e => {
-                        alert('Could not locate address. Please use GPS or adjust the marker manually.');
-                    });
-            }
-        })
-        .catch(error => {
-            if (searchBtn) {
-                searchBtn.innerText = oldText;
-                searchBtn.disabled = false;
-            }
-            alert('Geocoding service unavailable. Please drag marker manually or paste a Google Maps link.');
-        });
-}
-
-function detectLiveLocationGPS() {
-    const gpsBtn = document.getElementById('gps-btn');
-    const oldText = gpsBtn.innerText;
-    gpsBtn.innerText = '⏳ Accessing GPS...';
-    gpsBtn.disabled = true;
-    
-    if (!navigator.geolocation) {
-        alert('Geolocation is not supported by your browser.');
-        gpsBtn.innerText = oldText;
-        gpsBtn.disabled = false;
-        return;
-    }
-    
-    navigator.geolocation.getCurrentPosition(
-        (position) => {
-            gpsBtn.innerText = oldText;
-            gpsBtn.disabled = false;
-            
-            const lat = position.coords.latitude;
-            const lng = position.coords.longitude;
-            
-            initMap(lat, lng);
-            
-            // Attempt reverse geocoding to fill address fields
-            fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`)
-                .then(r => r.json())
-                .then(data => {
-                    if (data && data.address) {
-                        const addr = data.address;
-                        const road = addr.road || addr.suburb || '';
-                        const suburb = addr.neighbourhood || addr.suburb || '';
-                        const postcode = addr.postcode || '';
-                        
-                        if (road) document.getElementById('loc_street').value = road;
-                        if (suburb) document.getElementById('loc_area').value = suburb;
-                        if (postcode) document.getElementById('loc_pin').value = postcode;
-                        
-                        compileAddressFromInputs();
-                    }
-                })
-                .catch(e => {});
-                
-            document.getElementById('map-preview-section').scrollIntoView({ behavior: 'smooth' });
-        },
-        (error) => {
-            gpsBtn.innerText = oldText;
-            gpsBtn.disabled = false;
-            let msg = 'Unable to access your GPS. ';
-            if (error.code === error.PERMISSION_DENIED) {
-                msg += 'Permission denied. Please paste a Google Maps link instead.';
-            } else {
-                msg += 'Coordinates unavailable.';
-            }
-            alert(msg);
-        },
-        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
-    );
-}
-
-function parseGoogleMapsLink(val) {
-    if (!val) return;
-    
-    // Parse lat,lng coordinates out of Google Maps URLs or direct text
-    const regex1 = /@(-?\d+\.\d+),(-?\d+\.\d+)/;
-    const regex2 = /q=(-?\d+\.\d+),(-?\d+\.\d+)/;
-    const regex3 = /(-?\d+\.\d+),\s*(-?\d+\.\d+)/;
-    
-    let match = val.match(regex1) || val.match(regex2) || val.match(regex3);
-    
-    if (match) {
-        const lat = parseFloat(match[1]);
-        const lng = parseFloat(match[2]);
-        
-        initMap(lat, lng);
-        
-        document.getElementById('paste-success-msg').style.display = 'block';
-        setTimeout(() => {
-            document.getElementById('paste-success-msg').style.display = 'none';
-        }, 3000);
-        
-        document.getElementById('map-preview-section').scrollIntoView({ behavior: 'smooth' });
-    }
-}
-
-function confirmMapPin() {
-    alert('✓ Property coordinates locked successfully!');
-}
-
-// Auto-compile and auto-init map on edit load if coordinates exist
-document.addEventListener("DOMContentLoaded", function() {
-    const ids = ['loc_house', 'loc_street', 'loc_area', 'loc_pin'];
-    ids.forEach(id => {
-        const el = document.getElementById(id);
-        if (el) {
-            el.addEventListener('input', compileAddressFromInputs);
-        }
-    });
-    
-    // Auto-init map if latitude and longitude exist
-    const latVal = document.getElementById('latitude').value;
-    const lngVal = document.getElementById('longitude').value;
-    if (latVal && lngVal) {
-        initMap(parseFloat(latVal), parseFloat(lngVal));
-    }
-});
-
-// Dynamic Category Fields Handler
-document.addEventListener("DOMContentLoaded", function() {
-    const typeSelect = document.getElementById("type");
-    const dynamicSection = document.getElementById("dynamic-category-section");
-    const panels = {
-        flat: document.getElementById("panel-flat"),
-        pg: document.getElementById("panel-pg"),
-        flatmate: document.getElementById("panel-flatmate"),
-        commercial: document.getElementById("panel-commercial")
-    };
-
-    function updatePanels() {
-        const val = typeSelect.value;
-        
-        // Hide all panels
-        for (let p in panels) {
-            if (panels[p]) {
-                panels[p].style.display = "none";
-                // Remove required flags for hidden fields
-                const inputs = panels[p].querySelectorAll("input, select");
-                inputs.forEach(input => input.removeAttribute("required"));
-            }
-        }
-        if (dynamicSection) {
-            dynamicSection.style.display = "none";
-        }
-
-        if (val === "1BHK" || val === "2BHK" || val === "3BHK") {
-            if (dynamicSection && panels.flat) {
-                dynamicSection.style.display = "block";
-                panels.flat.style.display = "block";
-                panels.flat.querySelectorAll("input, select").forEach(inp => inp.setAttribute("required", "required"));
-            }
-        } else if (val === "PG (Men)" || val === "PG (Women)" || val === "Co-living" || val === "Single Room") {
-            if (dynamicSection && panels.pg) {
-                dynamicSection.style.display = "block";
-                panels.pg.style.display = "block";
-                panels.pg.querySelectorAll("input, select").forEach(inp => inp.setAttribute("required", "required"));
-            }
-        } else if (val === "Flatmate") {
-            if (dynamicSection && panels.flatmate) {
-                dynamicSection.style.display = "block";
-                panels.flatmate.style.display = "block";
-                panels.flatmate.querySelectorAll("input, select").forEach(inp => inp.setAttribute("required", "required"));
-            }
-        } else if (val === "Commercial Space" || val === "Office Space") {
-            if (dynamicSection && panels.commercial) {
-                dynamicSection.style.display = "block";
-                panels.commercial.style.display = "block";
-                panels.commercial.querySelectorAll("input, select").forEach(inp => inp.setAttribute("required", "required"));
-            }
-        }
-    }
-
-    if (typeSelect) {
-        typeSelect.addEventListener("change", updatePanels);
-        updatePanels();
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = 'Saving Changes...';
     }
 });
 </script>
@@ -1004,13 +732,11 @@ document.addEventListener("DOMContentLoaded", function() {
 </script>
 
 <script>
-    // Dynamically filter areas on city selection for edit property wizard
     function updateEditAreaOptions(selectedCityId, preselectedAreaId = null) {
         const areaSelect = document.getElementById('area');
         if (!areaSelect) return;
         
         areaSelect.innerHTML = '<option value="">Select Area</option>';
-        
         if (!selectedCityId) return;
         
         const dataBlock = document.getElementById('city-area-data');
@@ -1019,7 +745,6 @@ document.addEventListener("DOMContentLoaded", function() {
         try {
             const citiesData = JSON.parse(dataBlock.textContent);
             const matchedCity = citiesData.find(c => String(c.id) === String(selectedCityId));
-            
             if (matchedCity && matchedCity.areas) {
                 matchedCity.areas.forEach(area => {
                     const option = document.createElement('option');
@@ -1032,16 +757,15 @@ document.addEventListener("DOMContentLoaded", function() {
                 });
             }
         } catch (e) {
-            console.error("Error parsing city-area JSON data:", e);
+            console.error("Error filtering areas:", e);
         }
     }
 
-    // Pre-populate area options on page load
+    // Initialize area select on load for edit form
     document.addEventListener("DOMContentLoaded", function() {
         const citySelect = document.getElementById('city');
         if (citySelect && citySelect.value) {
-            const currentAreaId = "{{ listing.area_id|default:'' }}";
-            updateEditAreaOptions(citySelect.value, currentAreaId);
+            updateEditAreaOptions(citySelect.value, "{{ listing.area_id }}");
         }
     });
 </script>

@@ -22,16 +22,8 @@
 <!-- Overlapping Unified Search Bar -->
 <div class="search-wrapper">
     <div class="search-container">
-        <!-- Search Tabs for Type Filter -->
-        <div class="search-tabs">
-            <div class="search-tab active" onclick="setSearchType('')">🔍 All Stays</div>
-            <div class="search-tab" onclick="setSearchType('1BHK')">🏠 Rent Flat</div>
-            <div class="search-tab" onclick="setSearchType('PG (Men)')">🏢 PGs & Hostels</div>
-            <div class="search-tab" onclick="setSearchType('Co-living')">👥 Co-living</div>
-        </div>
-        
         <!-- Search Form -->
-        <form action="{% url 'search' %}" method="GET" class="search-form">
+        <form action="{% url 'search' %}" method="GET" class="search-form" style="grid-template-columns: 1fr 1fr auto;">
             <input type="hidden" name="type" id="search-type-input" value="">
             
             <!-- Select City -->
@@ -53,30 +45,8 @@
                 </select>
             </div>
             
-            <!-- Property Type Select -->
-            <div class="search-field">
-                <span class="search-icon">🏠</span>
-                <select name="type_select" id="type-select-dropdown" onchange="syncSearchType(this.value)" aria-label="Select Property Type">
-                    <option value="">Select Property Type</option>
-                    <option value="1BHK">1 BHK Apartment</option>
-                    <option value="2BHK">2 BHK Apartment</option>
-                    <option value="Single Room">Single Room</option>
-                    <option value="PG (Men)">Men's PG</option>
-                    <option value="PG (Women)">Women's PG</option>
-                    <option value="Co-living">Co-living Space</option>
-                    <option value="Flatmate">Shared Flatmate</option>
-                    <option value="Commercial Space">Commercial Space</option>
-                </select>
-            </div>
-            
-            <!-- Budget Numeric Input -->
-            <div class="search-field">
-                <span class="search-icon">₹</span>
-                <input type="number" name="price" placeholder="Max Budget (₹/mo)" aria-label="Maximum Budget">
-            </div>
-            
             <!-- Search Submit Button -->
-            <button type="submit" class="btn btn-primary search-btn">Search</button>
+            <button type="submit" class="btn btn-primary search-btn" style="height: 100%;">Search</button>
         </form>
     </div>
 </div>
@@ -188,154 +158,7 @@
     {% endcache %}
 </section>
 
-<!-- 3. Why Choose RoomNest Section -->
-<section class="value-props-section">
-    <div style="max-width: 1200px; margin: 0 auto;">
-        <div style="text-align: center; margin-bottom: 3.5rem;">
-            <h2 style="font-size: 1.85rem; font-weight: 800; margin-bottom: 0.5rem;">Why Renters Choose RoomNest</h2>
-            <p style="color: var(--text-light); max-width: 500px; margin: 0 auto; font-size: 0.95rem;">We make property hunting simple, transparent, and direct, saving you thousands in broker fees.</p>
-        </div>
-        
-        <div class="grid">
-            <!-- Value Prop 1 -->
-            <div style="text-align: center; padding: 0 1rem;">
-                <div style="width: 55px; height: 55px; border-radius: 50%; background: var(--primary-light); color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 1.6rem; margin: 0 auto 1.25rem auto;">💸</div>
-                <h3 style="font-size: 1.15rem; margin-bottom: 0.5rem; color: var(--text-dark);">Zero Brokerage</h3>
-                <p style="color: var(--text-light); font-size: 0.9rem; line-height: 1.6;">Contact landowners directly. We never charge brokerage commissions or middleman fees.</p>
-            </div>
-
-            <!-- Value Prop 2 -->
-            <div style="text-align: center; padding: 0 1rem;">
-                <div style="width: 55px; height: 55px; border-radius: 50%; background: var(--primary-light); color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 1.6rem; margin: 0 auto 1.25rem auto;">🛡️</div>
-                <h3 style="font-size: 1.15rem; margin-bottom: 0.5rem; color: var(--text-dark);">100% Verified Properties</h3>
-                <p style="color: var(--text-light); font-size: 0.9rem; line-height: 1.6;">Every listed flat and PG goes through physical or document verification to ensure premium trust.</p>
-            </div>
-
-            <!-- Value Prop 3 -->
-            <div style="text-align: center; padding: 0 1rem;">
-                <div style="width: 55px; height: 55px; border-radius: 50%; background: var(--primary-light); color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 1.6rem; margin: 0 auto 1.25rem auto;">💬</div>
-                <h3 style="font-size: 1.15rem; margin-bottom: 0.5rem; color: var(--text-dark);">Direct WhatsApp Chat</h3>
-                <p style="color: var(--text-light); font-size: 0.9rem; line-height: 1.6;">Initiate instant communication with landlords over WhatsApp to quickly negotiate and schedule tours.</p>
-            </div>
-
-            <!-- Value Prop 4 -->
-            <div style="text-align: center; padding: 0 1rem;">
-                <div style="width: 55px; height: 55px; border-radius: 50%; background: var(--primary-light); color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 1.6rem; margin: 0 auto 1.25rem auto;">🤝</div>
-                <h3 style="font-size: 1.15rem; margin-bottom: 0.5rem; color: var(--text-dark);">Flatmate Matcher</h3>
-                <p style="color: var(--text-light); font-size: 0.9rem; line-height: 1.6;">Use our premium compatibility quiz to find friendly flatmates who match your lifestyle choices.</p>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- 4. Testimonials Section -->
-<section class="container">
-    <div style="text-align: center; margin-bottom: 3.5rem;">
-        <h2 style="font-size: 1.85rem; font-weight: 800; margin-bottom: 0.5rem;">Loved by Renters in Mysore ❤️</h2>
-        <p style="color: var(--text-light); max-width: 500px; margin: 0 auto; font-size: 0.95rem;">Join thousands of students and working professionals who found their homes via RoomNest.</p>
-    </div>
-    
-    <div class="grid">
-        <!-- Testimonial 1 -->
-        <div style="background: var(--white); border: 1px solid var(--border-color); padding: 2rem; border-radius: var(--border-radius-lg); box-shadow: var(--shadow); display: flex; flex-direction: column; justify-content: space-between;">
-            <div>
-                <div style="color: var(--accent); font-size: 1rem; margin-bottom: 0.75rem;">★★★★★</div>
-                <p style="color: var(--text-light); font-style: italic; line-height: 1.6; font-size: 0.92rem; margin-bottom: 1.5rem;">"As a student at JSS University, finding an affordable PG in Mysore was extremely difficult. RoomNest helped me connect directly with PG owners in Gokulam, saving me huge brokerage fees!"</p>
-            </div>
-            <div style="display: flex; align-items: center; gap: 12px; border-top: 1px solid #F1F5F9; padding-top: 1rem;">
-                <div style="width: 38px; height: 38px; border-radius: 50%; background: var(--primary-light); color: var(--primary); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem;">RK</div>
-                <div>
-                    <strong style="color: var(--text-dark); font-size: 0.9rem; display: block;">Rohan K.</strong>
-                    <span style="color: var(--text-muted); font-size: 0.75rem; display: block;">JSS University Student</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Testimonial 2 -->
-        <div style="background: var(--white); border: 1px solid var(--border-color); padding: 2rem; border-radius: var(--border-radius-lg); box-shadow: var(--shadow); display: flex; flex-direction: column; justify-content: space-between;">
-            <div>
-                <div style="color: var(--accent); font-size: 1rem; margin-bottom: 0.75rem;">★★★★★</div>
-                <p style="color: var(--text-light); font-style: italic; line-height: 1.6; font-size: 0.92rem; margin-bottom: 1.5rem;">"Listing my 2BHK flat in Vijayanagar on RoomNest was completely seamless. Within 48 hours, I received multiple verification requests and rented it out to a professional IT family."</p>
-            </div>
-            <div style="display: flex; align-items: center; gap: 12px; border-top: 1px solid #F1F5F9; padding-top: 1rem;">
-                <div style="width: 38px; height: 38px; border-radius: 50%; background: #ECFDF5; color: #10B981; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem;">MG</div>
-                <div>
-                    <strong style="color: var(--text-dark); font-size: 0.9rem; display: block;">Mahesh G.</strong>
-                    <span style="color: var(--text-muted); font-size: 0.75rem; display: block;">Property Owner (Vijayanagar)</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Testimonial 3 -->
-        <div style="background: var(--white); border: 1px solid var(--border-color); padding: 2rem; border-radius: var(--border-radius-lg); box-shadow: var(--shadow); display: flex; flex-direction: column; justify-content: space-between;">
-            <div>
-                <div style="color: var(--accent); font-size: 1rem; margin-bottom: 0.75rem;">★★★★★</div>
-                <p style="color: var(--text-light); font-style: italic; line-height: 1.6; font-size: 0.92rem; margin-bottom: 1.5rem;">"The flatmate lifestyle compatibility match scoring tool is a total game changer! It helped me match with a quiet and compatible flatmate to split rent on our shared flat in Hebbal."</p>
-            </div>
-            <div style="display: flex; align-items: center; gap: 12px; border-top: 1px solid #F1F5F9; padding-top: 1rem;">
-                <div style="width: 38px; height: 38px; border-radius: 50%; background: #FEF3C7; color: #D97706; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem;">AP</div>
-                <div>
-                    <strong style="color: var(--text-dark); font-size: 0.9rem; display: block;">Ananya P.</strong>
-                    <span style="color: var(--text-muted); font-size: 0.75rem; display: block;">Software Engineer (Infosys)</span>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- 5. Download App / CTA Section -->
-<section class="cta-download-section">
-    <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 3rem; position: relative; z-index: 2;">
-        <!-- Left Text Area -->
-        <div style="flex: 1.2; min-width: 300px;">
-            <span style="background: rgba(37, 99, 235, 0.2); color: #93C5FD; padding: 0.35rem 0.85rem; border-radius: 99px; font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px;">Coming Soon</span>
-            <h2 style="color: var(--white); font-size: 2.2rem; font-weight: 800; margin-top: 0.8rem; margin-bottom: 0.75rem;">Search on the Go. Download RoomNest</h2>
-            <p style="opacity: 0.85; font-size: 0.98rem; line-height: 1.6; margin-bottom: 2rem; max-width: 520px;">
-                Get real-time notification alerts when new rooms matching your budget are posted in Mysore. Experience verified landlord listings directly from your phone.
-            </p>
-            <div style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: center;">
-                <!-- Store Badges -->
-                <a href="#" style="display: inline-block; background: #000000; border: 1px solid #334155; border-radius: 8px; padding: 0.5rem 1rem; color: white; transition: var(--transition-smooth);" onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor='#334155'">
-                    <span style="font-size: 0.65rem; text-transform: uppercase; display: block; opacity: 0.7; font-weight: 600;">GET IT ON</span>
-                    <strong style="font-size: 1rem; font-family: sans-serif; font-weight: 700; display: block; margin-top: -2px;">Google Play</strong>
-                </a>
-                <a href="#" style="display: inline-block; background: #000000; border: 1px solid #334155; border-radius: 8px; padding: 0.5rem 1rem; color: white; transition: var(--transition-smooth);" onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor='#334155'">
-                    <span style="font-size: 0.65rem; text-transform: uppercase; display: block; opacity: 0.7; font-weight: 600;">Download on the</span>
-                    <strong style="font-size: 1rem; font-family: sans-serif; font-weight: 700; display: block; margin-top: -2px;">App Store</strong>
-                </a>
-            </div>
-        </div>
-        
-        <!-- Right CSS Phone Mockup -->
-        <div style="flex: 0.8; display: flex; justify-content: center; min-width: 260px;">
-            <div style="width: 220px; height: 380px; background: #000000; border: 8px solid #334155; border-radius: 36px; padding: 10px; box-shadow: var(--shadow-lg); position: relative; overflow: hidden; display: flex; flex-direction: column;">
-                <!-- Speaker Notch -->
-                <div style="width: 80px; height: 16px; background: #334155; border-radius: 0 0 12px 12px; position: absolute; top: 0; left: 50%; transform: translateX(-50%); z-index: 5;"></div>
-                
-                <!-- Phone Inner screen -->
-                <div style="flex: 1; background: #F8FAFC; border-radius: 24px; padding: 1.5rem 0.85rem; display: flex; flex-direction: column; justify-content: space-between; overflow: hidden;">
-                    <div>
-                        <div style="display: flex; align-items: center; gap: 4px; margin-bottom: 1rem;">
-                            <img src="{% static 'images/logo_icon.webp' %}" alt="RoomNest Icon" width="18" height="18" loading="lazy" decoding="async" style="height: 18px; width: 18px; object-fit: contain;">
-                            <strong style="font-size: 0.75rem; color: var(--primary);">RoomNest</strong>
-                        </div>
-                        <div style="background: white; border: 1px solid #E2E8F0; border-radius: 8px; padding: 8px; box-shadow: var(--shadow-sm); margin-bottom: 8px;">
-                            <span style="font-size: 0.55rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; display: block;">Featured stay</span>
-                            <strong style="font-size: 0.68rem; color: var(--text-dark); display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 1px;">Luxury 1BHK Gokulam</strong>
-                            <strong style="font-size: 0.75rem; color: var(--primary); display: block; margin-top: 2px;">₹12,500/mo</strong>
-                        </div>
-                        <div style="background: white; border: 1px solid #E2E8F0; border-radius: 8px; padding: 8px; box-shadow: var(--shadow-sm);">
-                            <span style="font-size: 0.55rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; display: block;">Verified pg</span>
-                            <strong style="font-size: 0.68rem; color: var(--text-dark); display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 1px;">Sree PGs for Men</strong>
-                            <strong style="font-size: 0.75rem; color: var(--primary); display: block; margin-top: 2px;">₹5,500/mo</strong>
-                        </div>
-                    </div>
-                    <div style="background: var(--primary); color: white; text-align: center; border-radius: 8px; padding: 6px; font-size: 0.68rem; font-weight: 700; cursor: pointer; box-shadow: 0 4px 10px rgba(37,99,235,0.2);">Explore 250+ Mysore PGs</div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
+<!-- Simplified Experience: Extra promotional sections removed for clean minimal design -->
 
 <!-- JSON metadata for City-Area relationships -->
 <script id="city-area-data" type="application/json">
@@ -389,57 +212,7 @@
         }
     }
 
-    // Set Search Type value based on tabs
-    function setSearchType(type) {
-        document.getElementById('search-type-input').value = type;
-        
-        // Sync active class
-        const tabs = document.querySelectorAll('.search-tab');
-        tabs.forEach(tab => {
-            tab.classList.remove('active');
-        });
-        
-        // Find clicked tab and activate
-        const eventTarget = window.event ? window.event.currentTarget : null;
-        if (eventTarget) {
-            eventTarget.classList.add('active');
-        }
-        
-        // Sync property type select dropdown if necessary
-        const selectDropdown = document.getElementById('type-select-dropdown');
-        if (selectDropdown) {
-            if (type === '1BHK') {
-                selectDropdown.value = '1BHK';
-            } else if (type === 'PG (Men)' || type === 'PG') {
-                selectDropdown.value = 'PG (Men)';
-            } else if (type === 'Co-living') {
-                selectDropdown.value = 'Co-living';
-            } else {
-                selectDropdown.value = '';
-            }
-        }
-    }
-    
-    // Sync Select Dropdown to search-tabs
-    function syncSearchType(value) {
-        document.getElementById('search-type-input').value = value;
-        
-        const tabs = document.querySelectorAll('.search-tab');
-        tabs.forEach(tab => {
-            tab.classList.remove('active');
-        });
-        
-        // Activate matching tab
-        if (value === '1BHK') {
-            tabs[1].classList.add('active');
-        } else if (value === 'PG (Men)' || value === 'PG (Women)') {
-            tabs[2].classList.add('active');
-        } else if (value === 'Co-living') {
-            tabs[3].classList.add('active');
-        } else {
-            tabs[0].classList.add('active');
-        }
-    }
+    // Tab-switching and dropdown sync JS removed since tabs are removed
     
     // Initialize area select on load if city is pre-selected
     document.addEventListener("DOMContentLoaded", function() {

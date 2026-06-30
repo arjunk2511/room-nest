@@ -20,6 +20,7 @@ def home(request):
         cache.set('home_featured_listings', featured_listings, 900)  # Cache for 15 minutes
     has_subscription = False
     wishlist_ids = []
+    user_listings = []
     if request.user.is_authenticated:
         has_subscription = Subscription.objects.filter(
             user=request.user,
@@ -27,11 +28,13 @@ def home(request):
             end_date__gt=timezone.now()
         ).exists()
         wishlist_ids = list(Wishlist.objects.filter(user=request.user).values_list('listing_id', flat=True))
+        user_listings = list(Listing.objects.filter(owner=request.user).select_related('city', 'area')[:3])
     
     context = {
         'listings': featured_listings,
         'has_subscription': has_subscription,
-        'wishlist_ids': wishlist_ids
+        'wishlist_ids': wishlist_ids,
+        'user_listings': user_listings,
     }
     
     if not request.user.is_authenticated:
@@ -284,10 +287,10 @@ def add_property(request):
         
         images = request.FILES.getlist('images')
         
-        if len(images) < 3:
-            messages.error(request, 'You must upload at least 3 photos to publish your listing.')
+        if len(images) < 1:
+            messages.error(request, 'You must upload at least 1 photo to publish your listing.')
             return render(request, 'add_property.html', {
-                'error_msg': 'Minimum 3 photos required'
+                'error_msg': 'Minimum 1 photo required'
             })
         
         main_image = images[0]
@@ -565,8 +568,8 @@ def edit_property(request, listing_id):
         
         images = request.FILES.getlist('images')
         if images:
-            if len(images) < 3:
-                messages.error(request, 'If you decide to upload new photos, you must upload at least 3 photos.')
+            if len(images) < 1:
+                messages.error(request, 'If you decide to upload new photos, you must upload at least 1 photo.')
                 return redirect('edit_property', listing_id=listing.id)
             
             # Update main image to first new image
