@@ -3369,7 +3369,10 @@ footer {
     .swipe-gallery {
         height: 100% !important;
         display: flex !important;
-        overflow: hidden !important;
+        overflow-x: auto !important;
+        scroll-snap-type: x mandatory !important;
+        -ms-overflow-style: none !important;
+        scrollbar-width: none !important;
     }
 
     .swipe-gallery-item {

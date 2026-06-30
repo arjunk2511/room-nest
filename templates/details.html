@@ -521,10 +521,14 @@ function syncGalleryUI() {
 function goToSwipeSlide(index) {
     currentSlide = index;
     if (swipeGallery) {
-        swipeGallery.scrollTo({
-            left: index * swipeGallery.clientWidth,
-            behavior: 'smooth'
-        });
+        const items = swipeGallery.querySelectorAll('.swipe-gallery-item');
+        if (items[index]) {
+            items[index].scrollIntoView({
+                behavior: 'smooth',
+                block: 'nearest',
+                inline: 'start'
+            });
+        }
     }
     syncGalleryUI();
 }
