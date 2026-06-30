@@ -898,13 +898,65 @@ document.querySelector('form').addEventListener('submit', function(e) {
         return false;
     }
     
+    // Show the loading overlay
+    const overlay = document.getElementById('submit-loading-overlay');
+    if (overlay) {
+        overlay.style.display = 'flex';
+    }
+    
+    // Disable submit button
     const submitBtn = document.querySelector('button[type="submit"]');
     if (submitBtn) {
         submitBtn.disabled = true;
-        submitBtn.innerHTML = 'Publishing...';
+        submitBtn.innerHTML = 'Uploading...';
     }
+    
+    // Cycle messages and progress bar
+    const statusTitle = document.getElementById('loading-status-title');
+    const progressBar = document.getElementById('loading-progress-bar');
+    
+    let progress = 0;
+    const interval = setInterval(() => {
+        progress += 2;
+        if (progress > 95) {
+            clearInterval(interval);
+        } else {
+            if (progressBar) progressBar.style.width = progress + "%";
+            if (statusTitle) {
+                if (progress < 40) {
+                    statusTitle.innerText = "Uploading images...";
+                } else if (progress < 75) {
+                    statusTitle.innerText = "Saving property details...";
+                } else {
+                    statusTitle.innerText = "Publishing your listing...";
+                }
+            }
+        }
+    }, 120);
 });
 </script>
+
+<!-- Full-screen Loading Overlay -->
+<div id="submit-loading-overlay" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); z-index: 999999; align-items: center; justify-content: center; color: white; flex-direction: column; gap: 1.5rem; font-family: 'Outfit', sans-serif;">
+    <div style="position: relative; width: 80px; height: 80px;">
+        <div style="position: absolute; width: 100%; height: 100%; border: 4px solid transparent; border-top-color: var(--primary); border-radius: 50%; animation: spin-loading 1s linear infinite;"></div>
+        <div style="position: absolute; width: 80%; height: 80%; top: 10%; left: 10%; border: 4px solid transparent; border-bottom-color: #38bdf8; border-radius: 50%; animation: spin-loading 1.5s linear infinite reverse;"></div>
+    </div>
+    <div style="text-align: center;">
+        <h3 id="loading-status-title" style="margin: 0; font-size: 1.5rem; font-weight: 800; color: white; min-height: 2.2rem; transition: all 0.3s ease;">Uploading images...</h3>
+        <p style="margin: 0.5rem 0 0 0; font-size: 0.9rem; color: #94a3b8; font-weight: 500;">Please do not close this window or refresh the page.</p>
+    </div>
+    <div style="width: 200px; height: 6px; background: rgba(255,255,255,0.1); border-radius: 99px; overflow: hidden;">
+        <div id="loading-progress-bar" style="width: 0%; height: 100%; background: linear-gradient(90deg, var(--primary) 0%, #38bdf8 100%); border-radius: 99px; transition: width 0.4s ease;"></div>
+    </div>
+</div>
+
+<style>
+@keyframes spin-loading {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+</style>
 
 <!-- JSON metadata for City-Area relationships -->
 <script id="city-area-data" type="application/json">

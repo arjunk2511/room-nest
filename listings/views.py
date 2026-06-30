@@ -333,10 +333,19 @@ def add_property(request):
                 built_up_area=built_up_area
             )
             
-            # Save extra images (looping is required to trigger Cloudinary file upload and save logic)
+            # Save extra images in parallel to optimize Cloudinary upload times
             if len(images) > 1:
-                for img in images[1:]:
-                    ListingImage.objects.create(listing=listing, image=img)
+                import concurrent.futures
+                from django.db import connection
+
+                def upload_and_create_gallery_image(img_file):
+                    try:
+                        ListingImage.objects.create(listing=listing, image=img_file)
+                    finally:
+                        connection.close()
+
+                with concurrent.futures.ThreadPoolExecutor(max_workers=4) as executor:
+                    executor.map(upload_and_create_gallery_image, images[1:])
                 
             # Create a pending reward for the direct owner listing (Owner Bonus System)
             Reward.objects.create(
@@ -580,10 +589,19 @@ def edit_property(request, listing_id):
             # Update main image to first new image
             listing.image = images[0]
             
-            # Delete existing extra gallery images and save new ones
+            # Delete existing extra gallery images and save new ones in parallel to optimize Cloudinary upload times
             listing.images.all().delete()
-            for img in images[1:]:
-                ListingImage.objects.create(listing=listing, image=img)
+            import concurrent.futures
+            from django.db import connection
+
+            def upload_and_create_gallery_image(img_file):
+                try:
+                    ListingImage.objects.create(listing=listing, image=img_file)
+                finally:
+                    connection.close()
+
+            with concurrent.futures.ThreadPoolExecutor(max_workers=4) as executor:
+                executor.map(upload_and_create_gallery_image, images[1:])
         
         listing.save()
         messages.success(request, 'Property listing updated successfully!')
