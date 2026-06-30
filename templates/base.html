@@ -27,7 +27,9 @@
     <meta property="twitter:image" content="{% block twitter_image %}https://roomnest.online{% static 'images/logo_icon.png' %}{% endblock %}">
 
     {% load webpush_notifications %}
-    {% webpush_header %}
+    {% if request %}
+        {% webpush_header %}
+    {% endif %}
 
     <!-- Preconnect to Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
