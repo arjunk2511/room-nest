@@ -46,24 +46,26 @@
 </script>
 
 <!-- Hero Section -->
-<section class="hero" style="background: linear-gradient(135deg, rgba(15, 23, 42, 0.85) 0%, rgba(37, 99, 235, 0.85) 100%){% if city.image %}, url('{{ city.image.url }}'){% endif %}; background-size: cover; background-position: center; min-height: 400px; display: flex; align-items: center; justify-content: center; text-align: center; color: white; padding: 4rem 1.5rem; position: relative;">
+<section class="hero" style="position: relative; overflow: hidden; background: linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(255, 56, 92, 0.75) 100%){% if city.image %}, url('{{ city.image.url }}'){% endif %}; background-size: cover; background-position: center; min-height: 380px; display: flex; align-items: center; justify-content: center; text-align: center; color: white; padding: 4rem 1.5rem;">
     <div style="max-width: 800px; margin: 0 auto; z-index: 2; position: relative;">
-        <span style="background: rgba(37, 99, 235, 0.2); color: #93C5FD; padding: 0.4rem 1rem; border-radius: 99px; font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; display: inline-block; margin-bottom: 1.5rem; border: 1px solid rgba(147, 197, 253, 0.3);">⚡ Zero Brokerage stays in {{ city.name }}</span>
-        <h1 style="color: white; font-size: 3rem; font-weight: 800; margin-bottom: 1rem; font-family: 'Outfit', sans-serif;">Find Rooms, PGs & Flats in {{ city.name }}</h1>
+        <span style="background: rgba(255, 56, 92, 0.15); color: var(--primary); padding: 0.4rem 1rem; border-radius: 99px; font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; display: inline-flex; align-items: center; gap: 6px; margin-bottom: 1.5rem; border: 1px solid rgba(255, 56, 92, 0.25);">
+            <i data-lucide="shield-check" style="width: 14px; height: 14px;"></i> Zero Brokerage stays in {{ city.name }}
+        </span>
+        <h1 style="color: white; font-size: 3rem; font-weight: 800; margin-bottom: 1rem; font-family: 'Outfit', sans-serif; letter-spacing: -0.03em;">Find Rooms, PGs & Flats in {{ city.name }}</h1>
         <p style="font-size: 1.15rem; opacity: 0.9; max-width: 600px; margin: 0 auto 2rem auto; font-weight: 400; line-height: 1.6;">Direct owner contacts, zero brokerage commissions, and verified premium rooms for rent.</p>
     </div>
 </section>
 
 <!-- Overlapping Unified Search Bar -->
-<div class="search-wrapper" style="margin-top: -40px; position: relative; z-index: 10; padding: 0 1.5rem;">
-    <div class="search-container" style="max-width: 1000px; margin: 0 auto; background: var(--white); border-radius: var(--border-radius-lg); padding: 1.5rem; box-shadow: var(--shadow-lg); border: 1px solid var(--border-color);">
-        <form action="{% url 'search' %}" method="GET" class="search-form" style="display: flex; flex-wrap: wrap; gap: 1rem; align-items: center; justify-content: space-between;">
+<div class="search-wrapper" style="margin-top: -3.5rem; position: relative; z-index: 10; padding: 0 1.5rem;">
+    <div class="search-container" style="max-width: 1000px; margin: 0 auto; background: var(--white); border-radius: 9999px; padding: 8px; box-shadow: var(--shadow-lg); border: 1px solid rgba(0, 0, 0, 0.05);">
+        <form action="{% url 'search' %}" method="GET" class="search-form" style="display: grid; grid-template-columns: 1.2fr 1fr 1fr auto; gap: 8px; align-items: center;">
             <input type="hidden" name="city" value="{{ city.slug }}">
             
             <!-- Area Selector -->
-            <div class="search-field" style="flex: 1.2; min-width: 240px; display: flex; align-items: center; gap: 10px; border: 1px solid var(--border-color); padding: 0.75rem 1rem; border-radius: var(--border-radius-md); background: #F8FAFC;">
-                <span style="font-size: 1.2rem;">📍</span>
-                <select name="area" style="width: 100%; border: none; background: transparent; outline: none; font-size: 0.92rem; font-weight: 600; color: var(--text-dark); cursor: pointer;">
+            <div class="search-field" style="border-right: 1px solid var(--border-color); height: 100%;">
+                <span class="search-icon" style="color: var(--primary);"><i data-lucide="map-pin" style="width: 18px; height: 18px;"></i></span>
+                <select name="area" style="width: 100%; border: none; background: transparent; outline: none; font-size: 0.92rem; font-weight: 600; color: var(--text-dark); cursor: pointer; padding-left: 2.5rem;">
                     <option value="">Select Neighborhood (All Areas)</option>
                     {% for area in areas %}
                         <option value="{{ area.slug }}">{{ area.name }}</option>
@@ -72,9 +74,9 @@
             </div>
             
             <!-- Property Type Select -->
-            <div class="search-field" style="flex: 1; min-width: 200px; display: flex; align-items: center; gap: 10px; border: 1px solid var(--border-color); padding: 0.75rem 1rem; border-radius: var(--border-radius-md); background: #F8FAFC;">
-                <span style="font-size: 1.2rem;">🏠</span>
-                <select name="type" style="width: 100%; border: none; background: transparent; outline: none; font-size: 0.92rem; font-weight: 600; color: var(--text-dark); cursor: pointer;">
+            <div class="search-field" style="border-right: 1px solid var(--border-color); height: 100%;">
+                <span class="search-icon" style="color: var(--primary);"><i data-lucide="home" style="width: 18px; height: 18px;"></i></span>
+                <select name="type" style="width: 100%; border: none; background: transparent; outline: none; font-size: 0.92rem; font-weight: 600; color: var(--text-dark); cursor: pointer; padding-left: 2.5rem;">
                     <option value="">Property Type</option>
                     <option value="1BHK">1 BHK Flat</option>
                     <option value="2BHK">2 BHK Flat</option>
@@ -88,13 +90,15 @@
             </div>
             
             <!-- Budget Numeric Input -->
-            <div class="search-field" style="flex: 1; min-width: 160px; display: flex; align-items: center; gap: 10px; border: 1px solid var(--border-color); padding: 0.75rem 1rem; border-radius: var(--border-radius-md); background: #F8FAFC;">
-                <span style="font-size: 1.2rem;">₹</span>
-                <input type="number" name="price" placeholder="Max Budget" style="width: 100%; border: none; background: transparent; outline: none; font-size: 0.92rem; font-weight: 600; color: var(--text-dark);">
+            <div class="search-field" style="height: 100%;">
+                <span class="search-icon" style="color: var(--primary); font-weight: 700; font-size: 1rem; padding-left: 1.1rem; display: flex; align-items: center; justify-content: center; height: 100%;">₹</span>
+                <input type="number" name="price" placeholder="Max Budget" style="width: 100%; border: none; background: transparent; outline: none; font-size: 0.92rem; font-weight: 600; color: var(--text-dark); padding-left: 2.5rem;">
             </div>
             
             <!-- Search Submit Button -->
-            <button type="submit" class="btn btn-primary" style="padding: 0.85rem 2rem; border-radius: var(--border-radius-md); font-weight: 700; color: white !important; cursor: pointer; box-shadow: 0 4px 14px rgba(37,99,235,0.25);">Search</button>
+            <button type="submit" class="btn btn-primary" style="border-radius: 9999px; min-height: 48px; padding: 0 2rem; display: inline-flex; align-items: center; gap: 8px;">
+                <i data-lucide="search" style="width: 18px; height: 18px;"></i> Search
+            </button>
         </form>
     </div>
 </div>
@@ -109,11 +113,13 @@
     
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem;">
         {% for area in areas %}
-        <a href="{% url 'area_page' city.slug area.slug %}" style="display: block;">
+        <a href="{% url 'area_page' city.slug area.slug %}" style="display: block; text-decoration: none;">
             <div style="background: var(--white); border: 1px solid var(--border-color); border-radius: var(--border-radius-lg); padding: 1.75rem; text-align: center; box-shadow: var(--shadow-sm); transition: var(--transition-bounce);" onmouseover="this.style.transform='translateY(-4px)'; this.style.borderColor='var(--primary)'; this.style.boxShadow='var(--shadow-md)';" onmouseout="this.style.transform='translateY(0)'; this.style.borderColor='var(--border-color)'; this.style.boxShadow='var(--shadow-sm)';">
-                <span style="font-size: 2.5rem; display: block; margin-bottom: 0.75rem;">📍</span>
+                <i data-lucide="map-pin" style="width: 28px; height: 28px; color: var(--primary); margin: 0 auto 0.75rem auto; display: block;"></i>
                 <h3 style="font-size: 1.25rem; color: var(--text-dark); margin-bottom: 0.5rem; font-family: 'Outfit', sans-serif;">{{ area.name }}</h3>
-                <span style="font-size: 0.8rem; color: var(--primary); font-weight: 700; background: var(--primary-light); padding: 0.25rem 0.75rem; border-radius: 99px; display: inline-block;">Explore Stays ➔</span>
+                <span style="font-size: 0.8rem; color: var(--primary); font-weight: 700; background: var(--primary-light); padding: 0.25rem 0.75rem; border-radius: 99px; display: inline-flex; align-items: center; gap: 4px; transition: var(--transition-smooth);">
+                    Explore Stays <i data-lucide="arrow-right" style="width: 12px; height: 12px;"></i>
+                </span>
             </div>
         </a>
         {% empty %}
@@ -137,7 +143,21 @@
     
     <div class="grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 2rem;">
         {% for listing in listings %}
-        <div class="card">
+        <div class="card" style="position: relative;">
+            <!-- Wishlist Heart Overlay -->
+            {% if user.is_authenticated %}
+                <form action="{% url 'toggle_wishlist' listing.id %}" method="POST" style="position: absolute; top: 1rem; right: 1rem; margin: 0; z-index: 10;">
+                    {% csrf_token %}
+                    <button type="submit" style="background: rgba(255, 255, 255, 0.9); border: none; border-radius: 50%; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; color: {% if listing.id in wishlist_ids %}var(--primary){% else %}var(--text-dark){% endif %}; cursor: pointer; box-shadow: var(--shadow-sm); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.1)';" onmouseout="this.style.transform='scale(1)';" title="Save Property">
+                        <i data-lucide="heart" style="width: 18px; height: 18px; {% if listing.id in wishlist_ids %}fill: var(--primary); stroke: var(--primary);{% else %}fill: none; stroke: currentColor;{% endif %}"></i>
+                    </button>
+                </form>
+            {% else %}
+                <a href="{% url 'login' %}?next={{ request.path }}" class="card-wishlist-btn" style="position: absolute; top: 1rem; right: 1rem; background: rgba(255, 255, 255, 0.9); border: none; border-radius: 50%; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; color: var(--text-dark); cursor: pointer; box-shadow: var(--shadow-sm); z-index: 10; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.1)';" onmouseout="this.style.transform='scale(1)';" title="Save Property">
+                    <i data-lucide="heart" style="width: 18px; height: 18px; fill: none; stroke: currentColor;"></i>
+                </a>
+            {% endif %}
+
             <a href="{{ listing.get_absolute_url }}" style="text-decoration: none; color: inherit; display: flex; flex-direction: column; flex-grow: 1;">
                 <div class="card-img-wrapper">
                     {% if listing.image %}
@@ -145,70 +165,70 @@
                     {% else %}
                     <div style="background: #E2E8F0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-weight: 600; font-size: 1rem;">No Image Available</div>
                     {% endif %}
-                    <span class="card-badge">{{ listing.type }}</span>
+                    <span class="card-badge" style="border-radius: 99px;">{{ listing.type }}</span>
                     {% if listing.owner.userprofile.is_verified %}
-                    <span style="position: absolute; top: 1rem; right: 1rem; background: #10B981; color: white; border-radius: 6px; font-size: 0.7rem; font-weight: 700; padding: 0.35rem 0.7rem; box-shadow: var(--shadow-sm); z-index: 2;">🛡️ Verified Owner</span>
+                    <span style="position: absolute; bottom: 1rem; left: 1rem; background: #10B981; color: white; border-radius: 99px; font-size: 0.68rem; font-weight: 700; padding: 0.25rem 0.75rem; box-shadow: var(--shadow-sm); z-index: 2; display: inline-flex; align-items: center; gap: 4px;">
+                        <i data-lucide="shield-check" style="width: 12px; height: 12px;"></i> Verified Owner
+                    </span>
                     {% endif %}
                 </div>
                 
-                <div class="card-content" style="padding: 1.5rem; display: flex; flex-direction: column; flex-grow: 1;">
-                    <div class="card-price">₹{{ listing.price }}<span>/ month</span></div>
-                    <h3 class="card-title">{{ listing.title }}</h3>
-                    <p style="color: var(--text-light); font-size: 0.85rem; margin-bottom: 0.5rem; font-weight: 500; display: flex; align-items: center; gap: 4px;">
-                        <span>📍</span> {% if listing.area %}{{ listing.area.name }}, {% endif %}{{ city.name }}
+                <div class="card-content" style="padding: 1.25rem; display: flex; flex-direction: column; flex-grow: 1;">
+                    <div class="card-price" style="font-size: 1.35rem; font-weight: 800; color: var(--text-dark); margin-bottom: 0.25rem;">₹{{ listing.price }}<span style="font-size: 0.85rem; color: var(--text-light); font-weight: 500;">/ month</span></div>
+                    <h3 class="card-title" style="font-size: 1.1rem; font-weight: 700; color: var(--text-dark); margin-bottom: 0.5rem; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; min-height: auto;">{{ listing.title }}</h3>
+                    <p style="color: var(--text-light); font-size: 0.85rem; margin-bottom: 0.5rem; font-weight: 500; display: flex; align-items: center; gap: 6px;">
+                        <i data-lucide="map-pin" style="width: 14px; height: 14px; color: var(--primary);"></i> {% if listing.area %}{{ listing.area.name }}, {% endif %}{{ city.name }}
                     </p>
-                    <div style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 0.8rem; display: flex; align-items: center; gap: 4px;">
-                        <span>🕒</span> Posted {{ listing.created_at|timesince }} ago
+                    <div style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 0.8rem; display: flex; align-items: center; gap: 6px;">
+                        <i data-lucide="clock" style="width: 14px; height: 14px;"></i> Posted {{ listing.created_at|timesince }} ago
                     </div>
                     
-                    <div class="card-info-row">
-                        <div class="card-info-item">
-                            <span class="card-info-label">Deposit</span>
-                            <span class="card-info-value">₹{{ listing.deposit }}</span>
+                    <div class="card-info-row" style="display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--border-color); padding-top: 0.75rem; margin-top: auto; text-align: center;">
+                        <div class="card-info-item" style="border-right: 1px solid var(--border-color);">
+                            <span class="card-info-label" style="display: block; font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px;">Deposit</span>
+                            <span class="card-info-value" style="font-size: 0.85rem; color: var(--text-dark); font-weight: 700;">₹{{ listing.deposit }}</span>
+                        </div>
+                        <div class="card-info-item" style="border-right: 1px solid var(--border-color);">
+                            <span class="card-info-label" style="display: block; font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px;">Furnishing</span>
+                            <span class="card-info-value" style="font-size: 0.85rem; color: var(--text-dark); font-weight: 700; display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ listing.furnishing }}</span>
                         </div>
                         <div class="card-info-item">
-                            <span class="card-info-label">Furnishing</span>
-                            <span class="card-info-value">{{ listing.furnishing }}</span>
-                        </div>
-                        <div class="card-info-item">
-                            <span class="card-info-label">Available</span>
-                            <span class="card-info-value" title="{{ listing.available_from }}">{{ listing.available_from }}</span>
+                            <span class="card-info-label" style="display: block; font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px;">Available</span>
+                            <span class="card-info-value" style="font-size: 0.85rem; color: var(--text-dark); font-weight: 700; display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="{{ listing.available_from }}">{{ listing.available_from }}</span>
                         </div>
                     </div>
                 </div>
             </a>
             
-            <div class="card-footer-action" style="display: grid; grid-template-columns: auto 1fr 1fr; gap: 8px; padding: 0 1.5rem 1.5rem 1.5rem; margin-top: auto; width: 100%; align-items: center; background: white; border-radius: 0 0 var(--border-radius-lg) var(--border-radius-lg);">
-                <!-- Save (wishlist heart) -->
-                {% if user.is_authenticated %}
-                    <form action="{% url 'toggle_wishlist' listing.id %}" method="POST" style="margin: 0; display: flex; align-items: center;">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-outline" style="min-height: 40px; width: 40px; height: 40px; padding: 0; border-radius: 8px; font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: var(--transition-smooth);" title="Save Property">
-                            {% if listing.id in wishlist_ids %}❤️{% else %}🤍{% endif %}
-                        </button>
-                    </form>
-                {% else %}
-                    <a href="{% url 'login' %}?next={{ request.path }}" class="btn btn-outline" style="min-height: 40px; width: 40px; height: 40px; padding: 0; border-radius: 8px; font-size: 1.1rem; display: inline-flex; align-items: center; justify-content: center;" title="Save Property">
-                        🤍
-                    </a>
-                {% endif %}
-
+            <div class="card-footer-action" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 0 1.25rem 1.25rem 1.25rem; margin-top: auto; width: 100%; align-items: center; background: white; border-radius: 0 0 var(--border-radius-lg) var(--border-radius-lg);">
                 <!-- Call -->
                 {% if user.is_authenticated and has_subscription or user.is_authenticated and request.user == listing.owner %}
-                    <a href="tel:{{ listing.phone }}" class="btn btn-outline" style="min-height: 40px; padding: 0.5rem; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; gap: 4px; font-weight: 700; font-size: 0.85rem;" title="Call Owner">📞 Call</a>
+                    <a href="tel:{{ listing.phone }}" class="btn btn-outline" style="min-height: 40px; padding: 0; border-radius: 9999px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; font-weight: 700; font-size: 0.85rem; color: var(--text-dark) !important; border: 1px solid var(--border-color);" title="Call Owner">
+                        <i data-lucide="phone" style="width: 14px; height: 14px;"></i> Call
+                    </a>
                 {% elif user.is_authenticated %}
-                    <a href="{{ listing.get_absolute_url }}" class="btn btn-outline" style="min-height: 40px; padding: 0.5rem; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; gap: 4px; font-weight: 700; font-size: 0.85rem; color: var(--text-muted) !important;" title="Unlock Call Contact">📞 Call 🔒</a>
+                    <a href="{{ listing.get_absolute_url }}" class="btn btn-outline" style="min-height: 40px; padding: 0; border-radius: 9999px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; font-weight: 700; font-size: 0.85rem; color: var(--text-dark) !important; border: 1px solid var(--border-color);" title="Unlock Call Contact">
+                        <i data-lucide="phone" style="width: 14px; height: 14px;"></i> Call <i data-lucide="lock" style="width: 10px; height: 10px; opacity: 0.6;"></i>
+                    </a>
                 {% else %}
-                    <a href="{% url 'login' %}?next={{ request.path }}" class="btn btn-outline" style="min-height: 40px; padding: 0.5rem; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; gap: 4px; font-weight: 700; font-size: 0.85rem; color: var(--text-muted) !important;" title="Login to Call">📞 Call 🔒</a>
+                    <a href="{% url 'login' %}?next={{ request.path }}" class="btn btn-outline" style="min-height: 40px; padding: 0; border-radius: 9999px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; font-weight: 700; font-size: 0.85rem; color: var(--text-dark) !important; border: 1px solid var(--border-color);" title="Login to Call">
+                        <i data-lucide="phone" style="width: 14px; height: 14px;"></i> Call <i data-lucide="lock" style="width: 10px; height: 10px; opacity: 0.6;"></i>
+                    </a>
                 {% endif %}
 
                 <!-- WhatsApp -->
                 {% if user.is_authenticated and has_subscription or user.is_authenticated and request.user == listing.owner %}
-                    <button onclick="openWhatsApp('{{ listing.phone|escapejs }}', '{{ listing.title|escapejs }}')" class="btn btn-whatsapp" style="min-height: 40px; padding: 0.5rem; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; gap: 4px; font-weight: 700; font-size: 0.85rem; color: white !important;" title="WhatsApp Owner">💬 Chat</button>
+                    <button onclick="openWhatsApp('{{ listing.phone|escapejs }}', '{{ listing.title|escapejs }}')" class="btn btn-whatsapp" style="min-height: 40px; padding: 0; border-radius: 9999px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; font-weight: 700; font-size: 0.85rem; background: #25D366; border: none; color: white !important;" title="WhatsApp Owner">
+                        <i data-lucide="message-square" style="width: 14px; height: 14px;"></i> Chat
+                    </button>
                 {% elif user.is_authenticated %}
-                    <a href="{{ listing.get_absolute_url }}" class="btn btn-whatsapp" style="min-height: 40px; padding: 0.5rem; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; gap: 4px; font-weight: 700; font-size: 0.85rem; color: white !important;" title="Unlock WhatsApp Contact">💬 Chat 🔒</a>
+                    <a href="{{ listing.get_absolute_url }}" class="btn btn-whatsapp" style="min-height: 40px; padding: 0; border-radius: 9999px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; font-weight: 700; font-size: 0.85rem; background: #25D366; border: none; color: white !important;" title="Unlock WhatsApp Contact">
+                        <i data-lucide="message-square" style="width: 14px; height: 14px;"></i> Chat <i data-lucide="lock" style="width: 10px; height: 10px; opacity: 0.8;"></i>
+                    </a>
                 {% else %}
-                    <a href="{% url 'login' %}?next={{ request.path }}" class="btn btn-whatsapp" style="min-height: 40px; padding: 0.5rem; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; gap: 4px; font-weight: 700; font-size: 0.85rem; color: white !important;" title="Login to Chat">💬 Chat 🔒</a>
+                    <a href="{% url 'login' %}?next={{ request.path }}" class="btn btn-whatsapp" style="min-height: 40px; padding: 0; border-radius: 9999px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; font-weight: 700; font-size: 0.85rem; background: #25D366; border: none; color: white !important;" title="Login to Chat">
+                        <i data-lucide="message-square" style="width: 14px; height: 14px;"></i> Chat <i data-lucide="lock" style="width: 10px; height: 10px; opacity: 0.8;"></i>
+                    </a>
                 {% endif %}
             </div>
         </div>
