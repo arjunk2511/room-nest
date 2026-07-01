@@ -11,25 +11,27 @@
 
 {% block content %}
 <!-- Premium Landing Hero Section -->
-<section class="hero">
-    <div style="max-width: 800px; margin: 0 auto; z-index: 2; position: relative;">
-        <span style="background: rgba(37, 99, 235, 0.2); color: #93C5FD; padding: 0.4rem 1rem; border-radius: 99px; font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; display: inline-block; margin-bottom: 1.5rem; border: 1px solid rgba(147, 197, 253, 0.3);">⚡ Zero Brokerage Rental Portal</span>
-        <h1>Find Your Perfect Stay in Mysore</h1>
-        <p>Mysore's premium digital platform for student housing, co-living spaces, flatmates, and direct owner rentals.</p>
+<section class="hero" style="position: relative; overflow: hidden; background: linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(15, 23, 42, 0.7) 100%), url('/static/images/hero_bg.webp') no-repeat center center; background-size: cover; padding: 6rem 1.5rem 8rem 1.5rem;">
+    <div style="max-width: 800px; margin: 0 auto; z-index: 2; position: relative; text-align: center;">
+        <span style="background: rgba(255, 56, 92, 0.15); color: var(--primary); padding: 0.5rem 1.25rem; border-radius: 99px; font-size: 0.82rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; display: inline-flex; align-items: center; gap: 6px; margin-bottom: 1.5rem; border: 1px solid rgba(255, 56, 92, 0.25);">
+            <i data-lucide="shield-check" style="width: 14px; height: 14px;"></i> Zero Brokerage Rental Portal
+        </span>
+        <h1 style="font-family: 'Outfit', sans-serif; font-size: 2.8rem; font-weight: 800; color: white; margin-bottom: 1rem; letter-spacing: -0.03em; line-height: 1.15;">Find Your Perfect Stay</h1>
+        <p style="font-family: 'Inter', sans-serif; font-size: 1.1rem; color: #E2E8F0; max-width: 600px; margin: 0 auto; line-height: 1.5; font-weight: 450; opacity: 0.95;">Verified student housing, co-living hubs, shared accommodation, and direct owner listings across India.</p>
     </div>
 </section>
 
-<!-- Overlapping Unified Search Bar -->
-<div class="search-wrapper">
-    <div class="search-container">
+<!-- Overlapping Unified Search Bar & Trust Strip -->
+<div class="search-wrapper" style="margin-top: -3.5rem;">
+    <div class="search-container" style="border-radius: 9999px; box-shadow: var(--shadow-lg); border: 1px solid rgba(0, 0, 0, 0.05); padding: 8px; background: white;">
         <!-- Search Form -->
-        <form action="{% url 'search' %}" method="GET" class="search-form" style="grid-template-columns: 1fr 1fr auto;">
+        <form action="{% url 'search' %}" method="GET" class="search-form" style="display: grid; grid-template-columns: 1fr 1fr auto; gap: 8px; align-items: center;">
             <input type="hidden" name="type" id="search-type-input" value="">
             
             <!-- Select City -->
-            <div class="search-field">
-                <span class="search-icon">🏙️</span>
-                <select name="city" id="city-select" onchange="updateAreaOptions(this.value)" aria-label="Select City">
+            <div class="search-field" style="border-right: 1px solid var(--border-color); height: 100%;">
+                <span class="search-icon" style="color: var(--primary);"><i data-lucide="map-pin" style="width: 18px; height: 18px;"></i></span>
+                <select name="city" id="city-select" onchange="updateAreaOptions(this.value)" aria-label="Select City" style="border: none; padding-left: 2.5rem; font-weight: 600; color: var(--text-dark); background: transparent;">
                     <option value="">Select City (All India)</option>
                     {% for city in active_cities %}
                         <option value="{{ city.slug }}">{{ city.name }}</option>
@@ -38,16 +40,31 @@
             </div>
             
             <!-- Select Area -->
-            <div class="search-field">
-                <span class="search-icon">📍</span>
-                <select name="area" id="area-select" aria-label="Select Area">
+            <div class="search-field" style="height: 100%;">
+                <span class="search-icon" style="color: var(--primary);"><i data-lucide="navigation" style="width: 18px; height: 18px;"></i></span>
+                <select name="area" id="area-select" aria-label="Select Area" style="border: none; padding-left: 2.5rem; font-weight: 600; color: var(--text-dark); background: transparent;">
                     <option value="">Select Area (All Areas)</option>
                 </select>
             </div>
             
             <!-- Search Submit Button -->
-            <button type="submit" class="btn btn-primary search-btn" style="height: 100%;">Search</button>
+            <button type="submit" class="btn btn-primary search-btn" style="border-radius: 9999px; min-height: 48px; padding: 0 2rem; display: inline-flex; align-items: center; gap: 8px;">
+                <i data-lucide="search" style="width: 18px; height: 18px;"></i> Search
+            </button>
         </form>
+    </div>
+
+    <!-- Trust Stats Badge Strip -->
+    <div style="display: flex; justify-content: center; align-items: center; gap: var(--space-4); margin-top: 1.5rem; flex-wrap: wrap;">
+        <span style="display: inline-flex; align-items: center; gap: 6px; font-size: 0.85rem; color: var(--text-light); font-weight: 600;">
+            <i data-lucide="percent" style="width: 16px; height: 16px; color: var(--primary);"></i> Zero Brokerage
+        </span>
+        <span style="display: inline-flex; align-items: center; gap: 6px; font-size: 0.85rem; color: var(--text-light); font-weight: 600;">
+            <i data-lucide="shield-check" style="width: 16px; height: 16px; color: var(--primary);"></i> Verified Owners
+        </span>
+        <span style="display: inline-flex; align-items: center; gap: 6px; font-size: 0.85rem; color: var(--text-light); font-weight: 600;">
+            <i data-lucide="user-check" style="width: 16px; height: 16px; color: var(--primary);"></i> Direct Owner Connect
+        </span>
     </div>
 </div>
 
@@ -95,7 +112,12 @@
     {% cache 900 welcome_featured_listings_grid %}
     <div class="grid">
         {% for listing in listings %}
-        <div class="card">
+        <div class="card" style="position: relative;">
+            <!-- Wishlist Heart Overlay -->
+            <a href="{% url 'login' %}?next={{ request.path }}" class="card-wishlist-btn" style="position: absolute; top: 1rem; right: 1rem; background: rgba(255, 255, 255, 0.9); border: none; border-radius: 50%; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; color: var(--text-dark); cursor: pointer; box-shadow: var(--shadow-sm); z-index: 10; transition: transform 0.2s, color 0.2s;" onmouseover="this.style.transform='scale(1.1)';" onmouseout="this.style.transform='scale(1)';">
+                <i data-lucide="heart" style="width: 18px; height: 18px; fill: none; stroke: currentColor;"></i>
+            </a>
+
             <a href="{{ listing.get_absolute_url }}" style="text-decoration: none; color: inherit; display: flex; flex-direction: column; flex-grow: 1;">
                 <div class="card-img-wrapper">
                     {% if listing.image %}
@@ -103,50 +125,51 @@
                     {% else %}
                     <div style="background: #E2E8F0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-weight: 600; font-size: 1rem;">No Image Available</div>
                     {% endif %}
-                    <span class="card-badge">{{ listing.type }}</span>
+                    <span class="card-badge" style="border-radius: 99px;">{{ listing.type }}</span>
                     {% if listing.owner.userprofile.is_verified %}
-                    <span style="position: absolute; top: 1rem; right: 1rem; background: #10B981; color: white; border-radius: 6px; font-size: 0.7rem; font-weight: 700; padding: 0.35rem 0.7rem; box-shadow: var(--shadow-sm); z-index: 2;">🛡️ Verified Owner</span>
+                    <span style="position: absolute; bottom: 1rem; left: 1rem; background: #10B981; color: white; border-radius: 99px; font-size: 0.68rem; font-weight: 700; padding: 0.25rem 0.75rem; box-shadow: var(--shadow-sm); z-index: 2; display: inline-flex; align-items: center; gap: 4px;">
+                        <i data-lucide="shield-check" style="width: 12px; height: 12px;"></i> Verified Owner
+                    </span>
                     {% endif %}
                 </div>
                 
-                <div class="card-content" style="padding: 1.5rem; display: flex; flex-direction: column; flex-grow: 1;">
-                    <div class="card-price">₹{{ listing.price }}<span>/ month</span></div>
-                    <h3 class="card-title">{{ listing.title }}</h3>
-                    <p style="color: var(--text-light); font-size: 0.85rem; margin-bottom: 0.5rem; font-weight: 500; display: flex; align-items: center; gap: 4px;">
-                        <span>📍</span> {{ listing.location }}
+                <div class="card-content" style="padding: 1.25rem; display: flex; flex-direction: column; flex-grow: 1;">
+                    <div class="card-price" style="font-size: 1.35rem; font-weight: 800; color: var(--text-dark); margin-bottom: 0.25rem;">₹{{ listing.price }}<span style="font-size: 0.85rem; color: var(--text-light); font-weight: 500;">/ month</span></div>
+                    <h3 class="card-title" style="font-size: 1.1rem; font-weight: 700; color: var(--text-dark); margin-bottom: 0.5rem; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; min-height: auto;">{{ listing.title }}</h3>
+                    <p style="color: var(--text-light); font-size: 0.85rem; margin-bottom: 0.5rem; font-weight: 500; display: flex; align-items: center; gap: 6px;">
+                        <i data-lucide="map-pin" style="width: 14px; height: 14px; color: var(--primary);"></i> {{ listing.location }}
                     </p>
-                    <div style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 0.8rem; display: flex; align-items: center; gap: 4px;">
-                        <span>🕒</span> Posted {{ listing.created_at|timesince }} ago
+                    <div style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 0.8rem; display: flex; align-items: center; gap: 6px;">
+                        <i data-lucide="clock" style="width: 14px; height: 14px;"></i> Posted {{ listing.created_at|timesince }} ago
                     </div>
                     
-                    <div class="card-info-row">
-                        <div class="card-info-item">
-                            <span class="card-info-label">Deposit</span>
-                            <span class="card-info-value">₹{{ listing.deposit }}</span>
+                    <div class="card-info-row" style="display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--border-color); padding-top: 0.75rem; margin-top: auto; text-align: center;">
+                        <div class="card-info-item" style="border-right: 1px solid var(--border-color);">
+                            <span class="card-info-label" style="display: block; font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px;">Deposit</span>
+                            <span class="card-info-value" style="font-size: 0.85rem; color: var(--text-dark); font-weight: 700;">₹{{ listing.deposit }}</span>
+                        </div>
+                        <div class="card-info-item" style="border-right: 1px solid var(--border-color);">
+                            <span class="card-info-label" style="display: block; font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px;">Furnishing</span>
+                            <span class="card-info-value" style="font-size: 0.85rem; color: var(--text-dark); font-weight: 700; display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ listing.furnishing }}</span>
                         </div>
                         <div class="card-info-item">
-                            <span class="card-info-label">Furnishing</span>
-                            <span class="card-info-value">{{ listing.furnishing }}</span>
-                        </div>
-                        <div class="card-info-item">
-                            <span class="card-info-label">Available</span>
-                            <span class="card-info-value" title="{{ listing.available_from }}">{{ listing.available_from }}</span>
+                            <span class="card-info-label" style="display: block; font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px;">Available</span>
+                            <span class="card-info-value" style="font-size: 0.85rem; color: var(--text-dark); font-weight: 700; display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="{{ listing.available_from }}">{{ listing.available_from }}</span>
                         </div>
                     </div>
                 </div>
             </a>
             
-            <div class="card-footer-action" style="display: grid; grid-template-columns: auto 1fr 1fr; gap: 8px; padding: 0 1.5rem 1.5rem 1.5rem; margin-top: auto; width: 100%; align-items: center; background: white; border-radius: 0 0 var(--border-radius-lg) var(--border-radius-lg);">
-                <!-- Save (routes to login) -->
-                <a href="{% url 'login' %}?next={{ request.path }}" class="btn btn-outline" style="min-height: 40px; width: 40px; height: 40px; padding: 0; border-radius: 8px; font-size: 1.1rem; display: inline-flex; align-items: center; justify-content: center;" title="Save Property">
-                    🤍
+            <div class="card-footer-action" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 0 1.25rem 1.25rem 1.25rem; margin-top: auto; width: 100%; align-items: center; background: white; border-radius: 0 0 var(--border-radius-lg) var(--border-radius-lg);">
+                <!-- Call (routes to login) -->
+                <a href="{% url 'login' %}?next={{ request.path }}" class="btn btn-outline" style="min-height: 40px; padding: 0; border-radius: 9999px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; font-weight: 700; font-size: 0.85rem; color: var(--text-dark) !important; border: 1px solid var(--border-color);" title="Login to Call">
+                    <i data-lucide="phone" style="width: 14px; height: 14px;"></i> Call <i data-lucide="lock" style="width: 10px; height: 10px; opacity: 0.6;"></i>
                 </a>
 
-                <!-- Call (routes to login) -->
-                <a href="{% url 'login' %}?next={{ request.path }}" class="btn btn-outline" style="min-height: 40px; padding: 0.5rem; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; gap: 4px; font-weight: 700; font-size: 0.85rem; color: var(--text-muted) !important;" title="Login to Call">📞 Call 🔒</a>
-
                 <!-- WhatsApp (routes to login) -->
-                <a href="{% url 'login' %}?next={{ request.path }}" class="btn btn-whatsapp" style="min-height: 40px; padding: 0.5rem; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; gap: 4px; font-weight: 700; font-size: 0.85rem; color: white !important;" title="Login to Chat">💬 Chat 🔒</a>
+                <a href="{% url 'login' %}?next={{ request.path }}" class="btn btn-whatsapp" style="min-height: 40px; padding: 0; border-radius: 9999px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; font-weight: 700; font-size: 0.85rem; background: #25D366; border: none; color: white !important;" title="Login to Chat">
+                    <i data-lucide="message-square" style="width: 14px; height: 14px;"></i> Chat <i data-lucide="lock" style="width: 10px; height: 10px; opacity: 0.8;"></i>
+                </a>
             </div>
         </div>
         {% empty %}
@@ -158,7 +181,46 @@
     {% endcache %}
 </section>
 
-<!-- Simplified Experience: Extra promotional sections removed for clean minimal design -->
+<!-- Premium How it Works / Process Section -->
+<section class="container" style="margin-top: 5rem; margin-bottom: 5rem; background: var(--white); border-radius: var(--border-radius-lg); padding: 3rem 2rem; box-shadow: var(--shadow-sm); border: 1px solid var(--border-color);">
+    <div style="text-align: center; margin-bottom: 3.5rem;">
+        <span style="color: var(--primary); font-weight: 700; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1.5px; display: block; margin-bottom: 0.5rem;">Simple & Transparent</span>
+        <h2 style="font-size: 1.85rem; font-weight: 800; margin-bottom: 0.5rem; font-family: 'Outfit', sans-serif;">How RoomNest Works</h2>
+        <p style="color: var(--text-light); max-width: 500px; margin: 0 auto; font-size: 0.95rem;">Rent verified rooms, PGs, and houses in three quick, brokerage-free steps.</p>
+    </div>
+    
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 2.5rem; position: relative;">
+        <!-- Step 1 -->
+        <div style="text-align: center; position: relative;">
+            <div style="width: 64px; height: 64px; background: var(--primary-light); color: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem auto; position: relative; box-shadow: var(--shadow-sm);">
+                <i data-lucide="search" style="width: 28px; height: 28px;"></i>
+                <span style="position: absolute; top: -5px; right: -5px; width: 24px; height: 24px; background: var(--primary); color: white; border-radius: 50%; font-size: 0.8rem; font-weight: 800; display: flex; align-items: center; justify-content: center;">1</span>
+            </div>
+            <h3 style="font-family: 'Outfit', sans-serif; font-size: 1.2rem; font-weight: 700; margin-bottom: 0.75rem; color: var(--text-dark);">Browse & Filter</h3>
+            <p style="color: var(--text-light); font-size: 0.9rem; line-height: 1.5; padding: 0 1rem;">Explore hundreds of verified listings. Filter easily by location, price, property type, and furnishing status.</p>
+        </div>
+        
+        <!-- Step 2 -->
+        <div style="text-align: center; position: relative;">
+            <div style="width: 64px; height: 64px; background: var(--primary-light); color: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem auto; position: relative; box-shadow: var(--shadow-sm);">
+                <i data-lucide="phone-call" style="width: 28px; height: 28px;"></i>
+                <span style="position: absolute; top: -5px; right: -5px; width: 24px; height: 24px; background: var(--primary); color: white; border-radius: 50%; font-size: 0.8rem; font-weight: 800; display: flex; align-items: center; justify-content: center;">2</span>
+            </div>
+            <h3 style="font-family: 'Outfit', sans-serif; font-size: 1.2rem; font-weight: 700; margin-bottom: 0.75rem; color: var(--text-dark);">Contact Owner Directly</h3>
+            <p style="color: var(--text-light); font-size: 0.9rem; line-height: 1.5; padding: 0 1rem;">Unlock direct contact details of verified owners. Message them on WhatsApp or call with zero broker fees.</p>
+        </div>
+        
+        <!-- Step 3 -->
+        <div style="text-align: center; position: relative;">
+            <div style="width: 64px; height: 64px; background: var(--primary-light); color: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem auto; position: relative; box-shadow: var(--shadow-sm);">
+                <i data-lucide="key" style="width: 28px; height: 28px;"></i>
+                <span style="position: absolute; top: -5px; right: -5px; width: 24px; height: 24px; background: var(--primary); color: white; border-radius: 50%; font-size: 0.8rem; font-weight: 800; display: flex; align-items: center; justify-content: center;">3</span>
+            </div>
+            <h3 style="font-family: 'Outfit', sans-serif; font-size: 1.2rem; font-weight: 700; margin-bottom: 0.75rem; color: var(--text-dark);">Visit & Move In</h3>
+            <p style="color: var(--text-light); font-size: 0.9rem; line-height: 1.5; padding: 0 1rem;">Visit the property physically, sign a standard rental agreement directly with the owner, and move in peacefully.</p>
+        </div>
+    </div>
+</section>
 
 <!-- FAQ Section with SEO Schema -->
 <section class="container" style="margin-top: 5rem; margin-bottom: 5rem;">

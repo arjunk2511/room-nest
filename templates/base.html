@@ -35,6 +35,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
     <!-- Async Google Fonts -->
     <link rel="preload" href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript>
@@ -166,7 +169,7 @@
             <!-- Center: Large Autocomplete Search Bar -->
             <div class="header-search-wrapper">
                 <form action="{% url 'search' %}" method="GET" class="header-search-form" id="headerSearchForm">
-                    <span class="search-icon">🔍</span>
+                    <span class="search-icon"><i data-lucide="search" style="width: 16px; height: 16px;"></i></span>
                     <input type="text" name="location" id="headerSearchInput" placeholder="Search city, locality, area or property..." autocomplete="off" aria-label="Search city, locality, area or property">
                     <button type="submit" style="display: none;"></button>
                 </form>
@@ -174,23 +177,23 @@
                 <!-- Autocomplete Suggestions Panel -->
                 <div class="search-suggestions-dropdown" id="searchSuggestionsDropdown" style="display: none;">
                     <div class="suggestions-section" id="popularSearchesSection">
-                        <div class="suggestions-title">🔥 Popular Searches</div>
+                        <div class="suggestions-title"><i data-lucide="trending-up" class="suggest-icon" style="width: 14px; height: 14px; display: inline-flex; vertical-align: middle; margin-right: 4px;"></i> Popular Searches</div>
                         <div class="suggestions-list" id="popularSuggestionsList"></div>
                     </div>
                     <div class="suggestions-section" id="recentSearchesSection" style="display: none;">
-                        <div class="suggestions-title">🕒 Recent Searches</div>
+                        <div class="suggestions-title"><i data-lucide="clock" class="suggest-icon" style="width: 14px; height: 14px; display: inline-flex; vertical-align: middle; margin-right: 4px;"></i> Recent Searches</div>
                         <div class="suggestions-list" id="recentSuggestionsList"></div>
                     </div>
                     <div class="suggestions-section" id="citiesSection" style="display: none;">
-                        <div class="suggestions-title">🏙️ Cities</div>
+                        <div class="suggestions-title"><i data-lucide="map-pin" class="suggest-icon" style="width: 14px; height: 14px; display: inline-flex; vertical-align: middle; margin-right: 4px;"></i> Cities</div>
                         <div class="suggestions-list" id="citiesSuggestionsList"></div>
                     </div>
                     <div class="suggestions-section" id="areasSection" style="display: none;">
-                        <div class="suggestions-title">📍 Areas</div>
+                        <div class="suggestions-title"><i data-lucide="map-pin" class="suggest-icon" style="width: 14px; height: 14px; display: inline-flex; vertical-align: middle; margin-right: 4px;"></i> Areas</div>
                         <div class="suggestions-list" id="areasSuggestionsList"></div>
                     </div>
                     <div class="suggestions-section" id="typesSection" style="display: none;">
-                        <div class="suggestions-title">🏠 Property Types</div>
+                        <div class="suggestions-title"><i data-lucide="home" class="suggest-icon" style="width: 14px; height: 14px; display: inline-flex; vertical-align: middle; margin-right: 4px;"></i> Property Types</div>
                         <div class="suggestions-list" id="typesSuggestionsList"></div>
                     </div>
                 </div>
@@ -199,42 +202,42 @@
             <!-- Right: Navigation Group -->
             <nav class="header-nav">
                 <div class="nav-links-group">
-                    <a href="{% url 'home' %}" class="nav-link-item {% if request.resolver_match.url_name == 'home' %}active{% endif %}"><span class="nav-emoji-icon">🏠</span> Home</a>
-                    <a href="{% url 'search' %}" class="nav-link-item {% if request.resolver_match.url_name == 'search' %}active{% endif %}"><span class="nav-emoji-icon">🔍</span> Search</a>
-                    <a href="{% url 'add_property' %}" class="nav-link-item {% if request.resolver_match.url_name == 'add_property' %}active{% endif %}"><span class="nav-emoji-icon">➕</span> Post Property</a>
-                    <a href="{% url 'wishlist' %}" class="nav-link-item {% if request.resolver_match.url_name == 'wishlist' %}active{% endif %}"><span class="nav-emoji-icon">❤️</span> Saved</a>
+                    <a href="{% url 'home' %}" class="nav-link-item {% if request.resolver_match.url_name == 'home' %}active{% endif %}"><i data-lucide="home" style="width: 15px; height: 15px; display: inline-flex; vertical-align: middle; margin-right: 4px;"></i> Home</a>
+                    <a href="{% url 'search' %}" class="nav-link-item {% if request.resolver_match.url_name == 'search' %}active{% endif %}"><i data-lucide="search" style="width: 15px; height: 15px; display: inline-flex; vertical-align: middle; margin-right: 4px;"></i> Search</a>
+                    <a href="{% url 'add_property' %}" class="nav-link-item {% if request.resolver_match.url_name == 'add_property' %}active{% endif %}"><i data-lucide="plus-circle" style="width: 15px; height: 15px; display: inline-flex; vertical-align: middle; margin-right: 4px;"></i> Post Property</a>
+                    <a href="{% url 'wishlist' %}" class="nav-link-item {% if request.resolver_match.url_name == 'wishlist' %}active{% endif %}"><i data-lucide="heart" style="width: 15px; height: 15px; display: inline-flex; vertical-align: middle; margin-right: 4px;"></i> Saved</a>
                     
                     <!-- Profile Dropdown (Authenticated or Guest) -->
                     <div class="header-dropdown" id="profileDropdown">
                         {% if user.is_authenticated %}
                             <button class="dropdown-btn profile-nav-btn" onclick="toggleDropdown('profileDropdownContent')">
                                 <span class="avatar-initial">{{ user.username|slice:":1"|upper }}</span>
-                                <span class="profile-text">Profile</span> <span class="chevron">▼</span>
+                                <span class="profile-text">Profile</span> <i data-lucide="chevron-down" style="width: 12px; height: 12px; display: inline-flex; vertical-align: middle; margin-left: 2px;"></i>
                             </button>
                             <div class="dropdown-menu menu-right" id="profileDropdownContent">
                                 {% if user.is_superuser or user.is_staff %}
-                                    <a href="{% url 'admin_dashboard' %}" onclick="closeDropdowns()" style="color: #EA580C; font-weight: 700;">🛡️ Admin Dashboard</a>
+                                    <a href="{% url 'admin_dashboard' %}" onclick="closeDropdowns()" style="color: #EA580C; font-weight: 700;"><i data-lucide="shield" style="width: 16px; height: 16px; display: inline-block; vertical-align: text-bottom; margin-right: 6px;"></i> Admin Dashboard</a>
                                     <div class="menu-divider"></div>
                                 {% endif %}
-                                <a href="{% url 'profile' %}" onclick="closeDropdowns()">👤 My Profile</a>
-                                <a href="{% url 'owner_dashboard' %}" onclick="closeDropdowns()">💼 My Listings</a>
-                                <a href="{% url 'wishlist' %}" onclick="closeDropdowns()">❤️ Saved Properties</a>
-                                <a href="{% url 'profile' %}#rewards" onclick="closeDropdowns()">🎁 Rewards</a>
-                                <a href="{% url 'profile' %}" onclick="closeDropdowns()">⚙️ Settings</a>
+                                <a href="{% url 'profile' %}" onclick="closeDropdowns()"><i data-lucide="user" style="width: 16px; height: 16px; display: inline-block; vertical-align: text-bottom; margin-right: 6px;"></i> My Profile</a>
+                                <a href="{% url 'owner_dashboard' %}" onclick="closeDropdowns()"><i data-lucide="briefcase" style="width: 16px; height: 16px; display: inline-block; vertical-align: text-bottom; margin-right: 6px;"></i> My Listings</a>
+                                <a href="{% url 'wishlist' %}" onclick="closeDropdowns()"><i data-lucide="heart" style="width: 16px; height: 16px; display: inline-block; vertical-align: text-bottom; margin-right: 6px;"></i> Saved Properties</a>
+                                <a href="{% url 'profile' %}#rewards" onclick="closeDropdowns()"><i data-lucide="gift" style="width: 16px; height: 16px; display: inline-block; vertical-align: text-bottom; margin-right: 6px;"></i> Rewards</a>
+                                <a href="{% url 'profile' %}" onclick="closeDropdowns()"><i data-lucide="settings" style="width: 16px; height: 16px; display: inline-block; vertical-align: text-bottom; margin-right: 6px;"></i> Settings</a>
                                 <div class="menu-divider"></div>
-                                <a href="{% url 'logout' %}" onclick="closeDropdowns()" class="menu-link-danger">🚪 Logout</a>
+                                <a href="{% url 'logout' %}" onclick="closeDropdowns()" class="menu-link-danger"><i data-lucide="log-out" style="width: 16px; height: 16px; display: inline-block; vertical-align: text-bottom; margin-right: 6px;"></i> Logout</a>
                             </div>
                         {% else %}
                             <button class="dropdown-btn profile-nav-btn" onclick="toggleDropdown('profileDropdownContent')">
-                                <span class="avatar-initial guest">👤</span>
-                                <span class="profile-text">Profile</span> <span class="chevron">▼</span>
+                                <span class="avatar-initial guest"><i data-lucide="user" style="width: 14px; height: 14px;"></i></span>
+                                <span class="profile-text">Profile</span> <i data-lucide="chevron-down" style="width: 12px; height: 12px; display: inline-flex; vertical-align: middle; margin-left: 2px;"></i>
                             </button>
                             <div class="dropdown-menu menu-right" id="profileDropdownContent">
-                                <a href="{% url 'login' %}?next={{ request.path }}" onclick="closeDropdowns()" class="menu-link-highlight">🔑 Login</a>
-                                <a href="{% url 'register' %}?next={{ request.path }}" onclick="closeDropdowns()">✨ Register Account</a>
+                                <a href="{% url 'login' %}?next={{ request.path }}" onclick="closeDropdowns()" class="menu-link-highlight"><i data-lucide="log-in" style="width: 16px; height: 16px; display: inline-block; vertical-align: text-bottom; margin-right: 6px;"></i> Login</a>
+                                <a href="{% url 'register' %}?next={{ request.path }}" onclick="closeDropdowns()"><i data-lucide="user-plus" style="width: 16px; height: 16px; display: inline-block; vertical-align: text-bottom; margin-right: 6px;"></i> Register Account</a>
                                 <div class="menu-divider"></div>
-                                <a href="{% url 'add_property' %}" onclick="closeDropdowns()">➕ Post Property</a>
-                                <a href="{% url 'search' %}" onclick="closeDropdowns()">🔍 Search Stays</a>
+                                <a href="{% url 'add_property' %}" onclick="closeDropdowns()"><i data-lucide="plus-circle" style="width: 16px; height: 16px; display: inline-block; vertical-align: text-bottom; margin-right: 6px;"></i> Post Property</a>
+                                <a href="{% url 'search' %}" onclick="closeDropdowns()"><i data-lucide="search" style="width: 16px; height: 16px; display: inline-block; vertical-align: text-bottom; margin-right: 6px;"></i> Search Stays</a>
                             </div>
                         {% endif %}
                     </div>
@@ -243,8 +246,8 @@
             
             <!-- Mobile Controls -->
             <div class="mobile-header-controls">
-                <button class="mobile-search-btn" onclick="toggleMobileSearch()" aria-label="Toggle Search">🔍</button>
-                <a href="{% url 'add_property' %}" class="mobile-add-btn" aria-label="Post Property">➕</a>
+                <button class="mobile-search-btn" onclick="toggleMobileSearch()" aria-label="Toggle Search"><i data-lucide="search" style="width: 20px; height: 20px;"></i></button>
+                <a href="{% url 'add_property' %}" class="mobile-add-btn" aria-label="Post Property"><i data-lucide="plus-circle" style="width: 20px; height: 20px;"></i></a>
                 <button class="mobile-hamburger-btn" onclick="toggleDrawer()" aria-label="Toggle Menu">
                     <span></span>
                     <span></span>
@@ -256,7 +259,7 @@
         <!-- Mobile Search Overlay -->
         <div class="mobile-search-overlay" id="mobileSearchOverlay">
             <div class="mobile-search-bar">
-                <span class="mobile-search-icon">🔍</span>
+                <span class="mobile-search-icon"><i data-lucide="search" style="width: 18px; height: 18px;"></i></span>
                 <input type="text" id="mobileSearchInput" placeholder="Search city, locality or property..." autocomplete="off" aria-label="Search city, locality or property">
                 <button class="mobile-search-close" onclick="toggleMobileSearch()">&times;</button>
             </div>
@@ -269,26 +272,26 @@
     <div class="mobile-drawer" id="mobile-drawer">
         <button class="drawer-close" onclick="toggleDrawer()">&times;</button>
         <div class="drawer-links">
-            <a href="{% url 'home' %}" onclick="toggleDrawer()">🏠 Home</a>
-            <a href="{% url 'search' %}" onclick="toggleDrawer()">🔍 Search</a>
+            <a href="{% url 'home' %}" onclick="toggleDrawer()"><i data-lucide="home" style="width: 18px; height: 18px; vertical-align: middle; margin-right: 8px;"></i> Home</a>
+            <a href="{% url 'search' %}" onclick="toggleDrawer()"><i data-lucide="search" style="width: 18px; height: 18px; vertical-align: middle; margin-right: 8px;"></i> Search Stays</a>
             
             <div class="drawer-section-title">Explore Cities</div>
-            <a href="/mysore/" onclick="toggleDrawer()">📍 Mysore</a>
-            <a href="/bengaluru/" onclick="toggleDrawer()">📍 Bengaluru</a>
-            <a href="/hyderabad/" onclick="toggleDrawer()">📍 Hyderabad</a>
+            <a href="/mysore/" onclick="toggleDrawer()"><i data-lucide="map-pin" style="width: 18px; height: 18px; vertical-align: middle; margin-right: 8px;"></i> Mysore</a>
+            <a href="/bengaluru/" onclick="toggleDrawer()"><i data-lucide="map-pin" style="width: 18px; height: 18px; vertical-align: middle; margin-right: 8px;"></i> Bengaluru</a>
+            <a href="/hyderabad/" onclick="toggleDrawer()"><i data-lucide="map-pin" style="width: 18px; height: 18px; vertical-align: middle; margin-right: 8px;"></i> Hyderabad</a>
             
             <div class="drawer-section-title">Navigation</div>
-            <a href="{% url 'wishlist' %}" onclick="toggleDrawer()">❤️ Saved</a>
-            <a href="{% url 'add_property' %}" onclick="toggleDrawer()">➕ Post Property</a>
+            <a href="{% url 'wishlist' %}" onclick="toggleDrawer()"><i data-lucide="heart" style="width: 18px; height: 18px; vertical-align: middle; margin-right: 8px;"></i> Saved Properties</a>
+            <a href="{% url 'add_property' %}" onclick="toggleDrawer()"><i data-lucide="plus-circle" style="width: 18px; height: 18px; vertical-align: middle; margin-right: 8px;"></i> Post Property</a>
             {% if user.is_authenticated %}
-                <a href="{% url 'profile' %}" onclick="toggleDrawer()">👤 Profile</a>
+                <a href="{% url 'profile' %}" onclick="toggleDrawer()"><i data-lucide="user" style="width: 18px; height: 18px; vertical-align: middle; margin-right: 8px;"></i> Profile Settings</a>
                 {% if user.is_superuser or user.is_staff %}
-                    <a href="{% url 'admin_dashboard' %}" style="color: #EA580C;" onclick="toggleDrawer()">🛡️ Admin Dashboard</a>
+                    <a href="{% url 'admin_dashboard' %}" style="color: #EA580C;" onclick="toggleDrawer()"><i data-lucide="shield" style="width: 18px; height: 18px; vertical-align: middle; margin-right: 8px;"></i> Admin Dashboard</a>
                 {% endif %}
-                <a href="{% url 'logout' %}" style="color: #EF4444; margin-top: 1rem;" onclick="toggleDrawer()">🚪 Logout</a>
+                <a href="{% url 'logout' %}" style="color: #EF4444; margin-top: 1rem;" onclick="toggleDrawer()"><i data-lucide="log-out" style="width: 18px; height: 18px; vertical-align: middle; margin-right: 8px;"></i> Logout</a>
             {% else %}
-                <a href="{% url 'login' %}?next={{ request.path }}" onclick="toggleDrawer()">🔑 Login</a>
-                <a href="{% url 'register' %}?next={{ request.path }}" onclick="toggleDrawer()">✨ Register</a>
+                <a href="{% url 'login' %}?next={{ request.path }}" onclick="toggleDrawer()"><i data-lucide="log-in" style="width: 18px; height: 18px; vertical-align: middle; margin-right: 8px;"></i> Login</a>
+                <a href="{% url 'register' %}?next={{ request.path }}" onclick="toggleDrawer()"><i data-lucide="user-plus" style="width: 18px; height: 18px; vertical-align: middle; margin-right: 8px;"></i> Register</a>
             {% endif %}
         </div>
     </div>
@@ -312,41 +315,29 @@
     <!-- Sticky Bottom Navigation Bar for Mobile -->
     <div class="bottom-nav">
         <a href="{% url 'home' %}" class="bottom-nav-item">
-            <svg class="bottom-nav-icon" viewBox="0 0 24 24">
-                <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
-            </svg>
+            <i data-lucide="home" class="bottom-nav-icon"></i>
             <span>Home</span>
         </a>
         <a href="{% url 'search' %}" class="bottom-nav-item">
-            <svg class="bottom-nav-icon" viewBox="0 0 24 24">
-                <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
-            </svg>
+            <i data-lucide="search" class="bottom-nav-icon"></i>
             <span>Search</span>
         </a>
+        <a href="{% url 'add_property' %}" class="bottom-nav-item">
+            <i data-lucide="plus-circle" class="bottom-nav-icon" style="color: var(--primary);"></i>
+            <span>Post Stay</span>
+        </a>
+        <a href="{% url 'wishlist' %}" class="bottom-nav-item">
+            <i data-lucide="heart" class="bottom-nav-icon"></i>
+            <span>Saved</span>
+        </a>
         {% if user.is_authenticated %}
-        <a href="{% url 'tenant_dashboard' %}" class="bottom-nav-item">
-            <svg class="bottom-nav-icon" viewBox="0 0 24 24">
-                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-            </svg>
-            <span>Tenant</span>
-        </a>
-        <a href="{% url 'owner_dashboard' %}" class="bottom-nav-item">
-            <svg class="bottom-nav-icon" viewBox="0 0 24 24">
-                <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v-2H7v-2h7V9H7V7h7V5h5v12h-5z"/>
-            </svg>
-            <span>Owner</span>
-        </a>
         <a href="{% url 'profile' %}" class="bottom-nav-item">
-            <svg class="bottom-nav-icon" viewBox="0 0 24 24">
-                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-            </svg>
+            <i data-lucide="user" class="bottom-nav-icon"></i>
             <span>Profile</span>
         </a>
         {% else %}
         <a href="{% url 'login' %}?next={{ request.path }}" class="bottom-nav-item">
-            <svg class="bottom-nav-icon" viewBox="0 0 24 24">
-                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-            </svg>
+            <i data-lucide="user" class="bottom-nav-icon"></i>
             <span>Login</span>
         </a>
         {% endif %}
@@ -771,6 +762,7 @@
 
     // Password visibility toggle
     document.addEventListener("DOMContentLoaded", function() {
+        lucide.createIcons();
         const passwordInputs = document.querySelectorAll("input[type='password']");
         passwordInputs.forEach(input => {
             const wrapper = document.createElement("div");

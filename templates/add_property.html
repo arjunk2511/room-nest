@@ -12,20 +12,20 @@
         cursor: pointer;
         padding: 1.2rem;
         width: 100%;
-        border: 1px solid #e2e8f0;
+        border: 1px solid var(--border-color);
         text-align: left;
         outline: none;
         font-size: 1.05rem;
-        font-weight: 700;
+        font-weight: 750;
         transition: 0.3s;
-        border-radius: 8px;
+        border-radius: 12px;
         display: flex;
         justify-content: space-between;
         align-items: center;
     }
     .accordion-btn:hover {
         background: #f1f5f9;
-        border-color: #cbd5e1;
+        border-color: var(--text-light);
     }
     .accordion-content {
         padding: 0 1.2rem;
@@ -35,12 +35,12 @@
         transition: max-height 0.3s ease-out;
         border: 1px solid transparent;
         border-top: none;
-        border-radius: 0 0 8px 8px;
+        border-radius: 0 0 12px 12px;
     }
     .accordion-content.open {
         padding: 1.5rem 1.2rem;
-        max-height: 1200px; /* high enough to fit content */
-        border-color: #e2e8f0;
+        max-height: 1500px; /* high enough to fit content */
+        border-color: var(--border-color);
         margin-bottom: 1.5rem;
     }
     .accordion-arrow {
@@ -52,10 +52,32 @@
     .step-card {
         background: var(--white);
         padding: 2.5rem;
-        border-radius: 16px;
-        border: 1px solid #e2e8f0;
-        box-shadow: var(--shadow-sm);
+        border-radius: 20px;
+        border: 1px solid var(--border-color);
+        box-shadow: var(--shadow-md);
         transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .form-group label {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+    .form-group input, .form-group select, .form-group textarea {
+        width: 100%;
+        padding: 0.85rem 1.25rem !important;
+        border-radius: 12px !important;
+        border: 1.5px solid var(--border-color) !important;
+        outline: none !important;
+        font-size: 0.95rem !important;
+        background: #f8fafc !important;
+        transition: all 0.2s !important;
+    }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+        border-color: var(--primary) !important;
+        background: var(--white) !important;
+        box-shadow: 0 0 0 4px rgba(255, 56, 92, 0.12) !important;
     }
 </style>
 {% endblock %}
@@ -68,15 +90,17 @@
     </div>
 
     <!-- Premium Owner Listing Promo Banner -->
-    <div style="background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); border: 1px solid #bfdbfe; border-radius: 12px; padding: 1.1rem 1.4rem; margin-bottom: 2rem; display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; box-shadow: var(--shadow-sm);">
+    <div style="background: linear-gradient(135deg, #FFF1F2 0%, #FFE4E6 100%); border: 1px solid #FECDD3; border-radius: 16px; padding: 1.1rem 1.4rem; margin-bottom: 2.5rem; display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; box-shadow: var(--shadow-sm);">
         <div style="display: flex; align-items: center; gap: 0.85rem;">
-            <div style="font-size: 1.8rem; background: rgba(37, 99, 235, 0.1); width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">🎁</div>
+            <div style="background: rgba(255, 56, 92, 0.1); width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: var(--primary);">
+                <i data-lucide="gift" style="width: 20px; height: 20px;"></i>
+            </div>
             <div>
-                <h4 style="margin: 0 0 0.15rem 0; font-size: 1.02rem; font-weight: 700; color: #1e3a8a;">Owner Bonus: Earn ₹50!</h4>
-                <p style="margin: 0; font-size: 0.86rem; color: #1e40af; line-height: 1.4;">Get your direct listing verified and receive a ₹50 cash bonus credited to your rewards!</p>
+                <h4 style="margin: 0 0 0.15rem 0; font-size: 1.02rem; font-weight: 700; color: #9F1239;">Owner Bonus: Earn ₹50!</h4>
+                <p style="margin: 0; font-size: 0.86rem; color: #BE123C; line-height: 1.4; font-weight: 500;">Get your direct listing verified and receive a ₹50 cash bonus credited to your rewards!</p>
             </div>
         </div>
-        <a href="{% url 'earn_rewards' %}" style="background: #2563EB; color: white; padding: 0.5rem 1rem; border-radius: 8px; font-weight: 600; font-size: 0.8rem; text-decoration: none; display: inline-flex; align-items: center; flex-shrink: 0; transition: background 0.2s;">
+        <a href="{% url 'earn_rewards' %}" class="btn btn-primary" style="padding: 0.5rem 1.25rem; border-radius: 9999px; font-weight: 700; font-size: 0.8rem; text-decoration: none; display: inline-flex; align-items: center; flex-shrink: 0; min-height: 36px; color: white !important;">
             Learn More
         </a>
     </div>
@@ -206,8 +230,8 @@
             
             <!-- Step 1 Navigation -->
             <div style="display: flex; justify-content: flex-end;">
-                <button type="button" onclick="nextStep(2)" class="btn btn-primary" style="padding: 1rem 2.2rem; border-radius: 8px; font-weight: 700; font-size: 1rem; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 8px;">
-                    Next: Pricing & Details ➡️
+                <button type="button" onclick="nextStep(2)" class="btn btn-primary" style="padding: 0.85rem 2.2rem; border-radius: 9999px; font-weight: 700; font-size: 1rem; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; min-height: 48px;">
+                    Next: Pricing & Details <i data-lucide="arrow-right" style="width: 18px; height: 18px;"></i>
                 </button>
             </div>
         </div>
@@ -407,12 +431,12 @@
             </div>
             
             <!-- Step 2 Navigation -->
-            <div style="display: flex; justify-content: space-between;">
-                <button type="button" onclick="prevStep(1)" class="btn btn-outline" style="padding: 1rem 2rem; border-radius: 8px; font-weight: 600; font-size: 1rem; cursor: pointer; border: 1px solid #cbd5e1;">
-                    ⬅️ Back
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1rem;">
+                <button type="button" onclick="prevStep(1)" class="btn btn-outline" style="padding: 0.85rem 2rem; border-radius: 9999px; font-weight: 600; font-size: 1rem; cursor: pointer; border: 1.5px solid var(--border-color); display: inline-flex; align-items: center; gap: 8px; min-height: 48px; color: var(--text-dark) !important;">
+                    <i data-lucide="arrow-left" style="width: 18px; height: 18px;"></i> Back
                 </button>
-                <button type="button" onclick="nextStep(3)" class="btn btn-primary" style="padding: 1rem 2.2rem; border-radius: 8px; font-weight: 700; font-size: 1rem; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 8px;">
-                    Next: Photos & Contact ➡️
+                <button type="button" onclick="nextStep(3)" class="btn btn-primary" style="padding: 0.85rem 2.2rem; border-radius: 9999px; font-weight: 700; font-size: 1rem; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; min-height: 48px;">
+                    Next: Photos & Contact <i data-lucide="arrow-right" style="width: 18px; height: 18px;"></i>
                 </button>
             </div>
         </div>
@@ -452,12 +476,12 @@
             </div>
 
             <!-- Step 3 Navigation -->
-            <div style="display: flex; justify-content: space-between;">
-                <button type="button" onclick="prevStep(2)" class="btn btn-outline" style="padding: 1rem 2rem; border-radius: 8px; font-weight: 600; font-size: 1rem; cursor: pointer; border: 1px solid #cbd5e1;">
-                    ⬅️ Back
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1rem;">
+                <button type="button" onclick="prevStep(2)" class="btn btn-outline" style="padding: 0.85rem 2rem; border-radius: 9999px; font-weight: 600; font-size: 1rem; cursor: pointer; border: 1.5px solid var(--border-color); display: inline-flex; align-items: center; gap: 8px; min-height: 48px; color: var(--text-dark) !important;">
+                    <i data-lucide="arrow-left" style="width: 18px; height: 18px;"></i> Back
                 </button>
-                <button type="submit" class="btn btn-primary" style="font-size: 1.1rem; padding: 1rem 2.5rem; border-radius: 8px; font-weight: 700; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; box-shadow: var(--shadow-md);">
-                    🚀 Publish Property Listing
+                <button type="submit" class="btn btn-primary" style="font-size: 1.1rem; padding: 0.85rem 2.5rem; border-radius: 9999px; font-weight: 700; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; box-shadow: var(--shadow-md); min-height: 48px;">
+                    <i data-lucide="check-circle" style="width: 20px; height: 20px;"></i> Publish Listing
                 </button>
             </div>
         </div>

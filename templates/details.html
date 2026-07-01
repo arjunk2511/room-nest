@@ -99,13 +99,13 @@
     <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1.5rem; margin-bottom: 2rem;">
         <div>
             <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-                <span class="details-badge">{{ listing.type }}</span>
-                <span style="background: #F1F5F9; color: #475569; padding: 0.35rem 0.85rem; border-radius: 8px; font-weight: 600; font-size: 0.82rem; display: inline-flex; align-items: center; gap: 4px; border: 1px solid var(--border-color);">
-                    📅 Posted {{ listing.created_at|date:"M d, Y" }}
+                <span class="details-badge" style="border-radius: 99px;">{{ listing.type }}</span>
+                <span style="background: var(--primary-light); color: var(--primary); padding: 0.35rem 0.85rem; border-radius: 99px; font-weight: 700; font-size: 0.82rem; display: inline-flex; align-items: center; gap: 6px; border: 1px solid rgba(255, 56, 92, 0.15);">
+                    <i data-lucide="calendar" style="width: 14px; height: 14px;"></i> Posted {{ listing.created_at|date:"M d, Y" }}
                 </span>
             </div>
-            <h1 style="margin-top: 0.8rem; margin-bottom: 0.4rem; font-size: 2rem; color: var(--text-dark); font-weight: 800;">{{ listing.title }}</h1>
-            <p style="color: var(--text-light); margin: 0; font-size: 1.05rem; font-weight: 500;">📍 {{ listing.location }}</p>
+            <h1 style="margin-top: 0.8rem; margin-bottom: 0.4rem; font-size: 2rem; color: var(--text-dark); font-weight: 800; font-family: 'Outfit', sans-serif; letter-spacing: -0.02em;">{{ listing.title }}</h1>
+            <p style="color: var(--text-light); margin: 0; font-size: 1.05rem; font-weight: 500; display: inline-flex; align-items: center; gap: 6px;"><i data-lucide="map-pin" style="width: 18px; height: 18px; color: var(--primary);"></i> {{ listing.location }}</p>
         </div>
         <div style="text-align: right; min-width: 150px;">
             <p style="font-size: 2.2rem; font-weight: 850; color: var(--primary); margin: 0; line-height: 1.1;">₹{{ listing.price }}</p>
@@ -122,7 +122,7 @@
             <div class="swipe-gallery-wrapper" style="position: relative;">
                 <!-- Fullscreen Trigger Button -->
                 <button type="button" class="gallery-fullscreen-btn" onclick="openFullscreenGallery()" title="View Fullscreen" style="position: absolute; top: 1rem; right: 1rem; background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border: none; color: white; padding: 0.5rem 0.85rem; border-radius: 6px; font-size: 0.82rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; z-index: 10; transition: background 0.2s;">
-                    <span>⛶</span> Fullscreen
+                    <i data-lucide="maximize-2" style="width: 14px; height: 14px;"></i> Fullscreen
                 </button>
                 <div class="swipe-gallery">
                     {% if listing.image %}
@@ -216,7 +216,7 @@
 
         <!-- Location Map Section (Moved inside Left Column) -->
         <div style="border-top: 1px solid var(--border-color); padding-top: 2rem;">
-            <h3 style="font-size: 1.3rem; font-weight: 800; color: var(--text-dark); margin-bottom: 1rem;">🗺️ Exact Property Location Map</h3>
+            <h3 style="font-size: 1.3rem; font-weight: 800; color: var(--text-dark); margin-bottom: 1rem; display: flex; align-items: center; gap: 8px;"><i data-lucide="map" style="width: 20px; height: 20px; color: var(--primary);"></i> Exact Property Location Map</h3>
             
             {% if has_subscription %}
                 <!-- Unlocked Map Info -->
@@ -233,11 +233,11 @@
                 
                 <!-- Directions Buttons -->
                 <div style="display: flex; gap: 10px; margin-top: 1rem;">
-                    <a href="https://www.google.com/maps/search/?api=1&query={{ listing.latitude|default:listing.address|urlencode }},{{ listing.longitude|default:'' }}" target="_blank" class="btn btn-outline" style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 0.85rem; padding: 0.5rem; border-radius: 8px; font-weight: 600; min-height: 40px;">
-                        🗺️ Open Google Maps
+                    <a href="https://www.google.com/maps/search/?api=1&query={{ listing.latitude|default:listing.address|urlencode }},{{ listing.longitude|default:'' }}" target="_blank" class="btn btn-outline" style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 0.85rem; padding: 0.5rem; border-radius: 99px; font-weight: 600; min-height: 40px; border: 1px solid var(--border-color); color: var(--text-dark) !important;">
+                        <i data-lucide="map-pin" style="width: 14px; height: 14px;"></i> Open Google Maps
                     </a>
-                    <a href="https://www.google.com/maps/dir/?api=1&destination={{ listing.latitude|default:listing.address|urlencode }},{{ listing.longitude|default:'' }}" target="_blank" class="btn btn-primary" style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 0.85rem; padding: 0.5rem; border-radius: 8px; font-weight: 600; min-height: 40px; color: white !important;">
-                        🚗 Get Directions
+                    <a href="https://www.google.com/maps/dir/?api=1&destination={{ listing.latitude|default:listing.address|urlencode }},{{ listing.longitude|default:'' }}" target="_blank" class="btn btn-primary" style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 0.85rem; padding: 0.5rem; border-radius: 99px; font-weight: 600; min-height: 40px; color: white !important;">
+                        <i data-lucide="navigation" style="width: 14px; height: 14px;"></i> Get Directions
                     </a>
                 </div>
 
@@ -280,7 +280,7 @@
 
         <!-- Reviews & Testimonial Feed -->
         <div style="border-top: 1px solid var(--border-color); padding-top: 2.5rem;">
-            <h3 style="font-size: 1.3rem; font-weight: 800; color: var(--text-dark); margin-bottom: 0.5rem;">⭐ Reviews & Seeker Testimonials</h3>
+            <h3 style="font-size: 1.3rem; font-weight: 800; color: var(--text-dark); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 8px;"><i data-lucide="star" style="width: 20px; height: 20px; color: var(--primary);"></i> Reviews & Testimonials</h3>
             
             {% if user.is_authenticated and request.user != listing.owner %}
             <form action="{% url 'add_review' listing.id %}" method="POST" style="margin-top: 1.25rem; background: #FAFAFA; border: 1px solid var(--border-color); padding: 1.5rem; border-radius: var(--border-radius-lg); display: flex; flex-direction: column; gap: 1rem;">
@@ -338,7 +338,7 @@
         <!-- Similar Properties Section (Only for Desktop/Laptop) -->
         {% if similar_listings %}
         <div style="border-top: 1px solid var(--border-color); padding-top: 2.5rem; margin-top: 2.5rem;" class="desktop-only-similar">
-            <h3 style="font-size: 1.35rem; font-weight: 800; color: var(--text-dark); margin-bottom: 1.25rem;">🏠 Similar Listings Nearby</h3>
+            <h3 style="font-size: 1.35rem; font-weight: 800; color: var(--text-dark); margin-bottom: 1.25rem; display: flex; align-items: center; gap: 8px;"><i data-lucide="home" style="width: 20px; height: 20px; color: var(--primary);"></i> Similar Listings Nearby</h3>
             <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;">
                 {% for sim in similar_listings %}
                 <div class="card" style="border-radius: 8px; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); overflow: hidden; background: var(--white); display: flex; flex-direction: column;">
@@ -354,7 +354,7 @@
                         <div style="padding: 0.85rem; display: flex; flex-direction: column; flex-grow: 1;">
                             <div style="font-size: 1.05rem; font-weight: 800; color: var(--text-dark); margin-bottom: 2px;">₹{{ sim.price }}/mo</div>
                             <h4 style="font-size: 0.85rem; font-weight: 700; color: var(--text-dark); margin: 0 0 4px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ sim.title }}</h4>
-                            <p style="color: var(--text-muted); font-size: 0.75rem; margin: 0; display: flex; align-items: center; gap: 2px;">📍 {{ sim.location }}</p>
+                            <p style="color: var(--text-muted); font-size: 0.75rem; margin: 0; display: flex; align-items: center; gap: 4px;"><i data-lucide="map-pin" style="width: 12px; height: 12px; color: var(--primary);"></i> {{ sim.location }}</p>
                         </div>
                     </a>
                 </div>
@@ -377,7 +377,7 @@
                     <div style="display: flex; align-items: center; gap: 4px; flex-wrap: wrap;">
                         <h4 style="margin: 0; font-size: 0.95rem; font-weight: 700; color: var(--text-dark); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 150px;">{{ listing.owner.username }}</h4>
                         {% if listing.owner.userprofile.is_verified %}
-                        <span style="background: #ECFDF5; color: #047857; font-size: 0.65rem; font-weight: 700; padding: 0.1rem 0.4rem; border-radius: 99px; border: 1px solid #A7F3D0; white-space: nowrap;">🛡️ Verified</span>
+                        <span style="background: #ECFDF5; color: #047857; font-size: 0.65rem; font-weight: 700; padding: 0.15rem 0.5rem; border-radius: 99px; border: 1px solid #A7F3D0; white-space: nowrap; display: inline-flex; align-items: center; gap: 2px;"><i data-lucide="shield-check" style="width: 12px; height: 12px; color: #047857;"></i> Verified</span>
                         {% endif %}
                     </div>
                     <p style="margin: 2px 0 0 0; font-size: 0.75rem; color: var(--text-light); font-weight: 500; line-height: 1.2;">
@@ -390,8 +390,8 @@
             <div style="margin-top: -0.5rem;">
                 <form action="{% url 'toggle_wishlist' listing.id %}" method="POST" style="margin: 0;">
                     {% csrf_token %}
-                    <button type="submit" class="btn btn-outline" style="width: 100%; border-color: var(--border-color); color: var(--text-dark); font-weight: 600; min-height: 44px; font-size: 0.88rem; padding: 0.5rem 1rem; border-radius: 8px;">
-                        {% if is_wishlisted %}❤️ Saved to Wishlist{% else %}🤍 Save Property Stay{% endif %}
+                    <button type="submit" class="btn btn-outline" style="width: 100%; border-color: var(--border-color); color: var(--text-dark); font-weight: 600; min-height: 44px; font-size: 0.88rem; padding: 0.5rem 1rem; border-radius: 9999px; display: inline-flex; align-items: center; justify-content: center; gap: 6px;">
+                        {% if is_wishlisted %}<i data-lucide="heart" style="width: 16px; height: 16px; fill: var(--primary); stroke: var(--primary);"></i> Saved to Wishlist{% else %}<i data-lucide="heart" style="width: 16px; height: 16px; fill: none; stroke: currentColor;"></i> Save Stay{% endif %}
                     </button>
                 </form>
             </div>
@@ -399,38 +399,44 @@
 
             {% if has_subscription %}
                 <!-- Unlocked Phone & Address Details -->
-                <div style="background: #F8FAFC; padding: 0.85rem; border-radius: 8px; border: 1px solid var(--border-color);">
-                    <span style="font-size: 0.68rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; display: block; margin-bottom: 2px;">Landlord Phone</span>
-                    <strong style="font-size: 1.1rem; font-weight: 800; color: var(--text-dark);">{{ listing.phone }}</strong>
+                <div style="background: #F8FAFC; padding: 0.85rem; border-radius: 12px; border: 1px solid var(--border-color); display: flex; align-items: center; gap: 8px;">
+                    <i data-lucide="phone" style="width: 16px; height: 16px; color: var(--primary);"></i>
+                    <div>
+                        <span style="font-size: 0.68rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; display: block; margin-bottom: 2px;">Landlord Phone</span>
+                        <strong style="font-size: 1.1rem; font-weight: 800; color: var(--text-dark);">{{ listing.phone }}</strong>
+                    </div>
                 </div>
                 
-                <div style="background: #F8FAFC; padding: 0.85rem; border-radius: 8px; border: 1px solid var(--border-color);">
-                    <span style="font-size: 0.68rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; display: block; margin-bottom: 2px;">Exact Address</span>
-                    <strong style="font-size: 0.85rem; font-weight: 600; color: var(--text-dark); display: block; line-height: 1.4;">{{ listing.address }}</strong>
-                    {% if listing.exact_location %}
-                    <span style="font-size: 0.78rem; color: var(--text-light); display: block; margin-top: 4px;">Landmark: {{ listing.exact_location }}</span>
-                    {% endif %}
+                <div style="background: #F8FAFC; padding: 0.85rem; border-radius: 12px; border: 1px solid var(--border-color); display: flex; align-items: flex-start; gap: 8px;">
+                    <i data-lucide="map-pin" style="width: 16px; height: 16px; color: var(--primary); margin-top: 3px;"></i>
+                    <div>
+                        <span style="font-size: 0.68rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; display: block; margin-bottom: 2px;">Exact Address</span>
+                        <strong style="font-size: 0.85rem; font-weight: 600; color: var(--text-dark); display: block; line-height: 1.4;">{{ listing.address }}</strong>
+                        {% if listing.exact_location %}
+                        <span style="font-size: 0.78rem; color: var(--text-light); display: block; margin-top: 4px;">Landmark: {{ listing.exact_location }}</span>
+                        {% endif %}
+                    </div>
                 </div>
                 
                 {% if request.user != listing.owner %}
                 <div style="display: flex; flex-direction: column; gap: 0.75rem;">
                     <!-- Call -->
-                    <a href="tel:{{ listing.phone }}" class="btn btn-outline" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: 700; border-color: var(--border-color); min-height: 44px; font-size: 0.88rem; border-radius: 8px;">
-                        📞 Call Landlord
+                    <a href="tel:{{ listing.phone }}" class="btn btn-outline" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: 700; border-color: var(--border-color); min-height: 44px; font-size: 0.88rem; border-radius: 9999px;">
+                        <i data-lucide="phone" style="width: 16px; height: 16px;"></i> Call Owner
                     </a>
                     <!-- WhatsApp -->
-                    <button onclick="openWhatsApp('{{ listing.phone|escapejs }}', '{{ listing.title|escapejs }}')" class="btn btn-whatsapp" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: 700; border: none; min-height: 44px; font-size: 0.88rem; border-radius: 8px; color: white !important;">
-                        💬 WhatsApp Chat
+                    <button onclick="openWhatsApp('{{ listing.phone|escapejs }}', '{{ listing.title|escapejs }}')" class="btn btn-whatsapp" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: 700; border: none; min-height: 44px; font-size: 0.88rem; border-radius: 9999px; color: white !important;">
+                        <i data-lucide="message-square" style="width: 16px; height: 16px;"></i> WhatsApp Chat
                     </button>
                     <!-- Book Visit -->
-                    <a href="#visit-booking-section" class="btn btn-primary" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: 700; min-height: 44px; font-size: 0.88rem; border-radius: 8px; color: white !important;">
-                        📅 Book Visit Tour
+                    <a href="#visit-booking-section" class="btn btn-primary" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: 700; min-height: 44px; font-size: 0.88rem; border-radius: 9999px; color: white !important;">
+                        <i data-lucide="calendar" style="width: 16px; height: 16px;"></i> Book Visit
                     </a>
                 </div>
                 
                 <!-- Visit Tour booking widget -->
                 <div id="visit-booking-section" style="padding-top: 1rem; border-top: 1px solid var(--border-color);">
-                    <h4 style="margin: 0 0 0.85rem 0; font-size: 0.9rem; font-weight: 800; color: var(--text-dark);">🗓️ Request Property Tour</h4>
+                    <h4 style="margin: 0 0 0.85rem 0; font-size: 0.9rem; font-weight: 800; color: var(--text-dark); display: inline-flex; align-items: center; gap: 6px;"><i data-lucide="calendar" style="width: 16px; height: 16px; color: var(--primary);"></i> Request Property Tour</h4>
                     <div style="display: flex; flex-direction: column; gap: 0.65rem;">
                         <div>
                             <label style="font-size: 0.7rem; font-weight: 700; color: var(--text-light); margin-bottom: 0.25rem; display: block;">Choose Date</label>
@@ -444,8 +450,8 @@
                                 <option value="Evening (4 PM - 7 PM)">Evening (4 PM - 7 PM)</option>
                             </select>
                         </div>
-                        <button onclick="requestVisit('{{ listing.phone|escapejs }}', '{{ listing.title|escapejs }}')" class="btn btn-outline" style="width: 100%; padding: 0.6rem; border-radius: 6px; font-weight: 700; border-color: var(--primary); color: var(--primary); font-size: 0.82rem; min-height: 38px;">
-                            📅 Request Booking Slot
+                        <button onclick="requestVisit('{{ listing.phone|escapejs }}', '{{ listing.title|escapejs }}')" class="btn btn-outline" style="width: 100%; padding: 0.6rem; border-radius: 9999px; font-weight: 700; border-color: var(--primary); color: var(--primary); font-size: 0.82rem; min-height: 38px; display: inline-flex; align-items: center; justify-content: center; gap: 4px;">
+                            <i data-lucide="calendar" style="width: 14px; height: 14px;"></i> Request Booking Slot
                         </button>
                     </div>
                 </div>
@@ -488,6 +494,38 @@
             {% endif %}
         </div>
     </aside>
+</div>
+
+<!-- Mobile Sticky Contact Bar -->
+<div class="details-mobile-sticky-bar">
+    <div class="mobile-sticky-price">
+        <span class="price-amt">₹{{ listing.price }}</span>
+        <span class="price-lbl">per month</span>
+    </div>
+    <div style="display: flex; gap: 8px; align-items: center;">
+        {% if has_subscription %}
+            {% if request.user != listing.owner %}
+                <a href="tel:{{ listing.phone }}" class="btn btn-outline" style="min-height: 40px; padding: 0 1rem; border-radius: 9999px; display: inline-flex; align-items: center; justify-content: center; gap: 4px; font-weight: 700; font-size: 0.82rem; border-color: var(--border-color); color: var(--text-dark) !important; text-decoration: none;">
+                    <i data-lucide="phone" style="width: 14px; height: 14px;"></i> Call
+                </a>
+                <button onclick="openWhatsApp('{{ listing.phone|escapejs }}', '{{ listing.title|escapejs }}')" class="btn btn-whatsapp" style="min-height: 40px; padding: 0 1rem; border-radius: 9999px; display: inline-flex; align-items: center; justify-content: center; gap: 4px; font-weight: 700; font-size: 0.82rem; background: #25D366; border: none; color: white !important;">
+                    <i data-lucide="message-square" style="width: 14px; height: 14px;"></i> Chat
+                </button>
+            {% else %}
+                <span style="font-size: 0.85rem; font-weight: 700; color: #10B981;">Your Stay Listing</span>
+            {% endif %}
+        {% else %}
+            {% if user.is_authenticated %}
+                <a href="{% url 'subscribe' %}" class="btn btn-primary" style="border-radius: 9999px; min-height: 40px; font-size: 0.82rem; padding: 0 1rem; display: inline-flex; align-items: center; justify-content: center; gap: 4px; color: white !important; text-decoration: none;">
+                    Unlock Stay <i data-lucide="lock" style="width: 12px; height: 12px;"></i>
+                </a>
+            {% else %}
+                <a href="{% url 'login' %}?next={{ request.path }}" class="btn btn-primary" style="border-radius: 9999px; min-height: 40px; font-size: 0.82rem; padding: 0 1rem; display: inline-flex; align-items: center; justify-content: center; gap: 4px; color: white !important; text-decoration: none;">
+                    Login to View <i data-lucide="lock" style="width: 12px; height: 12px;"></i>
+                </a>
+            {% endif %}
+        {% endif %}
+    </div>
 </div>
 
 <script>
