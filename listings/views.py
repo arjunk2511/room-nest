@@ -125,19 +125,55 @@ def search(request):
         wishlist_ids = list(Wishlist.objects.filter(user=request.user).values_list('listing_id', flat=True))
         
     # Dynamic SEO titles & descriptions based on filtered parameters
-    seo_title = None
-    seo_description = None
+    title_parts = []
+    desc_parts = []
     
+    prop_type = request.GET.get('type', '')
+    gender = request.GET.get('target_gender', '')
+    
+    type_str = ''
+    if prop_type:
+        if 'pg' in prop_type.lower():
+            if 'men' in prop_type.lower() or gender == 'Boys Only':
+                type_str = 'PG for Boys'
+            elif 'women' in prop_type.lower() or gender == 'Girls Only':
+                type_str = 'PG for Girls'
+            else:
+                type_str = 'PG'
+        elif '1bhk' in prop_type.lower():
+            type_str = '1 BHK Flat for Rent'
+        elif '2bhk' in prop_type.lower():
+            type_str = '2 BHK Flat for Rent'
+        elif '3bhk' in prop_type.lower():
+            type_str = '3 BHK Flat for Rent'
+        elif 'single room' in prop_type.lower():
+            type_str = 'Single Room for Rent'
+        elif 'flatmate' in prop_type.lower():
+            type_str = 'Shared Flatmate Stay'
+        elif 'co-living' in prop_type.lower():
+            type_str = 'Co-living Stay'
+        else:
+            type_str = f"{prop_type} for Rent"
+        title_parts.append(type_str)
+    else:
+        type_str = "Rooms, PGs & Rental Properties"
+        title_parts.append(type_str)
+        
     if current_city and current_area:
-        prop_type = request.GET.get('type', '')
-        type_str = f"{prop_type} " if prop_type else "Rooms, PGs & Flats "
-        seo_title = f"{type_str}for Rent in {current_area.name}, {current_city.name} | RoomNest"
-        seo_description = f"Discover verified {type_str.lower()}for rent in {current_area.name}, {current_city.name}. Connect directly with owners, pay zero brokerage, and find your next home with RoomNest."
+        title_parts.append(f"in {current_area.name}, {current_city.name}")
+        desc_parts.append(f"Discover verified {type_str.lower()} in {current_area.name}, {current_city.name}.")
     elif current_city:
-        prop_type = request.GET.get('type', '')
-        type_str = f"{prop_type}s " if prop_type else "Rooms, PGs & Flats "
-        seo_title = f"{type_str}in {current_city.name} | RoomNest"
-        seo_description = f"Discover verified {type_str.lower()}across {current_city.name}. Connect directly with owners, pay zero brokerage, and find your next home with RoomNest."
+        title_parts.append(f"in {current_city.name}")
+        desc_parts.append(f"Discover verified {type_str.lower()} across {current_city.name}.")
+    else:
+        title_parts.append("in Mysore, Bengaluru & Hyderabad")
+        desc_parts.append(f"Discover verified {type_str.lower()} across Mysore, Bengaluru, and Hyderabad.")
+        
+    title_parts.append("| RoomNest")
+    seo_title = " ".join(title_parts)
+    
+    desc_parts.append("Contact owners directly with zero brokerage, verified listings, and budget-friendly accommodation only on RoomNest.")
+    seo_description = " ".join(desc_parts)
     
     context = {
         'listings': page_obj,
@@ -163,6 +199,11 @@ def details(request, listing_id):
             id=listing_id
         )
         cache.set(cache_key, listing, 900)  # Cache for 15 minutes
+
+    # Redirect old /listing/<id>/ routes to SEO-friendly /<city>/<slug>/ routes
+    canonical_url = listing.get_absolute_url()
+    if request.path.startswith('/listing/') and canonical_url != request.path:
+        return redirect(canonical_url, permanent=True)
 
     # Increment view counter atomically in the DB (saves slow model save, avoids cache invalidation!)
     if not request.user.is_authenticated or request.user != listing.owner:
@@ -197,6 +238,33 @@ def details(request, listing_id):
     # Calculate average rating in Python to save another SQL query!
     avg_rating = sum(r.rating for r in reviews) / len(reviews) if reviews else 0
 
+    # Dynamic SEO titles & descriptions based on listing details
+    city_name = listing.city.name if listing.city else 'Mysore'
+    area_name = listing.area.name if listing.area else listing.location
+    
+    type_lower = listing.type.lower()
+    if 'pg (men)' in type_lower:
+        type_clean = 'PG for Boys'
+    elif 'pg (women)' in type_lower:
+        type_clean = 'PG for Girls'
+    elif '1bhk' in type_lower:
+        type_clean = '1 BHK Flat for Rent'
+    elif '2bhk' in type_lower:
+        type_clean = '2 BHK Flat for Rent'
+    elif '3bhk' in type_lower:
+        type_clean = '3 BHK Flat for Rent'
+    elif 'single room' in type_lower:
+        type_clean = 'Single Room for Rent'
+    elif 'co-living' in type_lower:
+        type_clean = 'Co-living Room for Rent'
+    elif 'flatmate' in type_lower:
+        type_clean = 'Shared Flatmate Stay'
+    else:
+        type_clean = f"{listing.type} for Rent"
+        
+    seo_title = f"{type_clean} in {area_name}, {city_name} | RoomNest"
+    seo_description = f"Find verified {listing.type.lower()} for rent in {area_name}, {city_name}. Rent: ₹{listing.price:.0f}, security deposit: ₹{listing.deposit:.0f}, available: {listing.available_from}. Direct owner contact, zero brokerage only on RoomNest."
+
     context = {
         'listing': listing,
         'has_subscription': has_subscription,
@@ -204,6 +272,8 @@ def details(request, listing_id):
         'similar_listings': similar_listings,
         'reviews': reviews,
         'avg_rating': round(avg_rating, 1),
+        'seo_title': seo_title,
+        'seo_description': seo_description,
     }
     return render(request, 'details.html', context)
 
@@ -1035,17 +1105,28 @@ def city_page(request, city_slug):
         ).exists()
         wishlist_ids = list(Wishlist.objects.filter(user=request.user).values_list('listing_id', flat=True))
         
+    seo_title = f"Rooms, PGs & Rental Properties in {page_data['city'].name} | RoomNest"
+    seo_description = f"Find verified rooms, PGs, flats and rental properties in {page_data['city'].name} with zero brokerage. Contact owners directly on RoomNest."
+
     return render(request, 'city_page.html', {
         'city': page_data['city'],
         'listings': page_data['listings'],
         'areas': page_data['areas'],
         'has_subscription': has_subscription,
-        'wishlist_ids': wishlist_ids
+        'wishlist_ids': wishlist_ids,
+        'seo_title': seo_title,
+        'seo_description': seo_description
     })
 
 
 def area_page(request, city_slug, area_slug):
-    # Verify city and area exist and are active
+    # Check if this slug matches a Listing first
+    listing = Listing.objects.filter(city__slug=city_slug, slug=area_slug).first()
+    if listing:
+        # Call details view directly
+        return details(request, listing_id=listing.id)
+
+    # Otherwise, it must be an Area page
     city = get_object_or_404(City, slug=city_slug, is_active=True)
     area = get_object_or_404(Area, city=city, slug=area_slug, is_active=True)
     

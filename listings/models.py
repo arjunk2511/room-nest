@@ -188,6 +188,7 @@ class Listing(models.Model):
     city = models.ForeignKey(City, on_delete=models.SET_NULL, null=True, blank=True, related_name='listings')
     area = models.ForeignKey(Area, on_delete=models.SET_NULL, null=True, blank=True, related_name='listings')
     created_at = models.DateTimeField(auto_now_add=True)
+    slug = models.SlugField(max_length=255, blank=True, null=True)
 
     class Meta:
         indexes = [
@@ -196,14 +197,87 @@ class Listing(models.Model):
             models.Index(fields=['price']),
             models.Index(fields=['type']),
             models.Index(fields=['created_at']),
+            models.Index(fields=['city', 'slug']),
         ]
 
     def __str__(self):
         return self.title
 
+    def get_absolute_url(self):
+        from django.urls import reverse
+        if self.city and self.slug:
+            return reverse('area_page', kwargs={'city_slug': self.city.slug, 'area_slug': self.slug})
+        return reverse('details', args=[self.id])
+
+    def get_seo_alt_text(self):
+        city_name = self.city.name if self.city else 'Mysore'
+        type_lower = self.type.lower()
+        if 'pg (men)' in type_lower:
+            type_str = f"Boys PG in {city_name}"
+        elif 'pg (women)' in type_lower:
+            type_str = f"Girls PG in {city_name}"
+        elif '1bhk' in type_lower:
+            type_str = f"1 BHK Room for Rent in {city_name}"
+        elif '2bhk' in type_lower:
+            type_str = f"2 BHK Flat in {city_name}"
+        elif '3bhk' in type_lower:
+            type_str = f"3 BHK Flat in {city_name}"
+        elif 'single room' in type_lower:
+            type_str = f"Single Room for Rent in {city_name}"
+        else:
+            type_str = f"{self.type} in {city_name}"
+        return f"{'Verified ' if self.is_verified else ''}{type_str}"
+
     def save(self, *args, **kwargs):
         if self.image and not self.image.name.lower().endswith('.webp'):
             resize_and_compress_image(self.image)
+
+        if not self.slug:
+            from django.utils.text import slugify
+            type_str = self.type.lower()
+            if 'pg' in type_str:
+                if 'men' in type_str or self.target_gender == 'Boys Only':
+                    type_slug = 'pg-for-boys'
+                elif 'women' in type_str or self.target_gender == 'Girls Only':
+                    type_slug = 'pg-for-girls'
+                else:
+                    type_slug = 'pg'
+            elif '1bhk' in type_str:
+                type_slug = '1-bhk-room'
+            elif '2bhk' in type_str:
+                type_slug = '2-bhk-flat'
+            elif '3bhk' in type_str:
+                type_slug = '3-bhk-flat'
+            elif 'flatmate' in type_str:
+                type_slug = 'flatmate-room'
+            elif 'co-living' in type_str:
+                type_slug = 'co-living-space'
+            else:
+                type_slug = slugify(self.type)
+                
+            purpose_slug = slugify(self.listing_purpose or 'rent')
+            area_name = self.area.name if self.area else (self.location or '')
+            area_slug = slugify(area_name)
+            
+            parts = []
+            if 'pg' in type_slug:
+                parts.append(type_slug)
+            else:
+                parts.append(type_slug)
+                parts.append(f"for-{purpose_slug}")
+            if area_slug:
+                parts.append(area_slug)
+                
+            base_slug = '-'.join(parts)
+            slug = base_slug
+            counter = 1
+            
+            # Check uniqueness within the same city
+            while Listing.objects.filter(city=self.city, slug=slug).exclude(id=self.id).exists():
+                slug = f"{base_slug}-{counter}"
+                counter += 1
+            self.slug = slug
+
         super().save(*args, **kwargs)
         
         # Smart cache invalidation (ignores background clicks/view count increases)

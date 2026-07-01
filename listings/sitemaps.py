@@ -25,7 +25,7 @@ class ListingSitemap(Sitemap):
         return Listing.objects.filter(is_sold=False).order_by('-created_at')
 
     def location(self, item):
-        return reverse('details', args=[item.id])
+        return item.get_absolute_url()
 
     def lastmod(self, item):
         return item.created_at

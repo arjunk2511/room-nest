@@ -2,8 +2,8 @@
 {% load static %}
 {% load performance_tags %}
 
-{% block seo_title %}Find Rooms, PGs & Rental Properties in Mysore | RoomNest{% endblock %}
-{% block seo_description %}Find verified rooms, PGs, flats and rental properties in Mysore. Connect directly with owners and discover affordable accommodation with RoomNest.{% endblock %}
+{% block seo_title %}Rooms, PGs & Rental Properties in Mysore, Bengaluru & Hyderabad | RoomNest{% endblock %}
+{% block seo_description %}Find verified rooms, PGs, flats and rental properties in Mysore, Bengaluru and Hyderabad. Contact owners directly with zero brokerage only on RoomNest.{% endblock %}
 
 {% block extra_head %}
 <link rel="preload" href="{% static 'images/hero_bg.webp' %}" as="image" type="image/webp" fetchpriority="high">
@@ -96,10 +96,10 @@
     <div class="grid">
         {% for listing in listings %}
         <div class="card">
-            <a href="{% url 'details' listing.id %}" style="text-decoration: none; color: inherit; display: flex; flex-direction: column; flex-grow: 1;">
+            <a href="{{ listing.get_absolute_url }}" style="text-decoration: none; color: inherit; display: flex; flex-direction: column; flex-grow: 1;">
                 <div class="card-img-wrapper">
                     {% if listing.image %}
-                    <img src="{{ listing.image.url|optimize_image:'w_600' }}" alt="Featured rental: {{ listing.title }}" class="card-img" width="360" height="240" loading="lazy" decoding="async">
+                    <img src="{{ listing.image.url|optimize_image:'w_600' }}" alt="{{ listing.get_seo_alt_text }}" class="card-img" width="360" height="240" loading="lazy" decoding="async">
                     {% else %}
                     <div style="background: #E2E8F0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-weight: 600; font-size: 1rem;">No Image Available</div>
                     {% endif %}
@@ -159,6 +159,63 @@
 </section>
 
 <!-- Simplified Experience: Extra promotional sections removed for clean minimal design -->
+
+<!-- FAQ Section with SEO Schema -->
+<section class="container" style="margin-top: 5rem; margin-bottom: 5rem;">
+    <div style="text-align: center; margin-bottom: 2.5rem;">
+        <span style="color: var(--primary); font-weight: 700; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 0.5rem;">Got Questions?</span>
+        <h2 style="font-size: 1.85rem; font-weight: 800; margin-bottom: 0.5rem; font-family: 'Outfit', sans-serif;">Frequently Asked Questions (FAQ)</h2>
+        <p style="color: var(--text-light); max-width: 500px; margin: 0 auto; font-size: 0.95rem;">Find quick answers about rooms, PGs, flats, and renting with zero brokerage on RoomNest.</p>
+    </div>
+    
+    <div style="max-width: 800px; margin: 0 auto; display: flex; flex-direction: column; gap: 1rem;">
+        <!-- FAQ Item 1 -->
+        <div style="background: var(--white); border: 1px solid var(--border-color); border-radius: var(--border-radius-md); padding: 1.25rem; box-shadow: var(--shadow-sm);">
+            <h3 style="font-size: 1.05rem; font-weight: 700; color: var(--text-dark); margin-bottom: 0.5rem;">How do I rent a room or PG on RoomNest with zero brokerage?</h3>
+            <p style="color: var(--text-light); font-size: 0.9rem; line-height: 1.5; margin: 0;">RoomNest connects room seekers directly with property owners. There are no agents, brokers, or middlemen involved, which guarantees that you pay absolutely zero brokerage commissions on any listed PG, flat, or room.</p>
+        </div>
+        <!-- FAQ Item 2 -->
+        <div style="background: var(--white); border: 1px solid var(--border-color); border-radius: var(--border-radius-md); padding: 1.25rem; box-shadow: var(--shadow-sm);">
+            <h3 style="font-size: 1.05rem; font-weight: 700; color: var(--text-dark); margin-bottom: 0.5rem;">Are the rental properties and PGs verified?</h3>
+            <p style="color: var(--text-light); font-size: 0.9rem; line-height: 1.5; margin: 0;">Yes! Listings on RoomNest undergo verification. Property owners submit document proof which is approved by our admin team. Look for the "🛡️ Verified Owner" badge on property cards.</p>
+        </div>
+        <!-- FAQ Item 3 -->
+        <div style="background: var(--white); border: 1px solid var(--border-color); border-radius: var(--border-radius-md); padding: 1.25rem; box-shadow: var(--shadow-sm);">
+            <h3 style="font-size: 1.05rem; font-weight: 700; color: var(--text-dark); margin-bottom: 0.5rem;">Do you support PG accommodations for both boys and girls?</h3>
+            <p style="color: var(--text-light); font-size: 0.9rem; line-height: 1.5; margin: 0;">Absolutely. We list boys PGs, girls PGs, and co-living spaces in top localities across Mysore, Bengaluru, and Hyderabad. You can easily filter by gender preferences on the search page.</p>
+        </div>
+    </div>
+</section>
+
+<!-- FAQ JSON-LD Schema Markup -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [{
+    "@type": "Question",
+    "name": "How do I rent a room or PG on RoomNest with zero brokerage?",
+    "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "RoomNest connects room seekers directly with property owners. There are no agents, brokers, or middlemen involved, which guarantees that you pay absolutely zero brokerage commissions on any listed PG, flat, or room."
+    }
+  },{
+    "@type": "Question",
+    "name": "Are the rental properties and PGs verified?",
+    "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "Yes! Listings on RoomNest undergo verification. Property owners submit document proof which is approved by our admin team. Look for the Verified Owner badge on property cards."
+    }
+  },{
+    "@type": "Question",
+    "name": "Do you support PG accommodations for both boys and girls?",
+    "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "Absolutely. We list boys PGs, girls PGs, and co-living spaces in top localities across Mysore, Bengaluru, and Hyderabad. You can easily filter by gender preferences on the search page."
+    }
+  }]
+}
+</script>
 
 <!-- JSON metadata for City-Area relationships -->
 <script id="city-area-data" type="application/json">

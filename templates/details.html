@@ -1,8 +1,8 @@
 {% extends 'base.html' %}
 {% load performance_tags %}
 
-{% block seo_title %}{{ listing.type }} for Rent in {{ listing.location }} | {{ listing.title }} | RoomNest{% endblock %}
-{% block seo_description %}Affordable {{ listing.type }} for rent in {{ listing.location }}, Mysore. Security deposit ₹{{ listing.deposit }}, available from {{ listing.available_from }}. View photos, amenities, and contact owner directly on RoomNest.{% endblock %}
+{% block seo_title %}{% if seo_title %}{{ seo_title }}{% else %}{{ listing.type }} for Rent in {{ listing.location }} | {{ listing.title }} | RoomNest{% endif %}{% endblock %}
+{% block seo_description %}{% if seo_description %}{{ seo_description }}{% else %}Affordable {{ listing.type }} for rent in {{ listing.location }}, Mysore. Security deposit ₹{{ listing.deposit }}, available from {{ listing.available_from }}. View photos, amenities, and contact owner directly on RoomNest.{% endif %}{% endblock %}
 
 {% block extra_head %}
     <!-- Leaflet JS Map Assets -->
@@ -10,12 +10,12 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
 {% endblock %}
 
-{% block og_title %}{{ listing.type }} for Rent in {{ listing.location }} | RoomNest{% endblock %}
-{% block og_description %}Affordable {{ listing.type }} for rent in {{ listing.location }}, Mysore. Security deposit ₹{{ listing.deposit }}, available from {{ listing.available_from }}. View photos, amenities, and contact owner directly on RoomNest.{% endblock %}
+{% block og_title %}{% if seo_title %}{{ seo_title }}{% else %}{{ listing.type }} for Rent in {{ listing.location }} | RoomNest{% endif %}{% endblock %}
+{% block og_description %}{% if seo_description %}{{ seo_description }}{% else %}Affordable {{ listing.type }} for rent in {{ listing.location }}, Mysore. Security deposit ₹{{ listing.deposit }}, available from {{ listing.available_from }}. View photos, amenities, and contact owner directly on RoomNest.{% endif %}{% endblock %}
 {% block og_image %}{% if listing.image %}{% if "http" in listing.image.url %}{{ listing.image.url }}{% else %}https://roomnest.online{{ listing.image.url }}{% endif %}{% else %}https://roomnest.online/static/images/logo_icon.png{% endif %}{% endblock %}
 
-{% block twitter_title %}{{ listing.type }} for Rent in {{ listing.location }} | RoomNest{% endblock %}
-{% block twitter_description %}Affordable {{ listing.type }} for rent in {{ listing.location }}, Mysore. Security deposit ₹{{ listing.deposit }}, available from {{ listing.available_from }}. View photos, amenities, and contact owner directly on RoomNest.{% endblock %}
+{% block twitter_title %}{% if seo_title %}{{ seo_title }}{% else %}{{ listing.type }} for Rent in {{ listing.location }} | RoomNest{% endif %}{% endblock %}
+{% block twitter_description %}{% if seo_description %}{{ seo_description }}{% else %}Affordable {{ listing.type }} for rent in {{ listing.location }}, Mysore. Security deposit ₹{{ listing.deposit }}, available from {{ listing.available_from }}. View photos, amenities, and contact owner directly on RoomNest.{% endif %}{% endblock %}
 {% block twitter_image %}{% if listing.image %}{% if "http" in listing.image.url %}{{ listing.image.url }}{% else %}https://roomnest.online{{ listing.image.url }}{% endif %}{% else %}https://roomnest.online/static/images/logo_icon.png{% endif %}{% endblock %}
 
 {% block content %}
@@ -27,7 +27,7 @@
   "name": "{{ listing.title|escapejs }}",
   "datePosted": "{{ listing.created_at|date:'c' }}",
   "description": "{{ listing.description|truncatechars:200|escapejs }}",
-  "url": "https://roomnest.online{% url 'details' listing.id %}",
+  "url": "https://roomnest.online{{ listing.get_absolute_url }}",
   "image": [
     "{% if listing.image %}{% if 'http' in listing.image.url %}{{ listing.image.url }}{% else %}https://roomnest.online{{ listing.image.url }}{% endif %}{% else %}https://roomnest.online/static/images/logo_icon.png{% endif %}"
   ],
@@ -71,18 +71,20 @@
       "position": 1,
       "name": "Home",
       "item": "https://roomnest.online/"
-    },
-    {
+    }
+    {% if listing.city %}
+    ,{
       "@type": "ListItem",
       "position": 2,
-      "name": "Search",
-      "item": "https://roomnest.online/search/"
-    },
-    {
+      "name": "{{ listing.city.name|escapejs }}",
+      "item": "https://roomnest.online/{{ listing.city.slug }}/"
+    }
+    {% endif %}
+    ,{
       "@type": "ListItem",
-      "position": 3,
+      "position": {% if listing.city %}3{% else %}2{% endif %},
       "name": "{{ listing.title|escapejs }}",
-      "item": "https://roomnest.online{% url 'details' listing.id %}"
+      "item": "https://roomnest.online{{ listing.get_absolute_url }}"
     }
   ]
 }
@@ -125,7 +127,7 @@
                 <div class="swipe-gallery">
                     {% if listing.image %}
                     <div class="swipe-gallery-item">
-                        <img src="{{ listing.image.url|optimize_image:'w_1200' }}" alt="Main image of {{ listing.title }}" width="800" height="533" decoding="async">
+                        <img src="{{ listing.image.url|optimize_image:'w_1200' }}" alt="{{ listing.get_seo_alt_text }}" width="800" height="533" decoding="async">
                     </div>
                     {% else %}
                     <div class="swipe-gallery-item" style="display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-weight: 600; font-size: 1.2rem; background: #E2E8F0;">No Image Available</div>
@@ -133,7 +135,7 @@
                     
                     {% for img in listing.images.all %}
                     <div class="swipe-gallery-item">
-                        <img src="{{ img.image.url|optimize_image:'w_1200' }}" alt="Gallery Image {{ forloop.counter }} of {{ listing.title }}" width="800" height="533" loading="lazy" decoding="async">
+                        <img src="{{ img.image.url|optimize_image:'w_1200' }}" alt="{{ listing.get_seo_alt_text }} - Gallery {{ forloop.counter }}" width="800" height="533" loading="lazy" decoding="async">
                     </div>
                     {% endfor %}
                 </div>
@@ -340,10 +342,10 @@
             <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;">
                 {% for sim in similar_listings %}
                 <div class="card" style="border-radius: 8px; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); overflow: hidden; background: var(--white); display: flex; flex-direction: column;">
-                    <a href="{% url 'details' sim.id %}" style="text-decoration: none; color: inherit; display: flex; flex-direction: column; flex-grow: 1;">
+                    <a href="{{ sim.get_absolute_url }}" style="text-decoration: none; color: inherit; display: flex; flex-direction: column; flex-grow: 1;">
                         <div style="aspect-ratio: 16 / 9; height: 130px; overflow: hidden; position: relative;">
                             {% if sim.image %}
-                            <img src="{{ sim.image.url|optimize_image:'w_600' }}" alt="Similar rental: {{ sim.title }}" width="230" height="130" loading="lazy" decoding="async" style="width: 100%; height: 100%; object-fit: cover;">
+                            <img src="{{ sim.image.url|optimize_image:'w_600' }}" alt="{{ sim.get_seo_alt_text }}" width="230" height="130" loading="lazy" decoding="async" style="width: 100%; height: 100%; object-fit: cover;">
                             {% else %}
                             <div style="background: #E2E8F0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 0.8rem; font-weight: 600;">No Image</div>
                             {% endif %}

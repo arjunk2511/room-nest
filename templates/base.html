@@ -15,15 +15,15 @@
     <!-- Open Graph / Facebook SEO -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://roomnest.online{{ request.path }}">
-    <meta property="og:title" content="{% block og_title %}RoomNest - Find Your Perfect Room, PG, Flatmate{% endblock %}">
-    <meta property="og:description" content="{% block og_description %}Discover comfortable and affordable rooms, PGs, and commercial spaces with zero brokerage.{% endblock %}">
+    <meta property="og:title" content="{% block og_title %}{% if seo_title %}{{ seo_title }}{% else %}RoomNest - Find Your Perfect Room, PG, Flatmate{% endif %}{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}{% if seo_description %}{{ seo_description }}{% else %}Discover comfortable and affordable rooms, PGs, and commercial spaces with zero brokerage.{% endif %}{% endblock %}">
     <meta property="og:image" content="{% block og_image %}https://roomnest.online{% static 'images/logo_icon.png' %}{% endblock %}">
 
     <!-- Twitter SEO -->
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="https://roomnest.online{{ request.path }}">
-    <meta property="twitter:title" content="{% block twitter_title %}RoomNest - Find Your Perfect Room, PG, Flatmate{% endblock %}">
-    <meta property="twitter:description" content="{% block twitter_description %}Discover rooms, PGs, and commercial spaces with zero brokerage.{% endblock %}">
+    <meta property="twitter:title" content="{% block twitter_title %}{% if seo_title %}{{ seo_title }}{% else %}RoomNest - Find Your Perfect Room, PG, Flatmate{% endif %}{% endblock %}">
+    <meta property="twitter:description" content="{% block twitter_description %}{% if seo_description %}{{ seo_description }}{% else %}Discover rooms, PGs, and commercial spaces with zero brokerage.{% endif %}{% endblock %}">
     <meta property="twitter:image" content="{% block twitter_image %}https://roomnest.online{% static 'images/logo_icon.png' %}{% endblock %}">
 
     {% load webpush_notifications %}
@@ -379,17 +379,38 @@
             </div>
             
             <!-- Quick Links -->
-            <div style="flex: 1; min-width: 180px;">
+            <div style="flex: 1; min-width: 140px;">
                 <h4 style="font-size: 1rem; font-weight: 700; margin-bottom: 1.2rem; color: var(--text-dark);">Platform</h4>
                 <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.75rem;">
-                    <li><a href="{% url 'home' %}" style="color: var(--text-light); font-size: 0.9rem;">Home</a></li>
+                    <li><a href="{% url 'home' %}" style="color: var(--text-light); font-size: 0.9rem;">Home Hub</a></li>
                     <li><a href="{% url 'search' %}" style="color: var(--text-light); font-size: 0.9rem;">Search Rooms</a></li>
-                    <li><a href="{% url 'add_property' %}" style="color: var(--text-light); font-size: 0.9rem;">Post a Property</a></li>
+                    <li><a href="{% url 'add_property' %}" style="color: var(--text-light); font-size: 0.9rem;">Post a Stay</a></li>
+                </ul>
+            </div>
+            
+            <!-- Top Cities Links -->
+            <div style="flex: 1; min-width: 160px;">
+                <h4 style="font-size: 1rem; font-weight: 700; margin-bottom: 1.2rem; color: var(--text-dark);">Top Cities</h4>
+                <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.75rem;">
+                    <li><a href="/mysore/" style="color: var(--text-light); font-size: 0.9rem;">PGs & Flats in Mysore</a></li>
+                    <li><a href="/bengaluru/" style="color: var(--text-light); font-size: 0.9rem;">PGs & Flats in Bengaluru</a></li>
+                    <li><a href="/hyderabad/" style="color: var(--text-light); font-size: 0.9rem;">PGs & Flats in Hyderabad</a></li>
+                </ul>
+            </div>
+            
+            <!-- Rental Stays Links -->
+            <div style="flex: 1; min-width: 160px;">
+                <h4 style="font-size: 1rem; font-weight: 700; margin-bottom: 1.2rem; color: var(--text-dark);">Rental Stays</h4>
+                <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.75rem;">
+                    <li><a href="/search/?type=PG+%28Men%29" style="color: var(--text-light); font-size: 0.9rem;">Boys PG Near Me</a></li>
+                    <li><a href="/search/?type=PG+%28Women%29" style="color: var(--text-light); font-size: 0.9rem;">Girls PG Near Me</a></li>
+                    <li><a href="/search/?type=1BHK" style="color: var(--text-light); font-size: 0.9rem;">1 BHK Flats for Rent</a></li>
+                    <li><a href="/search/?type=2BHK" style="color: var(--text-light); font-size: 0.9rem;">2 BHK Flats for Rent</a></li>
                 </ul>
             </div>
             
             <!-- Company Links -->
-            <div style="flex: 1; min-width: 180px;">
+            <div style="flex: 1; min-width: 140px;">
                 <h4 style="font-size: 1rem; font-weight: 700; margin-bottom: 1.2rem; color: var(--text-dark);">Company</h4>
                 <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.75rem;">
                     <li><a href="{% url 'about_us' %}" style="color: var(--text-light); font-size: 0.9rem;">About Us</a></li>

@@ -372,3 +372,85 @@ class ReferralsAndRewardsTestCase(TestCase):
         self.assertIn("Banashankari", areas)
 
 
+class SeoAndFriendlyUrlsTestCase(TestCase):
+    def setUp(self):
+        self.owner = User.objects.create_user(username='seo_owner', password='ownerpassword', email='seo_owner@roomnest.online')
+        self.client = Client()
+        
+        # Ensure City and Area exist
+        self.city, _ = City.objects.get_or_create(name="Bengaluru", slug="bengaluru", is_active=True)
+        self.area, _ = Area.objects.get_or_create(city=self.city, name="HSR Layout", slug="hsr-layout", is_active=True)
+        
+    def test_listing_slug_generation_and_seo_alt(self):
+        listing = Listing.objects.create(
+            title="Premium Room in HSR Layout",
+            location="HSR Layout",
+            city=self.city,
+            area=self.area,
+            price=12000.00,
+            deposit=24000.00,
+            type="PG (Men)",
+            owner=self.owner,
+            listing_purpose="Rent"
+        )
+        # Verify slug is generated automatically on save
+        self.assertTrue(listing.slug)
+        self.assertIn('pg-for-boys', listing.slug)
+        
+        # Verify alt text generation
+        alt_text = listing.get_seo_alt_text()
+        self.assertIn("Boys PG in Bengaluru", alt_text)
+        
+        # Verify absolute URL
+        absolute_url = listing.get_absolute_url()
+        self.assertEqual(absolute_url, f"/bengaluru/{listing.slug}/")
+
+    def test_old_url_redirect_to_friendly_url(self):
+        listing = Listing.objects.create(
+            title="Premium Room in HSR Layout",
+            location="HSR Layout",
+            city=self.city,
+            area=self.area,
+            price=12000.00,
+            deposit=24000.00,
+            type="PG (Men)",
+            owner=self.owner,
+            listing_purpose="Rent"
+        )
+        old_url = reverse('details', args=[listing.id])
+        response = self.client.get(old_url)
+        self.assertEqual(response.status_code, 301)
+        self.assertEqual(response.url, listing.get_absolute_url())
+
+    def test_friendly_url_routing_resolution(self):
+        listing = Listing.objects.create(
+            title="Premium Flat in HSR Layout",
+            location="HSR Layout",
+            city=self.city,
+            area=self.area,
+            price=12000.00,
+            deposit=24000.00,
+            type="2BHK",
+            owner=self.owner,
+            listing_purpose="Rent"
+        )
+        # Request detail page via friendly URL
+        friendly_url = listing.get_absolute_url()
+        response = self.client.get(friendly_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Premium Flat in HSR Layout")
+        self.assertContains(response, "2 BHK Flat for Rent in HSR Layout, Bengaluru")
+
+    def test_dynamic_seo_headers(self):
+        # Test search SEO tags for city search
+        response = self.client.get(reverse('search'), {'city': self.city.slug})
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "<title>Rooms, PGs &amp; Rental Properties in Bengaluru | RoomNest</title>")
+        
+        # Test city landing page SEO tags
+        response = self.client.get(reverse('city_page', args=[self.city.slug]))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "<title>Rooms, PGs &amp; Rental Properties in Bengaluru | RoomNest</title>")
+
+
+
