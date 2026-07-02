@@ -3036,7 +3036,7 @@ footer {
         width: 220px !important;
         padding: 8px 0 !important;
         z-index: 1100 !important;
-        display: none !important;
+        display: none;
     }
 
     .header-dropdown:hover .dropdown-menu {
