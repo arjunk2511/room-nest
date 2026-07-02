@@ -1,0 +1,276 @@
+{% load static %}
+{% load performance_tags %}
+
+<div class="property-card" id="card-{{ listing.id }}" onclick="if (!event.target.closest('.wishlist-heart, .carousel-control, .property-card-actions, a, button')) { if (event.metaKey || event.ctrlKey) { window.open('{{ listing.get_absolute_url }}', '_blank'); } else { window.location.href = '{{ listing.get_absolute_url }}'; } }">
+    <!-- CSRF Token for Wishlist AJAX -->
+    {% csrf_token %}
+
+    <!-- Image / Media Container -->
+    <div class="property-card-media">
+        <!-- Badge Top-Left -->
+        {% if listing.is_verified or listing.owner.userprofile.is_verified %}
+            <span class="badge-top-left badge-verified">
+                <i data-lucide="shield-check" style="width: 12px; height: 12px;"></i> Verified
+            </span>
+        {% elif listing|is_new_listing %}
+            <span class="badge-top-left badge-new">
+                <i data-lucide="sparkles" style="width: 12px; height: 12px;"></i> New
+            </span>
+        {% else %}
+            <span class="badge-top-left">
+                <i data-lucide="percent" style="width: 12px; height: 12px;"></i> No Brokerage
+            </span>
+        {% endif %}
+
+        <!-- Wishlist Heart Overlay -->
+        {% if request.user.is_authenticated %}
+            <button type="button" class="wishlist-heart{% if listing.id in wishlist_ids %} saved{% endif %}" aria-label="{% if listing.id in wishlist_ids %}Remove from Saved Stays{% else %}Save Stay{% endif %}" onclick="event.stopPropagation(); window.toggleWishlist(this, '{{ listing.id }}');">
+                <i data-lucide="heart" style="width: 18px; height: 18px; {% if listing.id in wishlist_ids %}fill: #FF385C; stroke: #FF385C;{% else %}fill: none; stroke: currentColor;{% endif %}"></i>
+            </button>
+        {% else %}
+            <a href="{% url 'login' %}?next={{ request.get_full_path }}" class="wishlist-heart" aria-label="Save Stay" onclick="event.stopPropagation();">
+                <i data-lucide="heart" style="width: 18px; height: 18px; fill: none; stroke: currentColor;"></i>
+            </a>
+        {% endif %}
+
+        <!-- Image Carousel Scroller -->
+        <div class="property-card-carousel">
+            {% if listing.image %}
+                <div class="property-card-slide">
+                    <img src="{{ listing.image.url|optimize_image:'w_600' }}" alt="{{ listing.get_seo_alt_text }}" class="property-card-img" loading="lazy" decoding="async">
+                </div>
+            {% else %}
+                <div class="property-card-slide shimmer-bg" style="display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-weight: 600; font-size: 1rem;">
+                    No Image Available
+                </div>
+            {% endif %}
+            {% for gallery_img in listing.images.all %}
+                <div class="property-card-slide">
+                    <img src="{{ gallery_img.image.url|optimize_image:'w_600' }}" alt="{{ listing.get_seo_alt_text }} gallery image {{ forloop.counter }}" class="property-card-img" loading="lazy" decoding="async">
+                </div>
+            {% endfor %}
+        </div>
+
+        <!-- Carousel Chevron Controls -->
+        {% if listing.images.all %}
+            <button type="button" class="carousel-control prev" aria-label="Previous image">
+                &#10094;
+            </button>
+            <button type="button" class="carousel-control next" aria-label="Next image">
+                &#10095;
+            </button>
+
+            <!-- Carousel Indicator Dots -->
+            <div class="carousel-dots">
+                <span class="carousel-dot active"></span>
+                {% for img in listing.images.all %}
+                    <span class="carousel-dot"></span>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Info Block -->
+    <div class="property-card-info">
+        <!-- Price Row -->
+        <div class="property-card-price-row">
+            <span class="property-card-price">
+                ₹{{ listing.price|format_price }}<span>/mo</span>
+            </span>
+            {% if listing.is_verified or listing.owner.userprofile.is_verified %}
+                <span class="verified-inline-badge">
+                    <i data-lucide="check" style="width: 10px; height: 10px;"></i> Verified
+                </span>
+            {% endif %}
+        </div>
+
+        <!-- Title -->
+        <h3 class="property-card-title" title="{{ listing.title }}">
+            {{ listing.title }}
+        </h3>
+
+        <!-- Location -->
+        <div class="property-card-location">
+            <i data-lucide="map-pin" style="width: 14px; height: 14px;"></i>
+            {% if listing.area %}
+                {{ listing.area.name }}, {{ listing.city.name }}
+            {% else %}
+                {{ listing.location }}{% if listing.city %}, {{ listing.city.name }}{% endif %}
+            {% endif %}
+        </div>
+
+        <!-- Meta Chips Row -->
+        <div class="property-card-chips">
+            {% with chips=listing|get_listing_chips %}
+                {% for chip in chips|slice:":3" %}
+                    <span class="property-card-chip">{{ chip }}</span>
+                {% endfor %}
+                {% if chips|length > 3 %}
+                    <span class="property-card-chip more-chip">+{{ chips|length|add:"-3" }} more</span>
+                {% endif %}
+            {% endwith %}
+        </div>
+
+        <!-- Divider -->
+        <hr class="property-card-divider">
+
+        <!-- Action Buttons Row -->
+        <div class="property-card-actions">
+            {% if request.user.is_authenticated and has_subscription or request.user.is_authenticated and request.user == listing.owner %}
+                <!-- Unlocked Actions -->
+                <a href="tel:{{ listing.phone }}" onclick="event.stopPropagation();" class="property-card-btn btn-call" title="Call Owner">
+                    <i data-lucide="phone" style="width: 16px; height: 16px;"></i> Call
+                </a>
+                <button type="button" onclick="event.stopPropagation(); window.openWhatsApp('{{ listing.phone|escapejs }}', '{{ listing.title|escapejs }}');" class="property-card-btn btn-chat" title="Chat on WhatsApp">
+                    <i data-lucide="message-square" style="width: 16px; height: 16px;"></i> Chat
+                </button>
+            {% else %}
+                <!-- Locked Actions (Routes to auth or subscription flow) -->
+                {% if not request.user.is_authenticated %}
+                    {% url 'login' as login_base_url %}
+                    {% with target_url=login_base_url|add:"?next="|add:request.get_full_path %}
+                        <a href="{{ target_url }}" onclick="event.stopPropagation();" class="property-card-btn btn-call locked" title="Unlock Call Contact">
+                            <i data-lucide="phone" style="width: 16px; height: 16px;"></i> Call
+                            <i data-lucide="lock" style="width: 12px; height: 12px;"></i>
+                        </a>
+                        <a href="{{ target_url }}" onclick="event.stopPropagation();" class="property-card-btn btn-chat locked" title="Unlock Chat Contact">
+                            <i data-lucide="message-square" style="width: 16px; height: 16px;"></i> Chat
+                            <i data-lucide="lock" style="width: 12px; height: 12px;"></i>
+                        </a>
+                    {% endwith %}
+                {% else %}
+                    <!-- Authenticated but no subscription -->
+                    {% with target_url=listing.get_absolute_url %}
+                        <a href="{{ target_url }}" onclick="event.stopPropagation();" class="property-card-btn btn-call locked" title="Unlock Call Contact">
+                            <i data-lucide="phone" style="width: 16px; height: 16px;"></i> Call
+                            <i data-lucide="lock" style="width: 12px; height: 12px;"></i>
+                        </a>
+                        <a href="{{ target_url }}" onclick="event.stopPropagation();" class="property-card-btn btn-chat locked" title="Unlock Chat Contact">
+                            <i data-lucide="message-square" style="width: 16px; height: 16px;"></i> Chat
+                            <i data-lucide="lock" style="width: 12px; height: 12px;"></i>
+                        </a>
+                    {% endwith %}
+                {% endif %}
+            {% endif %}
+        </div>
+
+        <!-- Lock Caption Subtitle -->
+        {% if not request.user.is_authenticated %}
+            <span class="property-lock-caption">Login to view contact details</span>
+        {% elif not has_subscription and request.user != listing.owner %}
+            <span class="property-lock-caption">Subscribe to view contact details</span>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Self-Contained Script Block for Carousel and Wishlist AJAX -->
+<script>
+(function() {
+    const cardId = 'card-{{ listing.id }}';
+    const card = document.getElementById(cardId);
+    if (!card) return;
+
+    // Carousel scrolling logic
+    const scroller = card.querySelector('.property-card-carousel');
+    const dots = card.querySelectorAll('.carousel-dot');
+    const prevBtn = card.querySelector('.carousel-control.prev');
+    const nextBtn = card.querySelector('.carousel-control.next');
+
+    if (scroller && dots.length > 0) {
+        let scrollTimeout;
+        scroller.addEventListener('scroll', () => {
+            clearTimeout(scrollTimeout);
+            scrollTimeout = setTimeout(() => {
+                const activeIndex = Math.round(scroller.scrollLeft / scroller.clientWidth);
+                dots.forEach((dot, idx) => {
+                    if (idx === activeIndex) {
+                        dot.classList.add('active');
+                    } else {
+                        dot.classList.remove('active');
+                    }
+                });
+            }, 50);
+        });
+    }
+
+    if (prevBtn && nextBtn && scroller) {
+        prevBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            scroller.scrollBy({ left: -scroller.clientWidth, behavior: 'smooth' });
+        });
+        nextBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            scroller.scrollBy({ left: scroller.clientWidth, behavior: 'smooth' });
+        });
+    }
+
+    // Initialize globally required functions once
+    if (!window.toggleWishlist) {
+        window.toggleWishlist = async function(btn, listingId) {
+            const cardElement = document.getElementById(`card-${listingId}`);
+            const csrfToken = cardElement ? cardElement.querySelector('[name=csrfmiddlewaretoken]')?.value : '';
+            
+            try {
+                btn.classList.add('saved-pulse');
+                setTimeout(() => btn.classList.remove('saved-pulse'), 200);
+                
+                const response = await fetch(`/wishlist/toggle/${listingId}/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json',
+                        'X-CSRFToken': csrfToken
+                    }
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.status === 'success') {
+                        const icon = btn.querySelector('svg');
+                        if (data.saved) {
+                            btn.classList.add('saved');
+                            btn.setAttribute('aria-label', 'Remove from Saved Stays');
+                            if (icon) {
+                                icon.style.fill = '#FF385C';
+                                icon.style.stroke = '#FF385C';
+                            }
+                        } else {
+                            btn.classList.remove('saved');
+                            btn.setAttribute('aria-label', 'Save Stay');
+                            if (icon) {
+                                icon.style.fill = 'none';
+                                icon.style.stroke = 'currentColor';
+                            }
+                        }
+                    }
+                } else if (response.status === 401 || response.status === 403) {
+                    window.location.href = `/accounts/login/?next=${encodeURIComponent(window.location.pathname + window.location.search)}`;
+                }
+            } catch (err) {
+                console.error("Wishlist toggle error:", err);
+            }
+        };
+    }
+
+    if (!window.openWhatsApp) {
+        window.openWhatsApp = function(phone, title) {
+            let cleaned = phone.replace(/\D/g, '');
+            if (cleaned.length === 10) {
+                cleaned = '91' + cleaned;
+            }
+            const message = encodeURIComponent(`Hi, I saw your property "${title}" listed on RoomNest and I am interested. Is it still available?`);
+            window.open(`https://wa.me/${cleaned}?text=${message}`, '_blank');
+        };
+    }
+
+    // Refresh Lucide icons for this card if loaded after page load
+    if (window.lucide) {
+        window.lucide.createIcons({
+            attrs: {
+                class: 'lucide-icon'
+            },
+            nameAttr: 'data-lucide',
+            node: card
+        });
+    }
+})();
+</script>

@@ -16,7 +16,7 @@ import datetime
 def home(request):
     featured_listings = cache.get('home_featured_listings')
     if not featured_listings:
-        featured_listings = list(Listing.objects.filter(is_sold=False).select_related('owner__userprofile', 'city', 'area').order_by('-created_at')[:6])
+        featured_listings = list(Listing.objects.filter(is_sold=False).select_related('owner__userprofile', 'city', 'area').prefetch_related('images').order_by('-created_at')[:6])
         cache.set('home_featured_listings', featured_listings, 900)  # Cache for 15 minutes
     has_subscription = False
     wishlist_ids = []
@@ -28,7 +28,7 @@ def home(request):
             end_date__gt=timezone.now()
         ).exists()
         wishlist_ids = list(Wishlist.objects.filter(user=request.user).values_list('listing_id', flat=True))
-        user_listings = list(Listing.objects.filter(owner=request.user).select_related('city', 'area')[:3])
+        user_listings = list(Listing.objects.filter(owner=request.user).select_related('city', 'area').prefetch_related('images')[:3])
     
     context = {
         'listings': featured_listings,
@@ -43,7 +43,7 @@ def home(request):
 
 def search(request):
     # Optimize query by pre-joining the owner's profile and city/area
-    listings = Listing.objects.filter(is_sold=False).select_related('owner__userprofile', 'city', 'area').order_by('-created_at')
+    listings = Listing.objects.filter(is_sold=False).select_related('owner__userprofile', 'city', 'area').prefetch_related('images').order_by('-created_at')
     
     # New V2 filters: city and area slugs
     city_slug = request.GET.get('city')
@@ -446,11 +446,21 @@ def toggle_wishlist(request, listing_id):
     wishlist_item, created = Wishlist.objects.get_or_create(user=request.user, listing=listing)
     if not created:
         wishlist_item.delete()
+        saved = False
+    else:
+        saved = True
+        
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest' or 'application/json' in request.headers.get('Accept', ''):
+        return JsonResponse({'status': 'success', 'saved': saved})
+        
+    referer = request.META.get('HTTP_REFERER')
+    if referer:
+        return redirect(referer)
     return redirect('details', listing_id=listing.id)
 
 @login_required
 def wishlist(request):
-    wishlist_items = Wishlist.objects.filter(user=request.user).select_related('listing', 'listing__owner').prefetch_related('listing__reviews')
+    wishlist_items = Wishlist.objects.filter(user=request.user).select_related('listing', 'listing__owner').prefetch_related('listing__reviews', 'listing__images')
     listings = [item.listing for item in wishlist_items]
     has_subscription = False
     wishlist_ids = []
@@ -1085,7 +1095,7 @@ def city_page(request, city_slug):
         featured_listings = list(Listing.objects.filter(
             city=city, 
             is_sold=False
-        ).select_related('owner__userprofile', 'city', 'area').order_by('-created_at')[:6])
+        ).select_related('owner__userprofile', 'city', 'area').prefetch_related('images').order_by('-created_at')[:6])
         areas = list(city.areas.filter(is_active=True).order_by('name'))
         page_data = {
             'city': city,

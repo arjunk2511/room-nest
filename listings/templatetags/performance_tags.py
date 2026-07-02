@@ -35,3 +35,47 @@ def split_by_comma(value):
     if not value:
         return []
     return [item.strip() for item in str(value).split(',') if item.strip()]
+
+@register.filter(name='format_price')
+def format_price(value):
+    """
+    Formats decimal/int as a comma-separated currency string.
+    """
+    if value is None:
+        return '0'
+    try:
+        return f"{int(float(value)):,}"
+    except (ValueError, TypeError):
+        return str(value)
+
+@register.filter(name='get_listing_chips')
+def get_listing_chips(listing):
+    """
+    Constructs a list of relevant meta chips for the listing.
+    """
+    chips = []
+    if listing.type:
+        chips.append(listing.type)
+    if listing.furnishing:
+        if listing.furnishing == 'Fully Furnished':
+            chips.append('Furnished')
+        elif listing.furnishing == 'Semi-Furnished':
+            chips.append('Semi-Furn')
+        else:
+            chips.append(listing.furnishing)
+    if listing.available_from:
+        chips.append(listing.available_from)
+    if listing.target_gender and listing.target_gender != 'Any':
+        chips.append(listing.target_gender)
+    return chips
+
+@register.filter(name='is_new_listing')
+def is_new_listing(listing):
+    """
+    Returns True if the listing was created in the last 3 days.
+    """
+    if not listing or not listing.created_at:
+        return False
+    from django.utils import timezone
+    delta = timezone.now() - listing.created_at
+    return delta.days < 3
