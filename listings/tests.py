@@ -453,4 +453,21 @@ class SeoAndFriendlyUrlsTestCase(TestCase):
         self.assertContains(response, "<title>Rooms, PGs &amp; Rental Properties in Bengaluru | RoomNest</title>")
 
 
+class ProfilePageTestCase(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='testprofileuser', password='testpassword', email='profileuser@roomnest.online')
+        self.client = Client()
+
+    def test_anonymous_profile_redirect(self):
+        response = self.client.get(reverse('profile'))
+        self.assertEqual(response.status_code, 302)
+        self.assertIn(reverse('login'), response.url)
+
+    def test_authenticated_profile_view(self):
+        self.client.login(username='testprofileuser', password='testpassword')
+        response = self.client.get(reverse('profile'))
+        self.assertEqual(response.status_code, 200)
+
+
+
 

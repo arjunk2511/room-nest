@@ -210,7 +210,7 @@
                     <!-- Profile Dropdown (Authenticated or Guest) -->
                     <div class="header-dropdown" id="profileDropdown">
                         {% if user.is_authenticated %}
-                            <button class="dropdown-btn profile-nav-btn" onclick="toggleDropdown('profileDropdownContent')">
+                            <button class="dropdown-btn profile-nav-btn" onclick="toggleDropdown(event, 'profileDropdownContent')">
                                 <span class="avatar-initial">{{ user.username|slice:":1"|upper }}</span>
                                 <span class="profile-text">Profile</span> <i data-lucide="chevron-down" style="width: 12px; height: 12px; display: inline-flex; vertical-align: middle; margin-left: 2px;"></i>
                             </button>
@@ -228,7 +228,7 @@
                                 <a href="{% url 'logout' %}" onclick="closeDropdowns()" class="menu-link-danger"><i data-lucide="log-out" style="width: 16px; height: 16px; display: inline-block; vertical-align: text-bottom; margin-right: 6px;"></i> Logout</a>
                             </div>
                         {% else %}
-                            <button class="dropdown-btn profile-nav-btn" onclick="toggleDropdown('profileDropdownContent')">
+                            <button class="dropdown-btn profile-nav-btn" onclick="toggleDropdown(event, 'profileDropdownContent')">
                                 <span class="avatar-initial guest"><i data-lucide="user" style="width: 14px; height: 14px;"></i></span>
                                 <span class="profile-text">Profile</span> <i data-lucide="chevron-down" style="width: 12px; height: 12px; display: inline-flex; vertical-align: middle; margin-left: 2px;"></i>
                             </button>
@@ -290,6 +290,7 @@
                 {% endif %}
                 <a href="{% url 'logout' %}" style="color: #EF4444; margin-top: 1rem;" onclick="toggleDrawer()"><i data-lucide="log-out" style="width: 18px; height: 18px; vertical-align: middle; margin-right: 8px;"></i> Logout</a>
             {% else %}
+                <a href="{% url 'login' %}?next={% url 'profile' %}" onclick="toggleDrawer()"><i data-lucide="user" style="width: 18px; height: 18px; vertical-align: middle; margin-right: 8px;"></i> Profile Settings</a>
                 <a href="{% url 'login' %}?next={{ request.path }}" onclick="toggleDrawer()"><i data-lucide="log-in" style="width: 18px; height: 18px; vertical-align: middle; margin-right: 8px;"></i> Login</a>
                 <a href="{% url 'register' %}?next={{ request.path }}" onclick="toggleDrawer()"><i data-lucide="user-plus" style="width: 18px; height: 18px; vertical-align: middle; margin-right: 8px;"></i> Register</a>
             {% endif %}
@@ -336,9 +337,9 @@
             <span>Profile</span>
         </a>
         {% else %}
-        <a href="{% url 'login' %}?next={{ request.path }}" class="bottom-nav-item">
+        <a href="{% url 'login' %}?next={% url 'profile' %}" class="bottom-nav-item">
             <i data-lucide="user" class="bottom-nav-icon"></i>
-            <span>Login</span>
+            <span>Profile</span>
         </a>
         {% endif %}
     </div>
@@ -458,8 +459,10 @@
     }
 
     // Toggle dropdowns (Explore, Profile Avatar)
-    function toggleDropdown(id) {
-        event.stopPropagation();
+    function toggleDropdown(event, id) {
+        if (event && event.stopPropagation) {
+            event.stopPropagation();
+        }
         const el = document.getElementById(id);
         const isOpen = el.classList.contains('show');
         
