@@ -41,6 +41,8 @@ urlpatterns = [
     # Rewards and referrals
     path('rewards/', views.earn_rewards, name='earn_rewards'),
     path('api/search-suggestions/', views.search_suggestions, name='search_suggestions'),
+    path('api/listing/<int:listing_id>/landmarks/', views.listing_landmarks_api, name='listing_landmarks_api'),
+    path('api/listing/landmarks/', views.listing_landmarks_api, name='area_landmarks_api'),
     path('rewards-admin/approve/<int:reward_id>/', views.approve_reward_claim, name='approve_reward_claim'),
     path('rewards-admin/reject/<int:reward_id>/', views.reject_reward_claim, name='reject_reward_claim'),
     path('rewards-admin/pay/<int:reward_id>/', views.pay_reward_claim, name='pay_reward_claim'),

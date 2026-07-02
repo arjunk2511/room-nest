@@ -4,6 +4,89 @@
 {% block seo_title %}{% if seo_title %}{{ seo_title }}{% else %}Search Rooms, Flats & PGs for Rent in Mysore | RoomNest{% endif %}{% endblock %}
 {% block seo_description %}{% if seo_description %}{{ seo_description }}{% else %}Discover comfortable and affordable rooms, PGs, flatmate hubs, and commercial spaces for rent in Mysore. Direct owner contact, zero brokerage.{% endif %}{% endblock %}
 
+{% block extra_head %}
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+    <style>
+        .search-page-layout {
+            display: flex;
+            gap: 1.5rem;
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+            position: relative;
+        }
+        .search-results-area {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+            align-content: start;
+        }
+        .search-map-sidebar {
+            flex: 1;
+            height: calc(100vh - 150px);
+            position: sticky;
+            top: 130px;
+            border-radius: var(--border-radius-lg);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+            display: block;
+            z-index: 10;
+        }
+        .mobile-map-toggle-btn {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 9999;
+            background: var(--text-dark);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 99px;
+            font-weight: 700;
+            font-size: 0.88rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            display: none;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.2s;
+        }
+        .mobile-map-toggle-btn:hover {
+            background: #1e293b;
+        }
+        @media (max-width: 1024px) {
+            .search-map-sidebar {
+                display: none;
+                position: fixed;
+                top: 120px;
+                left: 0;
+                right: 0;
+                bottom: 60px;
+                width: 100vw;
+                height: auto;
+                z-index: 1000;
+                border-radius: 0;
+                border: none;
+            }
+            .search-map-sidebar.mobile-open {
+                display: block !important;
+            }
+            .mobile-map-toggle-btn {
+                display: inline-flex;
+            }
+            .search-results-area.mobile-hidden {
+                display: none !important;
+            }
+            #results-and-pagination-container.mobile-hidden {
+                display: none !important;
+            }
+        }
+    </style>
+{% endblock %}
+
 {% block content %}
 <!-- Google Structured JSON-LD Breadcrumb Schema Markup -->
 <script type="application/ld+json">
@@ -79,8 +162,13 @@
 <div id="filter-overlay" class="drawer-overlay" onclick="toggleFilterDrawer()"></div>
 
 <!-- Floating Mobile Filter Trigger Button -->
-<button id="mobile-filter-trigger" class="floating-filter-btn" onclick="toggleFilterDrawer()" style="border-radius: 9999px; font-weight: 700; display: inline-flex; align-items: center; gap: 6px;">
-    <i data-lucide="sliders" style="width: 16px; height: 16px;"></i> Filter Rooms
+<button id="mobile-filter-trigger" class="floating-filter-btn" onclick="toggleFilterDrawer()" style="border-radius: 9999px; font-weight: 700; display: inline-flex; align-items: center; gap: 6px; bottom: 80px; left: 24px; transform: none;">
+    <i data-lucide="sliders" style="width: 16px; height: 16px;"></i> Filter
+</button>
+
+<!-- Floating Mobile Map Toggle Button -->
+<button id="mobile-map-toggle" class="mobile-map-toggle-btn" onclick="toggleMobileMapAndList()">
+    <i data-lucide="map" style="width: 16px; height: 16px;"></i> Show Map
 </button>
 
 <div class="search-page-layout">
@@ -208,24 +296,26 @@
         </form>
     </aside>
 
-    <!-- Listings Grid Area (Right on Desktop) -->
-    <div class="search-results-area">
-        {% for listing in listings %}
-            {% include 'partials/property_card.html' with listing=listing %}
-        {% empty %}
-            <!-- Empty Placeholder -->
-            <div style="text-align: center; padding: 5rem 2rem; background: var(--white); border-radius: var(--border-radius-lg); border: 1px dashed var(--border-color); grid-column: 1 / -1; width: 100%;">
-                <div style="font-size: 3rem; margin-bottom: 1.25rem;">🔍</div>
-                <h3 style="color: var(--text-dark); margin-bottom: 0.5rem; font-weight: 850; font-size: 1.3rem;">No stays found in this area yet</h3>
-                <p style="color: var(--text-light); font-weight: 500; font-size: 0.95rem; max-width: 400px; margin: 0 auto 1.5rem auto;">Try expanding your search radius or adjusting your filters.</p>
-                <a href="{% url 'search' %}" class="btn btn-primary">Reset Filters</a>
-            </div>
-        {% endfor %}
-    </div>
+    <!-- Results and Pagination Container -->
+    <div style="flex: 1.5; display: flex; flex-direction: column; gap: 1.5rem;" id="results-and-pagination-container">
+        <!-- Listings Grid Area -->
+        <div class="search-results-area">
+            {% for listing in listings %}
+                {% include 'partials/property_card.html' with listing=listing %}
+            {% empty %}
+                <!-- Empty Placeholder -->
+                <div style="text-align: center; padding: 5rem 2rem; background: var(--white); border-radius: var(--border-radius-lg); border: 1px dashed var(--border-color); grid-column: 1 / -1; width: 100%;">
+                    <div style="font-size: 3rem; margin-bottom: 1.25rem;">🔍</div>
+                    <h3 style="color: var(--text-dark); margin-bottom: 0.5rem; font-weight: 850; font-size: 1.3rem;">No stays found in this area yet</h3>
+                    <p style="color: var(--text-light); font-weight: 500; font-size: 0.95rem; max-width: 400px; margin: 0 auto 1.5rem auto;">Try expanding your search radius or adjusting your filters.</p>
+                    <a href="{% url 'search' %}" class="btn btn-primary">Reset Filters</a>
+                </div>
+            {% endfor %}
+        </div>
         
         <!-- Pagination -->
         {% if page_obj.has_other_pages %}
-        <div style="display: flex; justify-content: center; align-items: center; gap: 8px; margin-top: 2.5rem; flex-wrap: wrap; padding-bottom: 1rem; grid-column: 1 / -1; width: 100%;">
+        <div style="display: flex; justify-content: center; align-items: center; gap: 8px; margin-top: 1.5rem; flex-wrap: wrap; padding-bottom: 1rem; width: 100%;">
             {% if page_obj.has_previous %}
                 <a href="?page={{ page_obj.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" 
                    class="btn btn-outline" style="min-height: 38px; height: 38px; padding: 0 1rem !important;">
@@ -255,7 +345,32 @@
         </div>
         {% endif %}
     </div>
+
+    <!-- Sticky Map Sidebar -->
+    <aside class="search-map-sidebar" id="search-map-sidebar">
+        <div id="search-map" style="width: 100%; height: 100%;"></div>
+    </aside>
 </div>
+
+<!-- Embedded JSON Data for Leaflet plotting -->
+<script id="listings-json" type="application/json">
+[
+  {% for listing in listings %}
+    {% if listing.latitude and listing.longitude %}
+      {
+        "id": {{ listing.id }},
+        "title": "{{ listing.title|escapejs }}",
+        "price": "{{ listing.price|floatformat:0 }}",
+        "type": "{{ listing.type|escapejs }}",
+        "lat": {{ listing.latitude }},
+        "lng": {{ listing.longitude }},
+        "url": "{{ listing.get_absolute_url }}",
+        "image": "{% if listing.image %}{{ listing.image.url }}{% endif %}"
+      }{% if not forloop.last %},{% endif %}
+    {% endif %}
+  {% endfor %}
+]
+</script>
 
 <script>
 // Format and open WhatsApp chat
@@ -284,8 +399,125 @@ function toggleFilterDrawer() {
     }
 }
 
-// Render skeleton cards on filter form submit
-document.addEventListener('DOMContentLoaded', function() {
+// Mobile Map / List Toggle
+let isMobileMapOpen = false;
+function toggleMobileMapAndList() {
+    const mapSidebar = document.getElementById('search-map-sidebar');
+    const resultsContainer = document.getElementById('results-and-pagination-container');
+    const toggleBtn = document.getElementById('mobile-map-toggle');
+    
+    if (isMobileMapOpen) {
+        mapSidebar.classList.remove('mobile-open');
+        resultsContainer.classList.remove('mobile-hidden');
+        toggleBtn.innerHTML = '<i data-lucide="map" style="width: 16px; height: 16px;"></i> Show Map';
+        isMobileMapOpen = false;
+    } else {
+        mapSidebar.classList.add('mobile-open');
+        resultsContainer.classList.add('mobile-hidden');
+        toggleBtn.innerHTML = '<i data-lucide="list" style="width: 16px; height: 16px;"></i> Show List';
+        isMobileMapOpen = true;
+        if (window.searchMapRef) {
+            window.searchMapRef.invalidateSize();
+        }
+    }
+    if (window.lucide) {
+        lucide.createIcons();
+    }
+}
+
+// Leaflet Interactive Search Map
+document.addEventListener("DOMContentLoaded", function() {
+    let items = [];
+    try {
+        items = JSON.parse(document.getElementById('listings-json').textContent || '[]');
+    } catch (e) {
+        console.error("Failed to parse listings coordinates:", e);
+    }
+    
+    const defaultIcon = L.icon({
+        iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+        shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+        shadowSize: [41, 41]
+    });
+    
+    const highlightIcon = L.icon({
+        iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
+        shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+        shadowSize: [41, 41]
+    });
+
+    let centerLat = 12.2958;
+    let centerLng = 76.6394;
+    
+    if (items.length > 0) {
+        let sumLat = 0, sumLng = 0;
+        items.forEach(it => { sumLat += it.lat; sumLng += it.lng; });
+        centerLat = sumLat / items.length;
+        centerLng = sumLng / items.length;
+    }
+
+    const map = L.map('search-map').setView([centerLat, centerLng], 13);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+    
+    window.searchMapRef = map;
+    window.mapMarkers = {};
+    
+    const bounds = [];
+    items.forEach(item => {
+        const marker = L.marker([item.lat, item.lng], { icon: defaultIcon }).addTo(map);
+        
+        let popupContent = `
+            <div style="font-family: 'Inter', sans-serif; padding: 4px; max-width: 200px;">
+        `;
+        if (item.image) {
+            popupContent += `<img src="${item.image}" style="width: 100%; height: 90px; object-fit: cover; border-radius: 6px; margin-bottom: 6px;">`;
+        }
+        popupContent += `
+                <strong style="font-size: 0.88rem; display: block; color: var(--text-dark); margin-bottom: 2px;">${item.title}</strong>
+                <span style="font-weight: 700; color: var(--primary); font-size: 0.85rem; display: block; margin-bottom: 6px;">₹${item.price}/mo</span>
+                <a href="${item.url}" style="font-weight: 700; color: white !important; background: var(--primary); padding: 0.3rem 0.75rem; border-radius: 4px; font-size: 0.72rem; text-decoration: none; display: inline-block; width: 100%; text-align: center;">View Stay</a>
+            </div>
+        `;
+        
+        marker.bindPopup(popupContent);
+        window.mapMarkers[item.id] = marker;
+        bounds.push([item.lat, item.lng]);
+    });
+    
+    if (bounds.length > 0) {
+        map.fitBounds(bounds, { padding: [30, 30] });
+    }
+
+    // Sync card hovers to markers
+    const cards = document.querySelectorAll('.property-card');
+    cards.forEach(card => {
+        const cardIdAttr = card.getAttribute('id') || '';
+        const listingId = cardIdAttr.replace('card-', '');
+        const marker = window.mapMarkers[listingId];
+        
+        if (marker) {
+            card.addEventListener('mouseenter', () => {
+                marker.setIcon(highlightIcon);
+                map.panTo(marker.getLatLng(), { animate: true, duration: 0.5 });
+                marker.openPopup();
+            });
+            
+            card.addEventListener('mouseleave', () => {
+                marker.setIcon(defaultIcon);
+                marker.closePopup();
+            });
+        }
+    });
+
+    // Render skeleton cards on filter form submit
     const filterForm = document.querySelector('.search-sidebar form');
     if (filterForm) {
         filterForm.addEventListener('submit', function() {
@@ -316,9 +548,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 resultsArea.innerHTML = skeletonsHTML;
                 
-                // Hide pagination
-                const pagination = document.querySelector('.search-results-area + div');
-                if (pagination) {
+                const pagination = document.getElementById('results-and-pagination-container').querySelector('div:last-child');
+                if (pagination && pagination !== resultsArea) {
                     pagination.style.display = 'none';
                 }
             }

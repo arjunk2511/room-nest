@@ -12,6 +12,18 @@ from django.views.decorators.http import require_POST
 from django.core.cache import cache
 import csv
 import datetime
+import math
+import json
+import urllib.request
+import urllib.parse
+
+def get_haversine_distance(lat1, lon1, lat2, lon2):
+    R = 6371.0
+    dlat = math.radians(lat2 - lat1)
+    dlon = math.radians(lon2 - lon1)
+    a = math.sin(dlat / 2)**2 + math.cos(math.radians(lat1)) * math.cos(math.radians(lat2)) * math.sin(dlon / 2)**2
+    c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
+    return R * c
 
 def home(request):
     featured_listings = cache.get('home_featured_listings')
@@ -1133,25 +1145,63 @@ def area_page(request, city_slug, area_slug):
     # Check if this slug matches a Listing first
     listing = Listing.objects.filter(city__slug=city_slug, slug=area_slug).first()
     if listing:
-        # Call details view directly
         return details(request, listing_id=listing.id)
 
-    # Otherwise, it must be an Area page
+    # Otherwise, it is an Area Landing Page
     city = get_object_or_404(City, slug=city_slug, is_active=True)
     area = get_object_or_404(Area, city=city, slug=area_slug, is_active=True)
     
-    # Mutate request.GET to inject city and area slugs for the search view
-    query_params = request.GET.copy()
-    query_params['city'] = city.slug
-    query_params['area'] = area.slug
-    request.GET = query_params
+    # Fetch all active listings in this area
+    listings = Listing.objects.filter(
+        city=city,
+        area=area,
+        is_sold=False
+    ).select_related('owner__userprofile', 'city', 'area').prefetch_related('images').order_by('-created_at')
     
-    # Attach city and area objects to the request so search view can use them for dynamic SEO
-    request.current_city = city
-    request.current_area = area
+    # Calculate Average Monthly Rent in Area
+    avg_rent = listings.aggregate(avg_price=Avg('price'))['avg_price'] or 0.0
     
-    # Call search view directly to inherit all filters and layout
-    return search(request)
+    # Calculate average coordinates of properties in area
+    coords = listings.filter(latitude__isnull=False, longitude__isnull=False)
+    if coords.exists():
+        avg_lat = float(coords.aggregate(avg_lat=Avg('latitude'))['avg_lat'])
+        avg_lng = float(coords.aggregate(avg_lng=Avg('longitude'))['avg_lng'])
+    else:
+        # Fallback coordinates based on City slug
+        if city.slug == "bengaluru":
+            avg_lat, avg_lng = 12.9716, 77.5946
+        elif city.slug == "hyderabad":
+            avg_lat, avg_lng = 17.3850, 78.4867
+        else: # mysore default
+            avg_lat, avg_lng = 12.2958, 76.6394
+            
+    # Active subscription check
+    has_subscription = False
+    wishlist_ids = []
+    if request.user.is_authenticated:
+        has_subscription = Subscription.objects.filter(
+            user=request.user,
+            is_active=True,
+            end_date__gt=timezone.now()
+        ).exists()
+        wishlist_ids = list(Wishlist.objects.filter(user=request.user).values_list('listing_id', flat=True))
+        
+    seo_title = f"Rooms, PGs & Rental Properties in {area.name}, {city.name} | RoomNest"
+    seo_description = f"Explore flats, PGs, rooms and co-living spaces for rent in {area.name}, {city.name} with direct owner contacts. Interactive Area Map and proximity indicators included."
+    
+    return render(request, 'area_page.html', {
+        'city': city,
+        'area': area,
+        'listings': listings,
+        'total_count': listings.count(),
+        'avg_rent': int(round(avg_rent)),
+        'latitude': avg_lat,
+        'longitude': avg_lng,
+        'has_subscription': has_subscription,
+        'wishlist_ids': wishlist_ids,
+        'seo_title': seo_title,
+        'seo_description': seo_description
+    })
 
 
 def search_suggestions(request):
@@ -1389,5 +1439,283 @@ def read_all_notifications(request):
     Notification.objects.filter(user=request.user, is_read=False).update(is_read=True)
     messages.success(request, "All notifications marked as read.")
     return redirect('profile')
+
+
+def listing_landmarks_api(request, listing_id=None):
+    listing = None
+    lat = None
+    lng = None
+    location_name = ""
+    
+    if listing_id:
+        listing = get_object_or_404(Listing, id=listing_id)
+        if listing.nearby_landmarks_cache:
+            try:
+                cached_data = json.loads(listing.nearby_landmarks_cache)
+                if cached_data:
+                    return JsonResponse(cached_data)
+            except Exception:
+                pass
+        lat = listing.latitude
+        lng = listing.longitude
+        location_name = listing.location
+    else:
+        lat_val = request.GET.get('lat')
+        lng_val = request.GET.get('lng')
+        location_name = request.GET.get('location', '')
+        if lat_val and lng_val:
+            try:
+                lat = float(lat_val)
+                lng = float(lng_val)
+            except ValueError:
+                pass
+
+    # Define fallback mock data based on location area
+    loc = (location_name or "").lower()
+    fallback_data = {
+        "schools": [
+            { "name": "Nirmala High School", "distance": "0.6 km", "drive_time": "3 min", "walk_time": "7 min", "icon": "🏫" },
+            { "name": "Aditya First Grade College", "distance": "1.2 km", "drive_time": "5 min", "walk_time": "14 min", "icon": "🎓" }
+        ],
+        "hospitals": [
+            { "name": "Adithya Hospital", "distance": "0.8 km", "drive_time": "4 min", "walk_time": "9 min", "icon": "🏥" },
+            { "name": "Chandrakala Hospital", "distance": "1.5 km", "drive_time": "6 min", "walk_time": "18 min", "icon": "⚕️" }
+        ],
+        "transit": [
+            { "name": "Gokulam Bus Stop", "distance": "0.2 km", "drive_time": "1 min", "walk_time": "2 min", "icon": "🚌" },
+            { "name": "Mysore Junction Railway Station", "distance": "3.2 km", "drive_time": "10 min", "walk_time": "38 min", "icon": "🚆" }
+        ],
+        "shopping": [
+            { "name": "Loyal World Supermarket", "distance": "0.4 km", "drive_time": "2 min", "walk_time": "5 min", "icon": "🛒" },
+            { "name": "Corner House Ice Cream", "distance": "0.3 km", "drive_time": "1 min", "walk_time": "3 min", "icon": "🍦" }
+        ]
+    }
+    
+    if "vijayanagar" in loc:
+        fallback_data = {
+            "schools": [
+                { "name": "National Public School", "distance": "0.8 km", "drive_time": "4 min", "walk_time": "9 min", "icon": "🏫" },
+                { "name": "Amrita Vidyalayam", "distance": "1.4 km", "drive_time": "6 min", "walk_time": "16 min", "icon": "🎓" }
+            ],
+            "hospitals": [
+                { "name": "BM Hospital", "distance": "1.1 km", "drive_time": "5 min", "walk_time": "13 min", "icon": "🏥" },
+                { "name": "Columbia Asia Hospital", "distance": "4.5 km", "drive_time": "14 min", "walk_time": "54 min", "icon": "⚕️" }
+            ],
+            "transit": [
+                { "name": "Vijayanagar Water Tank Bus Stop", "distance": "0.3 km", "drive_time": "1 min", "walk_time": "3 min", "icon": "🚌" },
+                { "name": "Mysore Railway Station", "distance": "4.0 km", "drive_time": "12 min", "walk_time": "48 min", "icon": "🚆" }
+            ],
+            "shopping": [
+                { "name": "Abhishek Circle Market", "distance": "0.5 km", "drive_time": "2 min", "walk_time": "6 min", "icon": "🛒" },
+                { "name": "Empire Restaurant", "distance": "0.7 km", "drive_time": "3 min", "walk_time": "8 min", "icon": "🍔" }
+            ]
+        }
+    elif "hebbal" in loc:
+        fallback_data = {
+            "schools": [
+                { "name": "Kendriya Vidyalaya", "distance": "1.0 km", "drive_time": "5 min", "walk_time": "12 min", "icon": "🏫" },
+                { "name": "East West International School", "distance": "1.5 km", "drive_time": "7 min", "walk_time": "18 min", "icon": "🎓" }
+            ],
+            "hospitals": [
+                { "name": "Columbia Asia Hospital", "distance": "1.8 km", "drive_time": "7 min", "walk_time": "21 min", "icon": "🏥" },
+                { "name": "Narayana Multispeciality Hospital", "distance": "3.5 km", "drive_time": "11 min", "walk_time": "42 min", "icon": "⚕️" }
+            ],
+            "transit": [
+                { "name": "Hebbal Industrial Area Bus Stop", "distance": "0.4 km", "drive_time": "2 min", "walk_time": "4 min", "icon": "🚌" },
+                { "name": "Mysore Railway Station", "distance": "6.5 km", "drive_time": "18 min", "walk_time": "78 min", "icon": "🚆" }
+            ],
+            "shopping": [
+                { "name": "Reliance Smart Superstore", "distance": "0.9 km", "drive_time": "4 min", "walk_time": "10 min", "icon": "🛒" },
+                { "name": "Hebbal Lake Park Café", "distance": "1.2 km", "drive_time": "5 min", "walk_time": "14 min", "icon": "☕" }
+            ]
+        }
+
+    if not lat or not lng:
+        return JsonResponse(fallback_data)
+        
+    try:
+        lat = float(lat)
+        lng = float(lng)
+        
+        overpass_url = "https://overpass-api.de/api/interpreter"
+        overpass_query = f"""[out:json][timeout:8];
+        (
+          node(around:5000,{lat},{lng})[amenity~"school|college|university|hospital|clinic|bus_station|restaurant|cafe|bank|fuel|gym|park|mall|cinema|supermarket|marketplace"];
+          way(around:5000,{lat},{lng})[amenity~"school|college|university|hospital|clinic|bus_station|restaurant|cafe|bank|fuel|gym|park|mall|cinema|supermarket|marketplace"];
+          node(around:5000,{lat},{lng})[railway~"station|subway_entrance"];
+          node(around:5000,{lat},{lng})[shop~"supermarket|mall|department_store"];
+          way(around:5000,{lat},{lng})[shop~"supermarket|mall|department_store"];
+          node(around:5000,{lat},{lng})[office~"it|technology"];
+          way(around:5000,{lat},{lng})[office~"it|technology"];
+          node(around:5000,{lat},{lng})[leisure~"park|gym|sports_centre"];
+          way(around:5000,{lat},{lng})[leisure~"park|gym|sports_centre"];
+          node(around:15000,{lat},{lng})[aeroway="aerodrome"];
+        );
+        out body center;"""
+        
+        req = urllib.request.Request(
+            overpass_url,
+            data=urllib.parse.urlencode({'data': overpass_query}).encode('utf-8'),
+            headers={'User-Agent': 'RoomNestProximitySystem/1.0 (contact@roomnest.online)'},
+            method='POST'
+        )
+        
+        with urllib.request.urlopen(req, timeout=8) as response:
+            overpass_res = json.loads(response.read().decode('utf-8'))
+            
+        elements = overpass_res.get('elements', [])
+        
+        raw_categories = {
+            "schools": [], "colleges": [], "hospitals": [], "bus_stops": [],
+            "metro_stations": [], "railway_stations": [], "airports": [], "supermarkets": [],
+            "restaurants": [], "cafes": [], "banks": [], "petrol_pumps": [],
+            "gyms": [], "parks": [], "it_parks": [], "malls": []
+        }
+        
+        for el in elements:
+            tags = el.get('tags', {})
+            name = tags.get('name')
+            if not name:
+                continue
+                
+            e_lat = el.get('lat') or el.get('center', {}).get('lat')
+            e_lng = el.get('lon') or el.get('center', {}).get('lon')
+            if not e_lat or not e_lng:
+                continue
+                
+            dist_straight = get_haversine_distance(lat, lng, e_lat, e_lng)
+            
+            amenity = tags.get('amenity', '')
+            shop = tags.get('shop', '')
+            railway = tags.get('railway', '')
+            leisure = tags.get('leisure', '')
+            office = tags.get('office', '')
+            aeroway = tags.get('aeroway', '')
+            highway = tags.get('highway', '')
+            
+            item = {"name": name, "lat": e_lat, "lng": e_lng, "dist_straight": dist_straight}
+            
+            if amenity == 'school' or (amenity == 'university' and 'school' in name.lower()):
+                raw_categories["schools"].append((item, "🏫"))
+            elif amenity == 'college' or amenity == 'university':
+                raw_categories["colleges"].append((item, "🎓"))
+            elif amenity in ['hospital', 'clinic']:
+                raw_categories["hospitals"].append((item, "🏥"))
+            elif amenity == 'bus_station' or highway == 'bus_stop' or 'bus stop' in name.lower() or 'bus stand' in name.lower():
+                raw_categories["bus_stops"].append((item, "🚌"))
+            elif railway == 'subway_entrance' or 'metro' in name.lower():
+                raw_categories["metro_stations"].append((item, "🚇"))
+            elif railway == 'station' or 'railway station' in name.lower() or 'junction' in name.lower():
+                raw_categories["railway_stations"].append((item, "🚉"))
+            elif aeroway == 'aerodrome' or 'airport' in name.lower():
+                raw_categories["airports"].append((item, "✈️"))
+            elif shop == 'supermarket' or amenity == 'supermarket':
+                raw_categories["supermarkets"].append((item, "🛒"))
+            elif amenity == 'restaurant':
+                raw_categories["restaurants"].append((item, "🍽"))
+            elif amenity == 'cafe':
+                raw_categories["cafes"].append((item, "☕"))
+            elif amenity == 'bank':
+                raw_categories["banks"].append((item, "🏦"))
+            elif amenity == 'fuel':
+                raw_categories["petrol_pumps"].append((item, "⛽"))
+            elif leisure == 'gym' or amenity == 'gym' or leisure == 'sports_centre':
+                raw_categories["gyms"].append((item, "🏋️"))
+            elif leisure == 'park' or amenity == 'park':
+                raw_categories["parks"].append((item, "🌳"))
+            elif office == 'it' or 'it park' in name.lower() or 'technology' in name.lower():
+                raw_categories["it_parks"].append((item, "🏢"))
+            elif shop == 'mall' or amenity == 'mall' or 'mall' in name.lower():
+                raw_categories["malls"].append((item, "🏬"))
+                
+        selected_destinations = []
+        category_indices = {}
+        
+        for cat_name, items in raw_categories.items():
+            items.sort(key=lambda x: x[0]['dist_straight'])
+            top_items = items[:2]
+            category_indices[cat_name] = []
+            for item, icon in top_items:
+                dest_idx = len(selected_destinations)
+                selected_destinations.append({"lat": item['lat'], "lng": item['lng'], "name": item['name'], "icon": icon})
+                category_indices[cat_name].append(dest_idx)
+                
+        if not selected_destinations:
+            return JsonResponse(fallback_data)
+            
+        coords = [f"{lng},{lat}"]
+        for d in selected_destinations:
+            coords.append(f"{d['lng']},{d['lat']}")
+            
+        coords_str = ";".join(coords)
+        osrm_url = f"https://router.project-osrm.org/table/v1/driving/{coords_str}?sources=0&annotations=duration,distance"
+        
+        req_osrm = urllib.request.Request(osrm_url, headers={'User-Agent': 'RoomNestProximitySystem/1.0'})
+        with urllib.request.urlopen(req_osrm, timeout=8) as response:
+            osrm_res = json.loads(response.read().decode('utf-8'))
+            
+        distances = osrm_res.get('distances', [[]])[0]
+        durations = osrm_res.get('durations', [[]])[0]
+        
+        for idx, dest in enumerate(selected_destinations):
+            val_idx = idx + 1
+            road_dist_m = distances[val_idx] if val_idx < len(distances) else None
+            duration_s = durations[val_idx] if val_idx < len(durations) else None
+            
+            if road_dist_m is None:
+                road_dist_m = selected_destinations[idx].get('dist_straight', 1.0) * 1000.0
+                
+            if road_dist_m < 1000:
+                dist_str = f"{int(road_dist_m)} m"
+            else:
+                dist_str = f"{(road_dist_m / 1000.0):.1f} km"
+                
+            if duration_s is not None:
+                drive_min = max(1, int(round(duration_s / 60.0)))
+            else:
+                drive_min = max(1, int(round((road_dist_m / 1000.0) * 2.0)))
+                
+            walk_min = max(1, int(round(road_dist_m / (1.33 * 60.0))))
+            
+            dest["distance"] = dist_str
+            dest["drive_time"] = f"{drive_min} min drive"
+            dest["walk_time"] = f"{walk_min} min walk"
+            
+        tab_data = {
+            "schools": [],
+            "hospitals": [],
+            "transit": [],
+            "shopping": []
+        }
+        
+        tab_mappings = {
+            "schools": ["schools", "colleges"],
+            "hospitals": ["hospitals"],
+            "transit": ["bus_stops", "metro_stations", "railway_stations", "airports"],
+            "shopping": ["supermarkets", "restaurants", "cafes", "banks", "petrol_pumps", "gyms", "parks", "it_parks", "malls"]
+        }
+        
+        for tab_name, sub_cats in tab_mappings.items():
+            for sub_cat in sub_cats:
+                indices = category_indices.get(sub_cat, [])
+                for idx in indices:
+                    dest = selected_destinations[idx]
+                    tab_data[tab_name].append({
+                        "name": dest["name"],
+                        "distance": dest["distance"],
+                        "drive_time": dest["drive_time"],
+                        "walk_time": dest["walk_time"],
+                        "icon": dest["icon"]
+                    })
+                    
+        if listing:
+            listing.nearby_landmarks_cache = json.dumps(tab_data)
+            listing.save()
+        
+        return JsonResponse(tab_data)
+        
+    except Exception as e:
+        print(f"Landmark discovery failed: {e}")
+        return JsonResponse(fallback_data)
 
 

@@ -469,5 +469,60 @@ class ProfilePageTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
 
 
+class SmartLocationTestCase(TestCase):
+    def setUp(self):
+        self.owner = User.objects.create_user(username='locowner', password='password', email='loc@roomnest.online')
+        self.city, _ = City.objects.get_or_create(slug="mysore", defaults={"name": "Mysore", "is_active": True})
+        self.area, _ = Area.objects.get_or_create(slug="gokulam", city=self.city, defaults={"name": "Gokulam", "is_active": True})
+        
+        self.listing = Listing.objects.create(
+            title="Premium 2BHK in Gokulam Center",
+            location="Gokulam",
+            city=self.city,
+            area=self.area,
+            price=15000.00,
+            deposit=30000.00,
+            type="2BHK",
+            latitude=12.3211,
+            longitude=76.6433,
+            owner=self.owner,
+            listing_purpose="Rent"
+        )
+        self.client = Client()
+
+    def test_landmarks_api_success(self):
+        url = reverse('listing_landmarks_api', args=[self.listing.id])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        
+        data = response.json()
+        self.assertIn("schools", data)
+        self.assertIn("hospitals", data)
+        self.assertIn("transit", data)
+        self.assertIn("shopping", data)
+        
+        listing2 = Listing.objects.create(
+            title="Coordsless Property",
+            location="Saraswathipuram",
+            city=self.city,
+            area=self.area,
+            price=12000.00,
+            owner=self.owner,
+            listing_purpose="Rent"
+        )
+        url2 = reverse('listing_landmarks_api', args=[listing2.id])
+        response2 = self.client.get(url2)
+        self.assertEqual(response2.status_code, 200)
+
+    def test_area_page_renders_successfully(self):
+        url = reverse('area_page', args=[self.city.slug, self.area.slug])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'area_page.html')
+        self.assertContains(response, "Properties for Rent in Gokulam")
+        self.assertContains(response, "₹15,000")
+
+
+
 
 

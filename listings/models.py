@@ -141,6 +141,7 @@ class Listing(models.Model):
     latitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
     longitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
     google_place_id = models.CharField(max_length=255, blank=True, default='')
+    nearby_landmarks_cache = models.TextField(blank=True, default='')
     phone = models.CharField(max_length=20, default='')
     is_sold = models.BooleanField(default=False)
     views_count = models.PositiveIntegerField(default=0)

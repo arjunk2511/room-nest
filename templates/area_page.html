@@ -1,0 +1,277 @@
+{% extends 'base.html' %}
+{% load performance_tags %}
+
+{% block seo_title %}{% if seo_title %}{{ seo_title }}{% else %}Rooms & Properties for Rent in {{ area.name }}, {{ city.name }} | RoomNest{% endif %}{% endblock %}
+{% block seo_description %}{% if seo_description %}{{ seo_description }}{% else %}Find verified rooms, PGs, flats and properties for rent in {{ area.name }}, {{ city.name }} with direct owner contacts and zero brokerage. Proximity indicators and dynamic area map included.{% endif %}{% endblock %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+    <style>
+        .area-layout {
+            display: flex;
+            gap: 2rem;
+            max-width: 1280px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+        }
+        .area-main {
+            flex: 1.5;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+        .area-sidebar {
+            flex: 1;
+            min-width: 320px;
+            position: sticky;
+            top: 90px;
+            height: calc(100vh - 120px);
+            border-radius: var(--border-radius-lg);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+        .avg-rent-card {
+            background: linear-gradient(135deg, var(--primary-light) 0%, #EFF6FF 100%);
+            border: 1px solid rgba(37, 99, 235, 0.12);
+            border-radius: var(--border-radius-lg);
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1.5rem;
+            box-shadow: var(--shadow-sm);
+        }
+        .area-landmarks-panel {
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-lg);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+        }
+        @media (max-width: 1024px) {
+            .area-layout {
+                flex-direction: column;
+            }
+            .area-sidebar {
+                height: 350px;
+                position: relative;
+                top: 0;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+<div class="search-header-banner" style="background: var(--white); border-bottom: 1px solid var(--border-color); padding: 1.5rem 0;">
+    <div style="max-width: 1280px; margin: 0 auto; padding: 0 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+        <div>
+            <h1 style="font-family: 'Outfit', sans-serif; font-size: 1.8rem; font-weight: 800; color: var(--text-dark); margin: 0;">
+                Properties for Rent in {{ area.name }}
+            </h1>
+            <p style="color: var(--text-light); margin: 4px 0 0 0; font-size: 0.95rem; font-weight: 500; display: flex; align-items: center; gap: 6px;">
+                <i data-lucide="map-pin" style="width: 16px; height: 16px; color: var(--primary);"></i> Explore verified direct owner listings in {{ area.name }}, {{ city.name }}
+            </p>
+        </div>
+        <span style="background: var(--primary-light); color: var(--primary); border: 1px solid rgba(255, 56, 92, 0.1); font-weight: 700; font-size: 0.85rem; padding: 0.4rem 0.85rem; border-radius: 99px; display: inline-flex; align-items: center; gap: 4px;">
+            <i data-lucide="home" style="width: 14px; height: 14px;"></i> {{ total_count }} Properties Available
+        </span>
+    </div>
+</div>
+
+<div class="area-layout">
+    <!-- Main Content List -->
+    <div class="area-main">
+        <!-- Average Rent Card & Quick Specs -->
+        <div class="avg-rent-card">
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <div style="background: rgba(37,99,235,0.08); width: 50px; height: 50px; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: var(--primary); flex-shrink: 0;">
+                    <i data-lucide="trending-up" style="width: 24px; height: 24px;"></i>
+                </div>
+                <div>
+                    <h4 style="margin: 0; font-size: 0.82rem; color: var(--text-light); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Average Monthly Rent</h4>
+                    <span style="font-size: 1.6rem; font-weight: 850; color: var(--text-dark); line-height: 1.2;">
+                        {% if avg_rent > 0 %}₹{{ avg_rent|format_price }}{% else %}N/A{% endif %}
+                    </span>
+                </div>
+            </div>
+            <div style="text-align: right;">
+                <span style="font-size: 0.82rem; color: var(--text-muted); display: block; font-weight: 500;">Zero brokerage</span>
+                <span style="font-size: 0.82rem; color: var(--text-muted); display: block; font-weight: 500; margin-top: 2px;">Direct owner listings</span>
+            </div>
+        </div>
+
+        <!-- Proximity Landmarks Card -->
+        <div class="area-landmarks-panel">
+            <h3 style="font-size: 1.15rem; font-weight: 800; color: var(--text-dark); margin: 0 0 1rem 0; display: flex; align-items: center; gap: 8px;">
+                <i data-lucide="map" style="width: 18px; height: 18px; color: var(--primary);"></i> Local Proximity & Landmarks in {{ area.name }}
+            </h3>
+            
+            <div style="display: flex; gap: 8px; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; margin-bottom: 1rem; overflow-x: auto; -webkit-overflow-scrolling: touch;">
+                <button type="button" onclick="switchNearbyTab('schools')" class="nearby-tab active" id="tab-schools" style="background: none; border: none; font-weight: 700; font-size: 0.82rem; padding: 0.5rem 0.8rem; cursor: pointer; color: var(--primary); border-bottom: 2px solid var(--primary); white-space: nowrap; outline: none;">🎓 Education</button>
+                <button type="button" onclick="switchNearbyTab('hospitals')" class="nearby-tab" id="tab-hospitals" style="background: none; border: none; font-weight: 600; font-size: 0.82rem; padding: 0.5rem 0.8rem; cursor: pointer; color: var(--text-light); border-bottom: 2px solid transparent; white-space: nowrap; outline: none;">🏥 Healthcare</button>
+                <button type="button" onclick="switchNearbyTab('transit')" class="nearby-tab" id="tab-transit" style="background: none; border: none; font-weight: 600; font-size: 0.82rem; padding: 0.5rem 0.8rem; cursor: pointer; color: var(--text-light); border-bottom: 2px solid transparent; white-space: nowrap; outline: none;">🚌 Transport</button>
+                <button type="button" onclick="switchNearbyTab('shopping')" class="nearby-tab" id="tab-shopping" style="background: none; border: none; font-weight: 600; font-size: 0.82rem; padding: 0.5rem 0.8rem; cursor: pointer; color: var(--text-light); border-bottom: 2px solid transparent; white-space: nowrap; outline: none;">🛍️ Food & Shop</button>
+            </div>
+            
+            <div id="nearby-places-list" style="display: flex; flex-direction: column; gap: 0.75rem;">
+                <!-- Dynamically loaded -->
+            </div>
+        </div>
+
+        <!-- Property Grid -->
+        <div>
+            <h3 style="font-size: 1.25rem; font-weight: 800; color: var(--text-dark); margin-bottom: 1.25rem;">Available Properties</h3>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem;">
+                {% for listing in listings %}
+                    {% include 'partials/property_card.html' with listing=listing %}
+                {% empty %}
+                    <div style="text-align: center; padding: 4rem 2rem; background: var(--white); border-radius: var(--border-radius-lg); border: 1px dashed var(--border-color); width: 100%; grid-column: 1 / -1;">
+                        <span style="font-size: 2.5rem; display: block; margin-bottom: 1rem;">🔍</span>
+                        <h4 style="margin: 0 0 0.5rem 0; font-weight: 800;">No listings found in {{ area.name }}</h4>
+                        <p style="margin: 0; font-size: 0.9rem; color: var(--text-light);">Be the first to list a room, PG or flat in this area!</p>
+                        <a href="{% url 'add_property' %}" class="btn btn-primary" style="margin-top: 1.2rem; display: inline-flex;">List Property</a>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Sticky Map Sidebar -->
+    <aside class="area-sidebar">
+        <div id="area-map" style="width: 100%; height: 100%; z-index: 1;"></div>
+    </aside>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const lat = parseFloat("{{ latitude }}") || 12.2958;
+    const lng = parseFloat("{{ longitude }}") || 76.6394;
+    
+    // Initialize Area Map
+    const map = L.map('area-map').setView([lat, lng], 14);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+
+    // Render Markers for Listings
+    const listings = [
+        {% for listing in listings %}
+            {% if listing.latitude and listing.longitude %}
+                {
+                    lat: parseFloat("{{ listing.latitude }}"),
+                    lng: parseFloat("{{ listing.longitude }}"),
+                    title: "{{ listing.title|escapejs }}",
+                    price: "{{ listing.price|floatformat:0 }}",
+                    url: "{{ listing.get_absolute_url }}"
+                }{% if not forloop.last %},{% endif %}
+            {% endif %}
+        {% endfor %}
+    ];
+
+    if (listings.length > 0) {
+        const bounds = [];
+        listings.forEach(listing => {
+            const marker = L.marker([listing.lat, listing.lng]).addTo(map);
+            marker.bindPopup(`
+                <div style="font-family: 'Inter', sans-serif; padding: 4px; text-align: left;">
+                    <strong style="font-size: 0.9rem; display: block; color: var(--text-dark); margin-bottom: 2px;">${listing.title}</strong>
+                    <span style="font-weight: 700; color: var(--primary); font-size: 0.85rem; display: block; margin-bottom: 6px;">₹${listing.price}/mo</span>
+                    <a href="${listing.url}" style="font-weight: 700; color: white !important; background: var(--primary); padding: 0.3rem 0.75rem; border-radius: 4px; font-size: 0.75rem; text-decoration: none; display: inline-block;">View Stay</a>
+                </div>
+            `);
+            bounds.push([listing.lat, listing.lng]);
+        });
+        map.fitBounds(bounds);
+    }
+    
+    // Initialize Area Landmarks
+    loadAreaLandmarks(lat, lng);
+});
+
+function loadAreaLandmarks(lat, lng) {
+    const container = document.getElementById('nearby-places-list');
+    if (!container) return;
+    
+    container.innerHTML = `
+        <div class="property-card skeleton" style="box-shadow: none; border: none; padding: 0; background: transparent;">
+            <div class="skeleton-line" style="height: 40px; border-radius: 8px; margin-bottom: 8px;"></div>
+            <div class="skeleton-line" style="height: 40px; border-radius: 8px; margin-bottom: 8px;"></div>
+            <div class="skeleton-line" style="height: 40px; border-radius: 8px;"></div>
+        </div>
+    `;
+    
+    fetch(`/api/listing/landmarks/?lat=${lat}&lng=${lng}&location={{ area.name|urlencode }}`)
+        .then(res => res.json())
+        .then(data => {
+            window.currentNearbyData = data;
+            switchNearbyTab('schools');
+        })
+        .catch(err => {
+            console.error("Failed to load area proximity data:", err);
+            container.innerHTML = `<p style="font-size: 0.85rem; color: var(--text-light); text-align: center; font-style: italic; padding: 1rem;">Failed to load nearby landmarks.</p>`;
+        });
+}
+
+function switchNearbyTab(category) {
+    const tabs = document.querySelectorAll('.nearby-tab');
+    tabs.forEach(tab => {
+        if (tab.id === `tab-${category}`) {
+            tab.style.color = 'var(--primary)';
+            tab.style.borderBottomColor = 'var(--primary)';
+            tab.classList.add('active');
+        } else {
+            tab.style.color = 'var(--text-light)';
+            tab.style.borderBottomColor = 'transparent';
+            tab.classList.remove('active');
+        }
+    });
+    
+    const container = document.getElementById('nearby-places-list');
+    if (!container) return;
+    
+    const items = window.currentNearbyData ? window.currentNearbyData[category] : [];
+    container.innerHTML = "";
+    
+    if (!items || items.length === 0) {
+        container.innerHTML = `<div style="text-align: center; padding: 1.5rem; color: var(--text-light); font-size: 0.85rem; font-style: italic;">No landmarks found in this category.</div>`;
+        return;
+    }
+    
+    items.forEach(item => {
+        const div = document.createElement('div');
+        div.style.display = 'flex';
+        div.style.alignItems = 'center';
+        div.style.justifyContent = 'space-between';
+        div.style.padding = '0.75rem 1rem';
+        div.style.background = '#F8FAFC';
+        div.style.borderRadius = '8px';
+        div.style.border = '1px solid var(--border-color)';
+        div.style.fontSize = '0.9rem';
+        div.style.flexWrap = 'wrap';
+        div.style.gap = '8px';
+        
+        div.innerHTML = `
+            <div style="display: flex; align-items: center; gap: 10px; min-width: 200px;">
+                <span style="font-size: 1.2rem;">${item.icon}</span>
+                <span style="font-weight: 600; color: var(--text-dark);">${item.name}</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <span style="font-weight: 700; color: var(--primary); font-size: 0.82rem; background: var(--primary-light); padding: 0.2rem 0.5rem; border-radius: 4px; display: inline-flex; align-items: center; gap: 2px;">
+                    📍 ${item.distance}
+                </span>
+                <span style="font-weight: 600; color: var(--text-light); font-size: 0.78rem; background: #F1F5F9; padding: 0.2rem 0.5rem; border-radius: 4px;">
+                    🚗 ${item.drive_time}
+                </span>
+                <span style="font-weight: 600; color: var(--text-light); font-size: 0.78rem; background: #F1F5F9; padding: 0.2rem 0.5rem; border-radius: 4px;">
+                    🚶 ${item.walk_time}
+                </span>
+            </div>
+        `;
+        container.appendChild(div);
+    });
+}
+</script>
+{% endblock %}

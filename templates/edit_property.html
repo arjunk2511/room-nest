@@ -138,9 +138,10 @@
             </div>
 
             <!-- Visible, Required Address Textarea -->
-            <div class="form-group">
+            <div class="form-group" style="position: relative;">
                 <label for="address_input" style="font-weight: 600; color: var(--text-dark); margin-bottom: 0.5rem; display: block;">Property Address <span style="color: #ef4444;">*</span></label>
-                <textarea id="address_input" oninput="syncAddress()" placeholder="Enter the full physical address" rows="3" required style="width: 100%; padding: 0.85rem 1rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 0.95rem; font-family: inherit; resize: vertical;">{{ listing.address }}</textarea>
+                <textarea id="address_input" oninput="syncAddress(); handleAddressTyping(this.value);" placeholder="Enter the full physical address" rows="3" required style="width: 100%; padding: 0.85rem 1rem; border-radius: 8px; border: 1px solid #cbd5e1; outline: none; font-size: 0.95rem; font-family: inherit; resize: vertical;">{{ listing.address }}</textarea>
+                <div id="address-suggestions" style="position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid #cbd5e1; border-top: none; border-radius: 0 0 8px 8px; z-index: 100; box-shadow: 0 4px 6px rgba(0,0,0,0.1); max-height: 200px; overflow-y: auto; display: none;"></div>
                 <!-- Hidden compiled address actually sent to backend -->
                 <textarea id="address" name="address" style="display: none;" required>{{ listing.address }}</textarea>
             </div>
@@ -581,6 +582,74 @@ function parseGoogleMapsLink(val) {
         }, 3000);
     }
 }
+
+// Nominatim Address Autocomplete suggestions
+let autocompleteTimeout = null;
+function handleAddressTyping(val) {
+    clearTimeout(autocompleteTimeout);
+    const suggestionsBox = document.getElementById('address-suggestions');
+    if (!suggestionsBox) return;
+    
+    const query = val.trim();
+    if (query.length < 4) {
+        suggestionsBox.style.display = 'none';
+        return;
+    }
+    
+    autocompleteTimeout = setTimeout(() => {
+        const citySelect = document.getElementById('city');
+        const cityName = citySelect ? citySelect.options[citySelect.selectedIndex].text : '';
+        const searchQ = cityName ? `${query}, ${cityName}` : query;
+        
+        fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchQ + ', Karnataka, India')}&limit=5`)
+            .then(res => res.json())
+            .then(data => {
+                suggestionsBox.innerHTML = '';
+                if (data && data.length > 0) {
+                    suggestionsBox.style.display = 'block';
+                    data.forEach(item => {
+                        const div = document.createElement('div');
+                        div.style.padding = '0.75rem 1rem';
+                        div.style.cursor = 'pointer';
+                        div.style.borderBottom = '1px solid #f1f5f9';
+                        div.style.fontSize = '0.88rem';
+                        div.style.color = 'var(--text-dark)';
+                        div.innerText = item.display_name;
+                        
+                        div.addEventListener('click', () => {
+                            document.getElementById('address_input').value = item.display_name;
+                            syncAddress();
+                            
+                            const mapSec = document.getElementById('optional-map-section');
+                            if (mapSec && mapSec.style.display === 'none') {
+                                toggleMapSelector();
+                            }
+                            
+                            const lat = parseFloat(item.lat);
+                            const lng = parseFloat(item.lon);
+                            document.getElementById('google_place_id').value = item.place_id || '';
+                            
+                            initMap(lat, lng);
+                            suggestionsBox.style.display = 'none';
+                        });
+                        suggestionsBox.appendChild(div);
+                    });
+                } else {
+                    suggestionsBox.style.display = 'none';
+                }
+            })
+            .catch(() => {
+                suggestionsBox.style.display = 'none';
+            });
+    }, 400);
+}
+
+document.addEventListener('click', (e) => {
+    const suggestionsBox = document.getElementById('address-suggestions');
+    if (suggestionsBox && !e.target.closest('#address_input')) {
+        suggestionsBox.style.display = 'none';
+    }
+});
 
 // ==========================================================================
 // Image Upload & Compression Logic
