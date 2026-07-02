@@ -3697,3 +3697,495 @@ footer {
         max-width: 1440px !important;
     }
 }
+
+/* ==========================================================================
+   ROOMNEST PROPERTY CARD REDESIGN (Airbnb / NoBroker / Housing.com inspired)
+   ========================================================================== */
+
+/* Grid layout overrides */
+.property-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+}
+
+@media (max-width: 1023px) {
+    .property-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+    }
+}
+
+@media (max-width: 767px) {
+    .property-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+}
+
+/* Horizontal Swipe Row on Mobile */
+@media (max-width: 767px) {
+    .grid-swipe-mobile {
+        display: flex !important;
+        overflow-x: auto !important;
+        scroll-snap-type: x mandatory !important;
+        gap: 16px !important;
+        padding-bottom: 12px !important;
+        scroll-behavior: smooth !important;
+        -webkit-overflow-scrolling: touch !important;
+        /* Hide scrollbars but keep swipe */
+        scrollbar-width: none;
+    }
+    .grid-swipe-mobile::-webkit-scrollbar {
+        display: none;
+    }
+    .grid-swipe-mobile .property-card {
+        flex: 0 0 min(85vw, 320px) !important;
+        scroll-snap-align: start !important;
+        width: min(85vw, 320px) !important;
+    }
+}
+
+/* Shimmer Keyframe Animation */
+@keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+}
+
+.shimmer-bg {
+    background: linear-gradient(90deg, #F1F5F9 25%, #E2E8F0 50%, #F1F5F9 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite linear;
+}
+
+/* Property Card Container */
+.property-card {
+    background: #FFFFFF;
+    border-radius: 14px;
+    border: 1px solid #F1F5F9;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    cursor: pointer;
+    transition: transform 250ms ease, box-shadow 250ms ease, border-color 250ms ease;
+    width: 100%;
+}
+
+@media (min-width: 1024px) {
+    .property-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); /* shadow-lg */
+        border-color: transparent;
+    }
+}
+
+/* Image Block */
+.property-card-media {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    border-top-left-radius: 14px;
+    border-top-right-radius: 14px;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    /* Default shimmer background while loading */
+    background: linear-gradient(90deg, #F1F5F9 25%, #E2E8F0 50%, #F1F5F9 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite linear;
+}
+
+/* Image Carousel */
+.property-card-carousel {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    scrollbar-width: none; /* Hide standard Firefox scrollbar */
+    -ms-overflow-style: none; /* Hide IE scrollbar */
+}
+
+.property-card-carousel::-webkit-scrollbar {
+    display: none; /* Hide Safari & Chrome scrollbars */
+}
+
+.property-card-slide {
+    flex: 0 0 100%;
+    width: 100%;
+    height: 100%;
+    scroll-snap-align: start;
+    overflow: hidden;
+    position: relative;
+}
+
+.property-card-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 300ms ease;
+}
+
+@media (min-width: 1024px) {
+    .property-card:hover .property-card-img {
+        transform: scale(1.05);
+    }
+}
+
+/* Carousel Chevron Controls */
+.carousel-control {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    color: #475569;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    z-index: 5;
+    opacity: 0;
+    transition: opacity 200ms ease, background-color 200ms ease;
+}
+
+.carousel-control:hover {
+    background: #FFFFFF;
+    color: #0F172A;
+}
+
+.carousel-control.prev {
+    left: 8px;
+}
+
+.carousel-control.next {
+    right: 8px;
+}
+
+@media (min-width: 1024px) {
+    .property-card:hover .carousel-control {
+        opacity: 0.9;
+    }
+}
+
+/* Carousel Indicator Dots */
+.carousel-dots {
+    position: absolute;
+    bottom: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 4px;
+    z-index: 5;
+}
+
+.carousel-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.4);
+    transition: background-color 200ms ease, transform 200ms ease;
+}
+
+.carousel-dot.active {
+    background: #FF385C; /* Brand primary color */
+    transform: scale(1.2);
+}
+
+/* Badge (Top-Left) */
+.badge-top-left {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    background: #FFFFFF;
+    color: #FF385C; /* Brand Color */
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    z-index: 6;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.badge-top-left.badge-verified {
+    color: #10B981; /* Green for verified listing */
+}
+
+.badge-top-left.badge-new {
+    color: #F59E0B; /* Amber for new */
+}
+
+/* Wishlist Heart Overlay */
+.wishlist-heart {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.95);
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #475569;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    z-index: 6;
+    transition: transform 200ms ease, background-color 200ms ease;
+}
+
+.wishlist-heart:hover {
+    transform: scale(1.1);
+    background: #FFFFFF;
+}
+
+.wishlist-heart.saved {
+    color: #FF385C;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.25); }
+    100% { transform: scale(1); }
+}
+
+.wishlist-heart.saved-pulse {
+    animation: pulse 200ms ease-out;
+}
+
+/* Info Block */
+.property-card-info {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+/* Price Row */
+.property-card-price-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+}
+
+.property-card-price {
+    font-size: 19px;
+    font-weight: 700;
+    color: #0F172A; /* brand dark */
+}
+
+@media (max-width: 767px) {
+    .property-card-price {
+        font-size: 16px; /* Proportions must not shrink below 16px on mobile */
+    }
+}
+
+.property-card-price span {
+    font-size: 14px;
+    font-weight: 400;
+    color: #64748B;
+}
+
+/* Inline Verified Badge */
+.verified-inline-badge {
+    background: #DCFCE7;
+    color: #15803D;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    box-shadow: 0 1px 2px rgba(16, 185, 129, 0.05);
+}
+
+/* Title */
+.property-card-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #0F172A;
+    margin-bottom: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.4;
+}
+
+@media (max-width: 767px) {
+    .property-card-title {
+        font-size: 14px; /* Proportions must not shrink below 14px on mobile */
+    }
+}
+
+/* Location */
+.property-card-location {
+    font-size: 14px;
+    font-weight: 400;
+    color: #64748B;
+    margin-bottom: 8px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.property-card-location svg {
+    color: #FF385C;
+    flex-shrink: 0;
+}
+
+/* Meta Chips */
+.property-card-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 12px;
+}
+
+.property-card-chip {
+    background: #F1F5F9;
+    color: #475569;
+    padding: 4px 10px;
+    border-radius: 9999px;
+    font-size: 12px;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+@media (max-width: 767px) {
+    .property-card-chip {
+        font-size: 11px; /* Proportions must not shrink below 11px on mobile */
+    }
+}
+
+.property-card-chip.more-chip {
+    background: #E2E8F0;
+    color: #1E293B;
+}
+
+/* Divider */
+.property-card-divider {
+    height: 1px;
+    background-color: #F1F5F9;
+    border: none;
+    margin: 12px 0;
+}
+
+/* Action Buttons Container */
+.property-card-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 4px;
+}
+
+.property-card-btn {
+    height: 40px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    cursor: pointer;
+    transition: background-color 200ms ease, border-color 200ms ease, color 200ms ease;
+    text-decoration: none;
+    border: none;
+    outline: none;
+}
+
+/* Call Button Styling */
+.property-card-btn.btn-call {
+    background-color: #FF385C; /* Brand color */
+    color: #FFFFFF !important;
+}
+
+.property-card-btn.btn-call:hover {
+    background-color: #E00B41; /* Darken 8% */
+}
+
+/* Chat Button Styling */
+.property-card-btn.btn-chat {
+    background-color: transparent;
+    color: #FF385C !important;
+    border: 1px solid #FF385C;
+}
+
+.property-card-btn.btn-chat:hover {
+    background-color: rgba(255, 56, 92, 0.08); /* Brand color 8% opacity tint */
+}
+
+/* Locked States */
+.property-card-btn.locked {
+    opacity: 0.7;
+}
+
+.property-card-btn.locked svg {
+    opacity: 0.6;
+}
+
+/* Lock Caption */
+.property-lock-caption {
+    font-size: 11px;
+    color: #94A3B8;
+    text-align: center;
+    margin-top: 6px;
+    display: block;
+    line-height: 1.2;
+}
+
+/* CSS Skeleton Loader Styles */
+.property-card.skeleton {
+    cursor: default;
+    pointer-events: none;
+}
+
+.property-card.skeleton .skeleton-line {
+    background: linear-gradient(90deg, #F1F5F9 25%, #E2E8F0 50%, #F1F5F9 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite linear;
+    border-radius: 4px;
+}
+
+.property-card.skeleton .skeleton-title {
+    height: 16px;
+    width: 80%;
+    margin-bottom: 8px;
+}
+
+.property-card.skeleton .skeleton-location {
+    height: 14px;
+    width: 60%;
+    margin-bottom: 16px;
+}
+
+.property-card.skeleton .skeleton-chip {
+    height: 22px;
+    border-radius: 9999px;
+    width: 60px;
+}
+
+.property-card.skeleton .skeleton-btn {
+    height: 40px;
+    border-radius: 8px;
+    width: 100%;
+}
