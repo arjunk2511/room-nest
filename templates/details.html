@@ -425,7 +425,7 @@
                         <i data-lucide="phone" style="width: 16px; height: 16px;"></i> Call Owner
                     </a>
                     <!-- WhatsApp -->
-                    <button onclick="openWhatsApp('{{ listing.phone|escapejs }}', '{{ listing.title|escapejs }}')" class="btn btn-whatsapp" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: 700; border: none; min-height: 44px; font-size: 0.88rem; border-radius: 9999px; color: white !important;">
+                    <button onclick="openWhatsApp('{{ listing.phone|escapejs }}', '{{ listing.title|escapejs }}', '{{ listing.id }}')" class="btn btn-whatsapp" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: 700; border: none; min-height: 44px; font-size: 0.88rem; border-radius: 9999px; color: white !important;">
                         <i data-lucide="message-square" style="width: 16px; height: 16px;"></i> WhatsApp Chat
                     </button>
                     <!-- Book Visit -->
@@ -508,7 +508,7 @@
                 <a href="tel:{{ listing.phone }}" class="btn btn-outline" style="min-height: 40px; padding: 0 1rem; border-radius: 9999px; display: inline-flex; align-items: center; justify-content: center; gap: 4px; font-weight: 700; font-size: 0.82rem; border-color: var(--border-color); color: var(--text-dark) !important; text-decoration: none;">
                     <i data-lucide="phone" style="width: 14px; height: 14px;"></i> Call
                 </a>
-                <button onclick="openWhatsApp('{{ listing.phone|escapejs }}', '{{ listing.title|escapejs }}')" class="btn btn-whatsapp" style="min-height: 40px; padding: 0 1rem; border-radius: 9999px; display: inline-flex; align-items: center; justify-content: center; gap: 4px; font-weight: 700; font-size: 0.82rem; background: #25D366; border: none; color: white !important;">
+                <button onclick="openWhatsApp('{{ listing.phone|escapejs }}', '{{ listing.title|escapejs }}', '{{ listing.id }}')" class="btn btn-whatsapp" style="min-height: 40px; padding: 0 1rem; border-radius: 9999px; display: inline-flex; align-items: center; justify-content: center; gap: 4px; font-weight: 700; font-size: 0.82rem; background: #25D366; border: none; color: white !important;">
                     <i data-lucide="message-square" style="width: 14px; height: 14px;"></i> Chat
                 </button>
             {% else %}
@@ -651,7 +651,17 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
 });
 
 // WhatsApp direct contact
-function openWhatsApp(phone, title) {
+function openWhatsApp(phone, title, listingId) {
+    if (listingId) {
+        fetch(`/listing/${listingId}/track-whatsapp/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'Content-Type': 'application/json'
+            }
+        }).catch(err => console.error("Error tracking WhatsApp click:", err));
+    }
+
     let cleaned = phone.replace(/\D/g, '');
     if (cleaned.length === 10) {
         cleaned = '91' + cleaned;
@@ -677,14 +687,14 @@ function requestVisit(phone, title) {
             'X-CSRFToken': '{{ csrf_token }}',
             'Content-Type': 'application/json'
         }
-    }).then(() => {
-        let cleaned = phone.replace(/\D/g, '');
-        if (cleaned.length === 10) {
-            cleaned = '91' + cleaned;
-        }
-        const message = encodeURIComponent(`Hi, I would like to request a booking slot to visit "${title}" on ${dateVal} during the ${slotVal}. Please let me know if this works!`);
-        window.open(`https://wa.me/${cleaned}?text=${message}`, '_blank');
-    });
+    }).catch(err => console.error("Error tracking WhatsApp click:", err));
+
+    let cleaned = phone.replace(/\D/g, '');
+    if (cleaned.length === 10) {
+        cleaned = '91' + cleaned;
+    }
+    const message = encodeURIComponent(`Hi, I would like to request a booking slot to visit "${title}" on ${dateVal} during the ${slotVal}. Please let me know if this works!`);
+    window.open(`https://wa.me/${cleaned}?text=${message}`, '_blank');
 }
 
 // Share via WhatsApp
