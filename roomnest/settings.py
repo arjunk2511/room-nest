@@ -5,12 +5,21 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-dummy-key-for-roomnest-project')
 
-DEBUG = os.environ.get('DEBUG', 'False') == 'True'
+# Environments: development, staging, production
+DJANGO_ENV = os.environ.get('DJANGO_ENV', 'development').lower()
+if DJANGO_ENV not in ['development', 'staging', 'production']:
+    DJANGO_ENV = 'development'
 
-# Determine if running in production (either explicitly configured or automatically detected via common hosting provider env vars)
+# Enforce secure defaults on staging/production, local debug on development
+if 'DEBUG' in os.environ:
+    DEBUG = os.environ.get('DEBUG', 'False') == 'True'
+else:
+    DEBUG = (DJANGO_ENV == 'development')
+
+# Determine if running in production-like environment (staging or production)
 IS_PRODUCTION = (
-    os.environ.get('IS_PRODUCTION', 'False') == 'True'
-    or os.environ.get('DJANGO_ENV') == 'production'
+    DJANGO_ENV in ['staging', 'production']
+    or os.environ.get('IS_PRODUCTION', 'False') == 'True'
     or 'RAILWAY_ENVIRONMENT' in os.environ
     or 'RENDER' in os.environ
 )
@@ -242,7 +251,7 @@ CLOUDINARY_STORAGE = {
 }
 
 # Production Security and Optimization Settings
-if IS_PRODUCTION and os.environ.get('FORCE_DEBUG') != 'True':
+if IS_PRODUCTION and os.environ.get('FORCE_DEBUG') != 'True' and not DEBUG:
     # Redirect all HTTP requests to HTTPS
     SECURE_SSL_REDIRECT = True
     
@@ -262,7 +271,11 @@ if IS_PRODUCTION and os.environ.get('FORCE_DEBUG') != 'True':
     SECURE_CONTENT_TYPE_NOSNIFF = True
     
     # Strict-Transport-Security (HSTS) settings
-    SECURE_HSTS_SECONDS = 31536000  # 1 year
+    if DJANGO_ENV == 'production':
+        SECURE_HSTS_SECONDS = 31536000  # 1 year
+    else:
+        # Staging: short HSTS duration to allow easy local recovery if needed
+        SECURE_HSTS_SECONDS = 3600  # 1 hour
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_PRELOAD = True
 
