@@ -997,11 +997,13 @@ document.querySelector('form').addEventListener('submit', function(e) {
         overlay.style.display = 'flex';
     }
     
-    // Disable submit button
+    // Disable submit button asynchronously so the browser can package and upload files
     const submitBtn = document.querySelector('button[type="submit"]');
     if (submitBtn) {
-        submitBtn.disabled = true;
-        submitBtn.innerHTML = 'Uploading...';
+        setTimeout(() => {
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = 'Uploading...';
+        }, 50);
     }
     
     // Cycle messages and progress bar
