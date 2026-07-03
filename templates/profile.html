@@ -232,8 +232,28 @@
 </div>
 
 <script>
+// Hash routing map
+const hashTabMap = {
+    '#settings': 'edit-profile-tab',
+    '#rewards': 'rewards-tab',
+    '#notifications': 'notifications-tab'
+};
+const tabHashMap = {
+    'edit-profile-tab': '#settings',
+    'rewards-tab': '#rewards',
+    'notifications-tab': '#notifications'
+};
+
+function handleHashChange() {
+    const hash = window.location.hash || '#settings';
+    const tabId = hashTabMap[hash];
+    if (tabId) {
+        switchProfileTab(null, tabId, false);
+    }
+}
+
 // Profile tabs switcher script
-function switchProfileTab(evt, tabId) {
+function switchProfileTab(evt, tabId, updateHash = true) {
     const tabPanes = document.querySelectorAll('.profile-tab-pane');
     tabPanes.forEach(pane => pane.style.display = 'none');
     
@@ -268,16 +288,17 @@ function switchProfileTab(evt, tabId) {
             trigger.style.fontWeight = '700';
         }
     });
+
+    if (updateHash && tabHashMap[tabId]) {
+        history.pushState(null, null, tabHashMap[tabId]);
+    }
 }
 
-// Auto open rewards tab if URL has hash #rewards
 window.addEventListener('DOMContentLoaded', () => {
-    if (window.location.hash === '#rewards') {
-        const rewardsBtn = document.querySelector('[onclick*="rewards-tab"]');
-        if (rewardsBtn) {
-            rewardsBtn.click();
-        }
-    }
+    // Listen for hash changes
+    window.addEventListener('hashchange', handleHashChange);
+    // Initial check
+    handleHashChange();
 });
 </script>
 {% endblock %}

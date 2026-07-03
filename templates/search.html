@@ -23,10 +23,10 @@
             align-content: start;
         }
         .search-map-sidebar {
-            flex: 1;
-            height: calc(100vh - 150px);
+            flex: 1.1;
+            height: calc(100vh - 120px);
             position: sticky;
-            top: 130px;
+            top: 96px;
             border-radius: var(--border-radius-lg);
             border: 1px solid var(--border-color);
             overflow: hidden;
@@ -189,21 +189,22 @@
         
         <form action="{% url 'search' %}" method="GET" style="display: flex; flex-direction: column; gap: 1rem;">
             <div class="drawer-scroll-content">
-                <!-- Location Filter -->
+                <!-- City Filter -->
                 <div class="form-group">
-                    <label>Locality in {% if current_city %}{{ current_city.name }}{% else %}City{% endif %}</label>
-                    <select name="location">
-                        <option value="">Any Locality</option>
-                        <option value="Vijayanagar" {% if values.location == 'Vijayanagar' %}selected{% endif %}>Vijayanagar</option>
-                        <option value="Gokulam" {% if values.location == 'Gokulam' %}selected{% endif %}>Gokulam</option>
-                        <option value="Kuvempunagar" {% if values.location == 'Kuvempunagar' %}selected{% endif %}>Kuvempunagar</option>
-                        <option value="Saraswathipuram" {% if values.location == 'Saraswathipuram' %}selected{% endif %}>Saraswathipuram</option>
-                        <option value="Jayalakshmipuram" {% if values.location == 'Jayalakshmipuram' %}selected{% endif %}>Jayalakshmipuram</option>
-                        <option value="Vontikoppal" {% if values.location == 'Vontikoppal' %}selected{% endif %}>Vontikoppal</option>
-                        <option value="Hebbal" {% if values.location == 'Hebbal' %}selected{% endif %}>Hebbal</option>
-                        <option value="Bogadi" {% if values.location == 'Bogadi' %}selected{% endif %}>Bogadi</option>
-                        <option value="Siddhartha Layout" {% if values.location == 'Siddhartha Layout' %}selected{% endif %}>Siddhartha Layout</option>
-                        <option value="Other (Mysore)" {% if values.location == 'Other (Mysore)' %}selected{% endif %}>Other Area</option>
+                    <label>City</label>
+                    <select name="city" id="sidebar-city-select" onchange="updateSidebarAreaOptions(this.value)">
+                        <option value="">Any City</option>
+                        {% for city in active_cities %}
+                            <option value="{{ city.slug }}" {% if values.city == city.slug or current_city.slug == city.slug %}selected{% endif %}>{{ city.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Locality Filter -->
+                <div class="form-group">
+                    <label>Locality / Area</label>
+                    <select name="area" id="sidebar-area-select">
+                        <option value="">Any Area</option>
                     </select>
                 </div>
                 
@@ -211,14 +212,15 @@
                 <div class="form-group">
                     <label>Stay Type</label>
                     <select name="type">
-                        <option value="">Any Accommodation Type</option>
+                        <option value="">Any Stay Type</option>
+                        <option value="PG (Men)" {% if values.type == 'PG (Men)' %}selected{% endif %}>PG (Men)</option>
+                        <option value="PG (Women)" {% if values.type == 'PG (Women)' %}selected{% endif %}>PG (Women)</option>
+                        <option value="Co-living" {% if values.type == 'Co-living' %}selected{% endif %}>Co-living</option>
+                        <option value="Flatmate" {% if values.type == 'Flatmate' %}selected{% endif %}>Flatmate</option>
+                        <option value="Single Room" {% if values.type == 'Single Room' %}selected{% endif %}>Single Room</option>
                         <option value="1BHK" {% if values.type == '1BHK' %}selected{% endif %}>1 BHK Apartment</option>
                         <option value="2BHK" {% if values.type == '2BHK' %}selected{% endif %}>2 BHK Apartment</option>
-                        <option value="Single Room" {% if values.type == 'Single Room' %}selected{% endif %}>Single Room</option>
-                        <option value="PG (Men)" {% if values.type == 'PG (Men)' %}selected{% endif %}>PG (Men's)</option>
-                        <option value="PG (Women)" {% if values.type == 'PG (Women)' %}selected{% endif %}>PG (Women's)</option>
-                        <option value="Co-living" {% if values.type == 'Co-living' %}selected{% endif %}>Co-living Space</option>
-                        <option value="Flatmate" {% if values.type == 'Flatmate' %}selected{% endif %}>Flatmate / Shared Flat</option>
+                        <option value="3BHK" {% if values.type == '3BHK' %}selected{% endif %}>3 BHK Apartment</option>
                         <option value="Commercial Space" {% if values.type == 'Commercial Space' %}selected{% endif %}>Commercial Space</option>
                     </select>
                 </div>
@@ -227,11 +229,11 @@
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
                     <div class="form-group">
                         <label>Min Price</label>
-                        <input type="number" name="min_price" placeholder="₹ Min" value="{{ values.min_price }}">
+                        <input type="number" name="min_price" placeholder="₹ Min" value="{{ values.min_price }}" style="width: 100%; padding: 0.5rem; border-radius: 6px; border: 1px solid var(--border-color); outline: none; font-size: 0.85rem;">
                     </div>
                     <div class="form-group">
                         <label>Max Price</label>
-                        <input type="number" name="price" placeholder="₹ Max" value="{{ values.price }}">
+                        <input type="number" name="price" placeholder="₹ Max" value="{{ values.price }}" style="width: 100%; padding: 0.5rem; border-radius: 6px; border: 1px solid var(--border-color); outline: none; font-size: 0.85rem;">
                     </div>
                 </div>
                 
@@ -245,7 +247,7 @@
                         <option value="Fully Furnished" {% if values.furnishing == 'Fully Furnished' %}selected{% endif %}>Fully Furnished</option>
                     </select>
                 </div>
-
+ 
                 <!-- Preferred Gender Filter -->
                 <div class="form-group">
                     <label>Gender Preference</label>
@@ -257,8 +259,20 @@
                     </select>
                 </div>
 
+                <!-- Verified Stays Checkbox -->
+                <div class="form-group" style="margin-top: 0.5rem; display: flex; flex-direction: column; gap: 8px;">
+                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-weight: 600; color: var(--text-dark); font-size: 0.88rem;">
+                        <input type="checkbox" name="verified_only" value="true" {% if request.GET.verified_only == 'true' %}checked{% endif %} style="accent-color: var(--primary); width: 16px; height: 16px; border-radius: 4px;">
+                        🛡️ Verified Only
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-weight: 600; color: var(--text-dark); font-size: 0.88rem;">
+                        <input type="checkbox" name="available_now" value="true" {% if request.GET.available_now == 'true' %}checked{% endif %} style="accent-color: var(--primary); width: 16px; height: 16px; border-radius: 4px;">
+                        ⚡ Available Now
+                    </label>
+                </div>
+ 
                 <!-- Amenities checkboxes -->
-                <div class="form-group">
+                <div class="form-group" style="margin-top: 0.5rem;">
                     <label style="margin-bottom: 0.6rem; display: block;">Amenities Included</label>
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; font-size: 0.85rem; font-weight: 500;">
                         <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; color: var(--text-dark);">
@@ -275,7 +289,7 @@
                         </label>
                     </div>
                 </div>
-
+ 
                 <!-- Sort Filter -->
                 <div class="form-group">
                     <label>Sort Results By</label>
@@ -556,5 +570,73 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 });
+</script>
+
+<!-- JSON metadata for City-Area relationships -->
+<script id="city-area-data" type="application/json">
+[
+  {% for city in active_cities %}
+    {
+      "id": {{ city.id }},
+      "name": "{{ city.name|escapejs }}",
+      "slug": "{{ city.slug|escapejs }}",
+      "areas": [
+        {% for area in city.areas.all %}
+          {
+            "id": {{ area.id }},
+            "name": "{{ area.name|escapejs }}",
+            "slug": "{{ area.slug|escapejs }}"
+          }{% if not forloop.last %},{% endif %}
+        {% endfor %}
+      ]
+    }{% if not forloop.last %},{% endif %}
+  {% endfor %}
+]
+</script>
+
+<script>
+    // Dynamically filter areas on city selection in sidebar
+    function updateSidebarAreaOptions(selectedCitySlug, preselectedAreaSlug = "") {
+        const areaSelect = document.getElementById('sidebar-area-select');
+        if (!areaSelect) return;
+        
+        areaSelect.innerHTML = '<option value="">Any Area</option>';
+        
+        if (!selectedCitySlug) return;
+        
+        const dataBlock = document.getElementById('city-area-data');
+        if (!dataBlock) return;
+        
+        try {
+            const citiesData = JSON.parse(dataBlock.textContent);
+            const matchedCity = citiesData.find(c => c.slug === selectedCitySlug);
+            
+            if (matchedCity && matchedCity.areas) {
+                matchedCity.areas.forEach(area => {
+                    const option = document.createElement('option');
+                    option.value = area.slug;
+                    option.textContent = area.name;
+                    if (area.slug === preselectedAreaSlug) {
+                        option.selected = true;
+                    }
+                    areaSelect.appendChild(option);
+                });
+            }
+        } catch (e) {
+            console.error("Error parsing city-area JSON data:", e);
+        }
+    }
+    
+    // Auto-initialize sidebar area select on page load
+    document.addEventListener("DOMContentLoaded", function() {
+        const citySelect = document.getElementById('sidebar-city-select');
+        if (citySelect) {
+            const currentCitySlug = citySelect.value;
+            const currentAreaSlug = "{{ values.area|default:'' }}";
+            if (currentCitySlug) {
+                updateSidebarAreaOptions(currentCitySlug, currentAreaSlug);
+            }
+        }
+    });
 </script>
 {% endblock %}

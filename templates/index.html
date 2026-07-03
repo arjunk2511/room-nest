@@ -39,32 +39,68 @@
 <div id="path-tenant-content">
     <!-- Overlapping Unified Search Bar -->
     <div class="search-wrapper" style="margin-top: 2rem;">
-        <div class="search-container">
+        <div class="search-container" style="border-radius: var(--border-radius-md); box-shadow: var(--shadow-lg); border: 1px solid rgba(15, 23, 42, 0.06); padding: 12px; background: white;">
             <!-- Search Form -->
-            <form action="{% url 'search' %}" method="GET" class="search-form" style="grid-template-columns: 1fr 1fr auto;">
-                <input type="hidden" name="type" id="search-type-input" value="">
+            <form action="{% url 'search' %}" method="GET" class="search-form search-form-v3" style="display: grid; gap: 12px; align-items: center;">
                 
                 <!-- Select City -->
-                <div class="search-field">
-                    <span class="search-icon">🏙️</span>
-                    <select name="city" id="city-select" onchange="updateAreaOptions(this.value)" aria-label="Select City">
-                        <option value="">Select City (All India)</option>
+                <div class="search-field" style="position: relative;">
+                    <span class="search-icon" style="color: var(--primary); position: absolute; left: 12px; top: 50%; transform: translateY(-50%); pointer-events: none;"><i data-lucide="map-pin" style="width: 18px; height: 18px;"></i></span>
+                    <select name="city" id="city-select" onchange="updateAreaOptions(this.value)" aria-label="Select City" style="width: 100%; border: 1px solid var(--border-color); padding: 0.75rem 1rem 0.75rem 2.5rem; font-weight: 600; color: var(--text-dark); background: transparent; border-radius: 8px; font-size: 0.9rem; appearance: none; -webkit-appearance: none;">
+                        <option value="">Select City</option>
                         {% for city in active_cities %}
                             <option value="{{ city.slug }}">{{ city.name }}</option>
                         {% endfor %}
                     </select>
+                    <div style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); pointer-events: none; font-size: 0.65rem; color: var(--text-muted);">▼</div>
                 </div>
                 
                 <!-- Select Area -->
-                <div class="search-field">
-                    <span class="search-icon">📍</span>
-                    <select name="area" id="area-select" aria-label="Select Area">
-                        <option value="">Select Area (All Areas)</option>
+                <div class="search-field" style="position: relative;">
+                    <span class="search-icon" style="color: var(--primary); position: absolute; left: 12px; top: 50%; transform: translateY(-50%); pointer-events: none;"><i data-lucide="navigation" style="width: 18px; height: 18px;"></i></span>
+                    <select name="area" id="area-select" aria-label="Select Area" style="width: 100%; border: 1px solid var(--border-color); padding: 0.75rem 1rem 0.75rem 2.5rem; font-weight: 600; color: var(--text-dark); background: transparent; border-radius: 8px; font-size: 0.9rem; appearance: none; -webkit-appearance: none;">
+                        <option value="">Select Area</option>
                     </select>
+                    <div style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); pointer-events: none; font-size: 0.65rem; color: var(--text-muted);">▼</div>
+                </div>
+
+                <!-- Select Property Type -->
+                <div class="search-field" style="position: relative;">
+                    <span class="search-icon" style="color: var(--primary); position: absolute; left: 12px; top: 50%; transform: translateY(-50%); pointer-events: none;"><i data-lucide="home" style="width: 18px; height: 18px;"></i></span>
+                    <select name="type" id="type-select" aria-label="Select Property Type" style="width: 100%; border: 1px solid var(--border-color); padding: 0.75rem 1rem 0.75rem 2.5rem; font-weight: 600; color: var(--text-dark); background: transparent; border-radius: 8px; font-size: 0.9rem; appearance: none; -webkit-appearance: none;">
+                        <option value="">Property Type</option>
+                        <option value="PG (Men)">PG (Men)</option>
+                        <option value="PG (Women)">PG (Women)</option>
+                        <option value="Co-living">Co-living</option>
+                        <option value="Flatmate">Flatmate</option>
+                        <option value="Single Room">Single Room</option>
+                        <option value="1BHK">1 BHK Flat</option>
+                        <option value="2BHK">2 BHK Flat</option>
+                        <option value="3BHK">3 BHK Flat</option>
+                        <option value="Commercial Space">Commercial</option>
+                    </select>
+                    <div style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); pointer-events: none; font-size: 0.65rem; color: var(--text-muted);">▼</div>
+                </div>
+
+                <!-- Select Budget -->
+                <div class="search-field" style="position: relative;">
+                    <span class="search-icon" style="color: var(--primary); position: absolute; left: 12px; top: 50%; transform: translateY(-50%); pointer-events: none;"><i data-lucide="indian-rupee" style="width: 18px; height: 18px;"></i></span>
+                    <select name="price" id="budget-select" aria-label="Select Budget" style="width: 100%; border: 1px solid var(--border-color); padding: 0.75rem 1rem 0.75rem 2.5rem; font-weight: 600; color: var(--text-dark); background: transparent; border-radius: 8px; font-size: 0.9rem; appearance: none; -webkit-appearance: none;">
+                        <option value="">Max Budget</option>
+                        <option value="5000">Under ₹5,000</option>
+                        <option value="10000">Under ₹10,000</option>
+                        <option value="15000">Under ₹15,000</option>
+                        <option value="20000">Under ₹20,000</option>
+                        <option value="30000">Under ₹30,000</option>
+                        <option value="50000">Under ₹50,000</option>
+                    </select>
+                    <div style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); pointer-events: none; font-size: 0.65rem; color: var(--text-muted);">▼</div>
                 </div>
                 
                 <!-- Search Submit Button -->
-                <button type="submit" class="btn btn-primary search-btn" style="height: 100%;">Search</button>
+                <button type="submit" class="btn btn-primary search-btn" style="border-radius: 8px; min-height: 44px; padding: 0 1.5rem; display: inline-flex; align-items: center; justify-content: center; gap: 8px;">
+                    <i data-lucide="search" style="width: 18px; height: 18px;"></i> Search
+                </button>
             </form>
         </div>
     </div>

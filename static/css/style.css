@@ -7,15 +7,16 @@
    ========================================================================== */
 
 :root {
-    --primary: #FF385C;          /* Airbnb Rausch / Coral */
-    --primary-hover: #E00B41;
-    --primary-light: #FFF0F2;
-    --secondary: #0F172A;        /* Deep Slate */
-    --secondary-hover: #1E293B;
-    --accent: #FF385C;
-    --accent-hover: #E00B41;
-    --accent-light: #FFF0F2;
-    --bg-color: #FAFAFA;
+    --primary: #2563EB;          /* Royal Blue */
+    --primary-hover: #1D4ED8;
+    --primary-light: #EFF6FF;
+    --secondary: #4F46E5;        /* Indigo */
+    --secondary-hover: #4338CA;
+    --secondary-light: #EEF2FF;
+    --accent: #10B981;           /* Emerald Green */
+    --accent-hover: #059669;
+    --accent-light: #ECFDF5;
+    --bg-color: #F8FAFC;         /* Light Slate BG */
     --text-dark: #0F172A;
     --text-light: #475569;
     --text-muted: #94A3B8;
@@ -2903,9 +2904,9 @@ footer {
         width: 100% !important;
     }
 
-    /* --- 2. Compact Main Navigation Header (70px) --- */
+    /* --- 2. Compact Main Navigation Header (72px) --- */
     .main-header {
-        height: 70px !important;
+        height: 72px !important;
         background: var(--white) !important;
         border-bottom: 1px solid var(--border-color) !important;
         position: sticky !important;
@@ -3162,6 +3163,13 @@ footer {
         gap: 12px !important;
     }
 
+    .search-form-v3 {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr 1fr 1fr auto !important;
+        gap: 16px !important;
+        padding: 0 !important;
+    }
+
     .search-field select, 
     .search-field input {
         height: 44px !important;
@@ -3222,7 +3230,8 @@ footer {
 
     /* --- 5. Premium Property Cards --- */
     .card, 
-    .hc-card {
+    .hc-card,
+    .property-card {
         border-radius: 12px !important;
         box-shadow: 0 4px 20px rgba(15, 23, 42, 0.05) !important;
         transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease, border-color 0.3s ease !important;
@@ -3235,14 +3244,16 @@ footer {
     }
 
     .card:hover, 
-    .hc-card:hover {
+    .hc-card:hover,
+    .property-card:hover {
         transform: translateY(-6px) !important;
         box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08) !important;
         border-color: rgba(37, 99, 235, 0.1) !important;
     }
 
     .card-img-wrapper, 
-    .hc-img-wrapper {
+    .hc-img-wrapper,
+    .property-card-media {
         aspect-ratio: 16 / 9 !important;
         max-height: 220px !important;
         height: 220px !important;
@@ -3453,7 +3464,7 @@ footer {
         min-width: 320px !important;
         max-width: 380px !important;
         position: sticky !important;
-        top: 94px !important; /* 70px header + 24px spacing */
+        top: 96px !important; /* 72px header + 24px spacing */
         height: fit-content !important;
         display: flex !important;
         flex-direction: column !important;
@@ -3486,7 +3497,7 @@ footer {
 
     /* Left Sidebar Filter */
     .search-sidebar {
-        width: 280px !important;
+        width: 260px !important;
         flex-shrink: 0 !important;
         background: var(--white) !important;
         border: 1px solid var(--border-color) !important;
@@ -3562,7 +3573,13 @@ footer {
     }
 
     .search-header-banner {
-        top: 70px !important; /* Sync with desktop header height */
+        top: 72px !important; /* Sync with desktop header height */
+    }
+
+    @media (min-width: 1280px) {
+        .search-results-area {
+            grid-template-columns: repeat(3, 1fr) !important;
+        }
     }
 
     /* --- 8. Profile Page Two-Column Redesign --- */

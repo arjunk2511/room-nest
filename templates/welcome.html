@@ -11,9 +11,9 @@
 
 {% block content %}
 <!-- Premium Landing Hero Section -->
-<section class="hero" style="position: relative; overflow: hidden; background: linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(15, 23, 42, 0.7) 100%), url('/static/images/hero_bg.webp') no-repeat center center; background-size: cover; padding: 6rem 1.5rem 8rem 1.5rem;">
+<section class="hero" style="position: relative; overflow: hidden; background: linear-gradient(135deg, rgba(15, 23, 42, 0.85) 0%, rgba(15, 23, 42, 0.65) 100%), url('/static/images/hero_bg.webp') no-repeat center center; background-size: cover; padding: 6.5rem 1.5rem 8.5rem 1.5rem;">
     <div style="max-width: 800px; margin: 0 auto; z-index: 2; position: relative; text-align: center;">
-        <span style="background: rgba(255, 56, 92, 0.15); color: var(--primary); padding: 0.5rem 1.25rem; border-radius: 99px; font-size: 0.82rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; display: inline-flex; align-items: center; gap: 6px; margin-bottom: 1.5rem; border: 1px solid rgba(255, 56, 92, 0.25);">
+        <span style="background: rgba(37, 99, 235, 0.15); color: var(--primary); padding: 0.5rem 1.25rem; border-radius: 99px; font-size: 0.82rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; display: inline-flex; align-items: center; gap: 6px; margin-bottom: 1.5rem; border: 1px solid rgba(37, 99, 235, 0.25);">
             <i data-lucide="shield-check" style="width: 14px; height: 14px;"></i> Zero Brokerage Rental Portal
         </span>
         <h1 style="font-family: 'Outfit', sans-serif; font-size: 2.8rem; font-weight: 800; color: white; margin-bottom: 1rem; letter-spacing: -0.03em; line-height: 1.15;">Find Your Perfect Stay</h1>
@@ -23,32 +23,65 @@
 
 <!-- Overlapping Unified Search Bar & Trust Strip -->
 <div class="search-wrapper" style="margin-top: -3.5rem;">
-    <div class="search-container" style="border-radius: 9999px; box-shadow: var(--shadow-lg); border: 1px solid rgba(0, 0, 0, 0.05); padding: 8px; background: white;">
+    <div class="search-container" style="border-radius: var(--border-radius-md); box-shadow: var(--shadow-lg); border: 1px solid rgba(15, 23, 42, 0.06); padding: 12px; background: white;">
         <!-- Search Form -->
-        <form action="{% url 'search' %}" method="GET" class="search-form" style="display: grid; grid-template-columns: 1fr 1fr auto; gap: 8px; align-items: center;">
-            <input type="hidden" name="type" id="search-type-input" value="">
-            
+        <form action="{% url 'search' %}" method="GET" class="search-form search-form-v3" style="display: grid; gap: 12px; align-items: center;">
             <!-- Select City -->
-            <div class="search-field" style="border-right: 1px solid var(--border-color); height: 100%;">
-                <span class="search-icon" style="color: var(--primary);"><i data-lucide="map-pin" style="width: 18px; height: 18px;"></i></span>
-                <select name="city" id="city-select" onchange="updateAreaOptions(this.value)" aria-label="Select City" style="border: none; padding-left: 2.5rem; font-weight: 600; color: var(--text-dark); background: transparent;">
-                    <option value="">Select City (All India)</option>
+            <div class="search-field" style="position: relative;">
+                <span class="search-icon" style="color: var(--primary); position: absolute; left: 12px; top: 50%; transform: translateY(-50%); pointer-events: none;"><i data-lucide="map-pin" style="width: 18px; height: 18px;"></i></span>
+                <select name="city" id="city-select" onchange="updateAreaOptions(this.value)" aria-label="Select City" style="width: 100%; border: 1px solid var(--border-color); padding: 0.75rem 1rem 0.75rem 2.5rem; font-weight: 600; color: var(--text-dark); background: transparent; border-radius: 8px; font-size: 0.9rem; appearance: none; -webkit-appearance: none;">
+                    <option value="">Select City</option>
                     {% for city in active_cities %}
                         <option value="{{ city.slug }}">{{ city.name }}</option>
                     {% endfor %}
                 </select>
+                <div style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); pointer-events: none; font-size: 0.65rem; color: var(--text-muted);">▼</div>
             </div>
             
             <!-- Select Area -->
-            <div class="search-field" style="height: 100%;">
-                <span class="search-icon" style="color: var(--primary);"><i data-lucide="navigation" style="width: 18px; height: 18px;"></i></span>
-                <select name="area" id="area-select" aria-label="Select Area" style="border: none; padding-left: 2.5rem; font-weight: 600; color: var(--text-dark); background: transparent;">
-                    <option value="">Select Area (All Areas)</option>
+            <div class="search-field" style="position: relative;">
+                <span class="search-icon" style="color: var(--primary); position: absolute; left: 12px; top: 50%; transform: translateY(-50%); pointer-events: none;"><i data-lucide="navigation" style="width: 18px; height: 18px;"></i></span>
+                <select name="area" id="area-select" aria-label="Select Area" style="width: 100%; border: 1px solid var(--border-color); padding: 0.75rem 1rem 0.75rem 2.5rem; font-weight: 600; color: var(--text-dark); background: transparent; border-radius: 8px; font-size: 0.9rem; appearance: none; -webkit-appearance: none;">
+                    <option value="">Select Area</option>
                 </select>
+                <div style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); pointer-events: none; font-size: 0.65rem; color: var(--text-muted);">▼</div>
+            </div>
+
+            <!-- Select Property Type -->
+            <div class="search-field" style="position: relative;">
+                <span class="search-icon" style="color: var(--primary); position: absolute; left: 12px; top: 50%; transform: translateY(-50%); pointer-events: none;"><i data-lucide="home" style="width: 18px; height: 18px;"></i></span>
+                <select name="type" id="type-select" aria-label="Select Property Type" style="width: 100%; border: 1px solid var(--border-color); padding: 0.75rem 1rem 0.75rem 2.5rem; font-weight: 600; color: var(--text-dark); background: transparent; border-radius: 8px; font-size: 0.9rem; appearance: none; -webkit-appearance: none;">
+                    <option value="">Property Type</option>
+                    <option value="PG (Men)">PG (Men)</option>
+                    <option value="PG (Women)">PG (Women)</option>
+                    <option value="Co-living">Co-living</option>
+                    <option value="Flatmate">Flatmate</option>
+                    <option value="Single Room">Single Room</option>
+                    <option value="1BHK">1 BHK Flat</option>
+                    <option value="2BHK">2 BHK Flat</option>
+                    <option value="3BHK">3 BHK Flat</option>
+                    <option value="Commercial Space">Commercial</option>
+                </select>
+                <div style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); pointer-events: none; font-size: 0.65rem; color: var(--text-muted);">▼</div>
+            </div>
+
+            <!-- Select Budget -->
+            <div class="search-field" style="position: relative;">
+                <span class="search-icon" style="color: var(--primary); position: absolute; left: 12px; top: 50%; transform: translateY(-50%); pointer-events: none;"><i data-lucide="indian-rupee" style="width: 18px; height: 18px;"></i></span>
+                <select name="price" id="budget-select" aria-label="Select Budget" style="width: 100%; border: 1px solid var(--border-color); padding: 0.75rem 1rem 0.75rem 2.5rem; font-weight: 600; color: var(--text-dark); background: transparent; border-radius: 8px; font-size: 0.9rem; appearance: none; -webkit-appearance: none;">
+                    <option value="">Max Budget</option>
+                    <option value="5000">Under ₹5,000</option>
+                    <option value="10000">Under ₹10,000</option>
+                    <option value="15000">Under ₹15,000</option>
+                    <option value="20000">Under ₹20,000</option>
+                    <option value="30000">Under ₹30,000</option>
+                    <option value="50000">Under ₹50,000</option>
+                </select>
+                <div style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); pointer-events: none; font-size: 0.65rem; color: var(--text-muted);">▼</div>
             </div>
             
             <!-- Search Submit Button -->
-            <button type="submit" class="btn btn-primary search-btn" style="border-radius: 9999px; min-height: 48px; padding: 0 2rem; display: inline-flex; align-items: center; gap: 8px;">
+            <button type="submit" class="btn btn-primary search-btn" style="border-radius: 8px; min-height: 44px; padding: 0 1.5rem; display: inline-flex; align-items: center; justify-content: center; gap: 8px;">
                 <i data-lucide="search" style="width: 18px; height: 18px;"></i> Search
             </button>
         </form>
@@ -68,6 +101,41 @@
     </div>
 </div>
 
+<!-- Why Choose RoomNest Section -->
+<section class="container" style="margin-top: 4rem; margin-bottom: 4rem;">
+    <div style="text-align: center; margin-bottom: 3rem;">
+        <span style="color: var(--primary); font-weight: 700; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 0.5rem;">Premium Rental Benefits</span>
+        <h2 style="font-size: 1.85rem; font-weight: 800; margin-bottom: 0.5rem; font-family: 'Outfit', sans-serif;">Why Renters Choose RoomNest</h2>
+        <p style="color: var(--text-light); max-width: 500px; margin: 0 auto; font-size: 0.95rem;">Say goodbye to brokerage fees, fake listings, and pushy agents.</p>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 2rem;">
+        <!-- Card 1: Zero Brokerage -->
+        <div style="background: var(--white); border: 1px solid var(--border-color); border-radius: var(--border-radius-md); padding: 2rem; text-align: center; box-shadow: var(--shadow-sm); transition: var(--transition-smooth);" class="benefit-card">
+            <div style="width: 54px; height: 54px; background: var(--primary-light); color: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.25rem auto;">
+                <i data-lucide="percent" style="width: 24px; height: 24px;"></i>
+            </div>
+            <h3 style="font-size: 1.2rem; font-weight: 700; margin-bottom: 0.75rem; color: var(--text-dark);">Zero Brokerage</h3>
+            <p style="color: var(--text-light); font-size: 0.88rem; line-height: 1.5;">Direct listings from owners means you never pay commissions, fees, or deposit cuts to middle-agents.</p>
+        </div>
+        <!-- Card 2: 100% Verified -->
+        <div style="background: var(--white); border: 1px solid var(--border-color); border-radius: var(--border-radius-md); padding: 2rem; text-align: center; box-shadow: var(--shadow-sm); transition: var(--transition-smooth);" class="benefit-card">
+            <div style="width: 54px; height: 54px; background: var(--primary-light); color: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.25rem auto;">
+                <i data-lucide="shield-check" style="width: 24px; height: 24px;"></i>
+            </div>
+            <h3 style="font-size: 1.2rem; font-weight: 700; margin-bottom: 0.75rem; color: var(--text-dark);">Verified Listings</h3>
+            <p style="color: var(--text-light); font-size: 0.88rem; line-height: 1.5;">Every listing is thoroughly verified with documents and photos to ensure standard safety and trust levels.</p>
+        </div>
+        <!-- Card 3: Direct Connect -->
+        <div style="background: var(--white); border: 1px solid var(--border-color); border-radius: var(--border-radius-md); padding: 2rem; text-align: center; box-shadow: var(--shadow-sm); transition: var(--transition-smooth);" class="benefit-card">
+            <div style="width: 54px; height: 54px; background: var(--primary-light); color: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.25rem auto;">
+                <i data-lucide="message-square" style="width: 24px; height: 24px;"></i>
+            </div>
+            <h3 style="font-size: 1.2rem; font-weight: 700; margin-bottom: 0.75rem; color: var(--text-dark);">Direct Owner Connect</h3>
+            <p style="color: var(--text-light); font-size: 0.88rem; line-height: 1.5;">Get contact details instantly. Reach out directly on WhatsApp or Call to schedule site visits instantly.</p>
+        </div>
+    </div>
+</section>
+
 <!-- 1. Popular Cities Section -->
 <section class="container">
     <div style="text-align: center; margin-bottom: 2.5rem;">
@@ -76,7 +144,7 @@
         <p style="color: var(--text-light); max-width: 500px; margin: 0 auto; font-size: 0.95rem;">Browse verified student housing, co-living hubs, and luxury apartments across our launch cities.</p>
     </div>
     
-    <div class="grid">
+    <div class="popular-cities-grid">
         {% for city in active_cities %}
         <a href="{% url 'city_page' city.slug %}" style="display: block; position: relative; border-radius: var(--border-radius-lg); overflow: hidden; box-shadow: var(--shadow); transition: var(--transition-smooth);" onmouseover="this.style.transform='translateY(-6px)'; this.style.boxShadow='var(--shadow-lg)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='var(--shadow)';">
             <div style="height: 200px; position: relative; background: linear-gradient(180deg, rgba(15,23,42,0.1) 0%, rgba(15,23,42,0.8) 100%);">
@@ -102,7 +170,7 @@
 <section class="container">
     <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 2.5rem; flex-wrap: wrap; gap: 1rem;">
         <div>
-            <h2 style="font-size: 1.85rem; font-weight: 800; margin: 0 0 0.4rem 0;">Featured Listings in Mysore</h2>
+            <h2 style="font-size: 1.85rem; font-weight: 800; margin: 0 0 0.4rem 0;">Popular Featured Listings</h2>
             <p style="color: var(--text-light); margin: 0; font-size: 0.95rem;">Handpicked properties with direct owner contact and zero brokerage.</p>
         </div>
         <a href="{% url 'search' %}" style="font-weight: 700; color: var(--primary); display: flex; align-items: center; gap: 4px; font-size: 0.95rem;">View All Listings ➔</a>
@@ -159,6 +227,89 @@
             </div>
             <h3 style="font-family: 'Outfit', sans-serif; font-size: 1.2rem; font-weight: 700; margin-bottom: 0.75rem; color: var(--text-dark);">Visit & Move In</h3>
             <p style="color: var(--text-light); font-size: 0.9rem; line-height: 1.5; padding: 0 1rem;">Visit the property physically, sign a standard rental agreement directly with the owner, and move in peacefully.</p>
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials Section -->
+<section class="container" style="margin-top: 5rem; margin-bottom: 5rem; padding: 4rem 1.5rem; background: var(--secondary-light); border-radius: var(--border-radius-lg); border: 1px solid rgba(79, 70, 229, 0.08);">
+    <div style="text-align: center; margin-bottom: 3rem;">
+        <span style="color: var(--secondary); font-weight: 700; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1.5px; display: block; margin-bottom: 0.5rem;">User Experiences</span>
+        <h2 style="font-size: 1.85rem; font-weight: 800; margin-bottom: 0.5rem; font-family: 'Outfit', sans-serif;">Loved by Tenants & Owners</h2>
+        <p style="color: var(--text-light); max-width: 500px; margin: 0 auto; font-size: 0.95rem;">Join thousands of satisfied users who found their stay through RoomNest.</p>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem;">
+        <!-- Testimonial 1 -->
+        <div style="background: var(--white); border: 1px solid var(--border-color); border-radius: var(--border-radius-md); padding: 2rem; box-shadow: var(--shadow-sm); display: flex; flex-direction: column; justify-content: space-between; text-align: left;">
+            <div>
+                <div style="display: flex; gap: 4px; margin-bottom: 1rem; color: #F59E0B;">
+                    <i data-lucide="star" style="width: 16px; height: 16px; fill: currentColor;"></i>
+                    <i data-lucide="star" style="width: 16px; height: 16px; fill: currentColor;"></i>
+                    <i data-lucide="star" style="width: 16px; height: 16px; fill: currentColor;"></i>
+                    <i data-lucide="star" style="width: 16px; height: 16px; fill: currentColor;"></i>
+                    <i data-lucide="star" style="width: 16px; height: 16px; fill: currentColor;"></i>
+                </div>
+                <p style="color: var(--text-light); font-size: 0.92rem; line-height: 1.6; margin-bottom: 1.5rem; font-style: italic;">
+                    "Finding student housing in Gokulam (Mysore) was incredibly stressful until I used RoomNest. I connected directly with the landlord on WhatsApp and moved in within 3 days. Zero broker fees!"
+                </p>
+            </div>
+            <div style="display: flex; align-items: center; gap: 12px; border-top: 1px solid var(--border-color); padding-top: 1rem;">
+                <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--primary-light); color: var(--primary); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.9rem;">
+                    AR
+                </div>
+                <div>
+                    <h4 style="font-size: 0.95rem; font-weight: 700; color: var(--text-dark);">Abhishek Rao</h4>
+                    <span style="font-size: 0.8rem; color: var(--text-muted);">Student, Mysore University</span>
+                </div>
+            </div>
+        </div>
+        <!-- Testimonial 2 -->
+        <div style="background: var(--white); border: 1px solid var(--border-color); border-radius: var(--border-radius-md); padding: 2rem; box-shadow: var(--shadow-sm); display: flex; flex-direction: column; justify-content: space-between; text-align: left;">
+            <div>
+                <div style="display: flex; gap: 4px; margin-bottom: 1rem; color: #F59E0B;">
+                    <i data-lucide="star" style="width: 16px; height: 16px; fill: currentColor;"></i>
+                    <i data-lucide="star" style="width: 16px; height: 16px; fill: currentColor;"></i>
+                    <i data-lucide="star" style="width: 16px; height: 16px; fill: currentColor;"></i>
+                    <i data-lucide="star" style="width: 16px; height: 16px; fill: currentColor;"></i>
+                    <i data-lucide="star" style="width: 16px; height: 16px; fill: currentColor;"></i>
+                </div>
+                <p style="color: var(--text-light); font-size: 0.92rem; line-height: 1.6; margin-bottom: 1.5rem; font-style: italic;">
+                    "As an owner, listing my 2BHK flat in Kuvempunagar on RoomNest was extremely straightforward. Within a week, I got high-quality leads from IT professionals. The landlord dashboard is fantastic!"
+                </p>
+            </div>
+            <div style="display: flex; align-items: center; gap: 12px; border-top: 1px solid var(--border-color); padding-top: 1rem;">
+                <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--accent-light); color: var(--accent); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.9rem;">
+                    MD
+                </div>
+                <div>
+                    <h4 style="font-size: 0.95rem; font-weight: 700; color: var(--text-dark);">M. Deshpande</h4>
+                    <span style="font-size: 0.8rem; color: var(--text-muted);">Property Owner, Mysore</span>
+                </div>
+            </div>
+        </div>
+        <!-- Testimonial 3 -->
+        <div style="background: var(--white); border: 1px solid var(--border-color); border-radius: var(--border-radius-md); padding: 2rem; box-shadow: var(--shadow-sm); display: flex; flex-direction: column; justify-content: space-between; text-align: left;">
+            <div>
+                <div style="display: flex; gap: 4px; margin-bottom: 1rem; color: #F59E0B;">
+                    <i data-lucide="star" style="width: 16px; height: 16px; fill: currentColor;"></i>
+                    <i data-lucide="star" style="width: 16px; height: 16px; fill: currentColor;"></i>
+                    <i data-lucide="star" style="width: 16px; height: 16px; fill: currentColor;"></i>
+                    <i data-lucide="star" style="width: 16px; height: 16px; fill: currentColor;"></i>
+                    <i data-lucide="star" style="width: 16px; height: 16px; fill: currentColor;"></i>
+                </div>
+                <p style="color: var(--text-light); font-size: 0.92rem; line-height: 1.6; margin-bottom: 1.5rem; font-style: italic;">
+                    "Searching flatmate spaces in Electronic City, Bengaluru is usually dominated by brokers. RoomNest helped me find a verified single room with great flatmates with zero broker intervention."
+                </p>
+            </div>
+            <div style="display: flex; align-items: center; gap: 12px; border-top: 1px solid var(--border-color); padding-top: 1rem;">
+                <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--secondary-light); color: var(--secondary); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.9rem;">
+                    SN
+                </div>
+                <div>
+                    <h4 style="font-size: 0.95rem; font-weight: 700; color: var(--text-dark);">Shruti Nair</h4>
+                    <span style="font-size: 0.8rem; color: var(--text-muted);">Software Engineer, Bengaluru</span>
+                </div>
+            </div>
         </div>
     </div>
 </section>
