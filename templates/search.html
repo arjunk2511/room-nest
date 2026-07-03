@@ -448,88 +448,96 @@ document.addEventListener("DOMContentLoaded", function() {
         console.error("Failed to parse listings coordinates:", e);
     }
     
-    const defaultIcon = L.icon({
-        iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
-        shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
-        iconSize: [25, 41],
-        iconAnchor: [12, 41],
-        popupAnchor: [1, -34],
-        shadowSize: [41, 41]
-    });
-    
-    const highlightIcon = L.icon({
-        iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
-        shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
-        iconSize: [25, 41],
-        iconAnchor: [12, 41],
-        popupAnchor: [1, -34],
-        shadowSize: [41, 41]
-    });
-
-    let centerLat = 12.2958;
-    let centerLng = 76.6394;
-    
-    if (items.length > 0) {
-        let sumLat = 0, sumLng = 0;
-        items.forEach(it => { sumLat += it.lat; sumLng += it.lng; });
-        centerLat = sumLat / items.length;
-        centerLng = sumLng / items.length;
-    }
-
-    const map = L.map('search-map').setView([centerLat, centerLng], 13);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-    }).addTo(map);
-    
-    window.searchMapRef = map;
-    window.mapMarkers = {};
-    
-    const bounds = [];
-    items.forEach(item => {
-        const marker = L.marker([item.lat, item.lng], { icon: defaultIcon }).addTo(map);
-        
-        let popupContent = `
-            <div style="font-family: 'Inter', sans-serif; padding: 4px; max-width: 200px;">
-        `;
-        if (item.image) {
-            popupContent += `<img src="${item.image}" style="width: 100%; height: 90px; object-fit: cover; border-radius: 6px; margin-bottom: 6px;">`;
-        }
-        popupContent += `
-                <strong style="font-size: 0.88rem; display: block; color: var(--text-dark); margin-bottom: 2px;">${item.title}</strong>
-                <span style="font-weight: 700; color: var(--primary); font-size: 0.85rem; display: block; margin-bottom: 6px;">₹${item.price}/mo</span>
-                <a href="${item.url}" style="font-weight: 700; color: white !important; background: var(--primary); padding: 0.3rem 0.75rem; border-radius: 4px; font-size: 0.72rem; text-decoration: none; display: inline-block; width: 100%; text-align: center;">View Stay</a>
-            </div>
-        `;
-        
-        marker.bindPopup(popupContent);
-        window.mapMarkers[item.id] = marker;
-        bounds.push([item.lat, item.lng]);
-    });
-    
-    if (bounds.length > 0) {
-        map.fitBounds(bounds, { padding: [30, 30] });
-    }
-
-    // Sync card hovers to markers
-    const cards = document.querySelectorAll('.property-card');
-    cards.forEach(card => {
-        const cardIdAttr = card.getAttribute('id') || '';
-        const listingId = cardIdAttr.replace('card-', '');
-        const marker = window.mapMarkers[listingId];
-        
-        if (marker) {
-            card.addEventListener('mouseenter', () => {
-                marker.setIcon(highlightIcon);
-                map.panTo(marker.getLatLng(), { animate: true, duration: 0.5 });
-                marker.openPopup();
+    try {
+        if (typeof L !== 'undefined') {
+            const defaultIcon = L.icon({
+                iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+                shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+                iconSize: [25, 41],
+                iconAnchor: [12, 41],
+                popupAnchor: [1, -34],
+                shadowSize: [41, 41]
             });
             
-            card.addEventListener('mouseleave', () => {
-                marker.setIcon(defaultIcon);
-                marker.closePopup();
+            const highlightIcon = L.icon({
+                iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
+                shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+                iconSize: [25, 41],
+                iconAnchor: [12, 41],
+                popupAnchor: [1, -34],
+                shadowSize: [41, 41]
             });
+
+            let centerLat = 12.2958;
+            let centerLng = 76.6394;
+            
+            if (items.length > 0) {
+                let sumLat = 0, sumLng = 0;
+                items.forEach(it => { sumLat += it.lat; sumLng += it.lng; });
+                centerLat = sumLat / items.length;
+                centerLng = sumLng / items.length;
+            }
+
+            const map = L.map('search-map').setView([centerLat, centerLng], 13);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+            
+            window.searchMapRef = map;
+            window.mapMarkers = {};
+            
+            const bounds = [];
+            items.forEach(item => {
+                const marker = L.marker([item.lat, item.lng], { icon: defaultIcon }).addTo(map);
+                
+                let popupContent = `
+                    <div style="font-family: 'Inter', sans-serif; padding: 4px; max-width: 200px;">
+                `;
+                if (item.image) {
+                    popupContent += `<img src="${item.image}" style="width: 100%; height: 90px; object-fit: cover; border-radius: 6px; margin-bottom: 6px;">`;
+                }
+                popupContent += `
+                        <strong style="font-size: 0.88rem; display: block; color: var(--text-dark); margin-bottom: 2px;">${item.title}</strong>
+                        <span style="font-weight: 700; color: var(--primary); font-size: 0.85rem; display: block; margin-bottom: 6px;">₹${item.price}/mo</span>
+                        <a href="${item.url}" style="font-weight: 700; color: white !important; background: var(--primary); padding: 0.3rem 0.75rem; border-radius: 4px; font-size: 0.72rem; text-decoration: none; display: inline-block; width: 100%; text-align: center;">View Stay</a>
+                    </div>
+                `;
+                
+                marker.bindPopup(popupContent);
+                window.mapMarkers[item.id] = marker;
+                bounds.push([item.lat, item.lng]);
+            });
+            
+            if (bounds.length > 0) {
+                map.fitBounds(bounds, { padding: [30, 30] });
+            }
+
+            // Sync card hovers to markers
+            const cards = document.querySelectorAll('.property-card');
+            cards.forEach(card => {
+                const cardIdAttr = card.getAttribute('id') || '';
+                const listingId = cardIdAttr.replace('card-', '');
+                const marker = window.mapMarkers[listingId];
+                
+                if (marker) {
+                    card.addEventListener('mouseenter', () => {
+                        marker.setIcon(highlightIcon);
+                        map.panTo(marker.getLatLng(), { animate: true, duration: 0.5 });
+                        marker.openPopup();
+                    });
+                    
+                    card.addEventListener('mouseleave', () => {
+                        marker.setIcon(defaultIcon);
+                        marker.closePopup();
+                    });
+                }
+            });
+        } else {
+            console.warn("Leaflet map library is not loaded. Map features are disabled.");
         }
-    });
+    } catch (err) {
+        console.error("Failed to initialize Leaflet search map:", err);
+    }
 
     // Render skeleton cards on filter form submit
     const filterForm = document.querySelector('.search-sidebar form');
