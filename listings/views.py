@@ -17,6 +17,7 @@ import math
 import json
 import urllib.request
 import urllib.parse
+from decimal import Decimal
 
 def get_haversine_distance(lat1, lon1, lat2, lon2):
     R = 6371.0
@@ -1121,22 +1122,22 @@ def approve_verification(request, listing_id):
             listing=listing,
             property_title=listing.title,
             city=listing.city.name if listing.city else listing.location,
-            reward_amount=50.00,
+            reward_amount=Decimal('50.00'),
             status='Available',
             approval_date=timezone.now()
         )
         
         # Credit owner wallet
         wallet = RewardWallet.get_or_create_wallet(listing.owner)
-        wallet.available_balance += 50.00
-        wallet.total_earned += 50.00
+        wallet.available_balance = Decimal(str(wallet.available_balance)) + Decimal('50.00')
+        wallet.total_earned = Decimal(str(wallet.total_earned)) + Decimal('50.00')
         wallet.save()
         
         # Log Transaction
         RewardTransaction.objects.create(
             wallet=wallet,
             transaction_type='Credit',
-            amount=50.00,
+            amount=Decimal('50.00'),
             description=f"Reward for direct owner listing '{listing.title}' approved and verified."
         )
         
@@ -1564,13 +1565,14 @@ def request_withdrawal(request):
         
     # Get user wallet
     wallet = RewardWallet.get_or_create_wallet(request.user)
+    available_balance = Decimal(str(wallet.available_balance))
     
-    if wallet.available_balance < amount:
+    if available_balance < amount:
         messages.error(request, "Insufficient balance in your wallet.")
         return redirect('profile')
         
     # Update balance immediately to prevent double spending
-    wallet.available_balance -= amount
+    wallet.available_balance = available_balance - amount
     wallet.upi_id = upi_id
     wallet.save()
     
@@ -1734,22 +1736,22 @@ def admin_publish_submission(request, submission_id):
         property_submission=submission,
         property_title=listing.title,
         city=submission.city.name if submission.city else "Mysore",
-        reward_amount=50.00,
+        reward_amount=Decimal('50.00'),
         status='Available',
         approval_date=timezone.now()
     )
     
     # Credit referrer's wallet
     wallet = RewardWallet.get_or_create_wallet(submission.submitter)
-    wallet.available_balance += 50.00
-    wallet.total_earned += 50.00
+    wallet.available_balance = Decimal(str(wallet.available_balance)) + Decimal('50.00')
+    wallet.total_earned = Decimal(str(wallet.total_earned)) + Decimal('50.00')
     wallet.save()
     
     # Log transaction
     RewardTransaction.objects.create(
         wallet=wallet,
         transaction_type='Credit',
-        amount=50.00,
+        amount=Decimal('50.00'),
         description=f"Reward for referral submission #{submission.id} published."
     )
     
@@ -1802,7 +1804,7 @@ def admin_pay_withdrawal(request, withdrawal_id):
         
         # Credit user's wallet withdrawn amount
         wallet = RewardWallet.get_or_create_wallet(req.user)
-        wallet.withdrawn_amount += req.amount
+        wallet.withdrawn_amount = Decimal(str(wallet.withdrawn_amount)) + req.amount
         wallet.save()
         
         # Create PaymentHistory
@@ -1875,7 +1877,7 @@ def admin_reject_withdrawal(request, withdrawal_id):
     
     # Refund balance to user wallet
     wallet = RewardWallet.get_or_create_wallet(req.user)
-    wallet.available_balance += req.amount
+    wallet.available_balance = Decimal(str(wallet.available_balance)) + req.amount
     wallet.save()
     
     # Log refund transaction
