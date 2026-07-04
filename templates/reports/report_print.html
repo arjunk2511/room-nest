@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>RoomNest - {{ report_title }}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Outfit:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2563EB;
+            --secondary: #0F172A;
+            --text-dark: #1E293B;
+            --border-color: #E2E8F0;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            color: var(--text-dark);
+            margin: 2rem;
+            line-height: 1.5;
+            background-color: #ffffff;
+        }
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--secondary);
+            padding-bottom: 1rem;
+            margin-bottom: 2rem;
+        }
+        h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2rem;
+            color: var(--secondary);
+            margin: 0;
+        }
+        .meta-info {
+            text-align: right;
+            font-size: 0.88rem;
+            color: #64748B;
+        }
+        .meta-info strong {
+            color: var(--secondary);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 3rem;
+            font-size: 0.9rem;
+        }
+        th, td {
+            border: 1px solid var(--border-color);
+            padding: 0.75rem 1rem;
+            text-align: left;
+        }
+        th {
+            background-color: #F8FAFC;
+            font-weight: 700;
+            color: var(--secondary);
+        }
+        tr:nth-child(even) {
+            background-color: #F8FAFC;
+        }
+        .btn-print {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.6rem 1.5rem;
+            border-radius: 9999px;
+            font-weight: 600;
+            font-family: 'Outfit', sans-serif;
+            cursor: pointer;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            transition: all 0.2s ease;
+        }
+        .btn-print:hover {
+            background-color: #1D4ED8;
+            transform: translateY(-1px);
+        }
+        .no-print-wrapper {
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: flex-end;
+        }
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+            body {
+                margin: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="no-print-wrapper no-print">
+        <button onclick="window.print();" class="btn-print">🖨️ Print / Save as PDF</button>
+    </div>
+    
+    <div class="header-container">
+        <div>
+            <h1>RoomNest Reports</h1>
+            <p style="margin: 0.25rem 0 0 0; font-size: 1rem; font-weight: 600; color: var(--primary);">{{ report_title }}</p>
+        </div>
+        <div class="meta-info">
+            <p style="margin: 0;">Generated: <strong>{{ generated_at }}</strong></p>
+            <p style="margin: 0.25rem 0 0 0;">Scope: <strong>Platform Rewards Ledger</strong></p>
+        </div>
+    </div>
+    
+    <table>
+        <thead>
+            <tr>
+                {% for header in headers %}
+                <th>{{ header }}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in rows %}
+            <tr>
+                {% for cell in row %}
+                <td>{{ cell }}</td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

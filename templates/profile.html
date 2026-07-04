@@ -117,34 +117,74 @@
         <div id="rewards-tab" class="profile-tab-pane" style="display: none;">
             <div style="background: var(--white); border-radius: var(--border-radius-lg); padding: 2.5rem; box-shadow: var(--shadow); border: 1px solid var(--border-color);">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.75rem; flex-wrap: wrap; gap: 10px;">
-                    <h2 style="font-size: 1.5rem; color: var(--text-dark); font-weight: 800; margin: 0;">My Rewards Dashboard</h2>
+                    <h2 style="font-size: 1.5rem; color: var(--text-dark); font-weight: 800; margin: 0; display: flex; align-items: center; gap: 8px;">
+                        <span>👛</span> My Reward Wallet
+                    </h2>
                     <a href="{% url 'earn_rewards' %}" class="btn btn-primary" style="padding: 0.45rem 1rem; font-size: 0.82rem; border-radius: 8px; color: white !important;">🎁 Referral Form</a>
                 </div>
 
                 <!-- Reward Statistics Grid -->
-                <div class="reward-stats-grid">
-                    <div class="reward-stat-card stat-earnings">
-                        <span style="font-size: 0.7rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Total Earnings</span>
-                        <span class="stat-value">₹{{ total_earnings }}</span>
+                <div class="reward-stats-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1.25rem; margin-bottom: 2rem;">
+                    <div class="reward-stat-card" style="background: linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 100%); border: 1px solid #A7F3D0; border-radius: var(--border-radius-md); padding: 1.5rem; box-shadow: var(--shadow-sm); display: flex; flex-direction: column;">
+                        <span style="font-size: 0.72rem; color: #047857; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Available Balance</span>
+                        <span class="stat-value" style="font-size: 1.8rem; font-weight: 850; color: #065F46; margin-top: 0.25rem;">₹{{ wallet.available_balance }}</span>
                     </div>
-                    <div class="reward-stat-card">
-                        <span style="font-size: 0.7rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Successful</span>
-                        <span class="stat-value" style="color: #059669;">{{ successful_listings_count }}</span>
+                    <div class="reward-stat-card" style="background: #F8FAFC; border: 1px solid var(--border-color); border-radius: var(--border-radius-md); padding: 1.5rem; box-shadow: var(--shadow-sm); display: flex; flex-direction: column;">
+                        <span style="font-size: 0.72rem; color: var(--text-light); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Pending Potential</span>
+                        <span class="stat-value" style="font-size: 1.8rem; font-weight: 850; color: #D97706; margin-top: 0.25rem;">₹{{ pending_rewards_potential }}</span>
+                        <small style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.15rem; font-weight: 600;">{{ pending_listings_count }} referral(s) pending</small>
                     </div>
-                    <div class="reward-stat-card">
-                        <span style="font-size: 0.7rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Pending</span>
-                        <span class="stat-value" style="color: #D97706;">{{ pending_listings_count }}</span>
+                    <div class="reward-stat-card" style="background: #F8FAFC; border: 1px solid var(--border-color); border-radius: var(--border-radius-md); padding: 1.5rem; box-shadow: var(--shadow-sm); display: flex; flex-direction: column;">
+                        <span style="font-size: 0.72rem; color: var(--text-light); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Withdrawn Amount</span>
+                        <span class="stat-value" style="font-size: 1.8rem; font-weight: 850; color: var(--text-dark); margin-top: 0.25rem;">₹{{ wallet.withdrawn_amount }}</span>
                     </div>
-                    <div class="reward-stat-card">
-                        <span style="font-size: 0.7rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Rejected</span>
-                        <span class="stat-value" style="color: #DC2626;">{{ rejected_listings_count }}</span>
+                    <div class="reward-stat-card" style="background: #F8FAFC; border: 1px solid var(--border-color); border-radius: var(--border-radius-md); padding: 1.5rem; box-shadow: var(--shadow-sm); display: flex; flex-direction: column;">
+                        <span style="font-size: 0.72rem; color: var(--text-light); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Lifetime Earnings</span>
+                        <span class="stat-value" style="font-size: 1.8rem; font-weight: 850; color: var(--primary); margin-top: 0.25rem;">₹{{ wallet.total_earned }}</span>
                     </div>
                 </div>
 
+                <!-- Withdrawal Request Section -->
+                <div style="background: #F8FAFC; border: 1px solid var(--border-color); border-radius: var(--border-radius-lg); padding: 2rem; margin-bottom: 2.5rem; box-shadow: var(--shadow-sm);">
+                    <h3 style="font-size: 1.15rem; font-weight: 800; color: var(--text-dark); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 6px;">
+                        <span>💸</span> Withdraw Rewards
+                    </h3>
+                    <p style="font-size: 0.85rem; color: var(--text-light); margin-bottom: 1.25rem; font-weight: 500; line-height: 1.4;">
+                        Transfer your rewards directly to your bank account using UPI. Minimum withdrawal amount is <strong>₹200</strong>.
+                    </p>
+
+                    {% if wallet.available_balance >= 200 %}
+                    <form method="POST" action="{% url 'request_withdrawal' %}" style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: flex-end;">
+                        {% csrf_token %}
+                        <div class="form-group" style="flex: 1; min-width: 150px; margin-bottom: 0;">
+                            <label style="font-size: 0.78rem; font-weight: 700; color: var(--text-dark); margin-bottom: 0.4rem; display: block;">Amount to Withdraw (₹)</label>
+                            <input type="number" name="amount" min="200" max="{{ wallet.available_balance }}" value="{{ wallet.available_balance }}" required style="width: 100%; padding: 0.75rem 1rem; border-radius: 8px; border: 1px solid var(--border-color); outline: none; font-size: 0.95rem; background: var(--white); font-weight: 700; color: var(--text-dark);">
+                        </div>
+                        <div class="form-group" style="flex: 2; min-width: 250px; margin-bottom: 0;">
+                            <label style="font-size: 0.78rem; font-weight: 700; color: var(--text-dark); margin-bottom: 0.4rem; display: block;">UPI ID</label>
+                            <input type="text" name="upi_id" placeholder="e.g. username@ybl or 9876543210@oksbi" value="{{ wallet.upi_id|default:'' }}" required pattern="^[a-zA-Z0-9.\-_]{2,256}@[a-zA-Z]{2,64}$" title="Please enter a valid UPI ID (e.g. username@oksbi)" style="width: 100%; padding: 0.75rem 1rem; border-radius: 8px; border: 1px solid var(--border-color); outline: none; font-size: 0.95rem; background: var(--white);">
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="padding: 0.75rem 2rem; border-radius: 8px; font-size: 0.92rem; font-weight: 700; min-height: 46px;">Withdraw Rewards</button>
+                    </form>
+                    {% else %}
+                    <div style="background: #FFFBEB; border: 1px solid #FDE68A; padding: 1.25rem; border-radius: 8px; display: flex; align-items: center; gap: 10px;">
+                        <span style="font-size: 1.5rem;">🔒</span>
+                        <div>
+                            <span style="font-weight: 700; color: #B45309; font-size: 0.9rem; display: block;">Withdrawal Locked</span>
+                            <span style="font-size: 0.8rem; color: #D97706; font-weight: 500;">
+                                You need at least <strong>₹200</strong> in available balance to withdraw. Add more genuine listings to unlock.
+                            </span>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+
                 <!-- Referral Submissions List -->
-                <h3 style="font-size: 1.1rem; font-weight: 800; color: var(--text-dark); margin-bottom: 1rem;">My Referrals</h3>
+                <h3 style="font-size: 1.15rem; font-weight: 800; color: var(--text-dark); margin-bottom: 0.75rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; margin-top: 2rem;">
+                    📋 My Referrals
+                </h3>
                 {% if submissions %}
-                <div class="table-wrapper" style="overflow-x: auto; margin-top: 1rem; border: 1px solid var(--border-color); border-radius: 8px;">
+                <div class="table-wrapper" style="overflow-x: auto; margin-top: 0.5rem; border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 2.5rem;">
                     <table class="premium-table" style="width: 100%; border-collapse: collapse; text-align: left;">
                         <thead>
                             <tr style="background: #F8FAFC; border-bottom: 1px solid var(--border-color);">
@@ -160,25 +200,25 @@
                             <tr style="border-bottom: 1px solid var(--border-color);">
                                 <td style="padding: 0.85rem 1rem; font-size: 0.88rem; font-weight: 600; color: var(--text-dark);">
                                     {{ sub.property_type }}
-                                    <span style="font-size: 0.75rem; color: var(--text-light); display: block; font-weight: 500;">{{ sub.property_address|truncatechars:30 }}</span>
+                                    <span style="font-size: 0.75rem; color: var(--text-light); display: block; font-weight: 500; white-space: normal; max-width: 250px;">{{ sub.property_address|truncatechars:60 }}</span>
                                 </td>
                                 <td style="padding: 0.85rem 1rem; font-size: 0.85rem; color: var(--text-light);">{{ sub.owner_name }}</td>
                                 <td style="padding: 0.85rem 1rem; font-size: 0.85rem; color: var(--text-light);">{{ sub.city.name }}</td>
                                 <td style="padding: 0.85rem 1rem;">
                                     {% if sub.status == 'Pending' %}
-                                        <span class="badge-status status-pending">Pending</span>
+                                        <span class="badge-status status-pending">Pending Verification</span>
                                     {% elif sub.status == 'Under Verification' %}
                                         <span class="badge-status status-verification">Verifying</span>
                                     {% elif sub.status == 'Approved' %}
-                                        <span class="badge-status status-approved">Approved</span>
+                                        <span class="badge-status status-approved" style="background: #EFF6FF; color: #1D4ED8; border-color: #BFDBFE;">Approved</span>
                                     {% elif sub.status == 'Published' %}
                                         <span class="badge-status status-published">Published</span>
                                     {% elif sub.status == 'Rejected' %}
                                         <span class="badge-status status-rejected">Rejected</span>
                                     {% endif %}
                                 </td>
-                                <td style="padding: 0.85rem 1rem; font-size: 0.88rem; font-weight: 700; text-align: right; color: {% if sub.status == 'Approved' or sub.status == 'Published' %}#10B981{% else %}var(--text-light){% endif %};">
-                                    ₹{% if sub.status == 'Approved' or sub.status == 'Published' %}50{% else %}0{% endif %}
+                                <td style="padding: 0.85rem 1rem; font-size: 0.88rem; font-weight: 700; text-align: right; color: {% if sub.status == 'Published' %}#10B981{% else %}var(--text-light){% endif %};">
+                                    ₹{% if sub.status == 'Published' %}50{% else %}0{% endif %}
                                 </td>
                             </tr>
                             {% endfor %}
@@ -186,10 +226,115 @@
                     </table>
                 </div>
                 {% else %}
-                <div style="text-align: center; padding: 3rem 1rem; background: #F8FAFC; border-radius: 8px; border: 1px dashed var(--border-color); margin-top: 1rem;">
+                <div style="text-align: center; padding: 3rem 1rem; background: #F8FAFC; border-radius: 8px; border: 1px dashed var(--border-color); margin-top: 0.5rem; margin-bottom: 2.5rem;">
                     <span style="font-size: 2rem; display: block; margin-bottom: 0.75rem;">📋</span>
                     <h4 style="color: var(--text-dark); font-size: 1rem; margin-bottom: 0.25rem;">No Property Referrals Yet</h4>
                     <p style="color: var(--text-light); font-size: 0.85rem; max-width: 300px; margin: 0 auto; line-height: 1.4;">Earn ₹50 cash for every rental property board or owner detail you submit that gets verified!</p>
+                </div>
+                {% endif %}
+
+                <!-- Reward History List -->
+                <h3 style="font-size: 1.15rem; font-weight: 800; color: var(--text-dark); margin-bottom: 0.75rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;">
+                    💎 Reward History
+                </h3>
+                {% if reward_history %}
+                <div class="table-wrapper" style="overflow-x: auto; margin-top: 0.5rem; border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 2.5rem;">
+                    <table class="premium-table" style="width: 100%; border-collapse: collapse; text-align: left;">
+                        <thead>
+                            <tr style="background: #F8FAFC; border-bottom: 1px solid var(--border-color);">
+                                <th style="padding: 0.85rem 1rem; font-size: 0.78rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Reward ID</th>
+                                <th style="padding: 0.85rem 1rem; font-size: 0.78rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Property Title</th>
+                                <th style="padding: 0.85rem 1rem; font-size: 0.78rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">City</th>
+                                <th style="padding: 0.85rem 1rem; font-size: 0.78rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Earned Date</th>
+                                <th style="padding: 0.85rem 1rem; font-size: 0.78rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Status</th>
+                                <th style="padding: 0.85rem 1rem; font-size: 0.78rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; text-align: right;">Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for reward in reward_history %}
+                            <tr style="border-bottom: 1px solid var(--border-color);">
+                                <td style="padding: 0.85rem 1rem; font-size: 0.85rem; color: var(--text-light); font-weight: 600;">#{{ reward.id }}</td>
+                                <td style="padding: 0.85rem 1rem; font-size: 0.88rem; font-weight: 700; color: var(--text-dark);">{{ reward.property_title }}</td>
+                                <td style="padding: 0.85rem 1rem; font-size: 0.85rem; color: var(--text-light);">{{ reward.city }}</td>
+                                <td style="padding: 0.85rem 1rem; font-size: 0.85rem; color: var(--text-light);">{{ reward.created_date|date:"M d, Y" }}</td>
+                                <td style="padding: 0.85rem 1rem;">
+                                    {% if reward.status == 'Available' %}
+                                        <span class="badge-status status-published" style="background: #ECFDF5; color: #047857; border-color: #34D399;">Available</span>
+                                    {% elif reward.status == 'Pending' %}
+                                        <span class="badge-status status-pending">Pending</span>
+                                    {% elif reward.status == 'Paid' %}
+                                        <span class="badge-status status-approved">Paid</span>
+                                    {% elif reward.status == 'Rejected' %}
+                                        <span class="badge-status status-rejected">Rejected</span>
+                                    {% endif %}
+                                </td>
+                                <td style="padding: 0.85rem 1rem; font-size: 0.88rem; font-weight: 800; text-align: right; color: #10B981;">
+                                    ₹{{ reward.reward_amount }}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div style="text-align: center; padding: 2rem 1rem; background: #F8FAFC; border-radius: 8px; border: 1px dashed var(--border-color); margin-top: 0.5rem; margin-bottom: 2.5rem;">
+                    <span style="font-size: 1.5rem; display: block; margin-bottom: 0.5rem;">💎</span>
+                    <p style="color: var(--text-light); font-size: 0.85rem; margin: 0;">No reward histories logged yet.</p>
+                </div>
+                {% endif %}
+
+                <!-- Withdrawal History List -->
+                <h3 style="font-size: 1.15rem; font-weight: 800; color: var(--text-dark); margin-bottom: 0.75rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;">
+                    🏧 Withdrawal Requests
+                </h3>
+                {% if withdrawal_history %}
+                <div class="table-wrapper" style="overflow-x: auto; margin-top: 0.5rem; border: 1px solid var(--border-color); border-radius: 8px;">
+                    <table class="premium-table" style="width: 100%; border-collapse: collapse; text-align: left;">
+                        <thead>
+                            <tr style="background: #F8FAFC; border-bottom: 1px solid var(--border-color);">
+                                <th style="padding: 0.85rem 1rem; font-size: 0.78rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Req ID</th>
+                                <th style="padding: 0.85rem 1rem; font-size: 0.78rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">UPI ID</th>
+                                <th style="padding: 0.85rem 1rem; font-size: 0.78rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Requested Date</th>
+                                <th style="padding: 0.85rem 1rem; font-size: 0.78rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Status</th>
+                                <th style="padding: 0.85rem 1rem; font-size: 0.78rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Reference/Note</th>
+                                <th style="padding: 0.85rem 1rem; font-size: 0.78rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; text-align: right;">Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for req in withdrawal_history %}
+                            <tr style="border-bottom: 1px solid var(--border-color);">
+                                <td style="padding: 0.85rem 1rem; font-size: 0.85rem; color: var(--text-light); font-weight: 600;">#{{ req.id }}</td>
+                                <td style="padding: 0.85rem 1rem; font-size: 0.85rem; color: var(--text-dark); font-family: monospace;">{{ req.upi_id }}</td>
+                                <td style="padding: 0.85rem 1rem; font-size: 0.85rem; color: var(--text-light);">{{ req.requested_date|date:"M d, Y" }}</td>
+                                <td style="padding: 0.85rem 1rem;">
+                                    {% if req.status == 'Pending' %}
+                                        <span class="badge-status status-pending">Pending Payout</span>
+                                    {% elif req.status == 'Approved' %}
+                                        <span class="badge-status status-verification">Approved</span>
+                                    {% elif req.status == 'Paid' %}
+                                        <span class="badge-status status-approved">Paid</span>
+                                    {% elif req.status == 'Rejected' %}
+                                        <span class="badge-status status-rejected">Rejected</span>
+                                    {% endif %}
+                                </td>
+                                <td style="padding: 0.85rem 1rem; font-size: 0.82rem; color: var(--text-light); max-width: 180px; white-space: normal; line-height: 1.3;">
+                                    {% if req.status == 'Paid' %}
+                                        <span style="font-weight: 600; color: var(--text-dark); display: block;">UTR: {{ req.transaction_id }}</span>
+                                    {% endif %}
+                                    <span style="font-style: italic;">{{ req.admin_notes }}</span>
+                                </td>
+                                <td style="padding: 0.85rem 1rem; font-size: 0.88rem; font-weight: 800; text-align: right; color: var(--text-dark);">
+                                    ₹{{ req.amount }}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div style="text-align: center; padding: 2rem 1rem; background: #F8FAFC; border-radius: 8px; border: 1px dashed var(--border-color); margin-top: 0.5rem;">
+                    <span style="font-size: 1.5rem; display: block; margin-bottom: 0.5rem;">🏧</span>
+                    <p style="color: var(--text-light); font-size: 0.85rem; margin: 0;">No withdrawal requests placed yet.</p>
                 </div>
                 {% endif %}
             </div>

@@ -452,3 +452,117 @@ class Notification(models.Model):
         return f"Notification for {self.user.username}: {self.title} (Read: {self.is_read})"
 
 
+class RewardWallet(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='reward_wallet')
+    available_balance = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    total_earned = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    withdrawn_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    upi_id = models.CharField(max_length=255, blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"Wallet of {self.user.username} (Bal: ₹{self.available_balance})"
+
+    @classmethod
+    def get_or_create_wallet(cls, user):
+        wallet, created = cls.objects.get_or_create(user=user)
+        return wallet
+
+
+class RewardTransaction(models.Model):
+    TYPE_CHOICES = (
+        ('Credit', 'Credit'),
+        ('Debit', 'Debit'),
+    )
+    wallet = models.ForeignKey(RewardWallet, on_delete=models.CASCADE, related_name='transactions')
+    transaction_type = models.CharField(max_length=20, choices=TYPE_CHOICES)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    description = models.CharField(max_length=255)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.transaction_type} of ₹{self.amount} for {self.wallet.user.username}"
+
+
+class WithdrawalRequest(models.Model):
+    STATUS_CHOICES = (
+        ('Pending', 'Pending'),
+        ('Approved', 'Approved'),
+        ('Paid', 'Paid'),
+        ('Rejected', 'Rejected'),
+    )
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='withdrawal_requests')
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    upi_id = models.CharField(max_length=255)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Pending')
+    requested_date = models.DateTimeField(auto_now_add=True)
+    approved_date = models.DateTimeField(null=True, blank=True)
+    paid_date = models.DateTimeField(null=True, blank=True)
+    transaction_id = models.CharField(max_length=255, blank=True, null=True)
+    admin_notes = models.TextField(blank=True, default='')
+
+    class Meta:
+        ordering = ['-requested_date']
+
+    def __str__(self):
+        return f"Withdrawal of ₹{self.amount} by {self.user.username} ({self.status})"
+
+
+class RewardHistory(models.Model):
+    STATUS_CHOICES = (
+        ('Available', 'Available'),
+        ('Pending', 'Pending'),
+        ('Rejected', 'Rejected'),
+        ('Paid', 'Paid'),
+    )
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='reward_histories')
+    listing = models.ForeignKey(Listing, on_delete=models.SET_NULL, null=True, blank=True, related_name='reward_histories')
+    property_submission = models.ForeignKey(PropertySubmission, on_delete=models.SET_NULL, null=True, blank=True, related_name='reward_histories')
+    property_title = models.CharField(max_length=255)
+    city = models.CharField(max_length=100)
+    reward_amount = models.DecimalField(max_digits=10, decimal_places=2, default=50.00)
+    created_date = models.DateTimeField(auto_now_add=True)
+    approval_date = models.DateTimeField(null=True, blank=True)
+    payment_date = models.DateTimeField(null=True, blank=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Available')
+
+    class Meta:
+        ordering = ['-created_date']
+
+    def __str__(self):
+        return f"Reward ₹{self.reward_amount} ({self.status}) for {self.user.username}"
+
+
+class PaymentHistory(models.Model):
+    withdrawal_request = models.ForeignKey(WithdrawalRequest, on_delete=models.CASCADE, related_name='payments')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='payments')
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    upi_id = models.CharField(max_length=255)
+    payment_method = models.CharField(max_length=50, default='UPI')
+    transaction_reference = models.CharField(max_length=255)
+    paid_date = models.DateTimeField(auto_now_add=True)
+    admin_notes = models.TextField(blank=True, default='')
+
+    class Meta:
+        ordering = ['-paid_date']
+
+    def __str__(self):
+        return f"Payment ₹{self.amount} to {self.user.username} via {self.payment_method}"
+
+
+class AdminRewardLog(models.Model):
+    admin_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='admin_reward_logs')
+    action_type = models.CharField(max_length=50)
+    target_type = models.CharField(max_length=50)
+    target_id = models.IntegerField()
+    log_message = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.admin_user.username} - {self.action_type} on {self.target_type} {self.target_id}"
+
+

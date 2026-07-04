@@ -90,29 +90,35 @@ def profile_view(request):
     ).first()
     
     # Avoid circular imports by importing inside the view
-    from listings.models import Reward, PropertySubmission, Notification
+    from listings.models import RewardWallet, RewardHistory, WithdrawalRequest, PropertySubmission, Notification
     from django.db.models import Sum
     
-    rewards = Reward.objects.filter(user=request.user)
+    wallet = RewardWallet.get_or_create_wallet(request.user)
     submissions = PropertySubmission.objects.filter(submitter=request.user)
     notifications = Notification.objects.filter(user=request.user)
+    reward_history = RewardHistory.objects.filter(user=request.user).order_by('-created_date')
+    withdrawal_history = WithdrawalRequest.objects.filter(user=request.user).order_by('-requested_date')
     
-    successful_listings_count = rewards.filter(status__in=['Approved', 'Paid']).count()
-    pending_listings_count = rewards.filter(status='Pending').count()
-    rejected_listings_count = rewards.filter(status='Rejected').count()
+    successful_listings_count = submissions.filter(status__in=['Approved', 'Published']).count()
+    pending_listings_count = submissions.filter(status__in=['Pending', 'Under Verification']).count()
+    rejected_listings_count = submissions.filter(status='Rejected').count()
     
-    total_earnings = rewards.filter(status__in=['Approved', 'Paid']).aggregate(total=Sum('amount'))['total'] or 0.00
+    pending_rewards_potential = pending_listings_count * 50.00
     
     context = {
         'profile': user_profile,
         'subscription': subscription,
-        'rewards': rewards,
         'submissions': submissions,
         'notifications': notifications,
         'successful_listings_count': successful_listings_count,
         'pending_listings_count': pending_listings_count,
         'rejected_listings_count': rejected_listings_count,
-        'total_earnings': total_earnings,
+        
+        # Wallet fields
+        'wallet': wallet,
+        'reward_history': reward_history,
+        'withdrawal_history': withdrawal_history,
+        'pending_rewards_potential': pending_rewards_potential,
     }
     return render(request, 'profile.html', context)
 

@@ -43,9 +43,13 @@ urlpatterns = [
     path('api/search-suggestions/', views.search_suggestions, name='search_suggestions'),
     path('api/listing/<int:listing_id>/landmarks/', views.listing_landmarks_api, name='listing_landmarks_api'),
     path('api/listing/landmarks/', views.listing_landmarks_api, name='area_landmarks_api'),
-    path('rewards-admin/approve/<int:reward_id>/', views.approve_reward_claim, name='approve_reward_claim'),
-    path('rewards-admin/reject/<int:reward_id>/', views.reject_reward_claim, name='reject_reward_claim'),
-    path('rewards-admin/pay/<int:reward_id>/', views.pay_reward_claim, name='pay_reward_claim'),
+    path('rewards-admin/submission/approve/<int:submission_id>/', views.admin_approve_submission, name='admin_approve_submission'),
+    path('rewards-admin/submission/reject/<int:submission_id>/', views.admin_reject_submission, name='admin_reject_submission'),
+    path('rewards-admin/submission/publish/<int:submission_id>/', views.admin_publish_submission, name='admin_publish_submission'),
+    path('rewards-admin/withdrawal/approve-pay/<int:withdrawal_id>/', views.admin_pay_withdrawal, name='admin_pay_withdrawal'),
+    path('rewards-admin/withdrawal/reject/<int:withdrawal_id>/', views.admin_reject_withdrawal, name='admin_reject_withdrawal'),
+    path('rewards-admin/reports/export/', views.export_rewards_report, name='export_rewards_report'),
+    path('wallet/withdraw/', views.request_withdrawal, name='request_withdrawal'),
     path('notifications/read-all/', views.read_all_notifications, name='read_all_notifications'),
     
     # Dynamic city and area landing pages (placed at the end to avoid conflicts)

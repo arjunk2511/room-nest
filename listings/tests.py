@@ -2,7 +2,7 @@ from django.test import TestCase, Client
 from django.urls import reverse
 from django.contrib.auth.models import User
 from django.utils import timezone
-from .models import Listing, Lead, City, Area, PropertySubmission, Reward, Notification
+from .models import Listing, Lead, City, Area, PropertySubmission, RewardWallet, RewardHistory, WithdrawalRequest, RewardTransaction, PaymentHistory, AdminRewardLog, Notification
 from subscriptions.models import Subscription
 import datetime
 
@@ -230,17 +230,13 @@ class ReferralsAndRewardsTestCase(TestCase):
         # Verify it redirects to profile upon success
         self.assertEqual(response.status_code, 302)
         
-        # Verify submission object is created
+        # Verify submission object is created in Pending status
         submission = PropertySubmission.objects.get(owner_mobile='9000000001')
         self.assertEqual(submission.property_type, 'Flat')
         self.assertEqual(submission.status, 'Pending')
         
-        # Verify pending reward is created
-        reward = Reward.objects.get(submission=submission)
-        self.assertEqual(reward.user, self.submitter)
-        self.assertEqual(reward.reward_type, 'Referral')
-        self.assertEqual(reward.amount, 50.00)
-        self.assertEqual(reward.status, 'Pending')
+        # Verify NO reward is created initially (must be approved and published first)
+        self.assertFalse(RewardHistory.objects.filter(property_submission=submission).exists())
         
         # Verify notification is sent
         notification = Notification.objects.filter(user=self.submitter, title="Property Submitted").first()
@@ -253,7 +249,7 @@ class ReferralsAndRewardsTestCase(TestCase):
             submitted_by_name='Reward Submitter',
             submitted_by_mobile='9876543210',
             owner_name='John Doe',
-            owner_mobile='9000000002',
+            owner_mobile='+919000000002',
             property_type='Flat',
             property_address='Flat 302, Outer Ring Road, Bengaluru',
             city=self.city,
@@ -273,11 +269,11 @@ class ReferralsAndRewardsTestCase(TestCase):
             'city': self.city.id,
             'permission_confirmed': 'on'
         })
-        # Verify it returns HTML with error (does not redirect)
-        self.assertEqual(response.status_code, 200)
-        # Check that error is in context or messages (using django messages framework)
-        messages_list = list(response.context['messages'])
-        self.assertTrue(any("already been submitted or listed" in str(m) for m in messages_list))
+        
+        # Under new system, duplicate submissions are immediately saved as Rejected
+        submission = PropertySubmission.objects.filter(owner_mobile='9000000002').latest('created_at')
+        self.assertEqual(submission.status, 'Rejected')
+        self.assertTrue("Auto-rejected: Duplicate property details detected" in submission.notes)
 
     def test_direct_owner_listing_reward_approval_flow(self):
         # Create a listing for self.owner
@@ -295,61 +291,208 @@ class ReferralsAndRewardsTestCase(TestCase):
             verification_status="Pending"
         )
         
-        # Create pending Reward for direct owner listing
-        reward = Reward.objects.create(
-            user=self.owner,
-            reward_type='DirectOwner',
-            listing=listing,
-            amount=50.00,
-            status='Pending'
-        )
-        
         # Login as staff admin and approve verification
         self.client.login(username='reward_admin', password='adminpassword')
-        response = self.client.get(reverse('approve_verification', args=[listing.id]))
+        response = self.client.post(reverse('approve_verification', args=[listing.id]))
         self.assertEqual(response.status_code, 302)
         
         # Verify listing and reward are approved
         listing.refresh_from_db()
-        reward.refresh_from_db()
         self.assertTrue(listing.is_verified)
         self.assertEqual(listing.verification_status, 'Verified')
-        self.assertEqual(reward.status, 'Approved')
         
-        # Verify notifications are sent
+        # Verify RewardHistory is created
+        reward = RewardHistory.objects.get(listing=listing)
+        self.assertEqual(reward.user, self.owner)
+        self.assertEqual(reward.reward_amount, 50.00)
+        self.assertEqual(reward.status, 'Available')
+        
+        # Verify wallet credited
+        wallet = RewardWallet.objects.get(user=self.owner)
+        self.assertEqual(wallet.available_balance, 50.00)
+        self.assertEqual(wallet.total_earned, 50.00)
+        
+        # Verify notification is sent
         notifications = Notification.objects.filter(user=self.owner)
         self.assertTrue(notifications.filter(title="Reward Credited").exists())
-        self.assertTrue(notifications.filter(title="Property Approved").exists())
 
-    def test_unauthorized_access_to_reward_actions(self):
-        # Create a reward
+    def test_admin_publish_referral_flow(self):
+        # Create submission
         submission = PropertySubmission.objects.create(
             submitter=self.submitter,
             submitted_by_name='Reward Submitter',
             submitted_by_mobile='9876543210',
             owner_name='John Doe',
-            owner_mobile='9000000004',
+            owner_mobile='+919000000004',
             property_type='Flat',
             property_address='Flat 302, Outer Ring Road, Bengaluru',
             city=self.city,
             status='Pending'
         )
-        reward = Reward.objects.create(
-            user=self.submitter,
-            reward_type='Referral',
-            submission=submission,
-            amount=50.00,
+        
+        self.client.login(username='reward_admin', password='adminpassword')
+        
+        # 1. Approve referral submission
+        response = self.client.post(reverse('admin_approve_submission', args=[submission.id]))
+        self.assertEqual(response.status_code, 302)
+        submission.refresh_from_db()
+        self.assertEqual(submission.status, 'Approved')
+        
+        # 2. Publish referral submission (should create listing, reward, and credit wallet)
+        response = self.client.post(reverse('admin_publish_submission', args=[submission.id]))
+        self.assertEqual(response.status_code, 302)
+        submission.refresh_from_db()
+        self.assertEqual(submission.status, 'Published')
+        
+        # Check listing creation
+        listing = Listing.objects.get(phone='+919000000004')
+        self.assertEqual(listing.verification_status, 'Verified')
+        
+        # Check reward and wallet
+        reward = RewardHistory.objects.get(property_submission=submission)
+        self.assertEqual(reward.status, 'Available')
+        wallet = RewardWallet.objects.get(user=self.submitter)
+        self.assertEqual(wallet.available_balance, 50.00)
+
+    def test_withdrawal_request_success_and_payout_flow(self):
+        # Prepopulate wallet
+        wallet = RewardWallet.get_or_create_wallet(self.submitter)
+        wallet.available_balance = 250.00
+        wallet.total_earned = 250.00
+        wallet.save()
+        
+        self.client.login(username='reward_submitter', password='submitterpassword')
+        
+        # Request withdrawal
+        response = self.client.post(reverse('request_withdrawal'), {
+            'amount': '200.00',
+            'upi_id': 'submitter@oksbi'
+        })
+        self.assertEqual(response.status_code, 302)
+        
+        # Wallet balance should immediately decrease to ₹50 to prevent double spending
+        wallet.refresh_from_db()
+        self.assertEqual(wallet.available_balance, 50.00)
+        self.assertEqual(wallet.upi_id, 'submitter@oksbi')
+        
+        # Check request created
+        req = WithdrawalRequest.objects.get(user=self.submitter)
+        self.assertEqual(req.amount, 200.00)
+        self.assertEqual(req.status, 'Pending')
+        
+        # Login as Admin to disburse payout
+        self.client.login(username='reward_admin', password='adminpassword')
+        response = self.client.post(reverse('admin_pay_withdrawal', args=[req.id]), {
+            'payment_method': 'UPI',
+            'transaction_ref': 'UTR12345678',
+            'notes': 'Paid via admin dashboard panel'
+        })
+        self.assertEqual(response.status_code, 302)
+        
+        # Check request status updated
+        req.refresh_from_db()
+        self.assertEqual(req.status, 'Paid')
+        self.assertEqual(req.transaction_id, 'UTR12345678')
+        
+        # Check wallet withdrawn amount updated
+        wallet.refresh_from_db()
+        self.assertEqual(wallet.withdrawn_amount, 200.00)
+        
+        # Check payment history logged
+        payment = PaymentHistory.objects.get(withdrawal_request=req)
+        self.assertEqual(payment.amount, 200.00)
+        self.assertEqual(payment.transaction_reference, 'UTR12345678')
+
+    def test_withdrawal_request_insufficient_balance(self):
+        wallet = RewardWallet.get_or_create_wallet(self.submitter)
+        wallet.available_balance = 150.00
+        wallet.save()
+        
+        self.client.login(username='reward_submitter', password='submitterpassword')
+        
+        # Try withdrawing ₹200 (minimum is ₹200 but wallet has ₹150)
+        response = self.client.post(reverse('request_withdrawal'), {
+            'amount': '200.00',
+            'upi_id': 'submitter@oksbi'
+        })
+        self.assertEqual(response.status_code, 302)
+        
+        # Verify no request is created and balance is unchanged
+        self.assertFalse(WithdrawalRequest.objects.filter(user=self.submitter).exists())
+        wallet.refresh_from_db()
+        self.assertEqual(wallet.available_balance, 150.00)
+
+    def test_withdrawal_request_invalid_upi(self):
+        wallet = RewardWallet.get_or_create_wallet(self.submitter)
+        wallet.available_balance = 250.00
+        wallet.save()
+        
+        self.client.login(username='reward_submitter', password='submitterpassword')
+        
+        # Post invalid UPI format
+        response = self.client.post(reverse('request_withdrawal'), {
+            'amount': '200.00',
+            'upi_id': 'invalid-upi-id-format'
+        })
+        self.assertEqual(response.status_code, 302)
+        self.assertFalse(WithdrawalRequest.objects.filter(user=self.submitter).exists())
+
+    def test_withdrawal_rejection_refund_flow(self):
+        # Prepopulate wallet
+        wallet = RewardWallet.get_or_create_wallet(self.submitter)
+        wallet.available_balance = 250.00
+        wallet.save()
+        
+        # Create request (directly or via post)
+        self.client.login(username='reward_submitter', password='submitterpassword')
+        self.client.post(reverse('request_withdrawal'), {
+            'amount': '200.00',
+            'upi_id': 'submitter@oksbi'
+        })
+        
+        # Balance is ₹50
+        wallet.refresh_from_db()
+        self.assertEqual(wallet.available_balance, 50.00)
+        
+        req = WithdrawalRequest.objects.get(user=self.submitter)
+        
+        # Admin rejects withdrawal request
+        self.client.login(username='reward_admin', password='adminpassword')
+        response = self.client.post(reverse('admin_reject_withdrawal', args=[req.id]), {
+            'rejection_notes': 'Verification failed on UPI details'
+        })
+        self.assertEqual(response.status_code, 302)
+        
+        # Check status and refund
+        req.refresh_from_db()
+        self.assertEqual(req.status, 'Rejected')
+        
+        # Wallet available balance should be refunded to ₹250
+        wallet.refresh_from_db()
+        self.assertEqual(wallet.available_balance, 250.00)
+
+    def test_unauthorized_access_to_reward_actions(self):
+        # Create submission
+        submission = PropertySubmission.objects.create(
+            submitter=self.submitter,
+            submitted_by_name='Reward Submitter',
+            submitted_by_mobile='9876543210',
+            owner_name='John Doe',
+            owner_mobile='+919000000005',
+            property_type='Flat',
+            property_address='Flat 302, Outer Ring Road, Bengaluru',
+            city=self.city,
             status='Pending'
         )
         
         # Attempt access as standard logged in user
         self.client.login(username='reward_submitter', password='submitterpassword')
         
-        # Try to approve reward
-        response = self.client.get(reverse('approve_reward_claim', args=[reward.id]))
-        self.assertEqual(response.status_code, 302) # Should redirect to home with error
-        reward.refresh_from_db()
-        self.assertEqual(reward.status, 'Pending') # Remains pending
+        # Try to approve submission
+        response = self.client.post(reverse('admin_approve_submission', args=[submission.id]))
+        self.assertEqual(response.status_code, 302)
+        submission.refresh_from_db()
+        self.assertEqual(submission.status, 'Pending') # Remains pending
 
     def test_search_suggestions_api(self):
         # Query Suggestions with empty q (returns popular searches)
