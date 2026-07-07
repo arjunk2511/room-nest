@@ -163,7 +163,16 @@ import dj_database_url
 import os
 import sys
 
-database_url = os.environ.get("DATABASE_URL")
+database_url = os.environ.get("DATABASE_URL") or os.environ.get("DATABASE_PUBLIC_URL")
+if not database_url and os.environ.get("PGHOST"):
+    # Construct DATABASE_URL from individual PostgreSQL variables
+    pg_user = os.environ.get("PGUSER", "")
+    pg_pass = os.environ.get("PGPASSWORD", "")
+    pg_host = os.environ.get("PGHOST", "")
+    pg_port = os.environ.get("PGPORT", "5432")
+    pg_db = os.environ.get("PGDATABASE", "")
+    database_url = f"postgresql://{pg_user}:{pg_pass}@{pg_host}:{pg_port}/{pg_db}"
+
 if IS_PRODUCTION:
     # During the build phase (e.g., collectstatic), DATABASE_URL is not injected by Railway.
     # We detect if collectstatic is running to bypass strict DATABASE_URL check and use a dummy config.
