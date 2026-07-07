@@ -1,5 +1,42 @@
 import os
 import sys
+
+# 1. Print all available database environment variables during startup (safely masked)
+print("====================================================")
+print("🔍 Startup Environment Variables Check:")
+print("====================================================")
+vars_to_check = [
+    "DATABASE_URL",
+    "DATABASE_PUBLIC_URL",
+    "PGHOST",
+    "PGPORT",
+    "PGDATABASE",
+    "PGUSER",
+    "PGPASSWORD"
+]
+
+def mask_value(name, val):
+    if not val:
+        return "None / Empty"
+    if name in ["DATABASE_URL", "DATABASE_PUBLIC_URL"]:
+        if "@" in val and "://" in val:
+            prefix, rest = val.split("://", 1)
+            if "@" in rest:
+                creds, host_part = rest.split("@", 1)
+                if ":" in creds:
+                    user, _ = creds.split(":", 1)
+                    return f"{prefix}://{user}:***@{host_part}"
+                return f"{prefix}://***@{host_part}"
+        return "*** (Masked URL)"
+    if name == "PGPASSWORD":
+        return "***"
+    return val
+
+for name in vars_to_check:
+    val = os.environ.get(name)
+    print(f"  {name}: {mask_value(name, val)}")
+print("====================================================\n")
+
 import django
 
 # Set up Django environment
@@ -21,10 +58,20 @@ def main():
     print("🔒 Running Pre-Startup Production Database Safety Checks")
     print("====================================================")
     
-    # 1. Retrieve the default database connection
+    # 2. Retrieve the default database connection
     db_conn = connections['default']
     
-    # 2. Verify PostgreSQL connection
+    # Print the final database engine, host, and name that Django is actually using after startup
+    db_name = db_conn.settings_dict.get('NAME')
+    db_host = db_conn.settings_dict.get('HOST')
+    db_engine = db_conn.settings_dict.get('ENGINE')
+    print("ℹ️ Active Database Settings used by Django:")
+    print(f"  Engine: {db_engine}")
+    print(f"  Database Name: {db_name}")
+    print(f"  Host: {db_host}")
+    print("----------------------------------------------------")
+    
+    # 3. Verify PostgreSQL connection
     try:
         db_conn.ensure_connection()
         print("✅ Database connection verified.")
@@ -33,8 +80,7 @@ def main():
         print("Startup blocked to prevent data loss or fallback issues.")
         sys.exit(1)
         
-    # 3. Double-check database engine is not SQLite in production
-    engine = db_conn.settings_dict.get('ENGINE', '')
+    # 4. Double-check database engine is not SQLite in production
     is_production_env = (
         os.environ.get('DJANGO_ENV', 'development').lower() in ['staging', 'production']
         or os.environ.get('IS_PRODUCTION', 'False') == 'True'
@@ -42,12 +88,12 @@ def main():
         or 'RENDER' in os.environ
     )
     
-    if is_production_env and 'sqlite' in engine:
+    if is_production_env and 'sqlite' in db_engine:
         print("❌ CRITICAL DATABASE ERROR: SQLite configuration is prohibited in production!")
         print("Startup blocked to prevent data loss on ephemeral filesystems.")
         sys.exit(1)
 
-    # 4. Verify critical Django tables exist
+    # 5. Verify critical Django tables exist
     table_names = db_conn.introspection.table_names()
     required_tables = ['auth_user', 'listings_listing', 'django_migrations']
     missing_tables = [table for table in required_tables if table not in table_names]
@@ -59,7 +105,7 @@ def main():
     else:
         print("✅ Critical Django tables verified.")
 
-    # 5. Verify migration history exists
+    # 6. Verify migration history exists
     try:
         recorder = MigrationRecorder(db_conn)
         applied_migrations = recorder.applied_migrations()
@@ -73,7 +119,7 @@ def main():
         print(f"❌ DATABASE HISTORY ERROR: Failed to read migration history: {e}")
         sys.exit(1)
 
-    # 6. Verify database is not empty (contains users, listings)
+    # 7. Verify database is not empty (contains users, listings)
     try:
         User = get_user_model()
         user_count = User.objects.count()
