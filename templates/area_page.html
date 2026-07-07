@@ -110,8 +110,9 @@
             
             <div style="display: flex; gap: 8px; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; margin-bottom: 1rem; overflow-x: auto; -webkit-overflow-scrolling: touch;">
                 <button type="button" onclick="switchNearbyTab('schools')" class="nearby-tab active" id="tab-schools" style="background: none; border: none; font-weight: 700; font-size: 0.82rem; padding: 0.5rem 0.8rem; cursor: pointer; color: var(--primary); border-bottom: 2px solid var(--primary); white-space: nowrap; outline: none;">🎓 Education</button>
-                <button type="button" onclick="switchNearbyTab('hospitals')" class="nearby-tab" id="tab-hospitals" style="background: none; border: none; font-weight: 600; font-size: 0.82rem; padding: 0.5rem 0.8rem; cursor: pointer; color: var(--text-light); border-bottom: 2px solid transparent; white-space: nowrap; outline: none;">🏥 Healthcare</button>
+                <button type="button" onclick="switchNearbyTab('it_parks')" class="nearby-tab" id="tab-it_parks" style="background: none; border: none; font-weight: 600; font-size: 0.82rem; padding: 0.5rem 0.8rem; cursor: pointer; color: var(--text-light); border-bottom: 2px solid transparent; white-space: nowrap; outline: none;">🏢 Tech & IT Parks</button>
                 <button type="button" onclick="switchNearbyTab('transit')" class="nearby-tab" id="tab-transit" style="background: none; border: none; font-weight: 600; font-size: 0.82rem; padding: 0.5rem 0.8rem; cursor: pointer; color: var(--text-light); border-bottom: 2px solid transparent; white-space: nowrap; outline: none;">🚌 Transport</button>
+                <button type="button" onclick="switchNearbyTab('hospitals')" class="nearby-tab" id="tab-hospitals" style="background: none; border: none; font-weight: 600; font-size: 0.82rem; padding: 0.5rem 0.8rem; cursor: pointer; color: var(--text-light); border-bottom: 2px solid transparent; white-space: nowrap; outline: none;">🏥 Healthcare</button>
                 <button type="button" onclick="switchNearbyTab('shopping')" class="nearby-tab" id="tab-shopping" style="background: none; border: none; font-weight: 600; font-size: 0.82rem; padding: 0.5rem 0.8rem; cursor: pointer; color: var(--text-light); border-bottom: 2px solid transparent; white-space: nowrap; outline: none;">🛍️ Food & Shop</button>
             </div>
             
@@ -144,6 +145,60 @@
         <div id="area-map" style="width: 100%; height: 100%; z-index: 1;"></div>
     </aside>
 </div>
+
+<!-- Localized SEO & Locality FAQ Section -->
+<section style="background: var(--white); border-top: 1px solid var(--border-color); padding: 4.5rem 1.5rem; margin-top: 4rem;">
+    <div style="max-width: 1000px; margin: 0 auto;">
+        <h2 style="font-family: 'Outfit', sans-serif; font-size: 1.85rem; font-weight: 800; text-align: center; color: var(--text-dark); margin-bottom: 2rem;">
+            About Living in {{ area.name }}, {{ city.name }}
+        </h2>
+        
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2.5rem; margin-bottom: 4rem; line-height: 1.7; color: var(--text-light); font-size: 0.95rem;">
+            <div>
+                <h3 style="font-family: 'Outfit', sans-serif; font-size: 1.15rem; font-weight: 750; color: var(--primary); margin-bottom: 0.75rem;">
+                    Premium Locality Advantage
+                </h3>
+                <p>
+                    {{ area.name }} is one of the most prominent neighborhoods in {{ city.name }}, offering a perfect mix of residential serenity and commercial accessibility. Ideal for college students and working professionals, this locality boasts well-developed infrastructure, safe streets, and high connectivity to core transit nodes.
+                </p>
+            </div>
+            
+            <div>
+                <h3 style="font-family: 'Outfit', sans-serif; font-size: 1.15rem; font-weight: 750; color: var(--primary); margin-bottom: 0.75rem;">
+                    Brokerage-Free Stays
+                </h3>
+                <p>
+                    Finding a rental room or PG hostel in {{ area.name }} usually incurs high brokerage costs. RoomNest cuts out the middlemen entirely, letting you connect directly with land owners. Explore a range of single rooms, co-living flats, flatmate shares, and boys/girls PGs with absolute transparency.
+                </p>
+            </div>
+        </div>
+
+        <!-- Locality FAQ Accordions -->
+        <h3 style="font-family: 'Outfit', sans-serif; font-size: 1.5rem; font-weight: 800; text-align: center; color: var(--text-dark); margin-bottom: 1.5rem;">
+            Frequently Asked Questions
+        </h3>
+        
+        <div style="max-width: 800px; margin: 0 auto; display: flex; flex-direction: column; gap: 1rem;">
+            <div style="background: var(--bg-color); border: 1px solid var(--border-color); border-radius: var(--border-radius-md); padding: 1.25rem;">
+                <h4 style="font-size: 1.02rem; font-weight: 750; color: var(--text-dark); margin: 0 0 0.5rem 0;">
+                    What is the average rent in {{ area.name }}?
+                </h4>
+                <p style="color: var(--text-light); font-size: 0.9rem; line-height: 1.5; margin: 0;">
+                    Average rents in {{ area.name }}, {{ city.name }} range from ₹4,500 to ₹10,000 for standard PG accommodations (food included), and ₹9,500 to ₹22,000 for independent 1 BHK/2 BHK flats, depending on local demand and furnishing levels.
+                </p>
+            </div>
+            
+            <div style="background: var(--bg-color); border: 1px solid var(--border-color); border-radius: var(--border-radius-md); padding: 1.25rem;">
+                <h4 style="font-size: 1.02rem; font-weight: 750; color: var(--text-dark); margin: 0 0 0.5rem 0;">
+                    How close is {{ area.name }} to universities and public transit?
+                </h4>
+                <p style="color: var(--text-light); font-size: 0.9rem; line-height: 1.5; margin: 0;">
+                    {{ area.name }} is strategically situated close to primary educational campuses and public transport hubs. Use our live interactive proximity map above to check walking and driving times to your college or workplace.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
 
 <script>
 document.addEventListener("DOMContentLoaded", function() {

@@ -116,7 +116,10 @@
         <a href="{% url 'area_page' city.slug area.slug %}" style="display: block; text-decoration: none;">
             <div style="background: var(--white); border: 1px solid var(--border-color); border-radius: var(--border-radius-lg); padding: 1.75rem; text-align: center; box-shadow: var(--shadow-sm); transition: var(--transition-bounce);" onmouseover="this.style.transform='translateY(-4px)'; this.style.borderColor='var(--primary)'; this.style.boxShadow='var(--shadow-md)';" onmouseout="this.style.transform='translateY(0)'; this.style.borderColor='var(--border-color)'; this.style.boxShadow='var(--shadow-sm)';">
                 <i data-lucide="map-pin" style="width: 28px; height: 28px; color: var(--primary); margin: 0 auto 0.75rem auto; display: block;"></i>
-                <h3 style="font-size: 1.25rem; color: var(--text-dark); margin-bottom: 0.5rem; font-family: 'Outfit', sans-serif;">{{ area.name }}</h3>
+                <h3 style="font-size: 1.25rem; color: var(--text-dark); margin-bottom: 0.25rem; font-family: 'Outfit', sans-serif;">{{ area.name }}</h3>
+                <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600; margin-bottom: 0.85rem;">
+                    {{ area.active_count }} active stays
+                </div>
                 <span style="font-size: 0.8rem; color: var(--primary); font-weight: 700; background: var(--primary-light); padding: 0.25rem 0.75rem; border-radius: 99px; display: inline-flex; align-items: center; gap: 4px; transition: var(--transition-smooth);">
                     Explore Stays <i data-lucide="arrow-right" style="width: 12px; height: 12px;"></i>
                 </span>

@@ -125,6 +125,7 @@ SITE_ID = 1
 
 MIDDLEWARE = [
     'roomnest.middleware.PerformanceMiddleware',  # Profile request/response query counts and times!
+    'listings.middleware.IPRateLimitMiddleware',  # Rate limit requests to 100/min!
     'django.middleware.security.SecurityMiddleware',
     'django.middleware.gzip.GZipMiddleware',  # GZIP compress dynamic HTML content for 5x faster mobile speed!
     'whitenoise.middleware.WhiteNoiseMiddleware',

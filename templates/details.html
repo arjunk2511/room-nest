@@ -32,14 +32,14 @@
     "{% if listing.image %}{% if 'http' in listing.image.url %}{{ listing.image.url }}{% else %}https://roomnest.online{{ listing.image.url }}{% endif %}{% else %}https://roomnest.online/static/images/logo_icon.png{% endif %}"
   ],
   "about": {
-    "@type": "Accommodation",
+    "@type": "{% if 'BHK' in listing.type or 'Flat' in listing.type %}SingleFamilyResidence{% else %}Accommodation{% endif %}",
     "name": "{{ listing.title|escapejs }}",
     "description": "{{ listing.description|truncatechars:200|escapejs }}",
     "address": {
       "@type": "PostalAddress",
       "streetAddress": "{{ listing.address|escapejs }}",
       "addressLocality": "{{ listing.location|escapejs }}",
-      "addressRegion": "Karnataka",
+      "addressRegion": "{% if listing.city and listing.city.slug == 'hyderabad' %}Telangana{% else %}Karnataka{% endif %}",
       "addressCountry": "IN"
     },
     "offers": {
@@ -80,9 +80,17 @@
       "item": "https://roomnest.online/{{ listing.city.slug }}/"
     }
     {% endif %}
+    {% if listing.city and listing.area %}
     ,{
       "@type": "ListItem",
-      "position": {% if listing.city %}3{% else %}2{% endif %},
+      "position": 3,
+      "name": "{{ listing.area.name|escapejs }}",
+      "item": "https://roomnest.online/{{ listing.city.slug }}/{{ listing.area.slug }}/"
+    }
+    {% endif %}
+    ,{
+      "@type": "ListItem",
+      "position": {% if listing.city and listing.area %}4{% elif listing.city %}3{% else %}2{% endif %},
       "name": "{{ listing.title|escapejs }}",
       "item": "https://roomnest.online{{ listing.get_absolute_url }}"
     }
@@ -95,6 +103,17 @@
 </script>
 
 <div style="max-width: 1200px; margin: 2.5rem auto 0 auto; padding: 0 1.5rem;">
+    <!-- Visual Breadcrumbs -->
+    <nav aria-label="Breadcrumb" style="font-size: 0.85rem; color: var(--text-light); font-weight: 600; margin-bottom: 1.5rem;">
+        <a href="{% url 'home' %}" style="color: var(--text-light); text-decoration: none; transition: var(--transition-smooth);" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-light)'">Home</a>
+        {% if listing.city %}
+         &gt; <a href="{% url 'city_page' listing.city.slug %}" style="color: var(--text-light); text-decoration: none; transition: var(--transition-smooth);" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-light)'">{{ listing.city.name }}</a>
+        {% endif %}
+        {% if listing.city and listing.area %}
+         &gt; <a href="{% url 'area_page' listing.city.slug listing.area.slug %}" style="color: var(--text-light); text-decoration: none; transition: var(--transition-smooth);" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-light)'">{{ listing.area.name }}</a>
+        {% endif %}
+         &gt; <span style="color: var(--text-muted);">{{ listing.title|truncatechars:35 }}</span>
+    </nav>
     <!-- Title & Location Header -->
     <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1.5rem; margin-bottom: 2rem;">
         <div>
@@ -127,7 +146,7 @@
                 <div class="swipe-gallery">
                     {% if listing.image %}
                     <div class="swipe-gallery-item">
-                        <img src="{{ listing.image.url|optimize_image:'w_1200' }}" alt="{{ listing.get_seo_alt_text }}" width="800" height="533" decoding="async">
+                        <img src="{{ listing.image.url|optimize_image:'w_1200' }}" alt="{{ listing.get_seo_alt_text }}" width="800" height="533" fetchpriority="high" decoding="async">
                     </div>
                     {% else %}
                     <div class="swipe-gallery-item" style="display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-weight: 600; font-size: 1.2rem; background: #E2E8F0;">No Image Available</div>

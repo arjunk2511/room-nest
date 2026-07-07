@@ -1,0 +1,183 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load performance_tags %}
+
+{% block seo_title %}{{ seo_title }}{% endblock %}
+{% block seo_description %}{{ seo_description }}{% endblock %}
+
+{% block og_title %}{{ seo_title }}{% endblock %}
+{% block og_description %}{{ seo_description }}{% endblock %}
+{% block og_image %}{% if post.featured_image %}https://roomnest.online{{ post.featured_image.url }}{% else %}https://roomnest.online/static/images/logo_icon.png{% endif %}{% endblock %}
+
+{% block twitter_title %}{{ seo_title }}{% endblock %}
+{% block twitter_description %}{{ seo_description }}{% endblock %}
+{% block twitter_image %}{% if post.featured_image %}https://roomnest.online{{ post.featured_image.url }}{% else %}https://roomnest.online/static/images/logo_icon.png{% endif %}{% endblock %}
+
+{% block content %}
+<!-- JSON-LD Breadcrumb Schema for Blog Post -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://roomnest.online/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Blog",
+      "item": "https://roomnest.online/blog/"
+    }
+    {% if post.category %}
+    ,{
+      "@type": "ListItem",
+      "position": 3,
+      "name": "{{ post.category.name|escapejs }}",
+      "item": "https://roomnest.online/blog/?category={{ post.category.slug|escapejs }}"
+    }
+    {% endif %}
+    ,{
+      "@type": "ListItem",
+      "position": {% if post.category %}4{% else %}3{% endif %},
+      "name": "{{ post.title|escapejs }}",
+      "item": "https://roomnest.online{{ post.get_absolute_url|escapejs }}"
+    }
+  ]
+}
+</script>
+
+<!-- JSON-LD BlogPosting Schema -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "{{ post.title|escapejs }}",
+  "image": [
+    "{% if post.featured_image %}https://roomnest.online{{ post.featured_image.url }}{% else %}https://roomnest.online/static/images/logo_icon.png{% endif %}"
+  ],
+  "datePublished": "{{ post.created_at|date:'c' }}",
+  "dateModified": "{{ post.updated_at|date:'c' }}",
+  "author": {
+    "@type": "Organization",
+    "name": "RoomNest"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "RoomNest",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://roomnest.online/static/images/logo_icon.png"
+    }
+  },
+  "description": "{{ post.summary|escapejs }}"
+}
+</script>
+
+<article style="background: var(--white); border-bottom: 1px solid var(--border-color);">
+    <!-- Breadcrumb Chain -->
+    <div style="max-width: 800px; margin: 2rem auto 0 auto; padding: 0 1.5rem; font-size: 0.85rem; color: var(--text-light); font-weight: 600;">
+        <a href="{% url 'home' %}" style="color: var(--text-light); text-decoration: none;">Home</a> &gt; 
+        <a href="{% url 'blog_list' %}" style="color: var(--text-light); text-decoration: none;">Blog</a>
+        {% if post.category %}
+        &gt; <a href="{% url 'blog_list' %}?category={{ post.category.slug }}" style="color: var(--text-light); text-decoration: none;">{{ post.category.name }}</a>
+        {% endif %}
+        &gt; <span style="color: var(--text-muted);">{{ post.title|truncatechars:30 }}</span>
+    </div>
+
+    <!-- Header Section -->
+    <header style="max-width: 800px; margin: 1.5rem auto 3rem auto; padding: 0 1.5rem; text-align: left;">
+        {% if post.category %}
+        <span style="background: var(--primary-light); color: var(--primary); padding: 0.4rem 1rem; border-radius: 99px; font-size: 0.78rem; font-weight: 750; text-transform: uppercase; letter-spacing: 0.8px; display: inline-block; margin-bottom: 1rem;">
+            {{ post.category.name }}
+        </span>
+        {% endif %}
+        
+        <h1 style="font-size: 2.5rem; font-weight: 850; color: var(--text-dark); line-height: 1.25; margin-bottom: 1rem; font-family: 'Outfit', sans-serif; letter-spacing: -0.02em;">
+            {{ post.title }}
+        </h1>
+        
+        <div style="display: flex; align-items: center; gap: 12px; font-size: 0.88rem; color: var(--text-light); font-weight: 500;">
+            <div style="width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, var(--primary) 0%, #3b82f6 100%); color: white; display: flex; align-items: center; justify-content: center; font-weight: 800; font-family: 'Outfit', sans-serif;">
+                RN
+            </div>
+            <div>
+                <span style="font-weight: 700; color: var(--text-dark); display: block;">RoomNest Editor</span>
+                <span style="font-size: 0.78rem; color: var(--text-muted); display: block; margin-top: 1px;">
+                    📅 {{ post.created_at|date:"F d, Y" }} &bull; ⏱️ 4 min read
+                </span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Featured Image -->
+    {% if post.featured_image %}
+    <div style="max-width: 1000px; margin: 0 auto; padding: 0 1.5rem; border-radius: var(--border-radius-lg); overflow: hidden;">
+        <img src="{{ post.featured_image.url }}" alt="{{ post.title }}" fetchpriority="high" style="width: 100%; height: auto; max-height: 480px; object-fit: cover; border-radius: var(--border-radius-lg); display: block; box-shadow: var(--shadow);">
+    </div>
+    {% endif %}
+
+    <!-- Article Content -->
+    <div style="max-width: 800px; margin: 3rem auto; padding: 0 1.5rem; line-height: 1.8; font-size: 1.05rem; color: var(--text-dark);" class="blog-rich-content">
+        {{ post.content|linebreaks }}
+    </div>
+</article>
+
+<!-- Bottom Layout: Related Properties & Related Posts -->
+<div style="background: var(--bg-color); padding: 4rem 1.5rem;">
+    <div style="max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; gap: 4rem;">
+        
+        <!-- Related Properties -->
+        {% if related_listings %}
+        <section>
+            <div style="margin-bottom: 2rem;">
+                <span style="color: var(--primary); font-weight: 700; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 0.5rem;">Featured Listings</span>
+                <h2 style="font-size: 1.75rem; font-weight: 800; font-family: 'Outfit', sans-serif;">Related Verified Properties</h2>
+                <p style="color: var(--text-light); margin-top: 4px; font-size: 0.95rem;">Check out these recommended stays that match the topics in this guide.</p>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem;">
+                {% for listing in related_listings %}
+                    {% include 'partials/property_card.html' with listing=listing %}
+                {% endfor %}
+            </div>
+        </section>
+        {% endif %}
+
+        <!-- Related Blog Posts -->
+        {% if related_posts %}
+        <section>
+            <div style="margin-bottom: 2rem;">
+                <span style="color: var(--secondary); font-weight: 700; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 0.5rem;">More Guides</span>
+                <h2 style="font-size: 1.75rem; font-weight: 800; font-family: 'Outfit', sans-serif;">Other Helpful Articles</h2>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 2rem;">
+                {% for p in related_posts %}
+                <div class="card" style="border: 1px solid var(--border-color); border-radius: var(--border-radius-lg); overflow: hidden; background: var(--white); box-shadow: var(--shadow-sm); display: flex; flex-direction: column;">
+                    <a href="{{ p.get_absolute_url }}" style="text-decoration: none; color: inherit; display: flex; flex-direction: column; height: 100%;">
+                        <div style="aspect-ratio: 16 / 9; height: 140px; overflow: hidden; position: relative; background: #e2e8f0;">
+                            {% if p.featured_image %}
+                            <img src="{{ p.featured_image.url|optimize_image:'w_600' }}" alt="{{ p.title }}" loading="lazy" decoding="async" style="width: 100%; height: 100%; object-fit: cover;">
+                            {% else %}
+                            <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: #EFF6FF; color: var(--primary); font-size: 2rem;">📝</div>
+                            {% endif %}
+                        </div>
+                        <div style="padding: 1.25rem; display: flex; flex-direction: column; flex-grow: 1;">
+                            <span style="font-size: 0.72rem; color: var(--text-muted); font-weight: 600; margin-bottom: 0.4rem; display: block;">{{ p.created_at|date:"M d, Y" }}</span>
+                            <h4 style="font-size: 1.05rem; font-weight: 800; color: var(--text-dark); margin: 0 0 0.5rem 0; line-height: 1.35; font-family: 'Outfit', sans-serif;">{{ p.title }}</h4>
+                            <p style="color: var(--text-light); font-size: 0.85rem; line-height: 1.4; margin-bottom: 1rem; flex-grow: 1;">{{ p.summary|truncatechars:80 }}</p>
+                            <span style="font-size: 0.8rem; color: var(--primary); font-weight: 700; display: inline-flex; align-items: center; gap: 2px;">Read Guide →</span>
+                        </div>
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -52,7 +52,19 @@ urlpatterns = [
     path('wallet/withdraw/', views.request_withdrawal, name='request_withdrawal'),
     path('notifications/read-all/', views.read_all_notifications, name='read_all_notifications'),
     
+    # Blog System
+    path('blog/', views.blog_list, name='blog_list'),
+    path('blog/<slug:slug>/', views.blog_detail, name='blog_detail'),
+    
+    # Static Indexable Search Pages
+    path('search/<slug:city_slug>/', views.search_by_city, name='search_by_city'),
+    path('search/<slug:city_slug>/<slug:type_slug>/', views.search_by_city_and_type, name='search_by_city_and_type'),
+    
+    # Fallback direct string slug URL
+    path('listing/<slug:listing_slug>/', views.details_by_slug, name='details_by_slug'),
+    
     # Dynamic city and area landing pages (placed at the end to avoid conflicts)
     path('<slug:city_slug>/', views.city_page, name='city_page'),
     path('<slug:city_slug>/<slug:area_slug>/', views.area_page, name='area_page'),
+    path('<slug:city_slug>/<slug:area_slug>/<slug:listing_slug>/', views.listing_detail_by_slug, name='listing_detail_by_slug'),
 ]

@@ -61,6 +61,7 @@ class City(models.Model):
     image = models.ImageField(upload_to='cities/', blank=True, null=True)
     is_active = models.BooleanField(default=True)
     description = models.TextField(blank=True, default='')
+    state = models.CharField(max_length=100, default='Karnataka')
 
     class Meta:
         verbose_name_plural = "Cities"
@@ -206,8 +207,14 @@ class Listing(models.Model):
 
     def get_absolute_url(self):
         from django.urls import reverse
-        if self.city and self.slug:
-            return reverse('area_page', kwargs={'city_slug': self.city.slug, 'area_slug': self.slug})
+        if self.city and self.area and self.slug:
+            return reverse('listing_detail_by_slug', kwargs={
+                'city_slug': self.city.slug,
+                'area_slug': self.area.slug,
+                'listing_slug': self.slug
+            })
+        elif self.slug:
+            return reverse('details_by_slug', kwargs={'listing_slug': self.slug})
         return reverse('details', args=[self.id])
 
     def get_seo_alt_text(self):
@@ -564,5 +571,63 @@ class AdminRewardLog(models.Model):
 
     def __str__(self):
         return f"{self.admin_user.username} - {self.action_type} on {self.target_type} {self.target_id}"
+
+
+class SearchTrend(models.Model):
+    query = models.CharField(max_length=255)
+    city_slug = models.CharField(max_length=100, blank=True, null=True)
+    count = models.PositiveIntegerField(default=1)
+    last_searched = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-count', '-last_searched']
+
+    def __str__(self):
+        return f"{self.query} (searched {self.count} times)"
+
+
+class BlogCategory(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    slug = models.SlugField(max_length=100, unique=True)
+    description = models.TextField(blank=True, default='')
+
+    class Meta:
+        verbose_name_plural = "Blog Categories"
+
+    def __str__(self):
+        return self.name
+
+
+class BlogPost(models.Model):
+    title = models.CharField(max_length=200)
+    slug = models.SlugField(max_length=200, unique=True)
+    category = models.ForeignKey(BlogCategory, on_delete=models.SET_NULL, null=True, blank=True, related_name='posts')
+    featured_image = models.ImageField(upload_to='blog/', blank=True, null=True)
+    content = models.TextField()
+    summary = models.TextField(help_text="A short summary of the post for SEO and search results.")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    is_published = models.BooleanField(default=True)
+    related_listings = models.ManyToManyField(Listing, blank=True, related_name='blog_posts')
+    
+    # SEO fields
+    seo_title = models.CharField(max_length=200, blank=True, default='', help_text="Custom SEO title. If empty, title is used.")
+    seo_description = models.TextField(blank=True, default='', help_text="Custom SEO description. If empty, summary is used.")
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return self.title
+
+    def get_absolute_url(self):
+        from django.urls import reverse
+        return reverse('blog_detail', kwargs={'slug': self.slug})
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            from django.utils.text import slugify
+            self.slug = slugify(self.title)
+        super().save(*args, **kwargs)
 
 

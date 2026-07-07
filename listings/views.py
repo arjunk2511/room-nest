@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from .models import Listing, ListingImage, Wishlist, Message, Review, Lead, City, Area, PropertySubmission, Reward, Notification, RewardWallet, RewardTransaction, WithdrawalRequest, RewardHistory, PaymentHistory, AdminRewardLog
+from .models import Listing, ListingImage, Wishlist, Message, Review, Lead, City, Area, PropertySubmission, Reward, Notification, RewardWallet, RewardTransaction, WithdrawalRequest, RewardHistory, PaymentHistory, AdminRewardLog, SearchTrend, BlogCategory, BlogPost
 from .utils import check_duplicate_property
 from django.db.models import Q, Avg, F, Count
 from django.contrib.auth.models import User
@@ -94,7 +94,28 @@ def search(request):
     sort_by = request.GET.get('sort_by')
     
     if location:
-        listings = listings.filter(location__icontains=location)
+        listings = listings.filter(
+            Q(location__icontains=location) |
+            Q(address__icontains=location) |
+            Q(landmark__icontains=location) |
+            Q(exact_location__icontains=location) |
+            Q(nearby_landmarks_cache__icontains=location) |
+            Q(city__name__icontains=location) |
+            Q(area__name__icontains=location)
+        )
+        
+        # Log this search trend!
+        try:
+            city_slug_val = city_slug or (current_city.slug if current_city else None)
+            trend_obj, created = SearchTrend.objects.get_or_create(
+                query=location.lower().strip(),
+                city_slug=city_slug_val
+            )
+            if not created:
+                trend_obj.count = F('count') + 1
+                trend_obj.save(update_fields=['count'])
+        except Exception as e:
+            print("Error logging search trend:", e)
     if min_price:
         listings = listings.filter(price__gte=min_price)
     if max_price:
@@ -203,22 +224,7 @@ def search(request):
     }
     return render(request, 'search.html', context)
 
-def details(request, listing_id):
-    # Fetch listing with all related images and reviews' users pre-joined and cached
-    cache_key = f"listing_detail_{listing_id}"
-    listing = cache.get(cache_key)
-    if not listing:
-        listing = get_object_or_404(
-            Listing.objects.select_related('owner__userprofile', 'city', 'area').prefetch_related('images', 'reviews__user'),
-            id=listing_id
-        )
-        cache.set(cache_key, listing, 900)  # Cache for 15 minutes
-
-    # Redirect old /listing/<id>/ routes to SEO-friendly /<city>/<slug>/ routes
-    canonical_url = listing.get_absolute_url()
-    if request.path.startswith('/listing/') and canonical_url != request.path:
-        return redirect(canonical_url, permanent=True)
-
+def _show_listing_detail(request, listing):
     # Increment view counter atomically in the DB (saves slow model save, avoids cache invalidation!)
     if not request.user.is_authenticated or request.user != listing.owner:
         Listing.objects.filter(id=listing.id).update(views_count=F('views_count') + 1)
@@ -290,6 +296,56 @@ def details(request, listing_id):
         'seo_description': seo_description,
     }
     return render(request, 'details.html', context)
+
+
+def details(request, listing_id):
+    # Fetch listing with all related images and reviews' users pre-joined and cached
+    cache_key = f"listing_detail_{listing_id}"
+    listing = cache.get(cache_key)
+    if not listing:
+        listing = get_object_or_404(
+            Listing.objects.select_related('owner__userprofile', 'city', 'area').prefetch_related('images', 'reviews__user'),
+            id=listing_id
+        )
+        cache.set(cache_key, listing, 900)  # Cache for 15 minutes
+
+    canonical_url = listing.get_absolute_url()
+    return redirect(canonical_url, permanent=True)
+
+
+def details_by_slug(request, listing_slug):
+    cache_key = f"listing_detail_slug_{listing_slug}"
+    listing = cache.get(cache_key)
+    if not listing:
+        listing = get_object_or_404(
+            Listing.objects.select_related('owner__userprofile', 'city', 'area').prefetch_related('images', 'reviews__user'),
+            slug=listing_slug
+        )
+        cache.set(cache_key, listing, 900)
+    
+    canonical_url = listing.get_absolute_url()
+    return redirect(canonical_url, permanent=True)
+
+
+def listing_detail_by_slug(request, city_slug, area_slug, listing_slug):
+    cache_key = f"listing_detail_full_{city_slug}_{area_slug}_{listing_slug}"
+    listing = cache.get(cache_key)
+    if not listing:
+        listing = get_object_or_404(
+            Listing.objects.select_related('owner__userprofile', 'city', 'area').prefetch_related('images', 'reviews__user'),
+            city__slug=city_slug,
+            area__slug=area_slug,
+            slug=listing_slug
+        )
+        cache.set(cache_key, listing, 900)
+
+    # 301 Redirect if requested path doesn't match canonical (e.g. trailing slash issue)
+    canonical_url = listing.get_absolute_url()
+    if request.path != canonical_url:
+        return redirect(canonical_url, permanent=True)
+
+    return _show_listing_detail(request, listing)
+
 
 @login_required
 def add_property(request):
@@ -918,16 +974,58 @@ def terms_conditions(request):
     return render(request, 'terms_conditions.html')
 
 def contact_us(request):
+    # Retrieve client IP
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[0].strip()
+    else:
+        ip = request.META.get('REMOTE_ADDR')
+
+    cache_key = f"rate_limit_{ip}"
+    requests_count = len(cache.get(cache_key, []))
+    
+    # Conditional reCAPTCHA rule: require if IP has > 5 requests in last 60s or user is anonymous
+    require_recaptcha = (requests_count > 5) or (not request.user.is_authenticated)
+
     if request.method == 'POST':
         name = request.POST.get('name')
         email = request.POST.get('email')
         subject = request.POST.get('subject')
         message = request.POST.get('message')
         
+        if require_recaptcha:
+            recaptcha_response = request.POST.get('g-recaptcha-response')
+            # Google's global testing key (works for localhost/test domains)
+            recaptcha_secret = '6LeIxAcTAAAAAGG-vFI1TnFTxWfnEp3FAyZOqm1S'
+            
+            url = 'https://www.google.com/recaptcha/api/siteverify'
+            values = {
+                'secret': recaptcha_secret,
+                'response': recaptcha_response
+            }
+            data = urllib.parse.urlencode(values).encode('utf-8')
+            req = urllib.request.Request(url, data=data)
+            
+            try:
+                with urllib.request.urlopen(req, timeout=5) as response:
+                    result = json.loads(response.read().decode('utf-8'))
+                    if not result.get('success'):
+                        messages.error(request, "Invalid reCAPTCHA. Please solve the puzzle to verify you are human.")
+                        return render(request, 'contact_us.html', {
+                            'require_recaptcha': require_recaptcha,
+                            'name': name,
+                            'email': email,
+                            'subject': subject,
+                            'message': message
+                        })
+            except Exception as e:
+                print("reCAPTCHA validation failed:", e)
+        
         messages.success(request, f"Thank you, {name}! Your message has been sent successfully. Our support team will get back to you shortly.")
         return redirect('contact_us')
         
-    return render(request, 'contact_us.html')
+    return render(request, 'contact_us.html', {'require_recaptcha': require_recaptcha})
+
 
 @login_required
 def delete_property(request, listing_id):
@@ -1053,6 +1151,13 @@ def admin_dashboard(request):
     # Logs
     admin_logs = AdminRewardLog.objects.all().select_related('admin_user')[:25]
     
+    # Growth & SEO Analytics
+    total_listing_owners = Listing.objects.values('owner').distinct().count()
+    listings_per_city = City.objects.annotate(
+        listings_count=Count('listings', filter=Q(listings__is_sold=False))
+    ).order_by('-listings_count')
+    search_trends = SearchTrend.objects.all().order_by('-count', '-last_searched')[:50]
+
     return render(request, 'admin_dashboard.html', {
         'total_listings': total_listings,
         'active_listings': active_listings,
@@ -1079,6 +1184,11 @@ def admin_dashboard(request):
         'top_contributors': top_contributors,
         'most_active_cities': most_active_cities,
         'admin_logs': admin_logs,
+        
+        # Growth Analytics context
+        'total_listing_owners': total_listing_owners,
+        'listings_per_city': listings_per_city,
+        'search_trends': search_trends,
     })
 
 
@@ -1281,7 +1391,9 @@ def city_page(request, city_slug):
             city=city, 
             is_sold=False
         ).select_related('owner__userprofile', 'city', 'area').prefetch_related('images').order_by('-created_at')[:6])
-        areas = list(city.areas.filter(is_active=True).order_by('name'))
+        areas = list(city.areas.filter(is_active=True).annotate(
+            active_count=Count('listings', filter=Q(listings__is_sold=False))
+        ).order_by('name'))
         page_data = {
             'city': city,
             'listings': featured_listings,
@@ -2052,6 +2164,9 @@ def listing_landmarks_api(request, listing_id=None):
         "shopping": [
             { "name": "Loyal World Supermarket", "distance": "0.4 km", "drive_time": "2 min", "walk_time": "5 min", "icon": "🛒" },
             { "name": "Corner House Ice Cream", "distance": "0.3 km", "drive_time": "1 min", "walk_time": "3 min", "icon": "🍦" }
+        ],
+        "it_parks": [
+            { "name": "Silverline Tech Park", "distance": "1.8 km", "drive_time": "6 min", "walk_time": "22 min", "icon": "🏢" }
         ]
     }
     
@@ -2072,6 +2187,9 @@ def listing_landmarks_api(request, listing_id=None):
             "shopping": [
                 { "name": "Abhishek Circle Market", "distance": "0.5 km", "drive_time": "2 min", "walk_time": "6 min", "icon": "🛒" },
                 { "name": "Empire Restaurant", "distance": "0.7 km", "drive_time": "3 min", "walk_time": "8 min", "icon": "🍔" }
+            ],
+            "it_parks": [
+                { "name": "Hebbal Tech Enclave", "distance": "3.5 km", "drive_time": "9 min", "walk_time": "45 min", "icon": "🏢" }
             ]
         }
     elif "hebbal" in loc:
@@ -2091,6 +2209,10 @@ def listing_landmarks_api(request, listing_id=None):
             "shopping": [
                 { "name": "Reliance Smart Superstore", "distance": "0.9 km", "drive_time": "4 min", "walk_time": "10 min", "icon": "🛒" },
                 { "name": "Hebbal Lake Park Café", "distance": "1.2 km", "drive_time": "5 min", "walk_time": "14 min", "icon": "☕" }
+            ],
+            "it_parks": [
+                { "name": "Hebbal IT Park", "distance": "0.5 km", "drive_time": "2 min", "walk_time": "6 min", "icon": "🏢" },
+                { "name": "Infosys Mysore Campus", "distance": "1.2 km", "drive_time": "4 min", "walk_time": "15 min", "icon": "🏢" }
             ]
         }
 
@@ -2249,14 +2371,16 @@ def listing_landmarks_api(request, listing_id=None):
             "schools": [],
             "hospitals": [],
             "transit": [],
-            "shopping": []
+            "shopping": [],
+            "it_parks": []
         }
         
         tab_mappings = {
             "schools": ["schools", "colleges"],
             "hospitals": ["hospitals"],
             "transit": ["bus_stops", "metro_stations", "railway_stations", "airports"],
-            "shopping": ["supermarkets", "restaurants", "cafes", "banks", "petrol_pumps", "gyms", "parks", "it_parks", "malls"]
+            "shopping": ["supermarkets", "restaurants", "cafes", "banks", "petrol_pumps", "gyms", "parks", "malls"],
+            "it_parks": ["it_parks"]
         }
         
         for tab_name, sub_cats in tab_mappings.items():
@@ -2281,5 +2405,72 @@ def listing_landmarks_api(request, listing_id=None):
     except Exception as e:
         print(f"Landmark discovery failed: {e}")
         return JsonResponse(fallback_data)
+
+
+def blog_list(request):
+    posts_list = BlogPost.objects.filter(is_published=True).select_related('category').order_by('-created_at')
+    
+    category_slug = request.GET.get('category')
+    current_category = None
+    if category_slug:
+        current_category = get_object_or_404(BlogCategory, slug=category_slug)
+        posts_list = posts_list.filter(category=current_category)
+        
+    paginator = Paginator(posts_list, 6)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
+    categories = BlogCategory.objects.all()
+    
+    seo_title = f"{current_category.name} | RoomNest Stay Guides" if current_category else "RoomNest Blog - Expert Rental Guides & Co-living Tips"
+    seo_description = f"Read the latest {current_category.name.lower() if current_category else 'rental, student housing, and co-living'} articles, guides, and tips on RoomNest."
+    
+    return render(request, 'blog_list.html', {
+        'page_obj': page_obj,
+        'categories': categories,
+        'current_category': current_category,
+        'seo_title': seo_title,
+        'seo_description': seo_description
+    })
+
+
+def blog_detail(request, slug):
+    post = get_object_or_404(
+        BlogPost.objects.select_related('category').prefetch_related('related_listings__city', 'related_listings__area'), 
+        slug=slug, 
+        is_published=True
+    )
+    
+    seo_title = post.seo_title if post.seo_title else f"{post.title} | RoomNest Blog"
+    seo_description = post.seo_description if post.seo_description else post.summary
+    
+    related_posts = BlogPost.objects.filter(is_published=True, category=post.category).exclude(id=post.id).order_by('-created_at')[:3]
+    
+    return render(request, 'blog_detail.html', {
+        'post': post,
+        'related_listings': post.related_listings.filter(is_sold=False)[:3],
+        'related_posts': related_posts,
+        'seo_title': seo_title,
+        'seo_description': seo_description
+    })
+
+
+def search_by_city(request, city_slug):
+    # Mutate GET parameters to filter by city slug and forward to search view
+    q = request.GET.copy()
+    q['city'] = city_slug
+    request.GET = q
+    return search(request)
+
+
+def search_by_city_and_type(request, city_slug, type_slug):
+    # Mutate GET parameters to filter by city and stay type, then forward to search view
+    q = request.GET.copy()
+    q['city'] = city_slug
+    q['type'] = type_slug
+    request.GET = q
+    return search(request)
+
+
 
 

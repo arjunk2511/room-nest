@@ -546,7 +546,7 @@ class SeoAndFriendlyUrlsTestCase(TestCase):
         
         # Verify absolute URL
         absolute_url = listing.get_absolute_url()
-        self.assertEqual(absolute_url, f"/bengaluru/{listing.slug}/")
+        self.assertEqual(absolute_url, f"/bengaluru/hsr-layout/{listing.slug}/")
 
     def test_old_url_redirect_to_friendly_url(self):
         listing = Listing.objects.create(

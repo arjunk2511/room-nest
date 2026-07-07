@@ -5,13 +5,14 @@ from django.conf.urls.static import static
 from django.views.generic.base import RedirectView
 from django.http import HttpResponse
 from django.contrib.sitemaps.views import sitemap
-from listings.sitemaps import StaticViewSitemap, ListingSitemap, CitySitemap, AreaSitemap
+from listings.sitemaps import StaticViewSitemap, ListingSitemap, CitySitemap, AreaSitemap, BlogSitemap
 
 sitemaps = {
     'static': StaticViewSitemap,
     'listings': ListingSitemap,
     'cities': CitySitemap,
     'areas': AreaSitemap,
+    'blog': BlogSitemap,
 }
 
 def robots_txt(request):

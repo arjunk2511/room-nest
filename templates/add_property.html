@@ -761,15 +761,47 @@ function detectLiveLocationGPS() {
 
 function parseGoogleMapsLink(val) {
     if (!val) return;
-    const regex = /@(-?\d+\.\d+),(-?\d+\.\d+)/;
-    const match = val.match(regex);
-    if (match) {
-        const lat = parseFloat(match[1]);
-        const lng = parseFloat(match[2]);
-        initMap(lat, lng);
-        document.getElementById('paste-success-msg').style.display = 'block';
+    val = val.trim();
+    
+    // 1. Raw coordinates
+    const rawRegex = /^[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?),\s*[-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?)$/;
+    const rawMatch = val.match(rawRegex);
+    if (rawMatch) {
+        const parts = val.split(',');
+        const latVal = parseFloat(parts[0].trim());
+        const lngVal = parseFloat(parts[1].trim());
+        if (!isNaN(latVal) && !isNaN(lngVal)) {
+            initMap(latVal, lngVal);
+            showPasteSuccess();
+            return;
+        }
+    }
+    
+    // 2. URL q query parameter
+    const qRegex = /[?&]q=([-+]?\d+\.\d+),([-+]?\d+\.\d+)/;
+    const qMatch = val.match(qRegex);
+    if (qMatch) {
+        initMap(parseFloat(qMatch[1]), parseFloat(qMatch[2]));
+        showPasteSuccess();
+        return;
+    }
+    
+    // 3. URL @ coordinates
+    const atRegex = /@([-+]?\d+\.\d+),([-+]?\d+\.\d+)/;
+    const atMatch = val.match(atRegex);
+    if (atMatch) {
+        initMap(parseFloat(atMatch[1]), parseFloat(atMatch[2]));
+        showPasteSuccess();
+        return;
+    }
+}
+
+function showPasteSuccess() {
+    const successMsg = document.getElementById('paste-success-msg');
+    if (successMsg) {
+        successMsg.style.display = 'block';
         setTimeout(() => {
-            document.getElementById('paste-success-msg').style.display = 'none';
+            successMsg.style.display = 'none';
         }, 3000);
     }
 }
