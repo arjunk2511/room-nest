@@ -162,21 +162,37 @@ WSGI_APPLICATION = 'roomnest.wsgi.application'
 import dj_database_url
 import os
 
-if os.environ.get("DATABASE_URL"):
+database_url = os.environ.get("DATABASE_URL")
+if IS_PRODUCTION:
+    if not database_url:
+        from django.core.exceptions import ImproperlyConfigured
+        raise ImproperlyConfigured("DATABASE_URL environment variable is missing, but running in a production environment!")
     DATABASES = {
         "default": dj_database_url.config(
-            default=os.environ.get("DATABASE_URL"),
+            default=database_url,
             conn_max_age=600,
             ssl_require=True,
         )
     }
+    if DATABASES["default"]["ENGINE"] == "django.db.backends.sqlite3":
+        from django.core.exceptions import ImproperlyConfigured
+        raise ImproperlyConfigured("SQLite database cannot be used in a production environment!")
 else:
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.sqlite3",
-            "NAME": BASE_DIR / "db.sqlite3",
+    if database_url:
+        DATABASES = {
+            "default": dj_database_url.config(
+                default=database_url,
+                conn_max_age=600,
+                ssl_require=True,
+            )
         }
-    }
+    else:
+        DATABASES = {
+            "default": {
+                "ENGINE": "django.db.backends.sqlite3",
+                "NAME": BASE_DIR / "db.sqlite3",
+            }
+        }
 
 # Cache Configuration (Sub-millisecond local memory cache)
 CACHES = {

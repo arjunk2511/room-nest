@@ -1,0 +1,97 @@
+import os
+import sys
+import django
+
+# Set up Django environment
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'roomnest.settings')
+try:
+    django.setup()
+except Exception as e:
+    print(f"❌ ERROR: Failed to initialize Django settings: {e}")
+    sys.exit(1)
+
+from django.db import connections
+from django.db.utils import OperationalError
+from django.contrib.auth import get_user_model
+from django.db.migrations.recorder import MigrationRecorder
+from listings.models import Listing
+
+def main():
+    print("====================================================")
+    print("🔒 Running Pre-Startup Production Database Safety Checks")
+    print("====================================================")
+    
+    # 1. Retrieve the default database connection
+    db_conn = connections['default']
+    
+    # 2. Verify PostgreSQL connection
+    try:
+        db_conn.ensure_connection()
+        print("✅ Database connection verified.")
+    except OperationalError as e:
+        print(f"❌ DATABASE CONNECTION ERROR: Could not connect to the remote database: {e}")
+        print("Startup blocked to prevent data loss or fallback issues.")
+        sys.exit(1)
+        
+    # 3. Double-check database engine is not SQLite in production
+    engine = db_conn.settings_dict.get('ENGINE', '')
+    is_production_env = (
+        os.environ.get('DJANGO_ENV', 'development').lower() in ['staging', 'production']
+        or os.environ.get('IS_PRODUCTION', 'False') == 'True'
+        or 'RAILWAY_ENVIRONMENT' in os.environ
+        or 'RENDER' in os.environ
+    )
+    
+    if is_production_env and 'sqlite' in engine:
+        print("❌ CRITICAL DATABASE ERROR: SQLite configuration is prohibited in production!")
+        print("Startup blocked to prevent data loss on ephemeral filesystems.")
+        sys.exit(1)
+
+    # 4. Verify critical Django tables exist
+    table_names = db_conn.introspection.table_names()
+    required_tables = ['auth_user', 'listings_listing', 'django_migrations']
+    missing_tables = [table for table in required_tables if table not in table_names]
+    
+    if missing_tables:
+        print(f"❌ DATABASE STRUCTURE ERROR: Missing critical Django tables: {missing_tables}")
+        print("Startup blocked. Ensure migrations are applied or correct database is specified.")
+        sys.exit(1)
+    else:
+        print("✅ Critical Django tables verified.")
+
+    # 5. Verify migration history exists
+    try:
+        recorder = MigrationRecorder(db_conn)
+        applied_migrations = recorder.applied_migrations()
+        if not applied_migrations:
+            print("❌ DATABASE HISTORY ERROR: Migration history is empty (no applied migrations in django_migrations)!")
+            print("Startup blocked.")
+            sys.exit(1)
+        else:
+            print(f"✅ Migration history verified ({len(applied_migrations)} migrations applied).")
+    except Exception as e:
+        print(f"❌ DATABASE HISTORY ERROR: Failed to read migration history: {e}")
+        sys.exit(1)
+
+    # 6. Verify database is not empty (contains users, listings)
+    try:
+        User = get_user_model()
+        user_count = User.objects.count()
+        listing_count = Listing.objects.count()
+        
+        print(f"ℹ️ Database Scan: Found {user_count} users and {listing_count} listings.")
+        if user_count == 0:
+            print("❌ DATABASE CONTENT ERROR: The database contains 0 registered users (it is empty)!")
+            print("Startup blocked to prevent running against an empty/wiped database.")
+            sys.exit(1)
+        else:
+            print("✅ Database contains existing records (not empty).")
+    except Exception as e:
+        print(f"❌ DATABASE CONTENT ERROR: Failed to query existing database records: {e}")
+        sys.exit(1)
+
+    print("🎉 All pre-startup database safety checks passed successfully!")
+    sys.exit(0)
+
+if __name__ == '__main__':
+    main()
