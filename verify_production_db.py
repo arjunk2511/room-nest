@@ -75,6 +75,33 @@ def main():
     try:
         db_conn.ensure_connection()
         print("✅ Database connection verified.")
+        
+        # Run active diagnostic queries to fetch actual DB name, version, and migrations count
+        try:
+            with db_conn.cursor() as cursor:
+                # Query database name
+                cursor.execute("SELECT current_database();")
+                actual_db_name = cursor.fetchone()[0]
+                
+                # Query postgres/engine version
+                cursor.execute("SELECT version();")
+                actual_db_version = cursor.fetchone()[0]
+                
+                # Verify migrations count
+                table_names = db_conn.introspection.table_names()
+                migrations_count = "N/A (django_migrations table missing)"
+                if 'django_migrations' in table_names:
+                    cursor.execute("SELECT COUNT(*) FROM django_migrations;")
+                    migrations_count = cursor.fetchone()[0]
+                    
+            print("📊 Active Database Diagnostic Query Results:")
+            print(f"  Current Database: {actual_db_name}")
+            print(f"  Database Version: {actual_db_version}")
+            print(f"  Applied Migrations Count: {migrations_count}")
+            print("----------------------------------------------------")
+        except Exception as q_err:
+            print(f"⚠️ Warning: Failed to run diagnostic queries: {q_err}")
+            
     except OperationalError as e:
         print(f"❌ DATABASE CONNECTION ERROR: Could not connect to the remote database: {e}")
         print("Startup blocked to prevent data loss or fallback issues.")
