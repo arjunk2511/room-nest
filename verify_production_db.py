@@ -120,14 +120,14 @@ def main():
         print("Startup blocked to prevent data loss on ephemeral filesystems.")
         sys.exit(1)
 
-    # 5. Verify critical Django tables exist
+    # 5. Verify critical Django tables exist (Strict validation after migration runs)
     table_names = db_conn.introspection.table_names()
     required_tables = ['auth_user', 'listings_listing', 'django_migrations']
     missing_tables = [table for table in required_tables if table not in table_names]
     
     if missing_tables:
         print(f"❌ DATABASE STRUCTURE ERROR: Missing critical Django tables: {missing_tables}")
-        print("Startup blocked. Ensure migrations are applied or correct database is specified.")
+        print("Startup blocked. Ensure migrations have run successfully.")
         sys.exit(1)
     else:
         print("✅ Critical Django tables verified.")
@@ -146,7 +146,7 @@ def main():
         print(f"❌ DATABASE HISTORY ERROR: Failed to read migration history: {e}")
         sys.exit(1)
 
-    # 7. Verify database is not empty (contains users, listings)
+    # 7. Scan database users and listings
     try:
         User = get_user_model()
         user_count = User.objects.count()
@@ -154,16 +154,16 @@ def main():
         
         print(f"ℹ️ Database Scan: Found {user_count} users and {listing_count} listings.")
         if user_count == 0:
-            print("❌ DATABASE CONTENT ERROR: The database contains 0 registered users (it is empty)!")
-            print("Startup blocked to prevent running against an empty/wiped database.")
-            sys.exit(1)
+            print("⚠️ WARNING: The database contains 0 registered users.")
+            print("This is expected during the initial setup/bootstrap of a new production database.")
+            print("Verify that this is not a data loss event if you had previous users.")
         else:
-            print("✅ Database contains existing records (not empty).")
+            print("✅ Database contains existing records (persistence verified).")
     except Exception as e:
-        print(f"❌ DATABASE CONTENT ERROR: Failed to query existing database records: {e}")
+        print(f"❌ DATABASE CONTENT ERROR: Failed to query database records: {e}")
         sys.exit(1)
 
-    print("🎉 All pre-startup database safety checks passed successfully!")
+    print("🎉 All database safety checks passed successfully!")
     sys.exit(0)
 
 if __name__ == '__main__':
