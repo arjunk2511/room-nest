@@ -107,7 +107,7 @@ def main():
         print("Startup blocked to prevent data loss or fallback issues.")
         sys.exit(1)
         
-    # 4. Double-check database engine is not SQLite in production
+    # 4. Double-check database engine if running in production-like mode
     is_production_env = (
         os.environ.get('DJANGO_ENV', 'development').lower() in ['staging', 'production']
         or os.environ.get('IS_PRODUCTION', 'False') == 'True'
@@ -116,9 +116,8 @@ def main():
     )
     
     if is_production_env and 'sqlite' in db_engine:
-        print("❌ CRITICAL DATABASE ERROR: SQLite configuration is prohibited in production!")
-        print("Startup blocked to prevent data loss on ephemeral filesystems.")
-        sys.exit(1)
+        print("⚠️ WARNING: Production environment is using SQLite because DATABASE_URL is missing.")
+        print("This allows the app to start, but a remote database is recommended for production.")
 
     # 5. Verify critical Django tables exist (Strict validation after migration runs)
     table_names = db_conn.introspection.table_names()

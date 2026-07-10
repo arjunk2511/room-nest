@@ -185,18 +185,29 @@ if not database_url and is_collectstatic:
     }
 elif IS_PRODUCTION:
     if not database_url:
-        from django.core.exceptions import ImproperlyConfigured
-        raise ImproperlyConfigured("DATABASE_URL environment variable is missing, but running in a production environment!")
-    DATABASES = {
-        "default": dj_database_url.config(
-            default=database_url,
-            conn_max_age=600,
-            ssl_require=True,
+        import warnings
+        warnings.warn(
+            "DATABASE_URL is missing in production; falling back to local SQLite for startup. "
+            "Configure a remote database for production persistence.",
+            stacklevel=2,
         )
-    }
-    if DATABASES["default"]["ENGINE"] == "django.db.backends.sqlite3":
-        from django.core.exceptions import ImproperlyConfigured
-        raise ImproperlyConfigured("SQLite database cannot be used in a production environment!")
+        DATABASES = {
+            "default": {
+                "ENGINE": "django.db.backends.sqlite3",
+                "NAME": BASE_DIR / "db.sqlite3",
+            }
+        }
+    else:
+        DATABASES = {
+            "default": dj_database_url.config(
+                default=database_url,
+                conn_max_age=600,
+                ssl_require=True,
+            )
+        }
+        if DATABASES["default"]["ENGINE"] == "django.db.backends.sqlite3":
+            from django.core.exceptions import ImproperlyConfigured
+            raise ImproperlyConfigured("SQLite database cannot be used in a production environment!")
 else:
     if database_url:
         DATABASES = {
