@@ -6,6 +6,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-dummy-key-for-roomnest-project')
 
 # Environments: development, staging, production
+import sys
 DJANGO_ENV = os.environ.get('DJANGO_ENV', 'development').lower()
 if DJANGO_ENV not in ['development', 'staging', 'production']:
     DJANGO_ENV = 'development'
@@ -173,33 +174,29 @@ if not database_url and os.environ.get("PGHOST"):
     pg_db = os.environ.get("PGDATABASE", "")
     database_url = f"postgresql://{pg_user}:{pg_pass}@{pg_host}:{pg_port}/{pg_db}"
 
-if IS_PRODUCTION:
-    # During the build phase (e.g., collectstatic), DATABASE_URL is not injected by Railway.
-    # We detect if collectstatic is running to bypass strict DATABASE_URL check and use a dummy config.
-    is_collectstatic = 'collectstatic' in sys.argv
-    
-    if not database_url:
-        if is_collectstatic:
-            DATABASES = {
-                "default": {
-                    "ENGINE": "django.db.backends.sqlite3",
-                    "NAME": BASE_DIR / "db.sqlite3",
-                }
-            }
-        else:
-            from django.core.exceptions import ImproperlyConfigured
-            raise ImproperlyConfigured("DATABASE_URL environment variable is missing, but running in a production environment!")
-    else:
-        DATABASES = {
-            "default": dj_database_url.config(
-                default=database_url,
-                conn_max_age=600,
-                ssl_require=True,
-            )
+is_collectstatic = 'collectstatic' in sys.argv
+
+if not database_url and is_collectstatic:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
         }
-        if DATABASES["default"]["ENGINE"] == "django.db.backends.sqlite3":
-            from django.core.exceptions import ImproperlyConfigured
-            raise ImproperlyConfigured("SQLite database cannot be used in a production environment!")
+    }
+elif IS_PRODUCTION:
+    if not database_url:
+        from django.core.exceptions import ImproperlyConfigured
+        raise ImproperlyConfigured("DATABASE_URL environment variable is missing, but running in a production environment!")
+    DATABASES = {
+        "default": dj_database_url.config(
+            default=database_url,
+            conn_max_age=600,
+            ssl_require=True,
+        )
+    }
+    if DATABASES["default"]["ENGINE"] == "django.db.backends.sqlite3":
+        from django.core.exceptions import ImproperlyConfigured
+        raise ImproperlyConfigured("SQLite database cannot be used in a production environment!")
 else:
     if database_url:
         DATABASES = {
