@@ -2,13 +2,15 @@
 # exit on error
 set -o errexit
 
-echo "Building for Render..."
+echo "Building for production deployment..."
 pip install -r requirements.txt
 python manage.py collectstatic --no-input
-python manage.py makemigrations
-# Run database migrations
-echo "Applying database migrations..."
-python manage.py migrate --fake-initial
+
+echo "Applying database migrations safely..."
+python manage.py migrate --no-input
+
+echo "Running production readiness verification..."
+python manage.py verify_production_readiness
 
 # Create non-interactive Django superuser securely using Render environment variables
 echo "Checking superuser requirements..."

@@ -1,6 +1,8 @@
 import os
 from pathlib import Path
 
+from django.core.exceptions import ImproperlyConfigured
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-dummy-key-for-roomnest-project')
@@ -114,6 +116,7 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'cloudinary_storage',
     'cloudinary',
+    'roomnest.apps.RoomNestConfig',
     
     # Custom apps
     'accounts.apps.AccountsConfig',
@@ -176,38 +179,28 @@ if not database_url and os.environ.get("PGHOST"):
 
 is_collectstatic = 'collectstatic' in sys.argv
 
-if not database_url and is_collectstatic:
+if IS_PRODUCTION:
+    if not database_url and not os.environ.get('PGHOST'):
+        raise ImproperlyConfigured(
+            "Production requires PostgreSQL via DATABASE_URL or PGHOST/PGUSER/PGPASSWORD/PGDATABASE. "
+            "SQLite startup is blocked to prevent data loss."
+        )
+    DATABASES = {
+        "default": dj_database_url.config(
+            default=database_url,
+            conn_max_age=600,
+            ssl_require=True,
+        )
+    }
+    if DATABASES["default"]["ENGINE"] == "django.db.backends.sqlite3":
+        raise ImproperlyConfigured("SQLite database cannot be used in a production environment!")
+elif not database_url and is_collectstatic:
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.sqlite3",
             "NAME": BASE_DIR / "db.sqlite3",
         }
     }
-elif IS_PRODUCTION:
-    if not database_url:
-        import warnings
-        warnings.warn(
-            "DATABASE_URL is missing in production; falling back to local SQLite for startup. "
-            "Configure a remote database for production persistence.",
-            stacklevel=2,
-        )
-        DATABASES = {
-            "default": {
-                "ENGINE": "django.db.backends.sqlite3",
-                "NAME": BASE_DIR / "db.sqlite3",
-            }
-        }
-    else:
-        DATABASES = {
-            "default": dj_database_url.config(
-                default=database_url,
-                conn_max_age=600,
-                ssl_require=True,
-            )
-        }
-        if DATABASES["default"]["ENGINE"] == "django.db.backends.sqlite3":
-            from django.core.exceptions import ImproperlyConfigured
-            raise ImproperlyConfigured("SQLite database cannot be used in a production environment!")
 else:
     if database_url:
         DATABASES = {

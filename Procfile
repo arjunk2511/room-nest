@@ -1,1 +1,1 @@
-web: python manage.py migrate --no-input && python verify_production_db.py && python create_superuser.py && python verify_deployment.py && gunicorn roomnest.wsgi:application
+web: python manage.py migrate --no-input && python manage.py verify_production_readiness && python create_superuser.py && python create_safe_validation_data.py && python verify_deployment.py && gunicorn roomnest.wsgi:application

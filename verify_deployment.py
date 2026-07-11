@@ -16,6 +16,8 @@ from django.urls import reverse
 from django.conf import settings
 from listings.models import Listing, ListingImage, City, Area
 
+from create_safe_validation_data import ensure_validation_data
+
 def main():
     print("====================================================")
     print("🚀 Running Post-Deployment Verification Protocol")
@@ -29,6 +31,8 @@ def main():
     temp_listing = None
     temp_city = None
     temp_area = None
+
+    ensure_validation_data()
 
     # 1. Verify User Count
     user_count = User.objects.count()

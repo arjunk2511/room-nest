@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>System Health</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 24px; }
+    .card { border: 1px solid #ddd; padding: 16px; margin-bottom: 16px; border-radius: 8px; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { border: 1px solid #eee; padding: 8px; text-align: left; }
+    th { background: #f6f6f6; }
+  </style>
+</head>
+<body>
+  <h1>RoomNest System Health</h1>
+  <div class="card">
+    <table>
+      <tr><th>Database Engine</th><td>{{ db_engine }}</td></tr>
+      <tr><th>Database Name</th><td>{{ db_name }}</td></tr>
+      <tr><th>Database Status</th><td>{{ db_status }}</td></tr>
+      <tr><th>Total Users</th><td>{{ counts.users }}</td></tr>
+      <tr><th>Total Owners</th><td>{{ counts.owners }}</td></tr>
+      <tr><th>Total Listings</th><td>{{ counts.listings }}</td></tr>
+      <tr><th>Total Images</th><td>{{ counts.images }}</td></tr>
+      <tr><th>Last Migration</th><td>{{ last_migration }}</td></tr>
+      <tr><th>Current Git Commit</th><td>{{ git_commit }}</td></tr>
+      <tr><th>Railway Environment</th><td>{{ railway_environment }}</td></tr>
+      <tr><th>Cloudinary Status</th><td>{{ cloudinary_status }}</td></tr>
+      <tr><th>Last Deployment Time</th><td>{{ last_deployment_time }}</td></tr>
+    </table>
+  </div>
+</body>
+</html>
