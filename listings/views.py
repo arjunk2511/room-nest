@@ -19,6 +19,9 @@ import urllib.request
 import urllib.parse
 from decimal import Decimal
 
+# Server Startup/Deployment Time
+STARTUP_TIME = timezone.now()
+
 def get_haversine_distance(lat1, lon1, lat2, lon2):
     R = 6371.0
     dlat = math.radians(lat2 - lat1)
@@ -1158,6 +1161,80 @@ def admin_dashboard(request):
     ).order_by('-listings_count')
     search_trends = SearchTrend.objects.all().order_by('-count', '-last_searched')[:50]
 
+    # System Health Dashboard Metrics
+    import subprocess
+    import os
+    from django.db import connection
+    import cloudinary
+
+    # 1. Database Status
+    db_status = "Disconnected"
+    db_latency = "N/A"
+    db_engine = connection.settings_dict.get('ENGINE')
+    db_host = connection.settings_dict.get('HOST', 'Localhost')
+    db_name = connection.settings_dict.get('NAME', 'sqlite3')
+    
+    if db_host and db_host != 'localhost' and '.' in db_host:
+        parts = db_host.split('.')
+        db_host_masked = parts[0][:3] + "***." + ".".join(parts[1:])
+    else:
+        db_host_masked = db_host
+
+    start_time = datetime.datetime.now()
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT 1;")
+            cursor.fetchone()
+        db_status = "Connected"
+        latency = (datetime.datetime.now() - start_time).total_seconds() * 1000
+        db_latency = f"{latency:.2f} ms"
+    except Exception as e:
+        db_status = "Error"
+        db_latency = str(e)
+
+    # 2. Total Images (gallery and main listing images)
+    total_images = ListingImage.objects.count()
+    main_images_count = Listing.objects.exclude(image='').count()
+    combined_images_count = total_images + main_images_count
+
+    # 3. Cloudinary Status
+    cloudinary_status = "Not Configured"
+    cloudinary_cloud_name = "N/A"
+    if os.environ.get('CLOUDINARY_CLOUD_NAME'):
+        cloudinary_cloud_name = os.environ.get('CLOUDINARY_CLOUD_NAME')
+        try:
+            cloudinary.config(
+                cloud_name=cloudinary_cloud_name,
+                api_key=os.environ.get('CLOUDINARY_API_KEY'),
+                api_secret=os.environ.get('CLOUDINARY_API_SECRET')
+            )
+            import cloudinary.api
+            res = cloudinary.api.ping()
+            if res.get('status') == 'ok':
+                cloudinary_status = "Connected"
+            else:
+                cloudinary_status = "Response Error"
+        except Exception as e:
+            cloudinary_status = f"Error: {str(e)}"
+    
+    # 4. Railway Environment & variables
+    railway_env = os.environ.get('RAILWAY_ENVIRONMENT', 'Not Running in Railway (Local Dev)')
+    railway_service_name = os.environ.get('RAILWAY_SERVICE_NAME', 'N/A')
+    
+    # 5. Last Deployment & Server Startup
+    startup_timestamp = STARTUP_TIME.strftime("%Y-%m-%d %H:%M:%S UTC")
+    
+    # 6. Current Git Commit
+    git_commit = os.environ.get('RAILWAY_GIT_COMMIT_SHA', 'Unknown')[:8]
+    git_commit_message = os.environ.get('RAILWAY_GIT_COMMIT_MESSAGE', 'Unknown')
+    if git_commit == 'Unknown' or git_commit == '':
+        try:
+            git_commit = subprocess.check_output(['git', 'rev-parse', '--short', 'HEAD'], stderr=subprocess.DEVNULL).decode('utf-8').strip()
+            git_commit_message = subprocess.check_output(['git', 'log', '-1', '--format=%s'], stderr=subprocess.DEVNULL).decode('utf-8').strip()
+        except Exception:
+            git_commit = "Unknown"
+            git_commit_message = "Unknown"
+
     return render(request, 'admin_dashboard.html', {
         'total_listings': total_listings,
         'active_listings': active_listings,
@@ -1189,6 +1266,21 @@ def admin_dashboard(request):
         'total_listing_owners': total_listing_owners,
         'listings_per_city': listings_per_city,
         'search_trends': search_trends,
+
+        # System Health variables
+        'db_status': db_status,
+        'db_latency': db_latency,
+        'db_engine': db_engine,
+        'db_host': db_host_masked,
+        'db_name': db_name,
+        'combined_images_count': combined_images_count,
+        'cloudinary_status': cloudinary_status,
+        'cloudinary_cloud_name': cloudinary_cloud_name,
+        'railway_env': railway_env,
+        'railway_service_name': railway_service_name,
+        'startup_timestamp': startup_timestamp,
+        'git_commit': git_commit,
+        'git_commit_message': git_commit_message,
     })
 
 

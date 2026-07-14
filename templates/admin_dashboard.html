@@ -43,6 +43,7 @@
         <button class="tab-btn" onclick="switchTab(event, 'prop-verifications-tab')">🛡️ Property Listing Verifications ({{ pending_verifications|length }})</button>
         <button class="tab-btn" onclick="switchTab(event, 'rewards-management-tab')">🎁 Reward & Referral Management ({{ pending_rewards|length }})</button>
         <button class="tab-btn" onclick="switchTab(event, 'seo-analytics-tab')">📈 Growth & SEO Analytics</button>
+        <button class="tab-btn" onclick="switchTab(event, 'system-health-tab')">🏥 System Health</button>
     </div>
 
     <!-- 1. SUBSCRIPTION VERIFICATIONS TAB -->
@@ -576,6 +577,103 @@
                     </table>
                 </div>
             </div>
+        </div>
+    </div>
+    
+    <!-- 5. SYSTEM HEALTH DASHBOARD TAB -->
+    <div id="system-health-tab" class="tab-pane">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-top: 1rem;">
+            
+            <!-- Database Status Card -->
+            <div style="background: white; border: 1px solid var(--border-color); border-radius: var(--border-radius-lg); padding: 1.75rem; box-shadow: var(--shadow-sm); display: flex; flex-direction: column; justify-content: space-between; gap: 1.25rem;">
+                <div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                        <span style="font-size: 0.72rem; color: var(--text-light); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Production Database</span>
+                        {% if db_status == 'Connected' %}
+                            <span style="background: #ECFDF5; color: #047857; font-size: 0.7rem; font-weight: 700; padding: 0.25rem 0.6rem; border-radius: 9999px; border: 1px solid #A7F3D0;">🟢 Active</span>
+                        {% else %}
+                            <span style="background: #FEE2E2; color: #991B1B; font-size: 0.7rem; font-weight: 700; padding: 0.25rem 0.6rem; border-radius: 9999px; border: 1px solid #FCA5A5;">🔴 Outage</span>
+                        {% endif %}
+                    </div>
+                    <h3 style="font-size: 1.4rem; font-weight: 850; color: var(--text-dark); margin: 0;">PostgreSQL Server</h3>
+                    <p style="color: var(--text-light); font-size: 0.85rem; margin: 0.4rem 0 0 0; line-height: 1.4;">Active database adapter running queries cleanly.</p>
+                </div>
+                <div style="border-top: 1px solid var(--border-color); padding-top: 1rem; font-size: 0.85rem; display: flex; flex-direction: column; gap: 0.4rem; font-weight: 500;">
+                    <div style="display: flex; justify-content: space-between;"><span style="color: var(--text-light);">Engine:</span><strong style="color: var(--text-dark);">{{ db_engine }}</strong></div>
+                    <div style="display: flex; justify-content: space-between;"><span style="color: var(--text-light);">DB Name:</span><strong style="color: var(--text-dark);">{{ db_name }}</strong></div>
+                    <div style="display: flex; justify-content: space-between;"><span style="color: var(--text-light);">Host URL:</span><strong style="color: var(--text-dark); font-family: monospace; font-size: 0.8rem;">{{ db_host }}</strong></div>
+                    <div style="display: flex; justify-content: space-between;"><span style="color: var(--text-light);">Connection Latency:</span><strong style="color: var(--text-dark);">{{ db_latency }}</strong></div>
+                </div>
+            </div>
+
+            <!-- Asset/Cloudinary Status Card -->
+            <div style="background: white; border: 1px solid var(--border-color); border-radius: var(--border-radius-lg); padding: 1.75rem; box-shadow: var(--shadow-sm); display: flex; flex-direction: column; justify-content: space-between; gap: 1.25rem;">
+                <div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                        <span style="font-size: 0.72rem; color: var(--text-light); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Media Storage</span>
+                        {% if cloudinary_status == 'Connected' %}
+                            <span style="background: #ECFDF5; color: #047857; font-size: 0.7rem; font-weight: 700; padding: 0.25rem 0.6rem; border-radius: 9999px; border: 1px solid #A7F3D0;">🟢 Active</span>
+                        {% else %}
+                            <span style="background: #FEF3C7; color: #D97706; font-size: 0.7rem; font-weight: 700; padding: 0.25rem 0.6rem; border-radius: 9999px; border: 1px solid #FCD34D;">🟡 Local</span>
+                        {% endif %}
+                    </div>
+                    <h3 style="font-size: 1.4rem; font-weight: 850; color: var(--text-dark); margin: 0;">Cloudinary Storage</h3>
+                    <p style="color: var(--text-light); font-size: 0.85rem; margin: 0.4rem 0 0 0; line-height: 1.4;">Asset hosting for listing photos and verification PDFs.</p>
+                </div>
+                <div style="border-top: 1px solid var(--border-color); padding-top: 1rem; font-size: 0.85rem; display: flex; flex-direction: column; gap: 0.4rem; font-weight: 500;">
+                    <div style="display: flex; justify-content: space-between;"><span style="color: var(--text-light);">Status:</span><strong style="color: var(--text-dark);">{{ cloudinary_status }}</strong></div>
+                    <div style="display: flex; justify-content: space-between;"><span style="color: var(--text-light);">Cloud Name:</span><strong style="color: var(--text-dark);">{{ cloudinary_cloud_name }}</strong></div>
+                    <div style="display: flex; justify-content: space-between;"><span style="color: var(--text-light);">Total Stored Images:</span><strong style="color: var(--text-dark);">{{ combined_images_count }} images</strong></div>
+                </div>
+            </div>
+
+            <!-- Server Deployment Status Card -->
+            <div style="background: white; border: 1px solid var(--border-color); border-radius: var(--border-radius-lg); padding: 1.75rem; box-shadow: var(--shadow-sm); display: flex; flex-direction: column; justify-content: space-between; gap: 1.25rem;">
+                <div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                        <span style="font-size: 0.72rem; color: var(--text-light); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Hosting Environment</span>
+                        <span style="background: #EFF6FF; color: #1D4ED8; font-size: 0.7rem; font-weight: 700; padding: 0.25rem 0.6rem; border-radius: 9999px; border: 1px solid #BFDBFE;">⚙️ Operational</span>
+                    </div>
+                    <h3 style="font-size: 1.4rem; font-weight: 850; color: var(--text-dark); margin: 0;">Railway Engine</h3>
+                    <p style="color: var(--text-light); font-size: 0.85rem; margin: 0.4rem 0 0 0; line-height: 1.4;">Application startup platform details and environment indicators.</p>
+                </div>
+                <div style="border-top: 1px solid var(--border-color); padding-top: 1rem; font-size: 0.85rem; display: flex; flex-direction: column; gap: 0.4rem; font-weight: 500;">
+                    <div style="display: flex; justify-content: space-between;"><span style="color: var(--text-light);">Environment:</span><strong style="color: var(--text-dark);">{{ railway_env }}</strong></div>
+                    <div style="display: flex; justify-content: space-between;"><span style="color: var(--text-light);">Service:</span><strong style="color: var(--text-dark);">{{ railway_service_name }}</strong></div>
+                    <div style="display: flex; justify-content: space-between;"><span style="color: var(--text-light);">Last Startup:</span><strong style="color: var(--text-dark);">{{ startup_timestamp }}</strong></div>
+                </div>
+            </div>
+
+            <!-- Git Repository Metadata Card -->
+            <div style="background: white; border: 1px solid var(--border-color); border-radius: var(--border-radius-lg); padding: 1.75rem; box-shadow: var(--shadow-sm); display: flex; flex-direction: column; justify-content: space-between; gap: 1.25rem;">
+                <div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                        <span style="font-size: 0.72rem; color: var(--text-light); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Version Control</span>
+                        <span style="background: #EFF6FF; color: #1D4ED8; font-size: 0.7rem; font-weight: 700; padding: 0.25rem 0.6rem; border-radius: 9999px; border: 1px solid #BFDBFE;">🏷️ Git Tracking</span>
+                    </div>
+                    <h3 style="font-size: 1.4rem; font-weight: 850; color: var(--text-dark); margin: 0;">Code Commit</h3>
+                    <p style="color: var(--text-light); font-size: 0.85rem; margin: 0.4rem 0 0 0; line-height: 1.4;">Active repository code tag mapping deployed on the startup server.</p>
+                </div>
+                <div style="border-top: 1px solid var(--border-color); padding-top: 1rem; font-size: 0.85rem; display: flex; flex-direction: column; gap: 0.4rem; font-weight: 500;">
+                    <div style="display: flex; justify-content: space-between;"><span style="color: var(--text-light);">Commit SHA:</span><strong style="color: var(--text-dark); font-family: monospace; font-size: 0.85rem;">{{ git_commit }}</strong></div>
+                    <div style="display: flex; justify-content: space-between; width: 100%;"><span style="color: var(--text-light); flex-shrink: 0; margin-right: 10px;">Commit Msg:</span><strong style="color: var(--text-dark); text-overflow: ellipsis; white-space: nowrap; overflow: hidden; max-width: 150px;" title="{{ git_commit_message }}">{{ git_commit_message }}</strong></div>
+                </div>
+            </div>
+
+            <!-- Platform Health Summary Card -->
+            <div style="background: white; border: 1px solid var(--border-color); border-radius: var(--border-radius-lg); padding: 1.75rem; box-shadow: var(--shadow-sm); display: flex; flex-direction: column; justify-content: space-between; gap: 1.25rem;">
+                <div>
+                    <span style="font-size: 0.72rem; color: var(--text-light); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 0.5rem;">Database Metrics</span>
+                    <h3 style="font-size: 1.4rem; font-weight: 850; color: var(--text-dark); margin: 0;">Core Statistics</h3>
+                    <p style="color: var(--text-light); font-size: 0.85rem; margin: 0.4rem 0 0 0; line-height: 1.4;">Summary counts for production records.</p>
+                </div>
+                <div style="border-top: 1px solid var(--border-color); padding-top: 1rem; font-size: 0.85rem; display: flex; flex-direction: column; gap: 0.4rem; font-weight: 500;">
+                    <div style="display: flex; justify-content: space-between;"><span style="color: var(--text-light);">Total Listings:</span><strong style="color: var(--text-dark);">{{ total_listings }}</strong></div>
+                    <div style="display: flex; justify-content: space-between;"><span style="color: var(--text-light);">Total Registered Users:</span><strong style="color: var(--text-dark);">{{ total_users }}</strong></div>
+                    <div style="display: flex; justify-content: space-between;"><span style="color: var(--text-light);">Unique Property Owners:</span><strong style="color: var(--text-dark);">{{ total_listing_owners }}</strong></div>
+                </div>
+            </div>
+
         </div>
     </div>
 
