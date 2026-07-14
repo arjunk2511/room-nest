@@ -666,6 +666,101 @@ class SmartLocationTestCase(TestCase):
         self.assertContains(response, "₹15,000")
 
 
+class ProductionRoadmapTestCase(TestCase):
+    def setUp(self):
+        # Create Owner
+        self.owner = User.objects.create_user(username='owner_rm', password='password', email='owner@rm.com')
+        # Create Tenant
+        self.tenant = User.objects.create_user(username='tenant_rm', password='password', email='tenant@rm.com')
+        
+        self.city, _ = City.objects.get_or_create(slug="mysore", defaults={"name": "Mysore", "is_active": True})
+        self.area, _ = Area.objects.get_or_create(slug="gokulam", city=self.city, defaults={"name": "Gokulam", "is_active": True})
+        
+        # Create standard Listings
+        self.listing_1 = Listing.objects.create(
+            title="Premium Gokulam 1",
+            location="Gokulam",
+            city=self.city,
+            area=self.area,
+            price=12000.00,
+            type="2BHK",
+            owner=self.owner,
+            phone="9876543210"
+        )
+        self.listing_2 = Listing.objects.create(
+            title="Premium Gokulam 2",
+            location="Gokulam",
+            city=self.city,
+            area=self.area,
+            price=14000.00,
+            type="3BHK",
+            owner=self.owner,
+            phone="9876543211"
+        )
+        self.client = Client()
+
+    def test_call_click_tracking(self):
+        # Authenticate tenant
+        self.client.login(username='tenant_rm', password='password')
+        
+        # Trigger track_call click endpoint
+        url = reverse('track_call', args=[self.listing_1.id])
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, 200)
+        
+        # Check call_clicks_count updated
+        self.listing_1.refresh_from_db()
+        self.assertEqual(self.listing_1.call_clicks_count, 1)
+        
+        # Check Lead record created
+        lead = Lead.objects.filter(listing=self.listing_1, tenant=self.tenant, lead_type='Call').first()
+        self.assertIsNotNone(lead)
+        self.assertEqual(lead.phone, 'Not Provided') # No profile set up in setUp, defaults to 'Not Provided'
+
+    def test_listing_reporting(self):
+        # Authenticate tenant
+        self.client.login(username='tenant_rm', password='password')
+        
+        # Trigger report_listing endpoint
+        url = reverse('report_listing', args=[self.listing_1.id])
+        response = self.client.post(url, {
+            'reason': 'Wrong Price',
+            'details': 'Listed price is lower than actual price.'
+        })
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()['status'], 'success')
+        
+        # Verify ListingReport model populated
+        from .models import ListingReport
+        report = ListingReport.objects.filter(listing=self.listing_1, reporter=self.tenant).first()
+        self.assertIsNotNone(report)
+        self.assertEqual(report.reason, 'Wrong Price')
+        self.assertEqual(report.details, 'Listed price is lower than actual price.')
+        
+        # Assert owner cannot report their own listing
+        self.client.login(username='owner_rm', password='password')
+        response2 = self.client.post(url, {'reason': 'Wrong Price'})
+        self.assertEqual(response2.status_code, 400)
+
+    def test_recently_viewed_session_tracking(self):
+        # Request detail page for listing_1
+        self.client.get(self.listing_1.get_absolute_url())
+        
+        # Check session list contains listing_1.id
+        recent_ids = self.client.session.get('recently_viewed_properties', [])
+        self.assertIn(self.listing_1.id, recent_ids)
+        self.assertEqual(recent_ids[0], self.listing_1.id)
+        
+        # Request detail page for listing_2
+        self.client.get(self.listing_2.get_absolute_url())
+        
+        # Check session list contains both in correct order
+        recent_ids = self.client.session.get('recently_viewed_properties', [])
+        self.assertEqual(recent_ids[0], self.listing_2.id)
+        self.assertEqual(recent_ids[1], self.listing_1.id)
+
+
+
 
 
 
