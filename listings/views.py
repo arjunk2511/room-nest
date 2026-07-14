@@ -46,12 +46,38 @@ def home(request):
         ).exists()
         wishlist_ids = list(Wishlist.objects.filter(user=request.user).values_list('listing_id', flat=True))
         user_listings = list(Listing.objects.filter(owner=request.user).select_related('city', 'area').prefetch_related('images')[:3])
-    
+
+    # Live Stats (cached separately for 10 minutes)
+    live_stats = cache.get('home_live_stats')
+    if not live_stats:
+        from django.contrib.auth.models import User as AuthUser
+        live_stats = {
+            'total_listings': Listing.objects.filter(is_sold=False).count(),
+            'total_users': AuthUser.objects.count(),
+            'total_owners': Listing.objects.values('owner').distinct().count(),
+            'total_cities': City.objects.filter(is_active=True).count(),
+        }
+        cache.set('home_live_stats', live_stats, 600)
+
+    # Popular Areas (annotated with listing count)
+    popular_areas = cache.get('home_popular_areas')
+    if not popular_areas:
+        popular_areas = list(
+            Area.objects.filter(is_active=True)
+            .annotate(listing_count=Count('listings', filter=Q(listings__is_sold=False)))
+            .filter(listing_count__gt=0)
+            .select_related('city')
+            .order_by('-listing_count')[:10]
+        )
+        cache.set('home_popular_areas', popular_areas, 900)
+
     context = {
         'listings': featured_listings,
         'has_subscription': has_subscription,
         'wishlist_ids': wishlist_ids,
         'user_listings': user_listings,
+        'live_stats': live_stats,
+        'popular_areas': popular_areas,
     }
     
     if not request.user.is_authenticated:

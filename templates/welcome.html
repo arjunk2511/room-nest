@@ -118,6 +118,52 @@
     </div>
 </div>
 
+<!-- Live Statistics Counter Grid -->
+{% if live_stats %}
+<section class="container" style="margin-top: 3rem;">
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem;">
+        <div style="background: white; border: 1px solid var(--border-color); border-radius: var(--border-radius-md); padding: 1.5rem 1rem; text-align: center; box-shadow: var(--shadow-sm);">
+            <div style="font-size: 2rem; font-weight: 850; color: var(--primary); font-family: 'Outfit', sans-serif; line-height: 1;">{{ live_stats.total_listings }}+</div>
+            <div style="font-size: 0.78rem; font-weight: 700; color: var(--text-light); margin-top: 0.35rem; text-transform: uppercase; letter-spacing: 0.5px;">Active Listings</div>
+        </div>
+        <div style="background: white; border: 1px solid var(--border-color); border-radius: var(--border-radius-md); padding: 1.5rem 1rem; text-align: center; box-shadow: var(--shadow-sm);">
+            <div style="font-size: 2rem; font-weight: 850; color: var(--primary); font-family: 'Outfit', sans-serif; line-height: 1;">{{ live_stats.total_users }}+</div>
+            <div style="font-size: 0.78rem; font-weight: 700; color: var(--text-light); margin-top: 0.35rem; text-transform: uppercase; letter-spacing: 0.5px;">Registered Users</div>
+        </div>
+        <div style="background: white; border: 1px solid var(--border-color); border-radius: var(--border-radius-md); padding: 1.5rem 1rem; text-align: center; box-shadow: var(--shadow-sm);">
+            <div style="font-size: 2rem; font-weight: 850; color: var(--primary); font-family: 'Outfit', sans-serif; line-height: 1;">{{ live_stats.total_owners }}+</div>
+            <div style="font-size: 0.78rem; font-weight: 700; color: var(--text-light); margin-top: 0.35rem; text-transform: uppercase; letter-spacing: 0.5px;">Property Owners</div>
+        </div>
+        <div style="background: white; border: 1px solid var(--border-color); border-radius: var(--border-radius-md); padding: 1.5rem 1rem; text-align: center; box-shadow: var(--shadow-sm);">
+            <div style="font-size: 2rem; font-weight: 850; color: var(--primary); font-family: 'Outfit', sans-serif; line-height: 1;">{{ live_stats.total_cities }}+</div>
+            <div style="font-size: 0.78rem; font-weight: 700; color: var(--text-light); margin-top: 0.35rem; text-transform: uppercase; letter-spacing: 0.5px;">Cities Covered</div>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Popular Areas Section -->
+{% if popular_areas %}
+<section class="container" style="margin-top: 3rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.25rem;">
+        <div>
+            <span style="color: var(--primary); font-weight: 700; font-size: 0.82rem; text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 0.25rem;">Browse by Location</span>
+            <h2 style="font-size: 1.5rem; font-weight: 800; margin: 0; font-family: 'Outfit', sans-serif;">Popular Areas</h2>
+        </div>
+        <a href="{% url 'search' %}" style="font-size: 0.85rem; font-weight: 700; color: var(--primary); text-decoration: none;">See All →</a>
+    </div>
+    <div style="display: flex; flex-wrap: wrap; gap: 0.6rem;">
+        {% for area in popular_areas %}
+        <a href="{% url 'area_page' area.city.slug area.slug %}" style="background: white; border: 1px solid var(--border-color); border-radius: 99px; padding: 0.45rem 1rem; font-size: 0.85rem; font-weight: 600; color: var(--text-dark); text-decoration: none; transition: all 0.15s; display: inline-flex; align-items: center; gap: 6px; box-shadow: var(--shadow-sm);" onmouseover="this.style.background='var(--primary-light)';this.style.color='var(--primary)';this.style.borderColor='rgba(255,56,92,0.2)';" onmouseout="this.style.background='white';this.style.color='var(--text-dark)';this.style.borderColor='var(--border-color)';">
+            <i data-lucide="map-pin" style="width: 12px; height: 12px; color: var(--primary);"></i>
+            {{ area.name }}
+            <span style="font-size: 0.72rem; color: var(--text-muted); font-weight: 500;">{{ area.listing_count }}</span>
+        </a>
+        {% endfor %}
+    </div>
+</section>
+{% endif %}
+
 <!-- Why Choose RoomNest Section -->
 <section class="container" style="margin-top: 4rem; margin-bottom: 4rem;">
     <div style="text-align: center; margin-bottom: 3rem;">
