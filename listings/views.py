@@ -314,6 +314,22 @@ def _show_listing_detail(request, listing):
     seo_title = f"{type_clean} in {area_name}, {city_name} | RoomNest"
     seo_description = f"Find verified {listing.type.lower()} for rent in {area_name}, {city_name}. Rent: ₹{listing.price:.0f}, security deposit: ₹{listing.deposit:.0f}, available: {listing.available_from}. Direct owner contact, zero brokerage only on RoomNest."
 
+    # Session tracking for recently viewed properties
+    recently_viewed_ids = request.session.get('recently_viewed_properties', [])
+    if listing.id in recently_viewed_ids:
+        recently_viewed_ids.remove(listing.id)
+    recently_viewed_ids.insert(0, listing.id)
+    request.session['recently_viewed_properties'] = recently_viewed_ids[:6]
+    request.session.modified = True
+
+    # Fetch recently viewed properties (excluding current listing)
+    viewed_ids = [rid for rid in recently_viewed_ids if rid != listing.id]
+    recently_viewed = []
+    if viewed_ids:
+        recently_viewed_qs = Listing.objects.filter(id__in=viewed_ids, is_sold=False).select_related('city', 'area').prefetch_related('images')
+        recently_viewed_map = {item.id: item for item in recently_viewed_qs}
+        recently_viewed = [recently_viewed_map[rid] for rid in viewed_ids if rid in recently_viewed_map][:3]
+
     context = {
         'listing': listing,
         'has_subscription': has_subscription,
@@ -323,6 +339,7 @@ def _show_listing_detail(request, listing):
         'avg_rating': round(avg_rating, 1),
         'seo_title': seo_title,
         'seo_description': seo_description,
+        'recently_viewed': recently_viewed,
     }
     return render(request, 'details.html', context)
 

@@ -389,6 +389,34 @@
             </div>
         </div>
         {% endif %}
+
+        <!-- Recently Viewed Properties Section (Only for Desktop/Laptop) -->
+        {% if recently_viewed %}
+        <div style="border-top: 1px solid var(--border-color); padding-top: 2.5rem; margin-top: 2.5rem;" class="desktop-only-recent">
+            <h3 style="font-size: 1.35rem; font-weight: 800; color: var(--text-dark); margin-bottom: 1.25rem; display: flex; align-items: center; gap: 8px;"><i data-lucide="history" style="width: 20px; height: 20px; color: var(--primary);"></i> Recently Viewed Stays</h3>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;">
+                {% for recent in recently_viewed %}
+                <div class="card" style="border-radius: 8px; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); overflow: hidden; background: var(--white); display: flex; flex-direction: column;">
+                    <a href="{{ recent.get_absolute_url }}" style="text-decoration: none; color: inherit; display: flex; flex-direction: column; flex-grow: 1;">
+                        <div style="aspect-ratio: 16 / 9; height: 130px; overflow: hidden; position: relative;">
+                            {% if recent.image %}
+                            <img src="{{ recent.image.url|optimize_image:'w_600' }}" alt="{{ recent.get_seo_alt_text }}" width="230" height="130" loading="lazy" decoding="async" style="width: 100%; height: 100%; object-fit: cover;">
+                            {% else %}
+                            <div style="background: #E2E8F0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 0.8rem; font-weight: 600;">No Image</div>
+                            {% endif %}
+                            <span class="card-badge" style="position: absolute; bottom: 8px; left: 8px; font-size: 0.6rem; padding: 0.2rem 0.5rem; border-radius: 4px; background: rgba(255, 255, 255, 0.9); color: var(--text-dark); font-weight: 700;">{{ recent.type }}</span>
+                        </div>
+                        <div style="padding: 0.85rem; display: flex; flex-direction: column; flex-grow: 1;">
+                            <div style="font-size: 1.05rem; font-weight: 800; color: var(--text-dark); margin-bottom: 2px;">₹{{ recent.price }}/mo</div>
+                            <h4 style="font-size: 0.85rem; font-weight: 700; color: var(--text-dark); margin: 0 0 4px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ recent.title }}</h4>
+                            <p style="color: var(--text-muted); font-size: 0.75rem; margin: 0; display: flex; align-items: center; gap: 4px;"><i data-lucide="map-pin" style="width: 12px; height: 12px; color: var(--primary);"></i> {{ recent.location }}</p>
+                        </div>
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
     </div>
     
     <!-- Sticky Right Sidebar (Desktop) -->

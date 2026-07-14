@@ -3366,10 +3366,10 @@ footer {
         box-shadow: var(--shadow) !important;
     }
 
-    /* Image gallery capped to max 520px to prevent dominating the viewport */
+    /* Image gallery capped to max 420px to prevent dominating the viewport */
     .swipe-gallery-wrapper {
-        height: 520px !important;
-        max-height: 520px !important;
+        height: 420px !important;
+        max-height: 420px !important;
         border-radius: 12px !important;
         overflow: hidden !important;
         position: relative !important;
