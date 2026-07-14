@@ -38,20 +38,20 @@
             <span style="font-size: 1.85rem; font-weight: 850; color: var(--primary); margin-top: 0.25rem; display: block;">{{ total_views }}</span>
         </div>
         <div class="stat-card-premium stat-card-warning">
-            <span style="font-size: 0.72rem; color: var(--text-light); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Total Leads</span>
-            <span style="font-size: 1.85rem; font-weight: 850; color: #10B981; margin-top: 0.25rem; display: block;">{{ leads|length }}</span>
+            <span style="font-size: 0.72rem; color: var(--text-light); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Total Enquiries</span>
+            <span style="font-size: 1.85rem; font-weight: 850; color: #10B981; margin-top: 0.25rem; display: block;">{{ total_enquiries }}</span>
         </div>
         <div class="stat-card-premium stat-card-danger">
             <span style="font-size: 0.72rem; color: var(--text-light); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">WhatsApp Clicks</span>
-            <span style="font-size: 1.85rem; font-weight: 850; color: #D97706; margin-top: 0.25rem; display: block;">{{ total_whatsapp_clicks }}</span>
+            <span style="font-size: 1.85rem; font-weight: 850; color: #25D366; margin-top: 0.25rem; display: block;">{{ total_whatsapp_clicks }}</span>
         </div>
-        <div class="stat-card-premium" style="opacity: 0.85;">
-            <span style="font-size: 0.72rem; color: var(--text-light); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Saved Listings</span>
-            <span style="font-size: 1.25rem; font-weight: 800; color: var(--text-muted); margin-top: 0.65rem; display: block;">Coming Soon</span>
+        <div class="stat-card-premium" style="background: var(--white);">
+            <span style="font-size: 0.72rem; color: var(--text-light); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Saved by Users</span>
+            <span style="font-size: 1.85rem; font-weight: 850; color: #EC4899; margin-top: 0.25rem; display: block;">{{ total_saved }}</span>
         </div>
-        <div class="stat-card-premium" style="opacity: 0.85;">
-            <span style="font-size: 0.72rem; color: var(--text-light); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Revenue</span>
-            <span style="font-size: 1.25rem; font-weight: 800; color: var(--text-muted); margin-top: 0.65rem; display: block;">Coming Soon</span>
+        <div class="stat-card-premium" style="background: var(--white);">
+            <span style="font-size: 0.72rem; color: var(--text-light); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Call Clicks</span>
+            <span style="font-size: 1.85rem; font-weight: 850; color: #F59E0B; margin-top: 0.25rem; display: block;">{{ total_call_clicks }}</span>
         </div>
     </div>
 
@@ -95,6 +95,14 @@
                 {% endfor %}
             ];
 
+            const callClicksData = [
+                {% for l in listings %}
+                    {{ l.call_clicks_count }}{% if not forloop.last %},{% endif %}
+                {% empty %}
+                    0
+                {% endfor %}
+            ];
+
             try {
                 if (typeof Chart !== 'undefined') {
                     new Chart(ctx, {
@@ -113,6 +121,13 @@
                                     label: 'WhatsApp Clicks',
                                     data: clicksData,
                                     backgroundColor: '#10B981',
+                                    borderRadius: 6,
+                                    borderSkipped: false,
+                                },
+                                {
+                                    label: 'Call Clicks',
+                                    data: callClicksData,
+                                    backgroundColor: '#F59E0B',
                                     borderRadius: 6,
                                     borderSkipped: false,
                                 }

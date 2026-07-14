@@ -700,9 +700,13 @@ def owner_dashboard(request):
     # Aggregate view stats and lead clicks across all properties
     total_views = sum(l.views_count for l in listings_list)
     total_whatsapp_clicks = sum(l.whatsapp_clicks_count for l in listings_list)
+    total_call_clicks = sum(l.call_clicks_count for l in listings_list)
     
     # Retrieve leads for the owner's properties
     leads = Lead.objects.filter(listing__owner=request.user).select_related('listing', 'tenant').order_by('-created_at')
+    
+    # Calculate saved listings count (Wishlisted by users)
+    total_saved = Wishlist.objects.filter(listing__owner=request.user).count()
     
     # Retrieve active subscription details
     subscription = Subscription.objects.filter(
@@ -736,12 +740,18 @@ def owner_dashboard(request):
                 'unread_count': unread_count
             })
             
+    # Calculate total enquiries (leads + chat threads count)
+    total_enquiries = len(leads) + len(chat_users)
+            
     return render(request, 'owner_dashboard.html', {
         'listings': listings_list,
         'active_count': active_count,
         'sold_count': sold_count,
         'total_views': total_views,
         'total_whatsapp_clicks': total_whatsapp_clicks,
+        'total_call_clicks': total_call_clicks,
+        'total_saved': total_saved,
+        'total_enquiries': total_enquiries,
         'leads': leads,
         'subscription': subscription,
         'chat_users': chat_users[:5],  # Limit to 5 for dashboard summary
