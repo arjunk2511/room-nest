@@ -147,6 +147,8 @@ class Listing(models.Model):
     is_sold = models.BooleanField(default=False)
     views_count = models.PositiveIntegerField(default=0)
     whatsapp_clicks_count = models.PositiveIntegerField(default=0)
+    call_clicks_count = models.PositiveIntegerField(default=0)
+    updated_at = models.DateTimeField(auto_now=True)
     
     # Verification fields
     is_verified = models.BooleanField(default=False, help_text="Verified by RoomNest admin")
@@ -292,7 +294,7 @@ class Listing(models.Model):
         update_fields = kwargs.get('update_fields')
         if update_fields:
             fields_set = {f.name if hasattr(f, 'name') else f for f in update_fields}
-            if fields_set.issubset({'views_count', 'whatsapp_clicks_count'}):
+            if fields_set.issubset({'views_count', 'whatsapp_clicks_count', 'call_clicks_count'}):
                 return
         from django.core.cache import cache
         cache.delete(f"listing_detail_{self.id}")
@@ -365,7 +367,8 @@ class Lead(models.Model):
         max_length=20, 
         choices=(
             ('WhatsApp', 'WhatsApp Inquiry'), 
-            ('Chat', 'Direct Chat Message')
+            ('Chat', 'Direct Chat Message'),
+            ('Call', 'Phone Call'),
         )
     )
     created_at = models.DateTimeField(auto_now_add=True)
@@ -375,6 +378,29 @@ class Lead(models.Model):
         
     def __str__(self):
         return f"{self.name} - {self.listing.title} ({self.lead_type})"
+
+
+class ListingReport(models.Model):
+    REASON_CHOICES = (
+        ('Fake Photos', 'Fake Photos'),
+        ('Wrong Price', 'Wrong Price'),
+        ('Already Rented', 'Already Rented'),
+        ('Spam / Duplicate', 'Spam / Duplicate'),
+        ('Misleading Info', 'Misleading Info'),
+        ('Other', 'Other'),
+    )
+    listing = models.ForeignKey(Listing, on_delete=models.CASCADE, related_name='reports')
+    reporter = models.ForeignKey(User, on_delete=models.CASCADE, related_name='reports_filed')
+    reason = models.CharField(max_length=30, choices=REASON_CHOICES)
+    details = models.TextField(blank=True, default='')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('listing', 'reporter')
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"Report on '{self.listing.title}' by {self.reporter.username} – {self.reason}"
 
 
 class PropertySubmission(models.Model):

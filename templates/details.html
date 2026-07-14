@@ -119,8 +119,16 @@
         <div>
             <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
                 <span class="details-badge" style="border-radius: 99px;">{{ listing.type }}</span>
+                {% if listing.is_verified %}
+                <span style="background: #ECFDF5; color: #047857; padding: 0.35rem 0.85rem; border-radius: 99px; font-weight: 700; font-size: 0.82rem; display: inline-flex; align-items: center; gap: 6px; border: 1px solid #A7F3D0;">
+                    <i data-lucide="shield-check" style="width: 14px; height: 14px;"></i> Verified Property
+                </span>
+                {% endif %}
                 <span style="background: var(--primary-light); color: var(--primary); padding: 0.35rem 0.85rem; border-radius: 99px; font-weight: 700; font-size: 0.82rem; display: inline-flex; align-items: center; gap: 6px; border: 1px solid rgba(255, 56, 92, 0.15);">
-                    <i data-lucide="calendar" style="width: 14px; height: 14px;"></i> Posted {{ listing.created_at|date:"M d, Y" }}
+                    <i data-lucide="calendar" style="width: 14px; height: 14px;"></i> Posted {{ listing.created_at|timesince }} ago
+                </span>
+                <span style="background: #F0F9FF; color: #0369A1; padding: 0.35rem 0.85rem; border-radius: 99px; font-weight: 700; font-size: 0.82rem; display: inline-flex; align-items: center; gap: 6px; border: 1px solid #BAE6FD;">
+                    <i data-lucide="eye" style="width: 14px; height: 14px;"></i> {{ listing.views_count }} views
                 </span>
             </div>
             <h1 style="margin-top: 0.8rem; margin-bottom: 0.4rem; font-size: 2rem; color: var(--text-dark); font-weight: 800; font-family: 'Outfit', sans-serif; letter-spacing: -0.02em;">{{ listing.title }}</h1>
@@ -396,7 +404,10 @@
                     <div style="display: flex; align-items: center; gap: 4px; flex-wrap: wrap;">
                         <h4 style="margin: 0; font-size: 0.95rem; font-weight: 700; color: var(--text-dark); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 150px;">{{ listing.owner.username }}</h4>
                         {% if listing.owner.userprofile.is_verified %}
-                        <span style="background: #ECFDF5; color: #047857; font-size: 0.65rem; font-weight: 700; padding: 0.15rem 0.5rem; border-radius: 99px; border: 1px solid #A7F3D0; white-space: nowrap; display: inline-flex; align-items: center; gap: 2px;"><i data-lucide="shield-check" style="width: 12px; height: 12px; color: #047857;"></i> Verified</span>
+                        <span style="background: #ECFDF5; color: #047857; font-size: 0.65rem; font-weight: 700; padding: 0.15rem 0.5rem; border-radius: 99px; border: 1px solid #A7F3D0; white-space: nowrap; display: inline-flex; align-items: center; gap: 2px;"><i data-lucide="shield-check" style="width: 12px; height: 12px; color: #047857;"></i> Verified Owner</span>
+                        {% endif %}
+                        {% if listing.owner.userprofile.phone_number %}
+                        <span style="background: #EFF6FF; color: #1D4ED8; font-size: 0.65rem; font-weight: 700; padding: 0.15rem 0.5rem; border-radius: 99px; border: 1px solid #BFDBFE; white-space: nowrap; display: inline-flex; align-items: center; gap: 2px;"><i data-lucide="phone" style="width: 10px; height: 10px;"></i> Phone Verified</span>
                         {% endif %}
                     </div>
                     <p style="margin: 2px 0 0 0; font-size: 0.75rem; color: var(--text-light); font-weight: 500; line-height: 1.2;">
@@ -440,7 +451,7 @@
                 {% if request.user != listing.owner %}
                 <div style="display: flex; flex-direction: column; gap: 0.75rem;">
                     <!-- Call -->
-                    <a href="tel:{{ listing.phone }}" class="btn btn-outline" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: 700; border-color: var(--border-color); min-height: 44px; font-size: 0.88rem; border-radius: 9999px;">
+                    <a href="tel:{{ listing.phone }}" onclick="trackCallClick({{ listing.id }})" class="btn btn-outline" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: 700; border-color: var(--border-color); min-height: 44px; font-size: 0.88rem; border-radius: 9999px;">
                         <i data-lucide="phone" style="width: 16px; height: 16px;"></i> Call Owner
                     </a>
                     <!-- WhatsApp -->
@@ -487,6 +498,13 @@
                         </button>
                     </div>
                 </div>
+
+                <!-- Report Listing -->
+                <div style="text-align: center; padding-top: 0.5rem;">
+                    <button onclick="openReportModal()" style="background: none; border: none; cursor: pointer; color: var(--text-muted); font-size: 0.75rem; font-weight: 600; display: inline-flex; align-items: center; gap: 4px; transition: color 0.15s;" onmouseover="this.style.color='#EF4444'" onmouseout="this.style.color='var(--text-muted)'">
+                        <i data-lucide="flag" style="width: 12px; height: 12px;"></i> Report this listing
+                    </button>
+                </div>
                 {% endif %}
             {% else %}
                 <!-- Locked Info visual -->
@@ -524,7 +542,7 @@
     <div style="display: flex; gap: 8px; align-items: center;">
         {% if has_subscription %}
             {% if request.user != listing.owner %}
-                <a href="tel:{{ listing.phone }}" class="btn btn-outline" style="min-height: 40px; padding: 0 1rem; border-radius: 9999px; display: inline-flex; align-items: center; justify-content: center; gap: 4px; font-weight: 700; font-size: 0.82rem; border-color: var(--border-color); color: var(--text-dark) !important; text-decoration: none;">
+                <a href="tel:{{ listing.phone }}" onclick="trackCallClick({{ listing.id }})" class="btn btn-outline" style="min-height: 40px; padding: 0 1rem; border-radius: 9999px; display: inline-flex; align-items: center; justify-content: center; gap: 4px; font-weight: 700; font-size: 0.82rem; border-color: var(--border-color); color: var(--text-dark) !important; text-decoration: none;">
                     <i data-lucide="phone" style="width: 14px; height: 14px;"></i> Call
                 </a>
                 <button onclick="openWhatsApp('{{ listing.phone|escapejs }}', '{{ listing.title|escapejs }}', '{{ listing.id }}')" class="btn btn-whatsapp" style="min-height: 40px; padding: 0 1rem; border-radius: 9999px; display: inline-flex; align-items: center; justify-content: center; gap: 4px; font-weight: 700; font-size: 0.82rem; background: #25D366; border: none; color: white !important;">
@@ -835,5 +853,73 @@ function switchNearbyTab(category) {
     });
 }
 {% endif %}
+
+// Track Call Click
+function trackCallClick(listingId) {
+    fetch(`/listing/${listingId}/track-call/`, {
+        method: 'POST',
+        headers: {'X-CSRFToken': document.cookie.match(/csrftoken=([^;]+)/)?.[1] || ''},
+    }).catch(() => {});
+}
+
+// Report Listing Modal
+function openReportModal() {
+    document.getElementById('reportListingModal').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+}
+function closeReportModal() {
+    document.getElementById('reportListingModal').style.display = 'none';
+    document.body.style.overflow = '';
+}
+function submitReport() {
+    const reason = document.getElementById('reportReason').value;
+    const details = document.getElementById('reportDetails').value;
+    const msgEl = document.getElementById('reportMsg');
+    const csrfToken = document.cookie.match(/csrftoken=([^;]+)/)?.[1] || '';
+    const fd = new FormData();
+    fd.append('reason', reason);
+    fd.append('details', details);
+    fetch('{% url "report_listing" listing.id %}', {method: 'POST', headers: {'X-CSRFToken': csrfToken}, body: fd})
+        .then(r => r.json())
+        .then(data => {
+            msgEl.textContent = data.message;
+            msgEl.style.color = data.status === 'success' ? '#047857' : '#B45309';
+            if (data.status === 'success') {
+                setTimeout(closeReportModal, 2000);
+            }
+        })
+        .catch(() => { msgEl.textContent = 'Something went wrong. Please try again.'; msgEl.style.color = '#EF4444'; });
+}
 </script>
+
+<!-- Report Listing Modal -->
+<div id="reportListingModal" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(15,23,42,0.6); z-index:99998; align-items:center; justify-content:center; backdrop-filter:blur(4px);">
+    <div style="background:white; border-radius:16px; padding:2rem; max-width:460px; width:calc(100% - 2rem); box-shadow:0 25px 50px rgba(0,0,0,0.15); position:relative;">
+        <button onclick="closeReportModal()" style="position:absolute; top:1rem; right:1rem; background:none; border:none; font-size:1.5rem; cursor:pointer; color:var(--text-muted); line-height:1;">×</button>
+        <h3 style="margin:0 0 0.4rem 0; font-size:1.15rem; font-weight:800; color:var(--text-dark); display:flex; align-items:center; gap:8px;">🚩 Report Listing</h3>
+        <p style="margin:0 0 1.25rem 0; font-size:0.85rem; color:var(--text-light);">Help us maintain quality on RoomNest. Your report is anonymous to the owner.</p>
+        <div style="display:flex; flex-direction:column; gap:0.85rem;">
+            <div>
+                <label style="font-size:0.75rem; font-weight:700; color:var(--text-light); display:block; margin-bottom:0.35rem;">Reason <span style="color:#EF4444;">*</span></label>
+                <select id="reportReason" style="width:100%; padding:0.6rem 0.85rem; border-radius:8px; border:1px solid var(--border-color); font-size:0.9rem; background:white; outline:none;">
+                    <option value="Fake Photos">📷 Fake Photos</option>
+                    <option value="Wrong Price">💰 Wrong Price Listed</option>
+                    <option value="Already Rented">🔑 Already Rented / Not Available</option>
+                    <option value="Spam / Duplicate">♻️ Spam or Duplicate Listing</option>
+                    <option value="Misleading Info">⚠️ Misleading Information</option>
+                    <option value="Other">💬 Other</option>
+                </select>
+            </div>
+            <div>
+                <label style="font-size:0.75rem; font-weight:700; color:var(--text-light); display:block; margin-bottom:0.35rem;">Details (optional)</label>
+                <textarea id="reportDetails" rows="3" placeholder="Describe the issue briefly..." style="width:100%; padding:0.6rem 0.85rem; border-radius:8px; border:1px solid var(--border-color); font-size:0.88rem; resize:none; outline:none; font-family:inherit;"></textarea>
+            </div>
+            <p id="reportMsg" style="margin:0; font-size:0.82rem; font-weight:600; min-height:1rem;"></p>
+            <div style="display:flex; gap:10px;">
+                <button onclick="submitReport()" class="btn btn-primary" style="flex:1; border-radius:8px; font-weight:700;">Submit Report</button>
+                <button onclick="closeReportModal()" class="btn btn-outline" style="flex:1; border-radius:8px; font-weight:700; border-color:var(--border-color);">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

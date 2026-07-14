@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from .models import Listing, ListingImage, Wishlist, Message, Review, Lead, City, Area, PropertySubmission, Reward, Notification, RewardWallet, RewardTransaction, WithdrawalRequest, RewardHistory, PaymentHistory, AdminRewardLog, SearchTrend, BlogCategory, BlogPost
+from .models import Listing, ListingImage, Wishlist, Message, Review, Lead, City, Area, PropertySubmission, Reward, Notification, RewardWallet, RewardTransaction, WithdrawalRequest, RewardHistory, PaymentHistory, AdminRewardLog, SearchTrend, BlogCategory, BlogPost, ListingReport
 from .utils import check_duplicate_property
 from django.db.models import Q, Avg, F, Count
 from django.contrib.auth.models import User
@@ -737,6 +737,63 @@ def track_whatsapp_click(request, listing_id):
             )
             
     return JsonResponse({'status': 'success', 'whatsapp_clicks_count': listing.whatsapp_clicks_count})
+
+
+@require_POST
+def track_call_click(request, listing_id):
+    """Atomically increments call_clicks_count and saves a Call lead."""
+    listing = get_object_or_404(Listing, id=listing_id)
+    Listing.objects.filter(id=listing_id).update(call_clicks_count=F('call_clicks_count') + 1)
+
+    # Record a lead (dedup: one per 24h per user per listing)
+    if request.user.is_authenticated and request.user != listing.owner:
+        from accounts.models import UserProfile
+        profile = UserProfile.objects.filter(user=request.user).first()
+        phone = profile.phone_number if profile and profile.phone_number else 'Not Provided'
+        name = f"{request.user.first_name} {request.user.last_name}".strip() or request.user.username
+        last_day = timezone.now() - timezone.timedelta(days=1)
+        exists = Lead.objects.filter(
+            listing=listing,
+            tenant=request.user,
+            lead_type='Call',
+            created_at__gte=last_day
+        ).exists()
+        if not exists:
+            Lead.objects.create(
+                listing=listing,
+                tenant=request.user,
+                name=name,
+                email=request.user.email,
+                phone=phone,
+                lead_type='Call'
+            )
+
+    return JsonResponse({'status': 'success'})
+
+
+@login_required
+@require_POST
+def report_listing(request, listing_id):
+    """Submit a user report against a listing."""
+    listing = get_object_or_404(Listing, id=listing_id)
+    if request.user == listing.owner:
+        return JsonResponse({'status': 'error', 'message': 'Cannot report your own listing.'}, status=400)
+
+    reason = request.POST.get('reason', '').strip()
+    details = request.POST.get('details', '').strip()
+    valid_reasons = [r[0] for r in ListingReport.REASON_CHOICES]
+    if reason not in valid_reasons:
+        return JsonResponse({'status': 'error', 'message': 'Invalid reason.'}, status=400)
+
+    _, created = ListingReport.objects.get_or_create(
+        listing=listing,
+        reporter=request.user,
+        defaults={'reason': reason, 'details': details}
+    )
+    if created:
+        return JsonResponse({'status': 'success', 'message': 'Report submitted. Thank you for helping keep RoomNest safe.'})
+    return JsonResponse({'status': 'already_reported', 'message': 'You already reported this listing.'})
+
 
 @login_required
 def toggle_sold_status(request, listing_id):
