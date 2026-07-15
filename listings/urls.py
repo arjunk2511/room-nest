@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views
+from . import api_views
 
 urlpatterns = [
     path('', views.home, name='home'),
@@ -45,6 +46,23 @@ urlpatterns = [
     path('api/search-suggestions/', views.search_suggestions, name='search_suggestions'),
     path('api/listing/<int:listing_id>/landmarks/', views.listing_landmarks_api, name='listing_landmarks_api'),
     path('api/listing/landmarks/', views.listing_landmarks_api, name='area_landmarks_api'),
+    path('api/cities-areas/', api_views.get_cities_areas, name='api_cities_areas'),
+    path('api/listings/', api_views.get_listings, name='api_listings'),
+    path('api/listings/<int:listing_id>/', api_views.get_listing_detail, name='api_listing_detail'),
+    path('api/listings/<int:listing_id>/toggle-wishlist/', api_views.toggle_wishlist, name='api_toggle_wishlist'),
+    path('api/wishlist/', api_views.get_wishlist, name='api_wishlist'),
+    path('api/profile/', api_views.get_profile, name='api_profile'),
+    path('api/wallet/withdraw/', api_views.request_withdrawal, name='api_request_withdrawal'),
+    path('api/listings/refer/', api_views.refer_property, name='api_refer_property'),
+    path('api/listings/<int:listing_id>/report/', api_views.report_listing, name='api_report_listing'),
+    path('api/listings/<int:listing_id>/track-click/', api_views.track_click, name='api_track_click'),
+    path('api/owner/dashboard/', api_views.get_owner_dashboard, name='api_owner_dashboard'),
+    path('api/owner/toggle-sold/<int:listing_id>/', api_views.toggle_sold_status, name='api_toggle_sold_status'),
+    path('api/admin/dashboard/', api_views.get_admin_dashboard, name='api_admin_dashboard'),
+    path('api/admin/verify-property/', api_views.verify_property, name='api_verify_property'),
+    path('api/admin/verify-withdrawal/', api_views.verify_withdrawal, name='api_verify_withdrawal'),
+    path('api/blogs/', api_views.get_blogs, name='api_blogs'),
+    path('api/blogs/<slug:slug>/', api_views.get_blog_detail, name='api_blog_detail'),
     path('rewards-admin/submission/approve/<int:submission_id>/', views.admin_approve_submission, name='admin_approve_submission'),
     path('rewards-admin/submission/reject/<int:submission_id>/', views.admin_reject_submission, name='admin_reject_submission'),
     path('rewards-admin/submission/publish/<int:submission_id>/', views.admin_publish_submission, name='admin_publish_submission'),
