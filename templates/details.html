@@ -246,6 +246,45 @@
             <p style="color: var(--text-light); font-size: 0.95rem; line-height: 1.6; white-space: pre-line; margin: 0;">{{ listing.description }}</p>
         </div>
 
+        <!-- Verification logs (Visible if verified) -->
+        {% if listing.is_verified %}
+        <div style="border-top: 1px solid var(--border-color); padding-top: 2rem; margin-top: 2rem;">
+            <h3 style="font-size: 1.3rem; font-weight: 800; color: var(--text-dark); margin-bottom: 0.8rem; display: flex; align-items: center; gap: 8px;">
+                🛡️ Verified Document Log
+            </h3>
+            <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 1.25rem;">This property was verified by the RoomNest vetting team after reviewing the following submissions:</p>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem;">
+                <!-- Checkpoint 1 -->
+                <div style="background: #F0FDF4; border: 1px solid #BBF7D0; padding: 1rem; border-radius: 12px; display: flex; align-items: flex-start; gap: 10px;">
+                    <span style="font-size: 1.2rem; color: #166534; line-height: 1; font-weight: bold;">✓</span>
+                    <div>
+                        <strong style="color: #166534; font-size: 0.85rem; display: block; font-weight: 700;">Landlord Identity Check</strong>
+                        <span style="font-size: 0.78rem; color: #166534; opacity: 0.95;">Aadhaar/PAN matches listed owner records.</span>
+                    </div>
+                </div>
+
+                <!-- Checkpoint 2 -->
+                <div style="background: #F0FDF4; border: 1px solid #BBF7D0; padding: 1rem; border-radius: 12px; display: flex; align-items: flex-start; gap: 10px;">
+                    <span style="font-size: 1.2rem; color: #166534; line-height: 1; font-weight: bold;">✓</span>
+                    <div>
+                        <strong style="color: #166534; font-size: 0.85rem; display: block; font-weight: 700;">Property Ownership Document</strong>
+                        <span style="font-size: 0.78rem; color: #166534; opacity: 0.95;">Utility bill or tax receipt matched with address coordinates.</span>
+                    </div>
+                </div>
+
+                <!-- Checkpoint 3 -->
+                <div style="background: #F0FDF4; border: 1px solid #BBF7D0; padding: 1rem; border-radius: 12px; display: flex; align-items: flex-start; gap: 10px;">
+                    <span style="font-size: 1.2rem; color: #166534; line-height: 1; font-weight: bold;">✓</span>
+                    <div>
+                        <strong style="color: #166534; font-size: 0.85rem; display: block; font-weight: 700;">Photo Verification Match</strong>
+                        <span style="font-size: 0.78rem; color: #166534; opacity: 0.95;">Real-world photos matched with listing details.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
         <!-- Transit & Landmark Proximity Card (Visible to All) -->
         <div style="border-top: 1px solid var(--border-color); padding-top: 2rem; margin-top: 2rem;">
             <h3 style="font-size: 1.3rem; font-weight: 800; color: var(--text-dark); margin-bottom: 0.8rem; display: flex; align-items: center; gap: 8px;">
@@ -261,17 +300,17 @@
                     </h4>
                     <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 6px; font-size: 0.82rem; font-weight: 500; color: var(--text-light);">
                         {% if listing.city.slug == 'mysore' %}
-                            <li>🎓 Mysore University: ~15 mins drive</li>
-                            <li>🎓 JSS (SJCE) Campus: ~10 mins drive</li>
-                            <li>🎓 NIE Mysore: ~18 mins drive</li>
+                            <li id="col-1">🎓 Mysore University: ~15 mins drive</li>
+                            <li id="col-2">🎓 JSS (SJCE) Campus: ~10 mins drive</li>
+                            <li id="col-3">🎓 NIE Mysore: ~18 mins drive</li>
                         {% elif listing.city.slug == 'bengaluru' %}
-                            <li>🎓 IISc Bangalore: ~25 mins drive</li>
-                            <li>🎓 RV College of Eng: ~30 mins drive</li>
-                            <li>🎓 Christ University: ~20 mins drive</li>
+                            <li id="col-1">🎓 IISc Bangalore: ~25 mins drive</li>
+                            <li id="col-2">🎓 RV College of Eng: ~30 mins drive</li>
+                            <li id="col-3">🎓 Christ University: ~20 mins drive</li>
                         {% else %}
-                            <li>🎓 Osmania University: ~25 mins drive</li>
-                            <li>🎓 IIIT Hyderabad: ~15 mins drive</li>
-                            <li>🎓 JNTU Hyderabad: ~20 mins drive</li>
+                            <li id="col-1">🎓 Osmania University: ~25 mins drive</li>
+                            <li id="col-2">🎓 IIIT Hyderabad: ~15 mins drive</li>
+                            <li id="col-3">🎓 JNTU Hyderabad: ~20 mins drive</li>
                         {% endif %}
                     </ul>
                 </div>
@@ -283,17 +322,17 @@
                     </h4>
                     <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 6px; font-size: 0.82rem; font-weight: 500; color: var(--text-light);">
                         {% if listing.city.slug == 'mysore' %}
-                            <li>💼 Hebbal Infosys Campus: ~12 mins drive</li>
-                            <li>💼 Wipro Hebbal: ~14 mins drive</li>
-                            <li>💼 L&T Infotech: ~10 mins drive</li>
+                            <li id="tech-1">💼 Hebbal Infosys Campus: ~12 mins drive</li>
+                            <li id="tech-2">💼 Wipro Hebbal: ~14 mins drive</li>
+                            <li id="tech-3">💼 L&T Infotech: ~10 mins drive</li>
                         {% elif listing.city.slug == 'bengaluru' %}
-                            <li>💼 Manyata Tech Park: ~25 mins drive</li>
-                            <li>💼 ITPL Whitefield: ~35 mins drive</li>
-                            <li>💼 ORR Tech Corridor: ~30 mins drive</li>
+                            <li id="tech-1">💼 Manyata Tech Park: ~25 mins drive</li>
+                            <li id="tech-2">💼 ITPL Whitefield: ~35 mins drive</li>
+                            <li id="tech-3">💼 ORR Tech Corridor: ~30 mins drive</li>
                         {% else %}
-                            <li>💼 HITEC City: ~15 mins drive</li>
-                            <li>💼 Gachibowli Financial: ~12 mins drive</li>
-                            <li>💼 DLF Cyber City: ~14 mins drive</li>
+                            <li id="tech-1">💼 HITEC City: ~15 mins drive</li>
+                            <li id="tech-2">💼 Gachibowli Financial: ~12 mins drive</li>
+                            <li id="tech-3">💼 DLF Cyber City: ~14 mins drive</li>
                         {% endif %}
                     </ul>
                 </div>
@@ -305,22 +344,122 @@
                     </h4>
                     <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 6px; font-size: 0.82rem; font-weight: 500; color: var(--text-light);">
                         {% if listing.city.slug == 'mysore' %}
-                            <li>🍕 Gokulam Yoga Cafes: ~8 mins walk</li>
-                            <li>🍕 Vijayanagar Food Street: ~5 mins drive</li>
-                            <li>🍕 Chamundi Hills: ~25 mins drive</li>
+                            <li id="food-1">🍕 Gokulam Yoga Cafes: ~8 mins walk</li>
+                            <li id="food-2">🍕 Vijayanagar Food Street: ~5 mins drive</li>
+                            <li id="food-3">🍕 Chamundi Hills: ~25 mins drive</li>
                         {% elif listing.city.slug == 'bengaluru' %}
-                            <li>🍕 Koramangala Cafes: ~10 mins walk</li>
-                            <li>🍕 Indiranagar 100ft Rd: ~15 mins drive</li>
-                            <li>🍕 Cubbon Park: ~20 mins drive</li>
+                            <li id="food-1">🍕 Koramangala Cafes: ~10 mins walk</li>
+                            <li id="food-2">🍕 Indiranagar 100ft Rd: ~15 mins drive</li>
+                            <li id="food-3">🍕 Cubbon Park: ~20 mins drive</li>
                         {% else %}
-                            <li>🍕 Jubilee Hills Cafes: ~10 mins drive</li>
-                            <li>🍕 Charminar Food Stalls: ~35 mins drive</li>
-                            <li>🍕 Hussain Sagar: ~25 mins drive</li>
+                            <li id="food-1">🍕 Jubilee Hills Cafes: ~10 mins drive</li>
+                            <li id="food-2">🍕 Charminar Food Stalls: ~35 mins drive</li>
+                            <li id="food-3">🍕 Hussain Sagar: ~25 mins drive</li>
                         {% endif %}
                     </ul>
                 </div>
             </div>
         </div>
+
+        <script>
+            const landmarkCoords = {
+                mysore: {
+                    colleges: [
+                        { name: "Mysore University", lat: 12.3162, lon: 76.6135 },
+                        { name: "JSS (SJCE) Campus", lat: 12.3156, lon: 76.6133 },
+                        { name: "NIE Mysore", lat: 12.2826, lon: 76.6413 }
+                    ],
+                    tech: [
+                        { name: "Hebbal Infosys Campus", lat: 12.3582, lon: 76.6136 },
+                        { name: "Wipro Hebbal", lat: 12.3510, lon: 76.6190 },
+                        { name: "L&T Infotech", lat: 12.3610, lon: 76.6110 }
+                    ],
+                    food: [
+                        { name: "Gokulam Yoga Cafes", lat: 12.3315, lon: 76.6268 },
+                        { name: "Vijayanagar Food Street", lat: 12.3395, lon: 76.6080 },
+                        { name: "Chamundi Hills", lat: 12.2748, lon: 76.6785 }
+                    ]
+                },
+                bengaluru: {
+                    colleges: [
+                        { name: "IISc Bangalore", lat: 13.0184, lon: 77.5681 },
+                        { name: "RV College of Eng", lat: 12.9237, lon: 77.4987 },
+                        { name: "Christ University", lat: 12.9362, lon: 77.6058 }
+                    ],
+                    tech: [
+                        { name: "Manyata Tech Park", lat: 13.0452, lon: 77.6204 },
+                        { name: "ITPL Whitefield", lat: 12.9876, lon: 77.7376 },
+                        { name: "ORR Tech Corridor", lat: 12.9260, lon: 77.6762 }
+                    ],
+                    food: [
+                        { name: "Koramangala Cafes", lat: 12.9352, lon: 77.6244 },
+                        { name: "Indiranagar 100ft Rd", lat: 12.9719, lon: 77.6412 },
+                        { name: "Cubbon Park", lat: 12.9779, lon: 77.5952 }
+                    ]
+                },
+                hyderabad: {
+                    colleges: [
+                        { name: "Osmania University", lat: 17.4137, lon: 78.5298 },
+                        { name: "IIIT Hyderabad", lat: 17.4448, lon: 78.3498 },
+                        { name: "JNTU Hyderabad", lat: 17.5018, lon: 78.3898 }
+                    ],
+                    tech: [
+                        { name: "HITEC City", lat: 17.4504, lon: 78.3808 },
+                        { name: "Gachibowli Financial", lat: 17.4168, lon: 78.3410 },
+                        { name: "DLF Cyber City", lat: 17.4484, lon: 78.3740 }
+                    ],
+                    food: [
+                        { name: "Jubilee Hills Cafes", lat: 17.4316, lon: 78.4069 },
+                        { name: "Charminar Food Stalls", lat: 17.3616, lon: 78.4747 },
+                        { name: "Hussain Sagar", lat: 17.4239, lon: 78.4738 }
+                    ]
+                }
+            };
+
+            function getHaversineDistance(lat1, lon1, lat2, lon2) {
+                const R = 6371; // Earth radius in km
+                const dLat = (lat2 - lat1) * Math.PI / 180;
+                const dLon = (lon2 - lon1) * Math.PI / 180;
+                const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                          Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                          Math.sin(dLon/2) * Math.sin(dLon/2);
+                const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+                return R * c;
+            }
+
+            document.addEventListener("DOMContentLoaded", function() {
+                const lat = parseFloat("{{ listing.latitude|default:'0' }}");
+                const lon = parseFloat("{{ listing.longitude|default:'0' }}");
+                const city = "{{ listing.city.slug }}";
+                
+                if (lat && lon && landmarkCoords[city]) {
+                    // Update colleges
+                    landmarkCoords[city].colleges.forEach((c, idx) => {
+                        const dist = getHaversineDistance(lat, lon, c.lat, c.lon);
+                        const element = document.getElementById('col-' + (idx + 1));
+                        if (element) {
+                            element.innerHTML = `🎓 ${c.name}: <strong>${dist.toFixed(1)} km</strong> away`;
+                        }
+                    });
+                    // Update tech parks
+                    landmarkCoords[city].tech.forEach((t, idx) => {
+                        const dist = getHaversineDistance(lat, lon, t.lat, t.lon);
+                        const element = document.getElementById('tech-' + (idx + 1));
+                        if (element) {
+                            element.innerHTML = `💼 ${t.name}: <strong>${dist.toFixed(1)} km</strong> away`;
+                        }
+                    });
+                    // Update food
+                    landmarkCoords[city].food.forEach((f, idx) => {
+                        const dist = getHaversineDistance(lat, lon, f.lat, f.lon);
+                        const element = document.getElementById('food-' + (idx + 1));
+                        if (element) {
+                            element.innerHTML = `🍕 ${f.name}: <strong>${dist.toFixed(1)} km</strong> away`;
+                        }
+                    });
+                }
+            });
+        </script>
 
         <!-- Location Map Section (Moved inside Left Column) -->
         <div style="border-top: 1px solid var(--border-color); padding-top: 2rem; margin-top: 2rem;">

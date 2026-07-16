@@ -226,17 +226,34 @@
                                 <td style="padding: 0.85rem 1rem; font-size: 0.85rem; color: var(--text-light);">{{ sub.owner_name }}</td>
                                 <td style="padding: 0.85rem 1rem; font-size: 0.85rem; color: var(--text-light);">{{ sub.city.name }}</td>
                                 <td style="padding: 0.85rem 1rem;">
-                                    {% if sub.status == 'Pending' %}
-                                        <span class="badge-status status-pending">Pending Verification</span>
-                                    {% elif sub.status == 'Under Verification' %}
-                                        <span class="badge-status status-verification">Verifying</span>
-                                    {% elif sub.status == 'Approved' %}
-                                        <span class="badge-status status-approved" style="background: #EFF6FF; color: #1D4ED8; border-color: #BFDBFE;">Approved</span>
-                                    {% elif sub.status == 'Published' %}
-                                        <span class="badge-status status-published">Published</span>
-                                    {% elif sub.status == 'Rejected' %}
-                                        <span class="badge-status status-rejected">Rejected</span>
-                                    {% endif %}
+                                    <div style="display: flex; flex-direction: column; gap: 4px; min-width: 140px;">
+                                        {% if sub.status == 'Pending' %}
+                                            <span style="font-size: 0.78rem; font-weight: 700; color: #D97706;">⏳ Pending Verification</span>
+                                            <div style="display: flex; gap: 2px; height: 4px; background: #E2E8F0; border-radius: 2px; overflow: hidden; width: 100px;">
+                                                <div style="width: 25%; background: #F59E0B; height: 100%;"></div>
+                                            </div>
+                                        {% elif sub.status == 'Under Verification' %}
+                                            <span style="font-size: 0.78rem; font-weight: 700; color: #2563EB;">🔍 Under Review</span>
+                                            <div style="display: flex; gap: 2px; height: 4px; background: #E2E8F0; border-radius: 2px; overflow: hidden; width: 100px;">
+                                                <div style="width: 50%; background: #3B82F6; height: 100%;"></div>
+                                            </div>
+                                        {% elif sub.status == 'Approved' %}
+                                            <span style="font-size: 0.78rem; font-weight: 700; color: #4F46E5;">⭐ Approved</span>
+                                            <div style="display: flex; gap: 2px; height: 4px; background: #E2E8F0; border-radius: 2px; overflow: hidden; width: 100px;">
+                                                <div style="width: 75%; background: #6366F1; height: 100%;"></div>
+                                            </div>
+                                        {% elif sub.status == 'Published' %}
+                                            <span style="font-size: 0.78rem; font-weight: 700; color: #059669;">🎉 Published & Paid</span>
+                                            <div style="display: flex; gap: 2px; height: 4px; background: #E2E8F0; border-radius: 2px; overflow: hidden; width: 100px;">
+                                                <div style="width: 100%; background: #10B981; height: 100%;"></div>
+                                            </div>
+                                        {% elif sub.status == 'Rejected' %}
+                                            <span style="font-size: 0.78rem; font-weight: 700; color: #DC2626;">❌ Rejected</span>
+                                            <div style="display: flex; gap: 2px; height: 4px; background: #E2E8F0; border-radius: 2px; overflow: hidden; width: 100px;">
+                                                <div style="width: 100%; background: #EF4444; height: 100%;"></div>
+                                            </div>
+                                        {% endif %}
+                                    </div>
                                 </td>
                                 <td style="padding: 0.85rem 1rem; font-size: 0.88rem; font-weight: 700; text-align: right; color: {% if sub.status == 'Published' %}#10B981{% else %}var(--text-light){% endif %};">
                                     ₹{% if sub.status == 'Published' %}50{% else %}0{% endif %}
