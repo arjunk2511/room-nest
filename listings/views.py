@@ -788,6 +788,15 @@ def track_whatsapp_click(request, listing_id):
                 phone=phone,
                 lead_type='WhatsApp'
             )
+            # Send real-time email notification to the landlord
+            from django.core.mail import send_mail
+            from django.conf import settings
+            try:
+                subject = f"🚀 New WhatsApp Inquiry for {listing.title} on RoomNest"
+                body = f"Hi {listing.owner.username},\n\nA tenant has clicked to WhatsApp you regarding your property \"{listing.title}\":\n\n- Name: {name}\n- Email: {request.user.email}\n- Phone: {phone}\n\nCheck your dashboard here: {request.build_absolute_uri('/owner/dashboard/')}\n\nBest regards,\nThe RoomNest Team"
+                send_mail(subject, body, settings.DEFAULT_FROM_EMAIL or 'noreply@roomnest.com', [listing.owner.email], fail_silently=True)
+            except Exception:
+                pass
             
     return JsonResponse({'status': 'success', 'whatsapp_clicks_count': listing.whatsapp_clicks_count})
 
@@ -820,6 +829,15 @@ def track_call_click(request, listing_id):
                 phone=phone,
                 lead_type='Call'
             )
+            # Send real-time email notification to the landlord
+            from django.core.mail import send_mail
+            from django.conf import settings
+            try:
+                subject = f"📞 New Call Inquiry for {listing.title} on RoomNest"
+                body = f"Hi {listing.owner.username},\n\nA tenant has clicked to Call you regarding your property \"{listing.title}\":\n\n- Name: {name}\n- Email: {request.user.email}\n- Phone: {phone}\n\nCheck your dashboard here: {request.build_absolute_uri('/owner/dashboard/')}\n\nBest regards,\nThe RoomNest Team"
+                send_mail(subject, body, settings.DEFAULT_FROM_EMAIL or 'noreply@roomnest.com', [listing.owner.email], fail_silently=True)
+            except Exception:
+                pass
 
     return JsonResponse({'status': 'success'})
 
@@ -993,6 +1011,15 @@ def chat_view(request, user_id):
                 listing=listing,
                 content=content
             )
+            # Send real-time email notification alert to the receiver
+            from django.core.mail import send_mail
+            from django.conf import settings
+            try:
+                subject = f"💬 New message from {request.user.username} on RoomNest"
+                body = f"Hi {other_user.username},\n\nYou received a new message from {request.user.username} regarding a RoomNest stay:\n\n\"{content}\"\n\nReply directly here: {request.build_absolute_uri('/inbox/')}\n\nHappy nesting,\nThe RoomNest Team"
+                send_mail(subject, body, settings.DEFAULT_FROM_EMAIL or 'noreply@roomnest.com', [other_user.email], fail_silently=True)
+            except Exception:
+                pass
             
             # Record a Lead of type 'Chat' if they are messaging about a listing and they are not the owner
             if listing and request.user != listing.owner:
