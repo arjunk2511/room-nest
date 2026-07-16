@@ -5,7 +5,8 @@ import { useRouter } from "next/navigation";
 import { getAuthHeader } from "@/lib/supabase";
 import { 
   MapPin, Phone, ShieldCheck, Heart, Share2, Star, Calendar, 
-  MessageSquare, Users, Eye, PhoneCall, ChevronRight, HelpCircle
+  MessageSquare, Users, Eye, PhoneCall, ChevronRight, HelpCircle,
+  Wifi, Shield, Car, Bolt, Refrigerator, Info
 } from "lucide-react";
 
 interface PageProps {
@@ -18,7 +19,7 @@ export default function ListingDetailsPage({ params }: PageProps) {
 
   const [listing, setListing] = useState<any>(null);
   const [landmarks, setLandmarks] = useState<any>(null);
-  const [activeTab, setActiveTab] = useState("schools");
+  const [activeTab, setActiveTab] = useState("");
   const [loading, setLoading] = useState(true);
   const [landmarkLoading, setLandmarkLoading] = useState(false);
 
@@ -54,6 +55,9 @@ export default function ListingDetailsPage({ params }: PageProps) {
       .then((res) => res.json())
       .then((data) => {
         setLandmarks(data);
+        if (data && Object.keys(data).length > 0) {
+          setActiveTab(Object.keys(data)[0]);
+        }
         setLandmarkLoading(false);
       })
       .catch((err) => {
@@ -72,7 +76,7 @@ export default function ListingDetailsPage({ params }: PageProps) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ type })
     }).then(() => {
-      // Re-fetch detail to increment lead counts if needed
+      // Re-fetch detail to increment lead counts
       fetch(`/api/listings/${id}/`).then(res => res.json()).then(data => {
         if (data && !data.error) setListing(data);
       });
@@ -141,58 +145,64 @@ export default function ListingDetailsPage({ params }: PageProps) {
     return <div className="p-12 text-center text-error font-semibold">Listing not found.</div>;
   }
 
+  // Calculate average rating
+  const avgRating = listing.reviews && listing.reviews.length > 0
+    ? (listing.reviews.reduce((sum: number, r: any) => sum + r.rating, 0) / listing.reviews.length).toFixed(1)
+    : "0.0";
+
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8 w-full flex-1 flex flex-col">
+    <div className="max-w-7xl mx-auto px-6 md:px-10 py-8 w-full flex-1 flex flex-col min-h-screen">
       {/* Breadcrumb / Top Info */}
       <div className="flex justify-between items-center mb-6">
         <div>
-          <span className="text-xs text-on-surface-variant font-semibold">
-            Properties / {listing.city?.name || 'Mysore'} / {listing.area?.name || listing.location}
+          <span className="text-xs text-on-surface-variant font-semibold flex items-center gap-1">
+            Properties <ChevronRight className="w-3 h-3" /> {listing.city?.name || 'Mysore'} <ChevronRight className="w-3 h-3" /> {listing.area?.name || listing.location}
           </span>
-          <h1 className="text-xl md:text-2xl font-extrabold font-plus-jakarta text-on-surface mt-1">{listing.title}</h1>
+          <h1 className="text-2xl md:text-3xl font-extrabold font-plus-jakarta text-on-surface mt-2">{listing.title}</h1>
         </div>
         <div className="flex gap-2">
-          <button onClick={handleToggleWishlist} className="p-2 border border-outline-variant rounded-xl hover:bg-surface-container transition-colors">
-            <Heart className="w-5 h-5 text-on-surface-variant" />
+          <button onClick={handleToggleWishlist} className="p-2.5 border border-outline-variant rounded-xl hover:bg-surface-container transition-colors shadow-sm bg-white">
+            <Heart className="w-5 h-5 text-on-surface-variant hover:text-error transition-colors" />
           </button>
-          <button className="p-2 border border-outline-variant rounded-xl hover:bg-surface-container transition-colors">
+          <button className="p-2.5 border border-outline-variant rounded-xl hover:bg-surface-container transition-colors shadow-sm bg-white">
             <Share2 className="w-5 h-5 text-on-surface-variant" />
           </button>
         </div>
       </div>
 
-      {/* Image Gallery */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-        <div className="md:col-span-2 relative h-80 md:h-[420px] rounded-2xl overflow-hidden shadow-sm">
+      {/* Image Gallery Redesign */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 mb-8">
+        <div className="lg:col-span-8 relative h-[350px] md:h-[450px] rounded-2xl overflow-hidden shadow-md">
           {listing.image ? (
             <img src={listing.image} alt={listing.title} className="w-full h-full object-cover" />
           ) : (
-            <div className="w-full h-full bg-surface-container-high flex items-center justify-center text-5xl">🏢</div>
+            <div className="w-full h-full bg-surface-container flex items-center justify-center text-5xl">🏢</div>
           )}
           {listing.is_verified && (
-            <div className="absolute top-4 right-4 bg-white/90 backdrop-blur text-primary px-3.5 py-1 rounded-full text-xs font-bold flex items-center gap-1 shadow-md">
-              <ShieldCheck className="w-4 h-4 fill-primary text-white" /> Verified Listing
+            <div className="absolute top-4 right-4 bg-white/90 backdrop-blur text-primary px-3.5 py-1.5 rounded-full text-xs font-bold flex items-center gap-1 shadow-md">
+              <ShieldCheck className="w-4 h-4 fill-primary text-white" /> Verified
             </div>
           )}
         </div>
-        <div className="hidden md:grid grid-rows-2 gap-4 h-[420px]">
+        <div className="hidden lg:grid lg:col-span-4 grid-rows-2 gap-4 h-[450px]">
           {listing.gallery && listing.gallery.slice(0, 2).map((imgUrl: string, idx: number) => (
-            <div key={idx} className="relative rounded-2xl overflow-hidden h-[202px] bg-surface-container-high shadow-sm">
+            <div key={idx} className="relative rounded-2xl overflow-hidden h-[217px] bg-surface-container-high shadow-md">
               <img src={imgUrl} alt={`gallery-${idx}`} className="w-full h-full object-cover" />
             </div>
           ))}
           {(!listing.gallery || listing.gallery.length === 0) && (
-            <div className="row-span-2 rounded-2xl bg-surface-container-low border border-dashed border-outline-variant flex items-center justify-center text-xs font-semibold text-text-muted">
-              No Additional Photos
+            <div className="row-span-2 rounded-2xl bg-white border-2 border-dashed border-outline-variant/50 flex flex-col items-center justify-center text-xs font-semibold text-text-muted gap-2">
+              <Info className="w-8 h-8 text-primary" />
+              <span>No Additional Photos Available</span>
             </div>
           )}
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         {/* Main Details */}
-        <div className="lg:col-span-2 space-y-8">
-          {/* Key Parameters */}
+        <div className="lg:col-span-8 space-y-8">
+          {/* Key Parameters Card */}
           <div className="bg-white border border-outline-variant rounded-2xl p-6 grid grid-cols-3 gap-4 shadow-sm text-center">
             <div>
               <div className="text-[10px] font-bold text-outline uppercase tracking-wider">Stay Type</div>
@@ -210,19 +220,37 @@ export default function ListingDetailsPage({ params }: PageProps) {
 
           {/* Description */}
           <div>
-            <h3 className="text-md font-bold text-on-surface mb-3">Property Description</h3>
-            <p className="text-sm text-on-surface-variant leading-relaxed whitespace-pre-line">{listing.description}</p>
+            <h3 className="text-lg font-bold text-on-surface mb-3">Property Description</h3>
+            <p className="text-sm text-on-surface-variant leading-relaxed whitespace-pre-line bg-white border border-outline-variant p-6 rounded-2xl shadow-sm">{listing.description}</p>
           </div>
 
           {/* Amenities Badges */}
           <div>
-            <h3 className="text-md font-bold text-on-surface mb-3">Facilities</h3>
-            <div className="flex flex-wrap gap-2">
-              {listing.facilities && listing.facilities.map((fac: string, idx: number) => (
-                <span key={idx} className="px-4 py-2 bg-surface-container text-xs font-bold text-on-surface rounded-full">
-                  {fac}
-                </span>
-              ))}
+            <h3 className="text-lg font-bold text-on-surface mb-3">Facilities</h3>
+            <div className="flex flex-wrap gap-3">
+              {listing.facilities && listing.facilities.map((fac: string, idx: number) => {
+                const iconMap: { [key: string]: any } = {
+                  wifi: <Wifi className="w-4 h-4 text-primary" />,
+                  parking: <Car className="w-4 h-4 text-primary" />,
+                  ac: <Bolt className="w-4 h-4 text-primary" />,
+                  security: <Shield className="w-4 h-4 text-primary" />,
+                  kitchen: <Refrigerator className="w-4 h-4 text-primary" />
+                };
+                const lower = fac.toLowerCase();
+                let icon = <CheckCircle2 className="w-4 h-4 text-primary" />;
+                for (const key in iconMap) {
+                  if (lower.includes(key)) {
+                    icon = iconMap[key];
+                    break;
+                  }
+                }
+                return (
+                  <span key={idx} className="flex items-center gap-2 px-4 py-2.5 bg-white border border-outline-variant text-xs font-bold text-on-surface rounded-full shadow-sm">
+                    {icon}
+                    {fac}
+                  </span>
+                );
+              })}
             </div>
           </div>
 
@@ -230,15 +258,15 @@ export default function ListingDetailsPage({ params }: PageProps) {
           <div className="bg-white border border-outline-variant rounded-2xl p-6 shadow-sm">
             <h3 className="text-sm font-bold text-on-surface mb-4">House Rules & Preferences</h3>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-center">
-              <div className="p-3 bg-surface-container-low rounded-xl">
+              <div className="p-4 bg-surface-container-low rounded-xl">
                 <div className="text-[10px] font-bold text-outline uppercase">Food Preference</div>
                 <div className="text-xs font-bold text-on-surface mt-1">{listing.food_preference}</div>
               </div>
-              <div className="p-3 bg-surface-container-low rounded-xl">
+              <div className="p-4 bg-surface-container-low rounded-xl">
                 <div className="text-[10px] font-bold text-outline uppercase">Curfew Hours</div>
                 <div className="text-xs font-bold text-on-surface mt-1">{listing.curfew}</div>
               </div>
-              <div className="p-3 bg-surface-container-low rounded-xl">
+              <div className="p-4 bg-surface-container-low rounded-xl">
                 <div className="text-[10px] font-bold text-outline uppercase">Visitor Access</div>
                 <div className="text-xs font-bold text-on-surface mt-1">{listing.visitors}</div>
               </div>
@@ -252,15 +280,15 @@ export default function ListingDetailsPage({ params }: PageProps) {
 
             {landmarkLoading ? (
               <div className="py-8 text-center animate-pulse text-xs text-text-muted">Discovering neighborhood details...</div>
-            ) : landmarks ? (
+            ) : landmarks && Object.keys(landmarks).length > 0 ? (
               <div>
                 {/* Tabs Selector */}
-                <div className="flex gap-2 border-b border-outline-variant/30 pb-3 mb-6 overflow-x-auto">
+                <div className="flex gap-2 border-b border-outline-variant/30 pb-3 mb-6 overflow-x-auto hide-scrollbar">
                   {Object.keys(landmarks).map((key) => (
                     <button
                       key={key}
                       onClick={() => setActiveTab(key)}
-                      className={`px-4 py-1.5 rounded-full text-xs font-bold shrink-0 transition-colors ${
+                      className={`px-4 py-2 rounded-full text-xs font-bold shrink-0 transition-colors ${
                         activeTab === key ? "bg-primary text-white" : "bg-surface-container hover:bg-outline-variant/30 text-on-surface-variant"
                       }`}
                     >
@@ -282,8 +310,8 @@ export default function ListingDetailsPage({ params }: PageProps) {
                           </div>
                         </div>
                         <div className="text-right text-[10px] font-semibold text-text-muted">
-                          <div>{l.drive_time}</div>
-                          <div className="mt-0.5">{l.walk_time}</div>
+                          <div>🚗 Drive: {l.drive_time}</div>
+                          <div className="mt-0.5">🚶 Walk: {l.walk_time}</div>
                         </div>
                       </div>
                     ))
@@ -299,7 +327,7 @@ export default function ListingDetailsPage({ params }: PageProps) {
 
           {/* Reviews List & Post Form */}
           <div className="space-y-6">
-            <h3 className="text-md font-bold text-on-surface">Reviews ({listing.reviews?.length || 0})</h3>
+            <h3 className="text-lg font-bold text-on-surface">Reviews ({listing.reviews?.length || 0})</h3>
             
             <div className="space-y-4">
               {listing.reviews && listing.reviews.map((r: any) => (
@@ -357,7 +385,7 @@ export default function ListingDetailsPage({ params }: PageProps) {
               {reviewError && <p className="text-xs text-error font-medium">{reviewError}</p>}
               {reviewSuccess && <p className="text-xs text-primary font-medium">{reviewSuccess}</p>}
 
-              <button type="submit" className="px-6 py-2.5 bg-primary text-white rounded-xl text-xs font-bold hover:opacity-90 active:scale-95 transition-all">
+              <button type="submit" className="px-6 py-2.5 bg-primary text-white rounded-xl text-xs font-bold hover:opacity-90 active:scale-95 transition-all shadow-md shadow-primary/10">
                 Submit Review
               </button>
             </form>
@@ -365,9 +393,8 @@ export default function ListingDetailsPage({ params }: PageProps) {
         </div>
 
         {/* Sidebar Actions */}
-        <aside className="space-y-6">
-          {/* Action Card */}
-          <div className="bg-white border border-outline-variant rounded-2xl p-6 shadow-md sticky top-20">
+        <aside className="lg:col-span-4 space-y-6 sticky top-20">
+          <div className="bg-white border border-outline-variant rounded-2xl p-6 shadow-md">
             <div className="flex justify-between items-center pb-4 border-b border-outline-variant/30 mb-6">
               <div>
                 <span className="text-[10px] text-on-surface-variant font-semibold">Rent Amount</span>
@@ -388,6 +415,10 @@ export default function ListingDetailsPage({ params }: PageProps) {
                 <Eye className="w-4 h-4 text-primary shrink-0" />
                 <span>Property views: <strong>{listing.views_count}</strong></span>
               </div>
+              <div className="flex items-center gap-3 text-xs text-on-surface">
+                <Star className="w-4 h-4 text-primary shrink-0 fill-primary" />
+                <span>Rating: <strong>{avgRating} / 5.0</strong></span>
+              </div>
               {listing.phone && (
                 <div className="flex items-center gap-3 text-xs text-on-surface">
                   <Phone className="w-4 h-4 text-primary shrink-0" />
@@ -401,7 +432,7 @@ export default function ListingDetailsPage({ params }: PageProps) {
                 <a
                   href={`tel:${listing.phone}`}
                   onClick={() => handleTrackClick("Call")}
-                  className="w-full py-3 bg-primary text-white rounded-xl text-xs font-bold flex items-center justify-center gap-2 hover:opacity-90 active:scale-95 transition-all shadow-md shadow-primary/10"
+                  className="w-full py-3 bg-primary text-white rounded-xl text-xs font-bold flex items-center justify-center gap-2 hover:opacity-90 active:scale-95 transition-all shadow-lg shadow-primary/10"
                 >
                   <PhoneCall className="w-4 h-4" /> Call Owner
                 </a>
@@ -412,7 +443,7 @@ export default function ListingDetailsPage({ params }: PageProps) {
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={() => handleTrackClick("WhatsApp")}
-                  className="w-full py-3 bg-secondary-container text-white rounded-xl text-xs font-bold flex items-center justify-center gap-2 hover:opacity-90 active:scale-95 transition-all shadow-md shadow-secondary-container/10"
+                  className="w-full py-3 bg-secondary-container text-white rounded-xl text-xs font-bold flex items-center justify-center gap-2 hover:opacity-90 active:scale-95 transition-all shadow-lg shadow-secondary-container/10"
                 >
                   <MessageSquare className="w-4 h-4" /> WhatsApp Chat
                 </a>
@@ -433,5 +464,25 @@ export default function ListingDetailsPage({ params }: PageProps) {
         </aside>
       </div>
     </div>
+  );
+}
+
+function CheckCircle2(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <circle cx="12" cy="12" r="10" />
+      <path d="m9 12 2 2 4-4" />
+    </svg>
   );
 }
