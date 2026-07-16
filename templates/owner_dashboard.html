@@ -175,21 +175,53 @@
         });
     </script>
 
-    <!-- Premium Owner Listing Promo Banner -->
-    <div style="background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); border: 1px solid #bfdbfe; border-radius: 12px; padding: 1.25rem 1.5rem; margin-top: 1.5rem; margin-bottom: 1rem; display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
-        <div style="display: flex; align-items: center; gap: 1rem;">
-            <div style="font-size: 2rem; background: rgba(37, 99, 235, 0.1); width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">🎁</div>
-            <div>
-                <h4 style="margin: 0 0 0.25rem 0; font-size: 1.1rem; font-weight: 700; color: #1e3a8a;">Direct Owner Listing Reward: Earn ₹50!</h4>
-                <p style="margin: 0; font-size: 0.9rem; color: #1e40af; line-height: 1.4;">Did you know? Listing your own property directly on RoomNest earns you a ₹50 listing bonus! Ensure your property is verified, and once approved, the reward will be credited directly to your dashboard.</p>
+    <!-- Landlord Success Stories & Promo Banner -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; margin-top: 1.5rem; margin-bottom: 1rem;">
+        <!-- Left: Listing Reward Promo -->
+        <div style="background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); border: 1px solid #bfdbfe; border-radius: 12px; padding: 1.25rem 1.5rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <div style="font-size: 2rem; background: rgba(37, 99, 235, 0.1); width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">🎁</div>
+                <div>
+                    <h4 style="margin: 0 0 0.25rem 0; font-size: 1.05rem; font-weight: 700; color: #1e3a8a;">Direct Owner Listing Reward: Earn ₹50!</h4>
+                    <p style="margin: 0; font-size: 0.85rem; color: #1e40af; line-height: 1.4;">List your property directly today. As soon as it is verified, we'll credit ₹50 to your UPI rewards wallet!</p>
+                </div>
             </div>
-        </div>
-        <div style="display: flex; gap: 10px; flex-shrink: 0;">
-            <a href="{% url 'earn_rewards' %}" style="background: #2563EB; color: white; padding: 0.6rem 1.2rem; border-radius: 8px; font-weight: 600; font-size: 0.85rem; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; transition: background 0.2s; box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2);">
+            <a href="{% url 'earn_rewards' %}" class="btn btn-primary" style="padding: 0.5rem 1rem; border-radius: 8px; font-weight: 700; font-size: 0.8rem; text-decoration: none; flex-shrink: 0; min-height: 36px; color: white !important;">
                 Learn More
             </a>
         </div>
+        <!-- Right: Landlord Success Story Ticker -->
+        <div style="background: linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 100%); border: 1px solid #A7F3D0; border-radius: 12px; padding: 1.25rem 1.5rem; display: flex; align-items: center; gap: 1rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
+            <div style="font-size: 2rem; background: rgba(16, 185, 129, 0.1); width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">🎉</div>
+            <div style="flex: 1;">
+                <h4 style="margin: 0 0 0.25rem 0; font-size: 1.05rem; font-weight: 700; color: #065F46;">Owner Success Stories</h4>
+                <div id="landlord-success-ticker" style="font-size: 0.85rem; color: #047857; line-height: 1.4; font-weight: 500; height: 40px; position: relative;">
+                    <div class="success-slide" style="position: absolute; width: 100%; transition: opacity 0.5s ease-in-out; opacity: 1;">
+                        "Meera Lal filled her Gokulam 2BHK flat within 4 days of listing. Zero agent calls."
+                    </div>
+                    <div class="success-slide" style="position: absolute; width: 100%; transition: opacity 0.5s ease-in-out; opacity: 0; pointer-events: none;">
+                        "Rajesh K. connected with a JSS student in 48 hours. Secure curfew setup."
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+    
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const slides = document.querySelectorAll('#landlord-success-ticker .success-slide');
+            if (slides.length > 1) {
+                let current = 0;
+                setInterval(() => {
+                    slides[current].style.opacity = '0';
+                    slides[current].style.pointerEvents = 'none';
+                    current = (current + 1) % slides.length;
+                    slides[current].style.opacity = '1';
+                    slides[current].style.pointerEvents = 'auto';
+                }, 5000);
+            }
+        });
+    </script>
 
     <!-- Tabbed Navigation Header -->
     <div class="tab-header" style="margin-top: 1.5rem;">

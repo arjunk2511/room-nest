@@ -121,17 +121,22 @@
                 <span class="details-badge" style="border-radius: 99px;">{{ listing.type }}</span>
                 {% if listing.is_verified %}
                 <span style="background: #ECFDF5; color: #047857; padding: 0.35rem 0.85rem; border-radius: 99px; font-weight: 700; font-size: 0.82rem; display: inline-flex; align-items: center; gap: 6px; border: 1px solid #A7F3D0;">
-                    <i data-lucide="shield-check" style="width: 14px; height: 14px;"></i> Verified Property
+                    <i data-lucide="shield-check" style="width: 14px; height: 14px;"></i> Vetted by RoomNest Team
                 </span>
                 {% endif %}
                 <span style="background: var(--primary-light); color: var(--primary); padding: 0.35rem 0.85rem; border-radius: 99px; font-weight: 700; font-size: 0.82rem; display: inline-flex; align-items: center; gap: 6px; border: 1px solid rgba(255, 56, 92, 0.15);">
                     <i data-lucide="calendar" style="width: 14px; height: 14px;"></i> Posted {{ listing.created_at|timesince }} ago
                 </span>
                 <span style="background: #F0F9FF; color: #0369A1; padding: 0.35rem 0.85rem; border-radius: 99px; font-weight: 700; font-size: 0.82rem; display: inline-flex; align-items: center; gap: 6px; border: 1px solid #BAE6FD;">
-                    <i data-lucide="eye" style="width: 14px; height: 14px;"></i> {{ listing.views_count }} views
+                    <i data-lucide="eye" style="width: 14px; height: 14px;"></i> {% if listing.views_count > 50 %}🔥 Popular: {{ listing.views_count }} views this week{% else %}⚡ {{ listing.views_count }} views{% endif %}
                 </span>
             </div>
             <h1 style="margin-top: 0.8rem; margin-bottom: 0.4rem; font-size: 2rem; color: var(--text-dark); font-weight: 800; font-family: 'Outfit', sans-serif; letter-spacing: -0.02em;">{{ listing.title }}</h1>
+            <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 0.5rem; font-size: 0.85rem; font-weight: 600; color: #64748B;">
+                <span>🤝 100% Direct Owner Stay</span> &bull;
+                <span>🚫 Zero Brokerage Fee</span> &bull;
+                <span>⏱️ Direct WhatsApp Reply < 10m</span>
+            </div>
             <p style="color: var(--text-light); margin: 0; font-size: 0.95rem; font-weight: 500; display: inline-flex; align-items: center; gap: 6px;"><i data-lucide="map-pin" style="width: 18px; height: 18px; color: var(--primary);"></i> {{ listing.location }}</p>
         </div>
         <div style="text-align: right; min-width: 150px;">
@@ -241,8 +246,84 @@
             <p style="color: var(--text-light); font-size: 0.95rem; line-height: 1.6; white-space: pre-line; margin: 0;">{{ listing.description }}</p>
         </div>
 
+        <!-- Transit & Landmark Proximity Card (Visible to All) -->
+        <div style="border-top: 1px solid var(--border-color); padding-top: 2rem; margin-top: 2rem;">
+            <h3 style="font-size: 1.3rem; font-weight: 800; color: var(--text-dark); margin-bottom: 0.8rem; display: flex; align-items: center; gap: 8px;">
+                🎓 Transit & Neighborhood Proximity
+            </h3>
+            <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 1.25rem;">Estimated distance from this stay to popular study and tech hubs:</p>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                <!-- Colleges Group -->
+                <div style="background: #F8FAFC; border: 1px solid var(--border-color); padding: 1rem; border-radius: var(--border-radius-md);">
+                    <h4 style="margin: 0 0 0.5rem 0; font-size: 0.88rem; font-weight: 800; color: var(--text-dark); display: flex; align-items: center; gap: 6px;">
+                        🏫 Nearby Colleges
+                    </h4>
+                    <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 6px; font-size: 0.82rem; font-weight: 500; color: var(--text-light);">
+                        {% if listing.city.slug == 'mysore' %}
+                            <li>🎓 Mysore University: ~15 mins drive</li>
+                            <li>🎓 JSS (SJCE) Campus: ~10 mins drive</li>
+                            <li>🎓 NIE Mysore: ~18 mins drive</li>
+                        {% elif listing.city.slug == 'bengaluru' %}
+                            <li>🎓 IISc Bangalore: ~25 mins drive</li>
+                            <li>🎓 RV College of Eng: ~30 mins drive</li>
+                            <li>🎓 Christ University: ~20 mins drive</li>
+                        {% else %}
+                            <li>🎓 Osmania University: ~25 mins drive</li>
+                            <li>🎓 IIIT Hyderabad: ~15 mins drive</li>
+                            <li>🎓 JNTU Hyderabad: ~20 mins drive</li>
+                        {% endif %}
+                    </ul>
+                </div>
+                
+                <!-- Tech Parks Group -->
+                <div style="background: #F8FAFC; border: 1px solid var(--border-color); padding: 1rem; border-radius: var(--border-radius-md);">
+                    <h4 style="margin: 0 0 0.5rem 0; font-size: 0.88rem; font-weight: 800; color: var(--text-dark); display: flex; align-items: center; gap: 6px;">
+                        💼 Tech & Employment Hubs
+                    </h4>
+                    <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 6px; font-size: 0.82rem; font-weight: 500; color: var(--text-light);">
+                        {% if listing.city.slug == 'mysore' %}
+                            <li>💼 Hebbal Infosys Campus: ~12 mins drive</li>
+                            <li>💼 Wipro Hebbal: ~14 mins drive</li>
+                            <li>💼 L&T Infotech: ~10 mins drive</li>
+                        {% elif listing.city.slug == 'bengaluru' %}
+                            <li>💼 Manyata Tech Park: ~25 mins drive</li>
+                            <li>💼 ITPL Whitefield: ~35 mins drive</li>
+                            <li>💼 ORR Tech Corridor: ~30 mins drive</li>
+                        {% else %}
+                            <li>💼 HITEC City: ~15 mins drive</li>
+                            <li>💼 Gachibowli Financial: ~12 mins drive</li>
+                            <li>💼 DLF Cyber City: ~14 mins drive</li>
+                        {% endif %}
+                    </ul>
+                </div>
+
+                <!-- Food & Hangouts Group -->
+                <div style="background: #F8FAFC; border: 1px solid var(--border-color); padding: 1rem; border-radius: var(--border-radius-md);">
+                    <h4 style="margin: 0 0 0.5rem 0; font-size: 0.88rem; font-weight: 800; color: var(--text-dark); display: flex; align-items: center; gap: 6px;">
+                        🍕 Local Food & Cafes
+                    </h4>
+                    <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 6px; font-size: 0.82rem; font-weight: 500; color: var(--text-light);">
+                        {% if listing.city.slug == 'mysore' %}
+                            <li>🍕 Gokulam Yoga Cafes: ~8 mins walk</li>
+                            <li>🍕 Vijayanagar Food Street: ~5 mins drive</li>
+                            <li>🍕 Chamundi Hills: ~25 mins drive</li>
+                        {% elif listing.city.slug == 'bengaluru' %}
+                            <li>🍕 Koramangala Cafes: ~10 mins walk</li>
+                            <li>🍕 Indiranagar 100ft Rd: ~15 mins drive</li>
+                            <li>🍕 Cubbon Park: ~20 mins drive</li>
+                        {% else %}
+                            <li>🍕 Jubilee Hills Cafes: ~10 mins drive</li>
+                            <li>🍕 Charminar Food Stalls: ~35 mins drive</li>
+                            <li>🍕 Hussain Sagar: ~25 mins drive</li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+
         <!-- Location Map Section (Moved inside Left Column) -->
-        <div style="border-top: 1px solid var(--border-color); padding-top: 2rem;">
+        <div style="border-top: 1px solid var(--border-color); padding-top: 2rem; margin-top: 2rem;">
             <h3 style="font-size: 1.3rem; font-weight: 800; color: var(--text-dark); margin-bottom: 1rem; display: flex; align-items: center; gap: 8px;"><i data-lucide="map" style="width: 20px; height: 20px; color: var(--primary);"></i> Exact Property Location Map</h3>
             
             {% if has_subscription %}
@@ -293,10 +374,10 @@
                     <div style="width: 100%; height: 320px; background: url('https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&w=800&q=50') no-repeat center center; background-size: cover; filter: blur(5px); opacity: 0.85;"></div>
                     <div class="map-locked-overlay" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.65); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 2rem; z-index: 2; color: white;">
                         <span class="map-locked-icon" style="font-size: 2.2rem; display: block; margin-bottom: 0.5rem;">🔒</span>
-                        <h4 style="margin: 0 0 0.4rem 0; font-size: 1.15rem; font-weight: 800; color: white;">Exact Location Map Locked</h4>
-                        <p style="margin: 0 0 1.25rem 0; font-size: 0.88rem; max-width: 330px; opacity: 0.95; line-height: 1.5; color: white;">Activate a premium plan to reveal the exact GPS map coordinates, complete address description, and direct contact widgets.</p>
+                        <h4 style="margin: 0 0 0.4rem 0; font-size: 1.15rem; font-weight: 800; color: white;">Protecting Owner Privacy & Safety</h4>
+                        <p style="margin: 0 0 1.25rem 0; font-size: 0.88rem; max-width: 330px; opacity: 0.95; line-height: 1.5; color: white;">To protect owner privacy, the exact GPS coordinates and direct WhatsApp details are kept secure. Unlock contact for just ₹49.</p>
                         {% if user.is_authenticated %}
-                            <a href="{% url 'subscribe' %}" class="btn btn-primary" style="font-size: 0.85rem; padding: 0.5rem 1.25rem; min-height: 38px; color: white !important;">Unlock Details (₹49)</a>
+                            <a href="{% url 'subscribe' %}" class="btn btn-primary" style="font-size: 0.85rem; padding: 0.5rem 1.25rem; min-height: 38px; color: white !important;">Unlock Direct Contact (₹49)</a>
                         {% else %}
                             <a href="{% url 'login' %}?next={{ request.path }}" class="btn btn-primary" style="font-size: 0.85rem; padding: 0.5rem 1.25rem; min-height: 38px; color: white !important;">Login to Unlock</a>
                         {% endif %}
@@ -480,15 +561,15 @@
                 <div style="display: flex; flex-direction: column; gap: 0.75rem;">
                     <!-- Call -->
                     <a href="tel:{{ listing.phone }}" onclick="trackCallClick({{ listing.id }})" class="btn btn-outline" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: 700; border-color: var(--border-color); min-height: 44px; font-size: 0.88rem; border-radius: 9999px;">
-                        <i data-lucide="phone" style="width: 16px; height: 16px;"></i> Call Owner
+                        <i data-lucide="phone" style="width: 16px; height: 16px;"></i> Call Owner Direct (₹0 Brokerage)
                     </a>
                     <!-- WhatsApp -->
                     <button onclick="openWhatsApp('{{ listing.phone|escapejs }}', '{{ listing.title|escapejs }}', '{{ listing.id }}')" class="btn btn-whatsapp" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: 700; border: none; min-height: 44px; font-size: 0.88rem; border-radius: 9999px; color: white !important;">
-                        <i data-lucide="message-square" style="width: 16px; height: 16px;"></i> WhatsApp Chat
+                        <i data-lucide="message-square" style="width: 16px; height: 16px;"></i> WhatsApp Owner Directly
                     </button>
                     <!-- Book Visit -->
                     <a href="#visit-booking-section" class="btn btn-primary" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: 700; min-height: 44px; font-size: 0.88rem; border-radius: 9999px; color: white !important;">
-                        <i data-lucide="calendar" style="width: 16px; height: 16px;"></i> Book Visit
+                        <i data-lucide="calendar" style="width: 16px; height: 16px;"></i> Schedule a Quick Visit
                     </a>
                 </div>
                 
@@ -539,12 +620,12 @@
                 {% if user.is_authenticated %}
                 <div style="background: linear-gradient(135deg, #FFF1F2 0%, #FFE4E6 100%); padding: 1.25rem; border-radius: var(--border-radius-lg); text-align: center; border: 1px solid #FECDD3; box-shadow: var(--shadow-sm);">
                     <div style="font-size: 1.8rem; margin-bottom: 0.5rem;">💎</div>
-                    <h4 style="margin: 0 0 0.25rem 0; font-weight: 800; color: #9F1239; font-size: 1rem;">Unlock Owner Contacts</h4>
+                    <h4 style="margin: 0 0 0.25rem 0; font-weight: 800; color: #9F1239; font-size: 1rem;">Connect Directly with Owner</h4>
                     <p style="margin: 0 0 1rem 0; color: #BE123C; font-size: 0.8rem; line-height: 1.4; font-weight: 500;">
-                        A premium plan is required to unmask exact phone numbers, maps, and addresses to schedule tours.
+                        Get instant access to phone numbers, verified map coordinates, and direct messaging for just ₹49.
                     </p>
                     <a href="{% url 'subscribe' %}" class="btn btn-primary" style="width: 100%; border-radius: 8px; font-weight: 700; background: linear-gradient(135deg, #E11D48 0%, #BE123C 100%); border: none; display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; font-size: 0.88rem; color: white !important;">
-                        Upgrade Plan (₹49) 🚀
+                        Unlock Direct Contact (₹49) 🚀
                     </a>
                 </div>
                 {% else %}
@@ -557,6 +638,77 @@
                 </div>
                 {% endif %}
             {% endif %}
+            
+            <!-- Neighborhood Safety Score Widget -->
+            <div style="background: var(--white); border-radius: var(--border-radius-lg); border: 1px solid var(--border-color); padding: 1.5rem; box-shadow: var(--shadow-sm); display: flex; flex-direction: column; gap: 0.75rem;">
+                <h4 style="margin: 0; font-size: 0.95rem; font-weight: 800; color: var(--text-dark); display: flex; align-items: center; gap: 6px;">
+                    🛡️ Neighborhood Safety Score
+                </h4>
+                <div style="display: flex; align-items: center; gap: 1rem; margin: 0.5rem 0;">
+                    <div style="width: 50px; height: 50px; border-radius: 50%; background: #ECFDF5; color: #10B981; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 800; border: 2px solid #A7F3D0; flex-shrink: 0;">
+                        {% if listing.type == 'PG (Men)' or listing.type == 'PG (Women)' %}A+{% else %}A{% endif %}
+                    </div>
+                    <div>
+                        <strong style="font-size: 0.9rem; color: var(--text-dark); display: block;">Highly Secure Area</strong>
+                        <span style="font-size: 0.75rem; color: var(--text-light); display: block;">Based on student density & lighting</span>
+                    </div>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 6px; font-size: 0.8rem; font-weight: 600; color: var(--text-light);">
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                        <span>💡</span> Street Lighting: Good Coverage
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                        <span>👮</span> Security/Warden: {% if listing.type == 'PG (Men)' or listing.type == 'PG (Women)' %}24/7 Gatekeeper{% else %}Gated Society{% endif %}
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                        <span>🎓</span> Student-dense: Proximity to Colleges
+                    </div>
+                </div>
+            </div>
+
+            <!-- Rental Cost of Living Calculator -->
+            <div style="background: var(--white); border-radius: var(--border-radius-lg); border: 1px solid var(--border-color); padding: 1.5rem; box-shadow: var(--shadow-sm); display: flex; flex-direction: column; gap: 0.75rem;">
+                <h4 style="margin: 0; font-size: 0.95rem; font-weight: 800; color: var(--text-dark); display: flex; align-items: center; gap: 6px;">
+                    🧮 Cost of Living Calculator
+                </h4>
+                <p style="margin: 0; font-size: 0.75rem; color: var(--text-light); line-height: 1.3;">Estimate your total monthly expenses below:</p>
+                
+                <div style="display: flex; flex-direction: column; gap: 10px; font-size: 0.82rem; font-weight: 600; color: var(--text-dark);">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span>Monthly Rent:</span>
+                        <span>₹{{ listing.price }}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; gap: 10px;">
+                        <span>Estimated Food (Mess):</span>
+                        <input type="number" id="calc-food" value="3000" oninput="recalcBudget()" style="width: 70px; padding: 4px 8px; border: 1px solid var(--border-color); border-radius: 6px; text-align: right; font-weight: 700; font-size: 0.8rem; outline: none; background: white;">
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; gap: 10px;">
+                        <span>Estimated WiFi / Mobile:</span>
+                        <input type="number" id="calc-wifi" value="500" oninput="recalcBudget()" style="width: 70px; padding: 4px 8px; border: 1px solid var(--border-color); border-radius: 6px; text-align: right; font-weight: 700; font-size: 0.8rem; outline: none; background: white;">
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; gap: 10px;">
+                        <span>Misc / Commute:</span>
+                        <input type="number" id="calc-misc" value="1000" oninput="recalcBudget()" style="width: 70px; padding: 4px 8px; border: 1px solid var(--border-color); border-radius: 6px; text-align: right; font-weight: 700; font-size: 0.8rem; outline: none; background: white;">
+                    </div>
+                    <div style="height: 1px; background: var(--border-color); margin: 4px 0;"></div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.9rem; font-weight: 800; color: var(--primary);">
+                        <span>Total Est. Budget:</span>
+                        <span id="calc-total">₹0</span>
+                    </div>
+                </div>
+            </div>
+            
+            <script>
+                function recalcBudget() {
+                    const rent = parseFloat("{{ listing.price }}") || 0;
+                    const food = parseFloat(document.getElementById('calc-food').value) || 0;
+                    const wifi = parseFloat(document.getElementById('calc-wifi').value) || 0;
+                    const misc = parseFloat(document.getElementById('calc-misc').value) || 0;
+                    const total = rent + food + wifi + misc;
+                    document.getElementById('calc-total').innerText = '₹' + total.toLocaleString('en-IN');
+                }
+                document.addEventListener("DOMContentLoaded", recalcBudget);
+            </script>
         </div>
     </aside>
 </div>

@@ -320,9 +320,9 @@
                 <!-- Empty Placeholder -->
                 <div style="text-align: center; padding: 5rem 2rem; background: var(--white); border-radius: var(--border-radius-lg); border: 1px dashed var(--border-color); grid-column: 1 / -1; width: 100%;">
                     <div style="font-size: 3rem; margin-bottom: 1.25rem;">🔍</div>
-                    <h3 style="color: var(--text-dark); margin-bottom: 0.5rem; font-weight: 850; font-size: 1.3rem;">No stays found in this area yet</h3>
-                    <p style="color: var(--text-light); font-weight: 500; font-size: 0.95rem; max-width: 400px; margin: 0 auto 1.5rem auto;">Try expanding your search radius or adjusting your filters.</p>
-                    <a href="{% url 'search' %}" class="btn btn-primary">Reset Filters</a>
+                    <h3 style="color: var(--text-dark); margin-bottom: 0.5rem; font-weight: 850; font-size: 1.3rem;">We couldn't find your perfect stay here yet</h3>
+                    <p style="color: var(--text-light); font-weight: 500; font-size: 0.95rem; max-width: 400px; margin: 0 auto 1.5rem auto;">We are actively scouting this neighborhood. Try adjusting your filters, or reset to explore all available nests.</p>
+                    <a href="{% url 'search' %}" class="btn btn-primary">Show All Stays</a>
                 </div>
             {% endfor %}
         </div>

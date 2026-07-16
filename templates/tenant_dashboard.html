@@ -34,6 +34,7 @@
         <button class="tab-btn" onclick="switchTab(event, 'inquiries-tab')">📬 Contact History ({{ inquiries|length }})</button>
         <button class="tab-btn" onclick="switchTab(event, 'chats-tab')">💬 Active Chats ({{ chat_users|length }})</button>
         <button class="tab-btn" onclick="switchTab(event, 'subscription-tab')">💳 Profile & Billing</button>
+        <button class="tab-btn" onclick="switchTab(event, 'checklist-tab')">📦 Moving Checklist</button>
     </div>
 
     <!-- 1. SAVED PROPERTIES TAB SECTION -->
@@ -335,6 +336,80 @@
             
         </div>
     </div>
+
+    <!-- 5. MOVING CHECKLIST TAB SECTION -->
+    <div id="checklist-tab" class="tab-pane">
+        <div style="background: var(--white); border: 1px solid var(--border-color); border-radius: var(--border-radius-lg); padding: 2.5rem; box-shadow: var(--shadow);">
+            <div style="border-bottom: 1px solid var(--border-color); padding-bottom: 0.75rem; margin-bottom: 1.8rem;">
+                <h3 style="font-size: 1.25rem; font-weight: 800; color: var(--text-dark); margin: 0; display: flex; align-items: center; gap: 8px;">
+                    📦 Renter's Moving Checklist
+                </h3>
+                <p style="color: var(--text-light); font-size: 0.85rem; margin: 0.2rem 0 0 0; font-weight: 500;">Tick off tasks as you prepare for your new home transition.</p>
+            </div>
+            
+            <div style="display: flex; flex-direction: column; gap: 1rem;" id="checklist-items">
+                <!-- Checklist Item 1 -->
+                <label style="display: flex; align-items: flex-start; gap: 12px; padding: 1rem; border: 1px solid var(--border-color); border-radius: 8px; cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='#F8FAFC'" onmouseout="this.style.background='white'">
+                    <input type="checkbox" style="accent-color: var(--primary); width: 18px; height: 18px; margin-top: 2px;" onclick="toggleChecklistItem(this)">
+                    <div>
+                        <strong style="color: var(--text-dark); font-size: 0.92rem; display: block;">🔒 Lock the Deal</strong>
+                        <span style="font-size: 0.8rem; color: var(--text-light);">Confirm rent, token deposit, and hand over the initial advance. Get a written receipt.</span>
+                    </div>
+                </label>
+
+                <!-- Checklist Item 2 -->
+                <label style="display: flex; align-items: flex-start; gap: 12px; padding: 1rem; border: 1px solid var(--border-color); border-radius: 8px; cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='#F8FAFC'" onmouseout="this.style.background='white'">
+                    <input type="checkbox" style="accent-color: var(--primary); width: 18px; height: 18px; margin-top: 2px;" onclick="toggleChecklistItem(this)">
+                    <div>
+                        <strong style="color: var(--text-dark); font-size: 0.92rem; display: block;">📝 Review Lease Agreement</strong>
+                        <span style="font-size: 0.8rem; color: var(--text-light);">Verify lease duration, lock-in periods, notice terms, and maintenance clauses.</span>
+                    </div>
+                </label>
+
+                <!-- Checklist Item 3 -->
+                <label style="display: flex; align-items: flex-start; gap: 12px; padding: 1rem; border: 1px solid var(--border-color); border-radius: 8px; cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='#F8FAFC'" onmouseout="this.style.background='white'">
+                    <input type="checkbox" style="accent-color: var(--primary); width: 18px; height: 18px; margin-top: 2px;" onclick="toggleChecklistItem(this)">
+                    <div>
+                        <strong style="color: var(--text-dark); font-size: 0.92rem; display: block;">🔌 Inspect Utilities & Meters</strong>
+                        <span style="font-size: 0.8rem; color: var(--text-light);">Check working water taps, electrical sockets, geysers, and note down electricity meter readings.</span>
+                    </div>
+                </label>
+
+                <!-- Checklist Item 4 -->
+                <label style="display: flex; align-items: flex-start; gap: 12px; padding: 1rem; border: 1px solid var(--border-color); border-radius: 8px; cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='#F8FAFC'" onmouseout="this.style.background='white'">
+                    <input type="checkbox" style="accent-color: var(--primary); width: 18px; height: 18px; margin-top: 2px;" onclick="toggleChecklistItem(this)">
+                    <div>
+                        <strong style="color: var(--text-dark); font-size: 0.92rem; display: block;">🚚 Pack & Coordinate Packers</strong>
+                        <span style="font-size: 0.8rem; color: var(--text-light);">Label boxes by room type, wrap fragile goods, and schedule a local transport truck.</span>
+                    </div>
+                </label>
+
+                <!-- Checklist Item 5 -->
+                <label style="display: flex; align-items: flex-start; gap: 12px; padding: 1rem; border: 1px solid var(--border-color); border-radius: 8px; cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='#F8FAFC'" onmouseout="this.style.background='white'">
+                    <input type="checkbox" style="accent-color: var(--primary); width: 18px; height: 18px; margin-top: 2px;" onclick="toggleChecklistItem(this)">
+                    <div>
+                        <strong style="color: var(--text-dark); font-size: 0.92rem; display: block;">🔑 Key Handover & Clean</strong>
+                        <span style="font-size: 0.8rem; color: var(--text-light);">Arrange a time to receive keys, verify gate rules, and inspect post-move clean status.</span>
+                    </div>
+                </label>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function toggleChecklistItem(checkbox) {
+            const container = checkbox.closest('label');
+            if (checkbox.checked) {
+                container.style.opacity = '0.65';
+                container.style.background = '#F8FAFC';
+                container.querySelector('strong').style.textDecoration = 'line-through';
+            } else {
+                container.style.opacity = '1';
+                container.style.background = 'white';
+                container.querySelector('strong').style.textDecoration = 'none';
+            }
+        }
+    </script>
 
 </div>
 

@@ -203,9 +203,9 @@
             <nav class="header-nav">
                 <div class="nav-links-group">
                     <a href="{% url 'home' %}" class="nav-link-item {% if request.resolver_match.url_name == 'home' %}active{% endif %}"><i data-lucide="home" style="width: 18px; height: 18px; display: inline-flex; vertical-align: middle; margin-right: 4px;"></i> Home</a>
-                    <a href="{% url 'search' %}" class="nav-link-item {% if request.resolver_match.url_name == 'search' %}active{% endif %}"><i data-lucide="search" style="width: 18px; height: 18px; display: inline-flex; vertical-align: middle; margin-right: 4px;"></i> Search</a>
-                    <a href="{% url 'add_property' %}" class="nav-link-item {% if request.resolver_match.url_name == 'add_property' %}active{% endif %}"><i data-lucide="plus-circle" style="width: 18px; height: 18px; display: inline-flex; vertical-align: middle; margin-right: 4px;"></i> Post Property</a>
-                    <a href="{% url 'wishlist' %}" class="nav-link-item {% if request.resolver_match.url_name == 'wishlist' %}active{% endif %}"><i data-lucide="heart" style="width: 18px; height: 18px; display: inline-flex; vertical-align: middle; margin-right: 4px;"></i> Saved</a>
+                    <a href="{% url 'search' %}" class="nav-link-item {% if request.resolver_match.url_name == 'search' %}active{% endif %}"><i data-lucide="search" style="width: 18px; height: 18px; display: inline-flex; vertical-align: middle; margin-right: 4px;"></i> Find a Stay</a>
+                    <a href="{% url 'add_property' %}" class="nav-link-item {% if request.resolver_match.url_name == 'add_property' %}active{% endif %}"><i data-lucide="plus-circle" style="width: 18px; height: 18px; display: inline-flex; vertical-align: middle; margin-right: 4px;"></i> Share a Stay</a>
+                    <a href="{% url 'wishlist' %}" class="nav-link-item {% if request.resolver_match.url_name == 'wishlist' %}active{% endif %}"><i data-lucide="heart" style="width: 18px; height: 18px; display: inline-flex; vertical-align: middle; margin-right: 4px;"></i> My Saved Nests</a>
                     <a href="{% if user.is_authenticated %}{% url 'profile' %}#notifications{% else %}{% url 'login' %}?next={% url 'profile' %}#notifications{% endif %}" class="nav-link-item"><i data-lucide="bell" style="width: 18px; height: 18px; display: inline-flex; vertical-align: middle; margin-right: 4px;"></i> Notifications</a>
                     
                     <!-- Profile Dropdown (Authenticated or Guest) -->
@@ -237,8 +237,8 @@
                                 <a href="{% url 'login' %}?next={{ request.path }}" onclick="closeDropdowns()" class="menu-link-highlight"><i data-lucide="log-in" style="width: 16px; height: 16px; display: inline-block; vertical-align: text-bottom; margin-right: 6px;"></i> Login</a>
                                 <a href="{% url 'register' %}?next={{ request.path }}" onclick="closeDropdowns()"><i data-lucide="user-plus" style="width: 16px; height: 16px; display: inline-block; vertical-align: text-bottom; margin-right: 6px;"></i> Register Account</a>
                                 <div class="menu-divider"></div>
-                                <a href="{% url 'add_property' %}" onclick="closeDropdowns()"><i data-lucide="plus-circle" style="width: 16px; height: 16px; display: inline-block; vertical-align: text-bottom; margin-right: 6px;"></i> Post Property</a>
-                                <a href="{% url 'search' %}" onclick="closeDropdowns()"><i data-lucide="search" style="width: 16px; height: 16px; display: inline-block; vertical-align: text-bottom; margin-right: 6px;"></i> Search Stays</a>
+                                <a href="{% url 'add_property' %}" onclick="closeDropdowns()"><i data-lucide="plus-circle" style="width: 16px; height: 16px; display: inline-block; vertical-align: text-bottom; margin-right: 6px;"></i> Share a Stay</a>
+                                <a href="{% url 'search' %}" onclick="closeDropdowns()"><i data-lucide="search" style="width: 16px; height: 16px; display: inline-block; vertical-align: text-bottom; margin-right: 6px;"></i> Find a Stay</a>
                             </div>
                         {% endif %}
                     </div>
@@ -248,7 +248,7 @@
             <!-- Mobile Controls -->
             <div class="mobile-header-controls">
                 <button class="mobile-search-btn" onclick="toggleMobileSearch()" aria-label="Toggle Search"><i data-lucide="search" style="width: 20px; height: 20px;"></i></button>
-                <a href="{% url 'add_property' %}" class="mobile-add-btn" aria-label="Post Property"><i data-lucide="plus-circle" style="width: 20px; height: 20px;"></i></a>
+                <a href="{% url 'add_property' %}" class="mobile-add-btn" aria-label="Share a Stay"><i data-lucide="plus-circle" style="width: 20px; height: 20px;"></i></a>
                 <button class="mobile-hamburger-btn" onclick="toggleDrawer()" aria-label="Toggle Menu">
                     <span></span>
                     <span></span>
@@ -274,7 +274,7 @@
         <button class="drawer-close" onclick="toggleDrawer()">&times;</button>
         <div class="drawer-links">
             <a href="{% url 'home' %}" onclick="toggleDrawer()"><i data-lucide="home" style="width: 18px; height: 18px; vertical-align: middle; margin-right: 8px;"></i> Home</a>
-            <a href="{% url 'search' %}" onclick="toggleDrawer()"><i data-lucide="search" style="width: 18px; height: 18px; vertical-align: middle; margin-right: 8px;"></i> Search Stays</a>
+            <a href="{% url 'search' %}" onclick="toggleDrawer()"><i data-lucide="search" style="width: 18px; height: 18px; vertical-align: middle; margin-right: 8px;"></i> Find a Stay</a>
             
             <div class="drawer-section-title">Explore Cities</div>
             <a href="/mysore/" onclick="toggleDrawer()"><i data-lucide="map-pin" style="width: 18px; height: 18px; vertical-align: middle; margin-right: 8px;"></i> Mysore</a>
@@ -282,8 +282,8 @@
             <a href="/hyderabad/" onclick="toggleDrawer()"><i data-lucide="map-pin" style="width: 18px; height: 18px; vertical-align: middle; margin-right: 8px;"></i> Hyderabad</a>
             
             <div class="drawer-section-title">Navigation</div>
-            <a href="{% url 'wishlist' %}" onclick="toggleDrawer()"><i data-lucide="heart" style="width: 18px; height: 18px; vertical-align: middle; margin-right: 8px;"></i> Saved Properties</a>
-            <a href="{% url 'add_property' %}" onclick="toggleDrawer()"><i data-lucide="plus-circle" style="width: 18px; height: 18px; vertical-align: middle; margin-right: 8px;"></i> Post Property</a>
+            <a href="{% url 'wishlist' %}" onclick="toggleDrawer()"><i data-lucide="heart" style="width: 18px; height: 18px; vertical-align: middle; margin-right: 8px;"></i> My Saved Nests</a>
+            <a href="{% url 'add_property' %}" onclick="toggleDrawer()"><i data-lucide="plus-circle" style="width: 18px; height: 18px; vertical-align: middle; margin-right: 8px;"></i> Share a Stay</a>
             {% if user.is_authenticated %}
                 <a href="{% url 'profile' %}" onclick="toggleDrawer()"><i data-lucide="user" style="width: 18px; height: 18px; vertical-align: middle; margin-right: 8px;"></i> Profile Settings</a>
                 {% if user.is_superuser or user.is_staff %}
@@ -322,15 +322,15 @@
         </a>
         <a href="{% url 'search' %}" class="bottom-nav-item">
             <i data-lucide="search" class="bottom-nav-icon"></i>
-            <span>Search</span>
+            <span>Find Stay</span>
         </a>
         <a href="{% url 'add_property' %}" class="bottom-nav-item">
             <i data-lucide="plus-circle" class="bottom-nav-icon" style="color: var(--primary);"></i>
-            <span>Post Stay</span>
+            <span>Share Stay</span>
         </a>
         <a href="{% url 'wishlist' %}" class="bottom-nav-item">
             <i data-lucide="heart" class="bottom-nav-icon"></i>
-            <span>Saved</span>
+            <span>Saved Nests</span>
         </a>
         {% if user.is_authenticated %}
         <a href="{% url 'profile' %}" class="bottom-nav-item">
@@ -376,8 +376,8 @@
                 <h4 style="font-size: 1rem; font-weight: 700; margin-bottom: 1.2rem; color: var(--text-dark);">Platform</h4>
                 <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.75rem;">
                     <li><a href="{% url 'home' %}" style="color: var(--text-light); font-size: 0.9rem;">Home Hub</a></li>
-                    <li><a href="{% url 'search' %}" style="color: var(--text-light); font-size: 0.9rem;">Search Rooms</a></li>
-                    <li><a href="{% url 'add_property' %}" style="color: var(--text-light); font-size: 0.9rem;">Post a Stay</a></li>
+                    <li><a href="{% url 'search' %}" style="color: var(--text-light); font-size: 0.9rem;">Find a Stay</a></li>
+                    <li><a href="{% url 'add_property' %}" style="color: var(--text-light); font-size: 0.9rem;">Share a Stay</a></li>
                 </ul>
             </div>
             
