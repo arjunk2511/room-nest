@@ -289,7 +289,7 @@
                 {% if user.is_superuser or user.is_staff %}
                     <a href="{% url 'admin_dashboard' %}" style="color: #EA580C;" onclick="toggleDrawer()"><i data-lucide="shield" style="width: 18px; height: 18px; vertical-align: middle; margin-right: 8px;"></i> Admin Dashboard</a>
                 {% endif %}
-                <a href="{% url 'logout' %}" style="color: #EF4444; margin-top: 1rem;" onclick="toggleDrawer()"><i data-lucide="log-out" style="width: 18px; height: 18px; vertical-align: middle; margin-right: 8px;"></i> Logout</a>
+                <a href="{% url 'logout' %}" style="color: #EF4444; margin-top: 1rem;" onclick="if(!confirm('Are you sure you want to log out?')) return false; toggleDrawer();"><i data-lucide="log-out" style="width: 18px; height: 18px; vertical-align: middle; margin-right: 8px;"></i> Logout</a>
             {% else %}
                 <a href="{% url 'login' %}?next={% url 'profile' %}" onclick="toggleDrawer()"><i data-lucide="user" style="width: 18px; height: 18px; vertical-align: middle; margin-right: 8px;"></i> Profile Settings</a>
                 <a href="{% url 'login' %}?next={{ request.path }}" onclick="toggleDrawer()"><i data-lucide="log-in" style="width: 18px; height: 18px; vertical-align: middle; margin-right: 8px;"></i> Login</a>

@@ -127,6 +127,44 @@ export default function Header() {
           <Link href="/search" onClick={() => setMenuOpen(false)} className="text-sm font-semibold text-on-surface">Properties</Link>
           <Link href="/blog" onClick={() => setMenuOpen(false)} className="text-sm font-semibold text-on-surface">Blog</Link>
           <Link href="/add-property" onClick={() => setMenuOpen(false)} className="w-full text-center py-2 rounded-full border border-primary text-primary text-sm font-semibold">Post Property</Link>
+          
+          {user ? (
+            <>
+              <div className="border-t border-outline-variant/30 my-1"></div>
+              <Link
+                href="/profile"
+                onClick={() => setMenuOpen(false)}
+                className="text-sm font-semibold text-on-surface flex items-center gap-2"
+              >
+                <User className="w-4 h-4 text-on-surface-variant" />
+                Profile Settings
+              </Link>
+              <button
+                onClick={() => {
+                  if (confirm("Are you sure you want to log out?")) {
+                    handleLogout();
+                    setMenuOpen(false);
+                  }
+                }}
+                className="text-sm font-semibold text-error flex items-center gap-2 text-left focus:outline-none"
+              >
+                <LogOut className="w-4 h-4" />
+                Logout
+              </button>
+            </>
+          ) : (
+            <>
+              <div className="border-t border-outline-variant/30 my-1"></div>
+              <Link
+                href="/login"
+                onClick={() => setMenuOpen(false)}
+                className="text-sm font-semibold text-primary flex items-center gap-2"
+              >
+                <User className="w-4 h-4" />
+                Login
+              </Link>
+            </>
+          )}
         </div>
       )}
     </header>
