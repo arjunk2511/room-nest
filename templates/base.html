@@ -102,6 +102,7 @@
             flex-direction: column;
             padding: 2rem 1.5rem;
             transition: right 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            overflow-y: auto;
         }
         .mobile-drawer.open {
             right: 0;
@@ -286,10 +287,10 @@
             <a href="{% url 'add_property' %}" onclick="toggleDrawer()"><i data-lucide="plus-circle" style="width: 18px; height: 18px; vertical-align: middle; margin-right: 8px;"></i> Share a Stay</a>
             {% if user.is_authenticated %}
                 <a href="{% url 'profile' %}" onclick="toggleDrawer()"><i data-lucide="user" style="width: 18px; height: 18px; vertical-align: middle; margin-right: 8px;"></i> Profile Settings</a>
+                <a href="{% url 'logout' %}" onclick="if(!confirm('Are you sure you want to log out?')) return false; toggleDrawer();"><i data-lucide="log-out" style="width: 18px; height: 18px; vertical-align: middle; margin-right: 8px;"></i> Logout</a>
                 {% if user.is_superuser or user.is_staff %}
                     <a href="{% url 'admin_dashboard' %}" style="color: #EA580C;" onclick="toggleDrawer()"><i data-lucide="shield" style="width: 18px; height: 18px; vertical-align: middle; margin-right: 8px;"></i> Admin Dashboard</a>
                 {% endif %}
-                <a href="{% url 'logout' %}" style="color: #EF4444; margin-top: 1rem;" onclick="if(!confirm('Are you sure you want to log out?')) return false; toggleDrawer();"><i data-lucide="log-out" style="width: 18px; height: 18px; vertical-align: middle; margin-right: 8px;"></i> Logout</a>
             {% else %}
                 <a href="{% url 'login' %}?next={% url 'profile' %}" onclick="toggleDrawer()"><i data-lucide="user" style="width: 18px; height: 18px; vertical-align: middle; margin-right: 8px;"></i> Profile Settings</a>
                 <a href="{% url 'login' %}?next={{ request.path }}" onclick="toggleDrawer()"><i data-lucide="log-in" style="width: 18px; height: 18px; vertical-align: middle; margin-right: 8px;"></i> Login</a>
